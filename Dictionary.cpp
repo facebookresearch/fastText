@@ -34,7 +34,7 @@ Dictionary::Dictionary() {
 
 Dictionary::~Dictionary() {}
 
-const std::hash<std::wstring> Dictionary::hashFn;
+// const std::hash<std::wstring> Dictionary::hashFn;
 
 int32_t Dictionary::find(const std::wstring& w) {
   int32_t h = hashFn(w) % MAX_VOCAB_SIZE;

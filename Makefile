@@ -1,5 +1,5 @@
-CC = cc
-CFLAGS = -lm -pthread -O3 -funroll-loops -std=c++0x
+CC = c++
+CFLAGS = -pthread -O3 -funroll-loops -std=c++0x
 OBJS = Args.o Dictionary.o Matrix.o Vector.o Model.o Utils.o
 INCLUDES = -I.
 
