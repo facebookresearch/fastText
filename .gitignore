@@ -1,6 +1,6 @@
 .*.swp
 *.o
-
+data
 classify
 fasttext
 print-vectors
