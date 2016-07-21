@@ -201,8 +201,8 @@ void Dictionary::initTableDiscard() {
   }
 }
 
-std::vector<long> Dictionary::getWordFreq() {
-  std::vector<long> freq;
+std::vector<int64_t> Dictionary::getWordFreq() {
+  std::vector<int64_t> freq;
   for (auto& w : words_) {
     if (w.type == 0) {
       freq.push_back(w.uf);
@@ -211,8 +211,8 @@ std::vector<long> Dictionary::getWordFreq() {
   return freq;
 }
 
-std::vector<long> Dictionary::getLabelFreq() {
-  std::vector<long> freq;
+std::vector<int64_t> Dictionary::getLabelFreq() {
+  std::vector<int64_t> freq;
   for (auto& w : words_) {
     if (w.type == 1) {
       freq.push_back(w.uf);
