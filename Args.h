@@ -1,0 +1,51 @@
+/**
+ * Copyright (c) 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
+#ifndef ARGS_H
+#define ARGS_H
+
+#include <string>
+
+enum class model_name : int {cbow=1, sg, sup};
+enum class sampling_name : int {sqrt=1, log, uni};
+enum class loss_name : int {hs=1, ns, softmax};
+
+class Args {
+  public:
+    Args();
+    std::string input;
+    std::string test;
+    std::string output;
+    double lr;
+    int dim;
+    int ws;
+    int epoch;
+    int minCount;
+    int neg;
+    int wordNgrams;
+    sampling_name sampling;
+    loss_name loss;
+    model_name model;
+    int bucket;
+    int minn;
+    int maxn;
+    int onlyWord;
+    int thread;
+    int verbose;
+    double t;
+    std::wstring label;
+
+    bool checkArgs();
+    void parseArgs(int, char**);
+    void printHelp();
+    void save(std::ofstream&);
+    void load(std::ifstream&);
+};
+
+#endif
