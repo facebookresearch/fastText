@@ -20,8 +20,8 @@ namespace utils {
   }
 
   real log(real x) {
-    if (x > 1.0 - 1e-8) {
-      x = 1.0 - 1e-8;
+    if (x > 1.0) {
+      return 0.0;
     }
     int i = int(x * LOG_TABLE_SIZE);
     return t_log[i];
@@ -33,7 +33,8 @@ namespace utils {
     } else if (x > MAX_SIGMOID) {
       return 1.0;
     } else {
-      return t_sigmoid[(int)((x+MAX_SIGMOID)*SIGMOID_TABLE_SIZE/MAX_SIGMOID/2)];
+      int i = int((x + MAX_SIGMOID) * SIGMOID_TABLE_SIZE / MAX_SIGMOID / 2);
+      return t_sigmoid[i];
     }
   }
 
@@ -53,17 +54,17 @@ namespace utils {
   }
 
   void initSigmoid() {
-    t_sigmoid = new real[SIGMOID_TABLE_SIZE+1];
-    for (int i = 0; i < SIGMOID_TABLE_SIZE+1; i++) {
+    t_sigmoid = new real[SIGMOID_TABLE_SIZE + 1];
+    for (int i = 0; i < SIGMOID_TABLE_SIZE + 1; i++) {
       real x = real(i * 2 * MAX_SIGMOID) / SIGMOID_TABLE_SIZE - MAX_SIGMOID;
-      t_sigmoid[i] = 1.0 / (1.0 + exp(-x));
+      t_sigmoid[i] = 1.0 / (1.0 + std::exp(-x));
     }
   }
 
   void initLog() {
-    t_log = new real[LOG_TABLE_SIZE];
-    for (int i = 0; i < LOG_TABLE_SIZE; i++) {
-      real x = (real(i) + 0.5) / LOG_TABLE_SIZE;
+    t_log = new real[LOG_TABLE_SIZE + 1];
+    for (int i = 0; i < LOG_TABLE_SIZE + 1; i++) {
+      real x = (real(i) + 1e-5) / LOG_TABLE_SIZE;
       t_log[i] = std::log(x);
     }
   }
