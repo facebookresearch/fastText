@@ -15,10 +15,6 @@ namespace utils {
   real* t_sigmoid;
   real* t_log;
 
-  real uniRand() {
-    return real(rand()) / RAND_MAX;
-  }
-
   real log(real x) {
     if (x > 1.0) {
       return 0.0;
@@ -35,16 +31,6 @@ namespace utils {
     } else {
       int i = int((x + MAX_SIGMOID) * SIGMOID_TABLE_SIZE / MAX_SIGMOID / 2);
       return t_sigmoid[i];
-    }
-  }
-
-  real trueSigmoid(real x) {
-    if (x < -11.5) {
-      return 0.0 + 1e-5;
-    } else if (x > 11.5) {
-      return 1.0 - 1e-5;
-    } else {
-      return 1.0 / (1.0 + exp(-x));
     }
   }
 

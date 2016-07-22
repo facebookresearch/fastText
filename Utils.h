@@ -19,11 +19,8 @@
 
 namespace utils {
 
-  real uniRand();
-
   real log(real);
   real sigmoid(real);
-  real trueSigmoid(real);
 
   void initTables();
   void initSigmoid();
