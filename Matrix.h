@@ -31,8 +31,8 @@ class Matrix {
 
     void zero();
     void uniform(real);
-    real dotRow(int64_t, const Vector&);
-    void addRow(int64_t, real, const Vector&);
+    real dotRow(const Vector&, int64_t);
+    void addRow(const Vector&, int64_t, real);
 
     void save(std::ofstream&);
     void load(std::ifstream&);

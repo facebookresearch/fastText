@@ -39,11 +39,11 @@ real Model::getLearningRate() {
 }
 
 void Model::binaryLogistic(int32_t label, int32_t context, double& loss) {
-  real d = wo_.dotRow(context, hidden_);
+  real d = wo_.dotRow(hidden_, context);
   real f = utils::sigmoid(d);
   real alpha = lr_ * ((real) label - f);
   grad_.addRow(wo_, context, alpha);
-  wo_.addRow(context, alpha, hidden_);
+  wo_.addRow(hidden_, context, alpha);
   if (label == 1) {
     loss -= utils::log(f + 1e-8);
   } else {
@@ -93,7 +93,7 @@ void Model::softmax(int32_t target, double& loss, int32_t& N) {
     output_[i] /= z;
     real alpha = lr_ * (label - output_[i]);
     grad_.addRow(wo_, i, alpha);
-    wo_.addRow(i, alpha, hidden_);
+    wo_.addRow(hidden_, i, alpha);
   }
   loss -= utils::log(output_[target]);
   N++;
@@ -124,7 +124,7 @@ void Model::dfs(int32_t node, real score, real& max, int32_t& argmax) {
     argmax = node;
     return;
   }
-  real f = utils::sigmoid(wo_.dotRow(node - osz_, hidden_));
+  real f = utils::sigmoid(wo_.dotRow(hidden_, node - osz_));
   dfs(tree[node].left, score + utils::log(1.0 - f), max, argmax);
   dfs(tree[node].right, score + utils::log(f), max, argmax);
 }
@@ -152,7 +152,7 @@ void Model::update(const std::vector<int32_t>& input, int32_t target, double& lo
     grad_.mul(1.0 / input.size());
   }
   for (auto it = input.cbegin(); it != input.cend(); ++it) {
-    wi_.addRow(*it, 1.0, grad_);
+    wi_.addRow(grad_, *it, 1.0);
   }
 }
 
