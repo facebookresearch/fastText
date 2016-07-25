@@ -1,40 +1,43 @@
+# 
+# Copyright (c) 2016-present, Facebook, Inc.
+# All rights reserved.
+# 
+# This source code is licensed under the BSD-style license found in the
+# LICENSE file in the root directory of this source tree. An additional grant
+# of patent rights can be found in the PATENTS file in the same directory.
+# 
+
 CC = c++
 CFLAGS = -pthread -O3 -funroll-loops -std=c++0x
-OBJS = Args.o Dictionary.o Matrix.o Vector.o Model.o Utils.o
+OBJS = args.o dictionary.o matrix.o vector.o model.o utils.o
 INCLUDES = -I.
 
 all: fasttext print-vectors classify
 
-Dictionary.h: Real.h
-Matrix.h: Real.h Vector.h
-Vector.h: Real.h Matrix.h
-Model.h: Vector.h Matrix.h Real.h
-Utils.h: Real.h
+args.o: src/args.cc src/args.h
+	$(CC) $(CFLAGS) -c src/args.cc
 
-Args.o: Args.cpp Args.h
-	$(CC) $(CFLAGS) -c Args.cpp
+dictionary.o: src/dictionary.cc src/dictionary.h src/args.h
+	$(CC) $(CFLAGS) -c src/dictionary.cc
 
-Dictionary.o: Dictionary.cpp Dictionary.h Args.h
-	$(CC) $(CFLAGS) -c Dictionary.cpp
+matrix.o: src/matrix.cc src/matrix.h src/utils.h
+	$(CC) $(CFLAGS) -c src/matrix.cc
 
-Matrix.o: Matrix.cpp Matrix.h Utils.h
-	$(CC) $(CFLAGS) -c Matrix.cpp
+vector.o: src/vector.cc src/vector.h src/utils.h
+	$(CC) $(CFLAGS) -c src/vector.cc
 
-Vector.o: Vector.cpp Vector.h Utils.h
-	$(CC) $(CFLAGS) -c Vector.cpp
+model.o: src/model.cc src/model.h src/args.h
+	$(CC) $(CFLAGS) -c src/model.cc
 
-Model.o: Model.cpp Model.h Args.h
-	$(CC) $(CFLAGS) -c Model.cpp
+utils.o: src/utils.cc src/utils.h
+	$(CC) $(CFLAGS) -c src/utils.cc
 
-Utils.o: Utils.cpp Utils.h
-	$(CC) $(CFLAGS) -c Utils.cpp
-
-fasttext : $(OBJS) FastText.cpp
-	$(CC) $(CFLAGS) $(OBJS) FastText.cpp -o fasttext
-print-vectors : $(OBJS) PrintVectors.cpp
-	$(CC) $(CFLAGS) $(OBJS) PrintVectors.cpp -o print-vectors
-classify : $(OBJS) Classify.cpp
-	$(CC) $(CFLAGS) $(OBJS) Classify.cpp -o classify
+fasttext : $(OBJS) src/fasttext.cc
+	$(CC) $(CFLAGS) $(OBJS) src/fasttext.cc -o fasttext
+print-vectors : $(OBJS) src/print-vectors.cc
+	$(CC) $(CFLAGS) $(OBJS) src/print-vectors.cc -o print-vectors
+classify : $(OBJS) src/classify.cc
+	$(CC) $(CFLAGS) $(OBJS) src/classify.cc -o classify
 
 clean:
 	rm -rf *.o fasttext print-vectors classify
