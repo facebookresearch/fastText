@@ -74,7 +74,7 @@ void loadModel(Dictionary& dict, Matrix& input, Matrix& output) {
   ifs.close();
 }
 
-void printInfo(Model& model, long long numTokens) {
+void printInfo(Model& model, int64_t numTokens) {
   real progress = real(info::allWords) / (args.epoch * numTokens);
   real avLoss = info::allLoss / info::allN;
   float time = float(clock() - info::start) / CLOCKS_PER_SEC;
@@ -178,7 +178,6 @@ void thread_function(Dictionary& dict, Matrix& input, Matrix& output,
 
   const int64_t ntokens = dict.getNumTokens();
   int64_t tokenCount = 0;
-  int64_t prevTokenCount = 0;
   double loss = 0.0;
   int32_t N = 0;
   std::vector<int32_t> line, labels;
@@ -194,11 +193,11 @@ void thread_function(Dictionary& dict, Matrix& input, Matrix& output,
       skipGram(dict, model, line, loss, N);
     }
 
-    if (tokenCount - prevTokenCount > 10000) {
-      info::allWords += tokenCount - prevTokenCount;
-      prevTokenCount = tokenCount;
+    if (tokenCount > 10000) {
+      info::allWords += tokenCount;
       info::allLoss += loss;
       info::allN += N;
+      tokenCount = 0;
       loss = 0.0;
       N = 0;
       real progress = real(info::allWords) / (args.epoch * ntokens);
@@ -245,9 +244,8 @@ int main(int argc, char** argv) {
     it->join();
   }
 
-  std::wcout << "training took: "
-              << float(clock() - info::start) / CLOCKS_PER_SEC / args.thread
-              << " s" << std::endl;
+  float trainTime = float(clock() - info::start) / CLOCKS_PER_SEC / args.thread;
+  std::wcout << "training took: " << trainTime << " sec" << std::endl;
 
   if (args.output.size() != 0) {
     saveModel(dict, input, output);
