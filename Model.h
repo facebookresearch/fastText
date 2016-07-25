@@ -53,7 +53,7 @@ class Model {
     void setLearningRate(real);
     real getLearningRate();
 
-    void binaryLogistic(int32_t, int32_t, double&);
+    void binaryLogistic(int32_t, bool, double&);
     void negativeSampling(int32_t, double&, int32_t&);
     void hierarchicalSoftmax(int32_t, double&, int32_t&);
     void softmax(int32_t, double&, int32_t&);

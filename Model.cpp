@@ -38,16 +38,15 @@ real Model::getLearningRate() {
   return lr_;
 }
 
-void Model::binaryLogistic(int32_t label, int32_t context, double& loss) {
-  real d = wo_.dotRow(context, hidden_);
-  real f = utils::sigmoid(d);
-  real alpha = lr_ * ((real) label - f);
-  grad_.addRow(wo_, context, alpha);
-  wo_.addRow(context, alpha, hidden_);
-  if (label == 1) {
-    loss -= utils::log(f + 1e-8);
+void Model::binaryLogistic(int32_t target, bool label, double& loss) {
+  real score = utils::sigmoid(wo_.dotRow(hidden_, target));
+  real alpha = lr_ * (real(label) - score);
+  grad_.addRow(wo_, target, alpha);
+  wo_.addRow(hidden_, target, alpha);
+  if (label) {
+    loss -= utils::log(score);
   } else {
-    loss -= utils::log(1.0 - f + 1e-8);
+    loss -= utils::log(1.0 - score);
   }
 }
 
@@ -55,9 +54,9 @@ void Model::negativeSampling(int32_t target, double& loss, int32_t& N) {
   grad_.zero();
   for (int32_t n = 0; n <= args.neg; n++) {
     if (n == 0) {
-      binaryLogistic(1, target, loss);
+      binaryLogistic(target, true, loss);
     } else {
-      binaryLogistic(0, getNegative(target), loss);
+      binaryLogistic(getNegative(target), false, loss);
     }
     N += 1;
   }
@@ -67,12 +66,8 @@ void Model::hierarchicalSoftmax(int32_t target, double& loss, int32_t& N) {
   grad_.zero();
   const std::vector<bool>& binaryCode = codes[target];
   const std::vector<int32_t>& pathToRoot = paths[target];
-  int32_t label, context;
-  int32_t pl = pathToRoot.size();
-  for (int32_t i = 0; i < pl; i++) {
-    label = int32_t(binaryCode[i]);
-    context = pathToRoot[i];
-    binaryLogistic(label, context, loss);
+  for (int32_t i = 0; i < pathToRoot.size(); i++) {
+    binaryLogistic(pathToRoot[i], binaryCode[i], loss);
   }
   N += 1;
 }
@@ -82,7 +77,7 @@ void Model::softmax(int32_t target, double& loss, int32_t& N) {
   output_.mul(wo_, hidden_);
   real max = 0.0, z = 0.0;
   for (int32_t i = 0; i < osz_; i++) {
-    max = (max > output_[i]) ? max : output_[i];
+    max = std::max(output_[i], max);
   }
   for (int32_t i = 0; i < osz_; i++) {
     output_[i] = exp(output_[i] - max);
@@ -93,7 +88,7 @@ void Model::softmax(int32_t target, double& loss, int32_t& N) {
     output_[i] /= z;
     real alpha = lr_ * (label - output_[i]);
     grad_.addRow(wo_, i, alpha);
-    wo_.addRow(i, alpha, hidden_);
+    wo_.addRow(hidden_, i, alpha);
   }
   loss -= utils::log(output_[target]);
   N++;
@@ -124,7 +119,7 @@ void Model::dfs(int32_t node, real score, real& max, int32_t& argmax) {
     argmax = node;
     return;
   }
-  real f = utils::sigmoid(wo_.dotRow(node - osz_, hidden_));
+  real f = utils::sigmoid(wo_.dotRow(hidden_, node - osz_));
   dfs(tree[node].left, score + utils::log(1.0 - f), max, argmax);
   dfs(tree[node].right, score + utils::log(f), max, argmax);
 }
@@ -152,7 +147,7 @@ void Model::update(const std::vector<int32_t>& input, int32_t target, double& lo
     grad_.mul(1.0 / input.size());
   }
   for (auto it = input.cbegin(); it != input.cend(); ++it) {
-    wi_.addRow(*it, 1.0, grad_);
+    wi_.addRow(grad_, *it, 1.0);
   }
 }
 
@@ -195,13 +190,11 @@ void Model::initTableNegatives(const std::vector<int64_t>& freq) {
 }
 
 int32_t Model::getNegative(int32_t target) {
-  int32_t n = negatives.size();
-  int32_t negative = negatives[npos++];
-  npos = npos % n;
-  while (target == negative) {
-    negative = negatives[npos++];
-    npos = npos % n;
-  }
+  int32_t negative;
+  do {
+    negative = negatives[npos];
+    npos = (npos + 1) % negatives.size();
+  } while (target == negative);
   return negative;
 }
 
