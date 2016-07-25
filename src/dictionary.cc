@@ -7,13 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#include "Dictionary.h"
+#include "dictionary.h"
 #include <assert.h>
 #include <iostream>
 #include <algorithm>
 #include <iterator>
 #include <unordered_map>
-#include "Args.h"
+#include "args.h"
 
 extern Args args;
 

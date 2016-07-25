@@ -7,11 +7,11 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#include "Model.h"
+#include "model.h"
 #include <assert.h>
 #include <algorithm>
-#include "Args.h"
-#include "Utils.h"
+#include "args.h"
+#include "utils.h"
 
 extern Args args;
 

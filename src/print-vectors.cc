@@ -10,10 +10,10 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "Args.h"
-#include "Matrix.h"
-#include "Vector.h"
-#include "Dictionary.h"
+#include "args.h"
+#include "matrix.h"
+#include "vector.h"
+#include "dictionary.h"
 
 Args args;
 

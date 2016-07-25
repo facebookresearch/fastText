@@ -7,13 +7,13 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#include "Matrix.h"
-#include "Vector.h"
-#include "Dictionary.h"
-#include "Model.h"
-#include "Utils.h"
-#include "Real.h"
-#include "Args.h"
+#include "matrix.h"
+#include "vector.h"
+#include "dictionary.h"
+#include "model.h"
+#include "utils.h"
+#include "real.h"
+#include "args.h"
 #include <iostream>
 #include <iomanip>
 #include <thread>

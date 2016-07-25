@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#include "Utils.h"
+#include "utils.h"
 #include <cmath>
 #include <ios>
 

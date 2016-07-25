@@ -10,9 +10,9 @@
 #ifndef MODEL_H
 #define MODEL_H
 
-#include "Matrix.h"
-#include "Vector.h"
-#include "Real.h"
+#include "matrix.h"
+#include "vector.h"
+#include "real.h"
 #include <vector>
 #include <random>
 

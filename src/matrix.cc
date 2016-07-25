@@ -7,11 +7,11 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#include "Matrix.h"
+#include "matrix.h"
 #include <assert.h>
 #include <random>
-#include "Utils.h"
-#include "Vector.h"
+#include "utils.h"
+#include "vector.h"
 
 Matrix::Matrix() {
   m_ = 0;

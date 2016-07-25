@@ -11,7 +11,7 @@
 #define UTILS_H
 
 #include <fstream>
-#include "Real.h"
+#include "real.h"
 
 #define SIGMOID_TABLE_SIZE 512
 #define MAX_SIGMOID 8

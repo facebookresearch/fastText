@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#include "Args.h"
+#include "args.h"
 #include "stdlib.h"
 #include <string.h>
 #include <iostream>

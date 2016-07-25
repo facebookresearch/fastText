@@ -7,12 +7,12 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#include "Vector.h"
+#include "vector.h"
 #include <assert.h>
 #include <iostream>
 #include <iomanip>
-#include "Matrix.h"
-#include "Utils.h"
+#include "matrix.h"
+#include "utils.h"
 
 Vector::Vector(int64_t m) {
   m_ = m;

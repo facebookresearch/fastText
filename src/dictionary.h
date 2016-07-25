@@ -10,7 +10,7 @@
 #ifndef DICTIONARY_H
 #define DICTIONARY_H
 
-#include "Real.h"
+#include "real.h"
 #include <vector>
 #include <string>
 #include <fstream>
