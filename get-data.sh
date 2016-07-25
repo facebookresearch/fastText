@@ -8,17 +8,19 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 # 
 
-mkdir -p data
+DATADIR=data
 
-if [ ! -f data/text9 ]
+mkdir -p "${DATADIR}"
+
+if [ ! -f "${DATADIR}"/text9 ]
 then
-  wget -c http://mattmahoney.net/dc/enwik9.zip -P data
-  unzip data/enwik9.zip -d data
-  perl wikifil.pl data/enwik9 > data/text9
+  wget -c http://mattmahoney.net/dc/enwik9.zip -P "${DATADIR}"
+  unzip "${DATADIR}"/enwik9.zip -d "${DATADIR}"
+  perl wikifil.pl "${DATADIR}"/enwik9 > "${DATADIR}"/text9
 fi
 
-if [ ! -f data/rw/rw.txt ]
+if [ ! -f "${DATADIR}"/rw/rw.txt ]
 then
-  wget -c http://www-nlp.stanford.edu/~lmthang/morphoNLM/rw.zip -P data
-  unzip data/rw.zip -d data
+  wget -c http://www-nlp.stanford.edu/~lmthang/morphoNLM/rw.zip -P "${DATADIR}"
+  unzip "${DATADIR}"/rw.zip -d "${DATADIR}"
 fi
