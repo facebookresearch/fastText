@@ -35,11 +35,6 @@ Args::Args() {
 }
 
 void Args::parseArgs(int argc, char** argv) {
-  if (argc == 1) {
-    std::wcout << "No arguments were provided! Usage:" << std::endl;
-    printHelp();
-    exit(EXIT_FAILURE);
-  }
   std::string command(argv[1]);
   if (command == "supervised") {
     model = model_name::sup;
