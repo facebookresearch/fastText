@@ -41,7 +41,6 @@ class Args {
     double t;
     std::wstring label;
 
-    bool checkArgs();
     void parseArgs(int, char**);
     void printHelp();
     void save(std::ofstream&);

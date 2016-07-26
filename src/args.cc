@@ -126,15 +126,11 @@ void Args::parseArgs(int argc, char** argv) {
     }
     ai += 2;
   }
-  if (!checkArgs()) {
+  if (input.empty() || output.empty()) {
     std::wcout << "Empty input or output path." << std::endl;
     printHelp();
     exit(EXIT_FAILURE);
   }
-}
-
-bool Args::checkArgs() {
-  return input.length() != 0 && output.length() != 0;
 }
 
 void Args::printHelp() {
