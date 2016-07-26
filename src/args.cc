@@ -40,7 +40,7 @@ void Args::parseArgs(int argc, char** argv) {
     model = model_name::sup;
     loss = loss_name::softmax;
   } else if (command == "cbow") {
-    model == model_name::cbow;
+    model = model_name::cbow;
   }
   int ai = 2;
   while (ai < argc) {
