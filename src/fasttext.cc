@@ -22,6 +22,7 @@
 #include <math.h>
 #include <vector>
 #include <atomic>
+#include <algorithm>
 #include <fenv.h>
 
 Args args;
@@ -40,19 +41,35 @@ void saveVectors(Dictionary& dict, Matrix& input, Matrix& output) {
     ofs << N << ' ' << args.dim << std::endl;
     for (int32_t i = 0; i < N; i++) {
       ofs << dict.getWord(i) << ' ';
-      Vector embedding(args.dim);
-      embedding.zero();
+      Vector vec(args.dim);
+      vec.zero();
       const std::vector<int32_t>& ngrams = dict.getNgrams(i);
       for (auto it = ngrams.begin(); it != ngrams.end(); ++it) {
-        embedding.addRow(input, *it);
+        vec.addRow(input, *it);
       }
-      embedding.mul(1.0 / ngrams.size());
-      embedding.writeToStream(ofs);
+      vec.mul(1.0 / ngrams.size());
+      vec.writeToStream(ofs);
       ofs << std::endl;
     }
     ofs.close();
   } else {
-    std::wcout << "Error opening file for writing" << std::endl;
+    std::wcout << "Error opening file for saving vectors." << std::endl;
+  }
+}
+
+void printVectors(Dictionary& dict, Matrix& input, Matrix& output) {
+  std::wstring ws;
+  while (std::wcin >> ws) {
+    std::wcout << ws << " ";
+    Vector vec(args.dim);
+    vec.zero();
+    std::vector<int32_t> ngrams = dict.getNgrams(ws);
+    for (auto it = ngrams.begin(); it != ngrams.end(); ++it) {
+      vec.addRow(input, *it);
+    }
+    vec.mul(1.0 / ngrams.size());
+    vec.writeToStream(std::wcout);
+    std::wcout << std::endl;
   }
 }
 
@@ -65,8 +82,9 @@ void saveModel(Dictionary& dict, Matrix& input, Matrix& output) {
   ofs.close();
 }
 
-void loadModel(Dictionary& dict, Matrix& input, Matrix& output) {
-  std::ifstream ifs(args.output + ".bin");
+void loadModel(std::string filename, Dictionary& dict,
+               Matrix& input, Matrix& output) {
+  std::ifstream ifs(filename);
   args.load(ifs);
   dict.load(ifs);
   input.load(ifs);
@@ -140,32 +158,30 @@ void skipGram(Dictionary& dict, Model& model,
   }
 }
 
-void test(Dictionary& dict, Model& model) {
-  int32_t N = 0;
+void test(Dictionary& dict, Model& model, std::string filename) {
+  int32_t nexamples = 0;
   double precision = 0.0;
   std::vector<int32_t> line, labels;
-  std::wifstream ifs(args.test);
+  std::wifstream ifs(filename);
   while (!ifs.eof()) {
     dict.getLine(ifs, line, labels, model.rng);
     dict.addNgrams(line, args.wordNgrams);
     if (labels.size() > 0 && line.size() > 0) {
       int32_t i = model.predict(line);
-      for (auto& t : labels) {
-        if (i == t) {
-          precision += 1.0;
-          break;
-        }
+      if (std::find(labels.begin(), labels.end(), i) != labels.end()) {
+        precision += 1.0;
       }
-      N++;
+      nexamples++;
     }
   }
   ifs.close();
-  std::wcout << std::setprecision(3) << "P@1: " << precision / N << std::endl;
-  std::wcout << std::setprecision(3) << "Sentences: " << N << std::endl;
+  std::wcout << std::setprecision(3);
+  std::wcout << "P@1: " << precision / nexamples << std::endl;
+  std::wcout << "Number of examples: " << nexamples << std::endl;
 }
 
-void thread_function(Dictionary& dict, Matrix& input, Matrix& output,
-                     int32_t threadId) {
+void trainThread(Dictionary& dict, Matrix& input, Matrix& output,
+                 int32_t threadId) {
   std::wifstream ifs(args.input);
   utils::seek(ifs, threadId * utils::size(ifs) / args.thread);
 
@@ -210,19 +226,69 @@ void thread_function(Dictionary& dict, Matrix& input, Matrix& output,
     std::wcout << std::endl;
   }
   if (args.model == model_name::sup && threadId == 0) {
-    test(dict, model);
+    test(dict, model, args.test);
   }
   ifs.close();
 }
 
-int main(int argc, char** argv) {
-  std::locale::global(std::locale(""));
+void printUsage() {
+  std::wcout
+    << "usage: fasttext <command> <args>\n\n"
+    << "The commands supported by fasttext are:\n\n"
+    << "  supervised       train a supervised classifier\n"
+    << "  test             evaluate a supervised classifier\n"
+    << "  skipgram         train a skipgram model\n"
+    << "  cbow             train a cbow model\n"
+    << "  print-vectors    print vectors given a trained model\n"
+    << std::endl;
+}
+
+void printTestUsage() {
+  std::wcout
+    << "usage: fasttext test <model> <test-data>\n\n"
+    << "  <model>      model filename\n"
+    << "  <test-data>  test data filename\n"
+    << std::endl;
+}
+
+void printPrintVectorsUsage() {
+  std::wcout
+    << "usage: fasttext print-vectors <model>\n\n"
+    << "  <model>      model filename\n"
+    << std::endl;
+}
+
+void test(int argc, char** argv) {
+  if (argc != 4) {
+    printTestUsage();
+    exit(EXIT_FAILURE);
+  }
+  Dictionary dict;
+  Matrix input, output;
+  loadModel(std::string(argv[2]), dict, input, output);
+  Model model(input, output, args.dim, args.lr, 1);
+  model.setLabelFreq(dict.getLabelFreq());
+  test(dict, model, std::string(argv[3]));
+  exit(0);
+}
+
+void printVectors(int argc, char** argv) {
+  if (argc != 3) {
+    printPrintVectorsUsage();
+    exit(EXIT_FAILURE);
+  }
+  Dictionary dict;
+  Matrix input, output;
+  loadModel(std::string(argv[2]), dict, input, output);
+  printVectors(dict, input, output);
+  exit(0);
+}
+
+void train(int argc, char** argv) {
   args.parseArgs(argc, argv);
-  utils::initTables();
 
   Dictionary dict;
   dict.readFromFile(args.input);
-
   Matrix input(dict.getNumWords() + args.bucket, args.dim);
   Matrix output;
   if (args.model == model_name::sup) {
@@ -234,16 +300,14 @@ int main(int argc, char** argv) {
   output.zero();
 
   info::start = clock();
-
   std::vector<std::thread> threads;
   for (int32_t i = 0; i < args.thread; i++) {
-    threads.push_back(std::thread(&thread_function, std::ref(dict),
+    threads.push_back(std::thread(&trainThread, std::ref(dict),
                                   std::ref(input), std::ref(output), i));
   }
   for (auto it = threads.begin(); it != threads.end(); ++it) {
     it->join();
   }
-
   float trainTime = float(clock() - info::start) / CLOCKS_PER_SEC / args.thread;
   std::wcout << "training took: " << trainTime << " sec" << std::endl;
 
@@ -251,7 +315,26 @@ int main(int argc, char** argv) {
     saveModel(dict, input, output);
     saveVectors(dict, input, output);
   }
-  utils::freeTables();
+}
 
+int main(int argc, char** argv) {
+  std::locale::global(std::locale(""));
+  utils::initTables();
+  if (argc < 2) {
+    printUsage();
+    exit(EXIT_FAILURE);
+  }
+  std::string command(argv[1]);
+  if (command == "skipgram" || command == "cbow" || command == "supervised") {
+    train(argc, argv);
+  } else if (command == "test") {
+    test(argc, argv);
+  } else if (command == "print-vectors") {
+    printVectors(argc, argv);
+  } else {
+    printUsage();
+    exit(EXIT_FAILURE);
+  }
+  utils::freeTables();
   return 0;
 }

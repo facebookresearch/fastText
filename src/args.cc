@@ -20,7 +20,7 @@ Args::Args() {
   epoch = 5;
   minCount = 5;
   neg = 5;
-  wordNgrams = 0;
+  wordNgrams = 1;
   sampling = sampling_name::sqrt;
   loss = loss_name::ns;
   model = model_name::sg;
@@ -40,7 +40,14 @@ void Args::parseArgs(int argc, char** argv) {
     printHelp();
     exit(EXIT_FAILURE);
   }
-  int ai = 1;
+  std::string command(argv[1]);
+  if (command == "supervised") {
+    model = model_name::sup;
+    loss = loss_name::softmax;
+  } else if (command == "cbow") {
+    model == model_name::cbow;
+  }
+  int ai = 2;
   while (ai < argc) {
     if (argv[ai][0] != '-') {
       std::wcout << "Provided argument without a dash! Usage:" << std::endl;
@@ -79,7 +86,7 @@ void Args::parseArgs(int argc, char** argv) {
       } else if (strcmp(argv[ai + 1], "uni") == 0) {
         sampling = sampling_name::uni;
       } else {
-        std::wcout << "Invalid sampling!" << std::endl;
+        std::wcout << "Unknown sampling: " << argv[ai + 1] << std::endl;
         printHelp();
         exit(EXIT_FAILURE);
       }
@@ -91,7 +98,7 @@ void Args::parseArgs(int argc, char** argv) {
       } else if (strcmp(argv[ai + 1], "softmax") == 0) {
         loss = loss_name::softmax;
       } else {
-        std::wcout << "Invalid loss!" << std::endl;
+        std::wcout << "Unknown loss: " << argv[ai + 1] << std::endl;
         printHelp();
         exit(EXIT_FAILURE);
       }
@@ -109,30 +116,18 @@ void Args::parseArgs(int argc, char** argv) {
       verbose = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-t") == 0) {
       t = atof(argv[ai + 1]);
-    } else if (strcmp(argv[ai], "-model") == 0) {
-      if (strcmp(argv[ai + 1], "cbow") == 0) {
-        model = model_name::cbow;
-      } else if (strcmp(argv[ai + 1], "sg") == 0) {
-        model = model_name::sg;
-      } else if (strcmp(argv[ai + 1], "sup") == 0) {
-        model = model_name::sup;
-      } else {
-        std::wcout << "Invalid model!" << std::endl;
-        printHelp();
-        exit(EXIT_FAILURE);
-      }
     } else if (strcmp(argv[ai], "-label") == 0) {
       std::string str = std::string(argv[ai + 1]);
       label = std::wstring(str.begin(), str.end());
     } else {
-      std::wcout << "Unknown argument!" << std::endl;
+      std::wcout << "Unknown argument: " << argv[ai] << std::endl;
       printHelp();
       exit(EXIT_FAILURE);
     }
     ai += 2;
   }
   if (!checkArgs()) {
-    std::wcout << "Empty input or output path!" << std::endl;
+    std::wcout << "Empty input or output path." << std::endl;
     printHelp();
     exit(EXIT_FAILURE);
   }
@@ -143,46 +138,30 @@ bool Args::checkArgs() {
 }
 
 void Args::printHelp() {
-  std::wcout << "The following arguments are mandatory:" << std::endl;
-  std::wcout << "\t-input:       training file path" << std::endl;
-  std::wcout << "\t-output:   output file path" << std::endl;
-  std::wcout << "The following arguments are optional "
-              << "and have a default value:" << std::endl;
-  std::wcout << "\t-lr:               learning rate, default="
-              << lr << std::endl;
-  std::wcout << "\t-dim:             size of the word vector, default="
-              << dim << std::endl;
-  std::wcout << "\t-ws:               size of the context window, default="
-              << ws << std::endl;
-  std::wcout << "\t-epoch:           number of epochs, default="
-              << epoch << std::endl;
-  std::wcout << "\t-minCount:       minimal number of word occurences, "
-              << "default=" << minCount << std::endl;
-  std::wcout << "\t-neg:           number of negatives sampled, default="
-              << neg << std::endl;
-  std::wcout << "\t-wordNgrams:       n for word ngrams to use in the "
-              << "supervised setup, default=" << wordNgrams << std::endl;
-  std::wcout << "\t-sampling:         sampling strategy used {sqrt, log, uni}, "
-              << "default=log" << std::endl;
-  std::wcout << "\t-loss:             loss function {ns, hs}, "
-              << "default=ns" << std::endl;
-  std::wcout << "\t-bucket:        number of ngrams used, default="
-              << bucket << std::endl;
-  std::wcout << "\t-minn:             length of shortest n-gram, default="
-              << minn << std::endl;
-  std::wcout << "\t-maxn:             length of longest n-gram, default="
-              << maxn << std::endl;
-  std::wcout << "\t-onlyWord:         number of words with no n-grams, "
-              << "default=" << onlyWord << std::endl;
-  std::wcout << "\t-thread:       number of threads, default="
-              << thread << std::endl;
-  std::wcout << "\t-verbose:      how often to print to stdout, default="
-              << verbose << std::endl;
-  std::wcout << "\t-t:                sampling threshold, default="
-              << t << std::endl;
-  std::wcout << "\t-model:            {sg, cbow}, default=sg" << std::endl;
-  std::wcout << "\t-label:           labels prefix, default=__label__";
-  std::wcout << std::endl;
+  std::wcout
+    << "\n"
+    << "The following arguments are mandatory:\n"
+    << "  -input      training file path\n"
+    << "  -output     output file path\n\n"
+    << "The following arguments are optional:\n"
+    << "  -lr         learning rate [" << lr << "]\n"
+    << "  -dim        size of word vectors [" << dim << "]\n"
+    << "  -ws         size of the context window [" << ws << "]\n"
+    << "  -epoch      number of epochs [" << epoch << "]\n"
+    << "  -minCount   minimal number of word occurences [" << minCount << "]\n"
+    << "  -neg        number of negatives sampled [" << neg << "]\n"
+    << "  -wordNgrams max length of word ngram [" << wordNgrams << "]\n"
+    << "  -sampling   sampling distribution {sqrt, log, uni} [log]\n"
+    << "  -loss       loss function {ns, hs, softmax}   [ns]\n"
+    << "  -bucket     number of buckets [" << bucket << "]\n"
+    << "  -minn       min length of char ngram [" << minn << "]\n"
+    << "  -maxn       max length of char ngram [" << maxn << "]\n"
+    << "  -onlyWord   number of words with no ngrams [" << onlyWord << "]\n"
+    << "  -thread     number of threads [" << thread << "]\n"
+    << "  -verbose    how often to print to stdout [" << verbose << "]\n"
+    << "  -t          sampling threshold [" << t << "]\n"
+    << "  -label      labels prefix [" << label << "]\n"
+    << std::endl;
 }
 
 void Args::save(std::ofstream& ofs) {
