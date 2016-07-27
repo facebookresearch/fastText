@@ -36,7 +36,7 @@ namespace info {
 
 void saveVectors(Dictionary& dict, Matrix& input, Matrix& output) {
   int32_t N = dict.getNumWords();
-  std::wofstream ofs(args.output + ".vec");
+  std::ofstream ofs(args.output + ".vec");
   if (ofs.is_open()) {
     ofs << N << ' ' << args.dim << std::endl;
     for (int32_t i = 0; i < N; i++) {
@@ -53,23 +53,23 @@ void saveVectors(Dictionary& dict, Matrix& input, Matrix& output) {
     }
     ofs.close();
   } else {
-    std::wcout << "Error opening file for saving vectors." << std::endl;
+    std::cout << "Error opening file for saving vectors." << std::endl;
   }
 }
 
 void printVectors(Dictionary& dict, Matrix& input, Matrix& output) {
-  std::wstring ws;
-  while (std::wcin >> ws) {
-    std::wcout << ws << " ";
+  std::string ws;
+  while (std::cin >> ws) {
+    std::cout << ws << " ";
     Vector vec(args.dim);
     vec.zero();
-    std::vector<int32_t> ngrams = dict.getNgrams(ws);
+    const std::vector<int32_t> ngrams = dict.getNgrams(ws);
     for (auto it = ngrams.begin(); it != ngrams.end(); ++it) {
       vec.addRow(input, *it);
     }
     vec.mul(1.0 / ngrams.size());
-    vec.writeToStream(std::wcout);
-    std::wcout << std::endl;
+    vec.writeToStream(std::cout);
+    std::cout << std::endl;
   }
 }
 
@@ -101,13 +101,13 @@ void printInfo(Model& model, int64_t numTokens) {
   int etah = eta / 3600;
   int etam = (eta - etah * 3600) / 60;
 
-  std::wcout << std::fixed;
-  std::wcout << "\rProgress: " << std::setprecision(1) << 100 * progress << "%";
-  std::wcout << "  words/sec/thread: " << std::setprecision(0) << wst;
-  std::wcout << "  lr: " << std::setprecision(6) << model.getLearningRate();
-  std::wcout << "  loss: " << std::setprecision(6) << avLoss;
-  std::wcout << "  eta: " << etah << "h" << etam << "m  ";
-  std::wcout << std::flush;
+  std::cout << std::fixed;
+  std::cout << "\rProgress: " << std::setprecision(1) << 100 * progress << "%";
+  std::cout << "  words/sec/thread: " << std::setprecision(0) << wst;
+  std::cout << "  lr: " << std::setprecision(6) << model.getLearningRate();
+  std::cout << "  loss: " << std::setprecision(6) << avLoss;
+  std::cout << "  eta: " << etah << "h" << etam << "m  ";
+  std::cout << std::flush;
 }
 
 void supervised(Model& model,
@@ -162,7 +162,7 @@ void test(Dictionary& dict, Model& model, std::string filename) {
   int32_t nexamples = 0;
   double precision = 0.0;
   std::vector<int32_t> line, labels;
-  std::wifstream ifs(filename);
+  std::ifstream ifs(filename);
   while (!ifs.eof()) {
     dict.getLine(ifs, line, labels, model.rng);
     dict.addNgrams(line, args.wordNgrams);
@@ -175,14 +175,14 @@ void test(Dictionary& dict, Model& model, std::string filename) {
     }
   }
   ifs.close();
-  std::wcout << std::setprecision(3);
-  std::wcout << "P@1: " << precision / nexamples << std::endl;
-  std::wcout << "Number of examples: " << nexamples << std::endl;
+  std::cout << std::setprecision(3);
+  std::cout << "P@1: " << precision / nexamples << std::endl;
+  std::cout << "Number of examples: " << nexamples << std::endl;
 }
 
 void trainThread(Dictionary& dict, Matrix& input, Matrix& output,
                  int32_t threadId) {
-  std::wifstream ifs(args.input);
+  std::ifstream ifs(args.input);
   utils::seek(ifs, threadId * utils::size(ifs) / args.thread);
 
   Model model(input, output, args.dim, args.lr, threadId);
@@ -223,7 +223,7 @@ void trainThread(Dictionary& dict, Matrix& input, Matrix& output,
   }
   if (threadId == 0) {
     printInfo(model, ntokens);
-    std::wcout << std::endl;
+    std::cout << std::endl;
   }
   if (args.model == model_name::sup && threadId == 0) {
     test(dict, model, args.test);
@@ -232,7 +232,7 @@ void trainThread(Dictionary& dict, Matrix& input, Matrix& output,
 }
 
 void printUsage() {
-  std::wcout
+  std::cout
     << "usage: fasttext <command> <args>\n\n"
     << "The commands supported by fasttext are:\n\n"
     << "  supervised       train a supervised classifier\n"
@@ -244,7 +244,7 @@ void printUsage() {
 }
 
 void printTestUsage() {
-  std::wcout
+  std::cout
     << "usage: fasttext test <model> <test-data>\n\n"
     << "  <model>      model filename\n"
     << "  <test-data>  test data filename\n"
@@ -252,7 +252,7 @@ void printTestUsage() {
 }
 
 void printPrintVectorsUsage() {
-  std::wcout
+  std::cout
     << "usage: fasttext print-vectors <model>\n\n"
     << "  <model>      model filename\n"
     << std::endl;
@@ -309,7 +309,7 @@ void train(int argc, char** argv) {
     it->join();
   }
   float trainTime = float(clock() - info::start) / CLOCKS_PER_SEC / args.thread;
-  std::wcout << "training took: " << trainTime << " sec" << std::endl;
+  std::cout << "training took: " << trainTime << " sec" << std::endl;
 
   if (args.output.size() != 0) {
     saveModel(dict, input, output);

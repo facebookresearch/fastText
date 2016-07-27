@@ -19,11 +19,11 @@
 typedef int32_t id_type;
 
 struct entry {
-  std::wstring word;
+  std::string word;
   int32_t id;
   int64_t uf;
   int8_t type;
-  std::vector<int32_t> hashes;
+  std::vector<int32_t> subwords;
 };
 
 class Dictionary {
@@ -31,9 +31,9 @@ class Dictionary {
     static const int32_t MAX_VOCAB_SIZE = 30000000;
     static const int32_t MAX_LINE_SIZE = 1024;
 
-    int32_t find(const std::wstring&);
+    int32_t find(const std::string&);
     void initTableDiscard();
-    void buildNgrams();
+    void initNgrams();
 
     std::vector<int32_t> word2int_;
     std::vector<entry> words_;
@@ -44,31 +44,32 @@ class Dictionary {
     int64_t ntokens;
 
   public:
-    static const std::wstring EOS;
-    static const std::wstring BOW;
-    static const std::wstring EOW;
-    static const std::hash<std::wstring> hashFn;
+    static const std::string EOS;
+    static const std::string BOW;
+    static const std::string EOW;
+    static const std::hash<std::string> hashFn;
 
     Dictionary();
     ~Dictionary();
     int32_t getNumWords();
     int32_t getNumLabels();
     int64_t getNumTokens();
-    int32_t getId(const std::wstring&);
+    int32_t getId(const std::string&);
     int8_t getType(int32_t);
     bool discard(int32_t, real);
-    std::wstring getWord(int32_t);
+    std::string getWord(int32_t);
     const std::vector<int32_t>& getNgrams(int32_t);
-    std::vector<int32_t> getNgrams(const std::wstring&);
-    void add(const std::wstring&);
-    std::wstring readWord(std::wistream&);
+    const std::vector<int32_t> getNgrams(const std::string&);
+    void computeNgrams(const std::string&, std::vector<int32_t>&);
+    void add(const std::string&);
+    std::string readWord(std::ifstream&);
     void readFromFile(const std::string&);
     void save(std::ofstream&);
     void load(std::ifstream&);
     std::vector<int64_t> getWordFreq();
     std::vector<int64_t> getLabelFreq();
     void addNgrams(std::vector<int32_t>&, int32_t);
-    int32_t getLine(std::wifstream&, std::vector<int32_t>&,
+    int32_t getLine(std::ifstream&, std::vector<int32_t>&,
                     std::vector<int32_t>&, std::minstd_rand&);
 };
 

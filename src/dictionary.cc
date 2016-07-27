@@ -17,9 +17,9 @@
 
 extern Args args;
 
-const std::wstring Dictionary::EOS = L"</s>";
-const std::wstring Dictionary::BOW = L"<";
-const std::wstring Dictionary::EOW = L">";
+const std::string Dictionary::EOS = "</s>";
+const std::string Dictionary::BOW = "<";
+const std::string Dictionary::EOW = ">";
 
 Dictionary::Dictionary() {
   size = 0;
@@ -34,7 +34,7 @@ Dictionary::Dictionary() {
 
 Dictionary::~Dictionary() {}
 
-int32_t Dictionary::find(const std::wstring& w) {
+int32_t Dictionary::find(const std::string& w) {
   int32_t h = hashFn(w) % MAX_VOCAB_SIZE;
   while (word2int_[h] != -1 && words_[word2int_[h]].word != w) {
     h = (h + 1) % MAX_VOCAB_SIZE;
@@ -42,7 +42,7 @@ int32_t Dictionary::find(const std::wstring& w) {
   return h;
 }
 
-void Dictionary::add(const std::wstring& w) {
+void Dictionary::add(const std::string& w) {
   int32_t h = find(w);
   if (word2int_[h] == -1) {
     word2int_[h] = size;
@@ -72,25 +72,18 @@ int64_t Dictionary::getNumTokens() {
 
 const std::vector<int32_t>& Dictionary::getNgrams(int32_t i) {
   assert(i >= 0 && i < nwords);
-  return words_[i].hashes;
+  return words_[i].subwords;
 }
 
-std::vector<int32_t> Dictionary::getNgrams(const std::wstring& w) {
-  std::vector<int32_t> ngramList;
-  int32_t i = getId(w);
+const std::vector<int32_t> Dictionary::getNgrams(const std::string& word) {
+  std::vector<int32_t> ngrams;
+  int32_t i = getId(word);
   if (i >= 0) {
-    ngramList = words_[i].hashes;
+    ngrams = words_[i].subwords;
   } else {
-    std::wstring word = BOW + w + EOW;
-    for (int32_t n = args.minn; n <= args.maxn; n++) {
-      for (int32_t i = 0; i+n <= word.size(); i++) {
-        std::wstring ngram = word.substr(i, n);
-        int32_t hash = hashFn(ngram) % args.bucket;
-        ngramList.push_back(nwords + hash);
-      }
-    }
+    computeNgrams(BOW + word + EOW, ngrams);
   }
-  return ngramList;
+  return ngrams;
 }
 
 bool Dictionary::discard(int32_t id, real rand) {
@@ -99,7 +92,7 @@ bool Dictionary::discard(int32_t id, real rand) {
   return rand > pdiscard_[id];
 }
 
-int32_t Dictionary::getId(const std::wstring& w) {
+int32_t Dictionary::getId(const std::string& w) {
   int32_t h = find(w);
   return word2int_[h];
 }
@@ -109,28 +102,40 @@ int8_t Dictionary::getType(int32_t id) {
   return words_[id].type;
 }
 
-std::wstring Dictionary::getWord(int32_t id) {
+std::string Dictionary::getWord(int32_t id) {
   assert(id >= 0 && id < size);
   return words_[id].word;
 }
 
-void Dictionary::buildNgrams() {
-  for (auto it = words_.begin(); it != words_.end(); ++it) {
-    std::wstring word = BOW + it->word + EOW;
-    for (int32_t n = args.minn; n <= args.maxn; n++) {
-      for (int32_t i = 0; i+n <= word.size(); i++) {
-        std::wstring ngram = word.substr(i, n);
+void Dictionary::computeNgrams(const std::string& word,
+                               std::vector<int32_t>& ngrams) {
+  for (size_t i = 0; i < word.size(); i++) {
+    std::string ngram;
+    if ((word[i] & 0xC0) == 0x80) continue;
+    for (size_t j = i, n = 1; j < word.size() && n <= args.maxn; n++) {
+      ngram.push_back(word[j++]);
+      while (j < word.size() && (word[j] & 0xC0) == 0x80) {
+        ngram.push_back(word[j++]);
+      }
+      if (n >= args.minn) {
         int32_t hash = hashFn(ngram) % args.bucket;
-        it->hashes.push_back(nwords + hash);
+        ngrams.push_back(nwords + hash);
       }
     }
   }
 }
 
-std::wstring Dictionary::readWord(std::wistream& fin)
+void Dictionary::initNgrams() {
+  for (auto it = words_.begin(); it != words_.end(); ++it) {
+    std::string word = BOW + it->word + EOW;
+    computeNgrams(word, it->subwords);
+  }
+}
+
+std::string Dictionary::readWord(std::ifstream& fin)
 {
-  wchar_t c;
-  std::wstring word;
+  char c;
+  std::string word;
   while (!fin.eof()) {
     fin.get(c);
     if (iswspace(c)) {
@@ -148,18 +153,18 @@ std::wstring Dictionary::readWord(std::wistream& fin)
 }
 
 void Dictionary::readFromFile(const std::string& fname) {
-  std::wifstream ifs(fname);
-  std::wstring word = readWord(ifs);
+  std::ifstream ifs(fname);
+  std::string word = readWord(ifs);
   while (!word.empty()) {
     add(word);
     ntokens++;
     if (ntokens % 1000000 == 0) {
-      std::wcout << "\rRead " << ntokens  / 1000000 << "M words" << std::flush;
+      std::cout << "\rRead " << ntokens  / 1000000 << "M words" << std::flush;
     }
     word = readWord(ifs);
   }
   ifs.close();
-  std::wcout << "\rRead " << ntokens  / 1000000 << "M words" << std::endl;
+  std::cout << "\rRead " << ntokens  / 1000000 << "M words" << std::endl;
 
   sort(words_.begin(), words_.end(), [](const entry& e1, const entry& e2) {
       if (e1.type != e2.type) return e1.type < e2.type;
@@ -180,15 +185,15 @@ void Dictionary::readFromFile(const std::string& fname) {
     int32_t h = find(it->word);
     word2int_[h] = size;
     it->id = size;
-    it->hashes.push_back(size);
+    it->subwords.push_back(size);
     size++;
     if (it->type == 0) nwords++;
     if (it->type == 1) nlabels++;
   }
-  std::wcout << "number of labels: " << nlabels << std::endl;
+  std::cout << "number of labels: " << nlabels << std::endl;
 
   initTableDiscard();
-  buildNgrams();
+  initNgrams();
 }
 
 void Dictionary::initTableDiscard() {
@@ -230,12 +235,12 @@ void Dictionary::addNgrams(std::vector<int32_t>& line, int32_t n) {
   }
 }
 
-int32_t Dictionary::getLine(std::wifstream& ifs,
+int32_t Dictionary::getLine(std::ifstream& ifs,
                             std::vector<int32_t>& words,
                             std::vector<int32_t>& labels,
                             std::minstd_rand& rng) {
   std::uniform_real_distribution<> uniform(0, 1);
-  std::wstring token;
+  std::string token;
   int32_t ntokens = 0;
   words.clear();
   labels.clear();
@@ -261,7 +266,6 @@ int32_t Dictionary::getLine(std::wifstream& ifs,
 }
 
 void Dictionary::save(std::ofstream& ofs) {
-  char buffer[1024];
   char ender = 0;
   int k = 0;
   if (ofs.is_open()) {
@@ -271,27 +275,24 @@ void Dictionary::save(std::ofstream& ofs) {
     ofs.write((char*) &ntokens, sizeof(int64_t));
     for (int32_t i = 0; i < size; i++) {
       entry e = words_[i];
-      std::wstring w = e.word;
+      std::string w = e.word;
       for (int c = 0; c < w.size(); c++) {
-        k = wctomb(buffer, w[c]);
-        ofs.write(buffer, k);
+        ofs.write(&w[c], sizeof(char));
       }
       ofs.write(&ender, 1);
       ofs.write((char*) &(e.id), sizeof(int32_t));
       ofs.write((char*) &(e.uf), sizeof(int64_t));
       ofs.write((char*) &(e.type), sizeof(int8_t));
-      int32_t nHashes = e.hashes.size();
-      ofs.write((char*) &nHashes, sizeof(int32_t));
-      for (int32_t hash : e.hashes) {
-        ofs.write((char*) &(hash), sizeof(int32_t));
+      int32_t nSubwords = e.subwords.size();
+      ofs.write((char*) &nSubwords, sizeof(int32_t));
+      for (int32_t subword : e.subwords) {
+        ofs.write((char*) &(subword), sizeof(int32_t));
       }
     }
   }
 }
 
 void Dictionary::load(std::ifstream& ifs) {
-  char buffer[1024];
-  wchar_t wbuffer[1024];
   words_.clear();
   if (ifs.is_open()) {
     ifs.read((char*) &size, sizeof(int32_t));
@@ -299,26 +300,22 @@ void Dictionary::load(std::ifstream& ifs) {
     ifs.read((char*) &nlabels, sizeof(int32_t));
     ifs.read((char*) &ntokens, sizeof(int64_t));
     for (int32_t j = 0; j < size; j++) {
-      char c = 1;
-      int i = 0;
-      while (c != 0) {
-        ifs.read(&c, 1);
-        buffer[i] = c;
-        i++;
-      }
-      mbstowcs(wbuffer, buffer, 1024);
-      std::wstring currentWord(wbuffer);
+      char c;
       entry we;
-      we.word = currentWord;
+      ifs.read(&c, sizeof(char));
+      while (c != 0) {
+        we.word.push_back(c);
+        ifs.read(&c, sizeof(char));
+      }
       ifs.read((char*) &we.id, sizeof(int32_t));
       ifs.read((char*) &we.uf, sizeof(int64_t));
       ifs.read((char*) &we.type, sizeof(int8_t));
-      int32_t nHashes = 0;
-      ifs.read((char*) &nHashes, sizeof(int32_t));
-      int32_t hash = 0;
-      for (int z = 0; z < nHashes; z++) {
-        ifs.read((char*) &hash, sizeof(int32_t));
-        we.hashes.push_back(hash);
+      int32_t nSubwords = 0;
+      ifs.read((char*) &nSubwords, sizeof(int32_t));
+      int32_t subword = 0;
+      for (int z = 0; z < nSubwords; z++) {
+        ifs.read((char*) &subword, sizeof(int32_t));
+        we.subwords.push_back(subword);
       }
       words_.push_back(we);
     }

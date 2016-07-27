@@ -28,7 +28,7 @@ class Vector {
     real& operator[](int64_t);
     const real& operator[](int64_t) const;
 
-    void writeToStream(std::wostream&);
+    void writeToStream(std::ostream&);
 
     void zero();
     void mul(real);

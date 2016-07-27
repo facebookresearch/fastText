@@ -31,7 +31,7 @@ Args::Args() {
   thread = 12;
   verbose = 1000;
   t = 1e-4;
-  label = L"__label__";
+  label = "__label__";
 }
 
 void Args::parseArgs(int argc, char** argv) {
@@ -45,12 +45,12 @@ void Args::parseArgs(int argc, char** argv) {
   int ai = 2;
   while (ai < argc) {
     if (argv[ai][0] != '-') {
-      std::wcout << "Provided argument without a dash! Usage:" << std::endl;
+      std::cout << "Provided argument without a dash! Usage:" << std::endl;
       printHelp();
       exit(EXIT_FAILURE);
     }
     if (strcmp(argv[ai], "-h") == 0) {
-      std::wcout << "Here is the help! Usage:" << std::endl;
+      std::cout << "Here is the help! Usage:" << std::endl;
       printHelp();
       exit(EXIT_FAILURE);
     } else if (strcmp(argv[ai], "-input") == 0) {
@@ -81,7 +81,7 @@ void Args::parseArgs(int argc, char** argv) {
       } else if (strcmp(argv[ai + 1], "uni") == 0) {
         sampling = sampling_name::uni;
       } else {
-        std::wcout << "Unknown sampling: " << argv[ai + 1] << std::endl;
+        std::cout << "Unknown sampling: " << argv[ai + 1] << std::endl;
         printHelp();
         exit(EXIT_FAILURE);
       }
@@ -93,7 +93,7 @@ void Args::parseArgs(int argc, char** argv) {
       } else if (strcmp(argv[ai + 1], "softmax") == 0) {
         loss = loss_name::softmax;
       } else {
-        std::wcout << "Unknown loss: " << argv[ai + 1] << std::endl;
+        std::cout << "Unknown loss: " << argv[ai + 1] << std::endl;
         printHelp();
         exit(EXIT_FAILURE);
       }
@@ -112,24 +112,23 @@ void Args::parseArgs(int argc, char** argv) {
     } else if (strcmp(argv[ai], "-t") == 0) {
       t = atof(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-label") == 0) {
-      std::string str = std::string(argv[ai + 1]);
-      label = std::wstring(str.begin(), str.end());
+      label = std::string(argv[ai + 1]);
     } else {
-      std::wcout << "Unknown argument: " << argv[ai] << std::endl;
+      std::cout << "Unknown argument: " << argv[ai] << std::endl;
       printHelp();
       exit(EXIT_FAILURE);
     }
     ai += 2;
   }
   if (input.empty() || output.empty()) {
-    std::wcout << "Empty input or output path." << std::endl;
+    std::cout << "Empty input or output path." << std::endl;
     printHelp();
     exit(EXIT_FAILURE);
   }
 }
 
 void Args::printHelp() {
-  std::wcout
+  std::cout
     << "\n"
     << "The following arguments are mandatory:\n"
     << "  -input      training file path\n"

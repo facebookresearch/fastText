@@ -49,7 +49,7 @@ void Vector::addRow(const Matrix& A, int64_t i, real a) {
   }
 }
 
-void Vector::writeToStream(std::wostream& os) {
+void Vector::writeToStream(std::ostream& os) {
   os << std::setprecision(5);
   for (int64_t j = 0; j < m_; j++) {
     os << data_[j] << ' ';

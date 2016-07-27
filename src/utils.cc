@@ -60,20 +60,17 @@ namespace utils {
     delete[] t_log;
   }
 
-  int64_t size(std::wifstream& ifs) {
+  int64_t size(std::ifstream& ifs) {
     ifs.seekg(std::streamoff(0), std::ios::end);
     return ifs.tellg();
   }
 
-  void seek(std::wifstream& ifs, int64_t pos) {
-    wchar_t c;
+  void seek(std::ifstream& ifs, int64_t pos) {
+    char c;
+    ifs.clear();
+    ifs.seekg(std::streampos(pos));
     do {
-      ifs.clear();
-      ifs.seekg(std::streampos(pos++));
       ifs.get(c);
-    } while (!ifs.good());
-    while (!iswspace(c)) {
-      ifs.get(c);
-    }
+    } while (!iswspace(c));
   }
 }

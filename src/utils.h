@@ -27,8 +27,8 @@ namespace utils {
   void initLog();
   void freeTables();
 
-  int64_t size(std::wifstream&);
-  void seek(std::wifstream&, int64_t);
+  int64_t size(std::ifstream&);
+  void seek(std::ifstream&, int64_t);
 }
 
 #endif
