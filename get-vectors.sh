@@ -21,13 +21,13 @@ DATADIR=data
 
 mkdir -p "${RESULTDIR}"
 
-./fasttext -input "${DATADIR}"/text9 -output "${RESULTDIR}"/text9 -lr 0.025 -dim 300 \
-  -ws 5 -epoch 1 -minCount 5 -neg 5 -sampling sqrt -loss ns -model sg \
+./fasttext skipgram -input "${DATADIR}"/text9 -output "${RESULTDIR}"/text9 -lr 0.025 -dim 300 \
+  -ws 5 -epoch 1 -minCount 5 -neg 5 -sampling sqrt -loss ns \
   -bucket 2000000 -minn 3 -maxn 6 -onlyWord 0 -thread 8 -verbose 1000 \
   -t 1e-4
 
 cut -f 1,2 "${DATADIR}"/rw/rw.txt | awk '{print tolower($0)}' | tr '\t' '\n' > "${DATADIR}"/queries.txt
 
-cat "${DATADIR}"/queries.txt | ./print-vectors "${RESULTDIR}"/text9.bin > "${RESULTDIR}"/vectors.txt
+cat "${DATADIR}"/queries.txt | ./fasttext print-vectors "${RESULTDIR}"/text9.bin > "${RESULTDIR}"/vectors.txt
 
 python eval.py -m "${RESULTDIR}"/vectors.txt -d "${DATADIR}"/rw/rw.txt

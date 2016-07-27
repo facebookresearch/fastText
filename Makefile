@@ -12,7 +12,7 @@ CFLAGS = -pthread -O3 -funroll-loops -std=c++0x
 OBJS = args.o dictionary.o matrix.o vector.o model.o utils.o
 INCLUDES = -I.
 
-all: fasttext print-vectors classify
+all: fasttext 
 
 args.o: src/args.cc src/args.h
 	$(CC) $(CFLAGS) -c src/args.cc
@@ -34,10 +34,6 @@ utils.o: src/utils.cc src/utils.h
 
 fasttext : $(OBJS) src/fasttext.cc
 	$(CC) $(CFLAGS) $(OBJS) src/fasttext.cc -o fasttext
-print-vectors : $(OBJS) src/print-vectors.cc
-	$(CC) $(CFLAGS) $(OBJS) src/print-vectors.cc -o print-vectors
-classify : $(OBJS) src/classify.cc
-	$(CC) $(CFLAGS) $(OBJS) src/classify.cc -o classify
 
 clean:
-	rm -rf *.o fasttext print-vectors classify
+	rm -rf *.o fasttext 
