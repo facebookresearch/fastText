@@ -163,7 +163,7 @@ void test(Dictionary& dict, Model& model, std::string filename) {
   double precision = 0.0;
   std::vector<int32_t> line, labels;
   std::ifstream ifs(filename);
-  while (!ifs.eof()) {
+  while (ifs.peek() != EOF) {
     dict.getLine(ifs, line, labels, model.rng);
     dict.addNgrams(line, args.wordNgrams);
     if (labels.size() > 0 && line.size() > 0) {
@@ -185,7 +185,7 @@ void predict(Dictionary& dict, Model& model, std::string filename) {
   double precision = 0.0;
   std::vector<int32_t> line, labels;
   std::ifstream ifs(filename);
-  while (!ifs.eof()) {
+  while (ifs.peek() != EOF) {
     dict.getLine(ifs, line, labels, model.rng);
     dict.addNgrams(line, args.wordNgrams);
     if (line.size() > 0) {
