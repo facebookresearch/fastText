@@ -188,9 +188,11 @@ void predict(Dictionary& dict, Model& model, std::string filename) {
   while (!ifs.eof()) {
     dict.getLine(ifs, line, labels, model.rng);
     dict.addNgrams(line, args.wordNgrams);
-    if (labels.size() > 0 && line.size() > 0) {
+    if (line.size() > 0) {
       int32_t i = model.predict(line);
       std::cout << dict.getLabel(i) << std::endl;
+    } else {
+      std::cout << "n/a" << std::endl;
     }
   }
   ifs.close();
