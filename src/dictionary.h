@@ -65,6 +65,7 @@ class Dictionary {
     void add(const std::string&);
     std::string readWord(std::ifstream&);
     void readFromFile(const std::string&);
+    std::string getLabel(int32_t);
     void save(std::ofstream&);
     void load(std::ifstream&);
     std::vector<int64_t> getWordFreq();

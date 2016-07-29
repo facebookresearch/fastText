@@ -180,6 +180,22 @@ void test(Dictionary& dict, Model& model, std::string filename) {
   std::cout << "Number of examples: " << nexamples << std::endl;
 }
 
+void predict(Dictionary& dict, Model& model, std::string filename) {
+  int32_t nexamples = 0;
+  double precision = 0.0;
+  std::vector<int32_t> line, labels;
+  std::ifstream ifs(filename);
+  while (!ifs.eof()) {
+    dict.getLine(ifs, line, labels, model.rng);
+    dict.addNgrams(line, args.wordNgrams);
+    if (labels.size() > 0 && line.size() > 0) {
+      int32_t i = model.predict(line);
+      std::cout << dict.getLabel(i) << std::endl;
+    }
+  }
+  ifs.close();
+}
+
 void trainThread(Dictionary& dict, Matrix& input, Matrix& output,
                  int32_t threadId) {
   std::ifstream ifs(args.input);
@@ -237,6 +253,7 @@ void printUsage() {
     << "The commands supported by fasttext are:\n\n"
     << "  supervised       train a supervised classifier\n"
     << "  test             evaluate a supervised classifier\n"
+    << "  predict          predict most likely label\n"
     << "  skipgram         train a skipgram model\n"
     << "  cbow             train a cbow model\n"
     << "  print-vectors    print vectors given a trained model\n"
@@ -246,6 +263,14 @@ void printUsage() {
 void printTestUsage() {
   std::cout
     << "usage: fasttext test <model> <test-data>\n\n"
+    << "  <model>      model filename\n"
+    << "  <test-data>  test data filename\n"
+    << std::endl;
+}
+
+void printPredictUsage() {
+  std::cout
+    << "usage: fasttext predict <model> <test-data>\n\n"
     << "  <model>      model filename\n"
     << "  <test-data>  test data filename\n"
     << std::endl;
@@ -269,6 +294,20 @@ void test(int argc, char** argv) {
   Model model(input, output, args.dim, args.lr, 1);
   model.setLabelFreq(dict.getLabelFreq());
   test(dict, model, std::string(argv[3]));
+  exit(0);
+}
+
+void predict(int argc, char** argv) {
+  if (argc != 4) {
+    printPredictUsage();
+    exit(EXIT_FAILURE);
+  }
+  Dictionary dict;
+  Matrix input, output;
+  loadModel(std::string(argv[2]), dict, input, output);
+  Model model(input, output, args.dim, args.lr, 1);
+  model.setLabelFreq(dict.getLabelFreq());
+  predict(dict, model, std::string(argv[3]));
   exit(0);
 }
 
@@ -331,6 +370,8 @@ int main(int argc, char** argv) {
     test(argc, argv);
   } else if (command == "print-vectors") {
     printVectors(argc, argv);
+  } else if (command == "predict") {
+    predict(argc, argv);
   } else {
     printUsage();
     exit(EXIT_FAILURE);

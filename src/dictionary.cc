@@ -274,6 +274,10 @@ int32_t Dictionary::getLine(std::ifstream& ifs,
   return ntokens;
 }
 
+std::string Dictionary::getLabel(int32_t lid) {
+  return words_[lid + nwords].word; 
+}
+
 void Dictionary::save(std::ofstream& ofs) {
   char ender = 0;
   int k = 0;
