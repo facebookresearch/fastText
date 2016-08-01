@@ -28,6 +28,8 @@
 Args args;
 
 namespace info {
+  time_t startTime;
+  time_t nowTime;
   clock_t start;
   std::atomic<int64_t> allWords(0);
   std::atomic<int64_t> allN(0);
@@ -341,6 +343,7 @@ void train(int argc, char** argv) {
   output.zero();
 
   info::start = clock();
+  time(&info::startTime);
   std::vector<std::thread> threads;
   for (int32_t i = 0; i < args.thread; i++) {
     threads.push_back(std::thread(&trainThread, std::ref(dict),
@@ -349,7 +352,8 @@ void train(int argc, char** argv) {
   for (auto it = threads.begin(); it != threads.end(); ++it) {
     it->join();
   }
-  float trainTime = float(clock() - info::start) / CLOCKS_PER_SEC / args.thread;
+  time(&info::nowTime);
+  double trainTime = difftime(info::nowTime, info::startTime);
   std::cout << "training took: " << trainTime << " sec" << std::endl;
 
   if (args.output.size() != 0) {
