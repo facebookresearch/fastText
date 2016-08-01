@@ -38,10 +38,10 @@ class Dictionary {
     std::vector<int32_t> word2int_;
     std::vector<entry> words_;
     std::vector<real> pdiscard_;
-    int32_t size;
-    int32_t nwords;
-    int32_t nlabels;
-    int64_t ntokens;
+    int32_t size_;
+    int32_t nwords_;
+    int32_t nlabels_;
+    int64_t ntokens_;
 
   public:
     static const std::string EOS;
@@ -51,9 +51,9 @@ class Dictionary {
 
     Dictionary();
     ~Dictionary();
-    int32_t getNumWords();
-    int32_t getNumLabels();
-    int64_t getNumTokens();
+    int32_t nwords();
+    int32_t nlabels();
+    int64_t ntokens();
     int32_t getId(const std::string&);
     int8_t getType(int32_t);
     bool discard(int32_t, real);
