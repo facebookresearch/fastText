@@ -34,6 +34,7 @@ class Dictionary {
     int32_t find(const std::string&);
     void initTableDiscard();
     void initNgrams();
+    void threshold(int64_t);
 
     std::vector<int32_t> word2int_;
     std::vector<entry> words_;

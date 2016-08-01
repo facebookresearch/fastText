@@ -44,6 +44,7 @@ int32_t Dictionary::find(const std::string& w) {
 
 void Dictionary::add(const std::string& w) {
   int32_t h = find(w);
+  ntokens_++;
   if (word2int_[h] == -1) {
     word2int_[h] = size_;
     entry we;
@@ -135,9 +136,10 @@ void Dictionary::computeNgrams(const std::string& word,
 }
 
 void Dictionary::initNgrams() {
-  for (auto it = words_.begin(); it != words_.end(); ++it) {
-    std::string word = BOW + it->word + EOW;
-    computeNgrams(word, it->subwords);
+  for (size_t i = 0; i < size_; i++) {
+    std::string word = BOW + words_[i].word + EOW;
+    words_[i].subwords.push_back(i);
+    computeNgrams(word, words_[i].subwords);
   }
 }
 
@@ -162,24 +164,28 @@ std::string Dictionary::readWord(std::ifstream& fin)
 }
 
 void Dictionary::readFromFile(std::ifstream& ifs) {
-  std::string word = readWord(ifs);
-  while (!word.empty()) {
+  std::string word;
+  int64_t minThreshold = 1;
+  while (!(word = readWord(ifs)).empty()) {
     add(word);
-    ntokens_++;
     if (ntokens_ % 1000000 == 0) {
       std::cout << "\rRead " << ntokens_  / 1000000 << "M words" << std::flush;
     }
-    word = readWord(ifs);
+    if (size_ > 0.75 * MAX_VOCAB_SIZE) threshold(minThreshold++);
   }
-  ifs.close();
   std::cout << "\rRead " << ntokens_  / 1000000 << "M words" << std::endl;
+  threshold(args.minCount);
+  initTableDiscard();
+  initNgrams();
+}
 
+void Dictionary::threshold(int64_t t) {
   sort(words_.begin(), words_.end(), [](const entry& e1, const entry& e2) {
       if (e1.type != e2.type) return e1.type < e2.type;
       return e1.uf > e2.uf;
     });
-  words_.erase(remove_if(words_.begin(), words_.end(), [](const entry& e) {
-        return e.uf < args.minCount;
+  words_.erase(remove_if(words_.begin(), words_.end(), [&](const entry& e) {
+        return e.uf < t;
       }), words_.end());
   words_.shrink_to_fit();
 
@@ -193,15 +199,10 @@ void Dictionary::readFromFile(std::ifstream& ifs) {
     int32_t h = find(it->word);
     word2int_[h] = size_;
     it->id = size_;
-    it->subwords.push_back(size_);
     size_++;
     if (it->type == 0) nwords_++;
     if (it->type == 1) nlabels_++;
   }
-  std::cout << "number of labels: " << nlabels_ << std::endl;
-
-  initTableDiscard();
-  initNgrams();
 }
 
 void Dictionary::initTableDiscard() {

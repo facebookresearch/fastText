@@ -14,7 +14,7 @@
 #include <fstream>
 
 Args::Args() {
-  lr = 0.025;
+  lr = 0.05;
   dim = 100;
   ws = 5;
   epoch = 5;
