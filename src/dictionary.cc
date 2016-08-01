@@ -250,7 +250,7 @@ int32_t Dictionary::getLine(std::ifstream& ifs,
                             std::minstd_rand& rng) {
   std::uniform_real_distribution<> uniform(0, 1);
   std::string token;
-  int32_t ntokens_ = 0;
+  int32_t ntokens = 0;
   words.clear();
   labels.clear();
   if (ifs.eof()) {
@@ -258,11 +258,11 @@ int32_t Dictionary::getLine(std::ifstream& ifs,
     ifs.seekg(std::streampos(0));
   }
   while (!(token = readWord(ifs)).empty()) {
-    ntokens_++;
     if (token == EOS) break;
     int32_t wid = getId(token);
     if (wid < 0) continue;
     int8_t type = getType(wid);
+    ntokens++;
     if (type == 0 && !discard(wid, uniform(rng))) {
       words.push_back(wid);
     }
@@ -271,7 +271,7 @@ int32_t Dictionary::getLine(std::ifstream& ifs,
     }
     if (words.size() > MAX_LINE_SIZE && args.model != model_name::sup) break;
   }
-  return ntokens_;
+  return ntokens;
 }
 
 std::string Dictionary::getLabel(int32_t lid) {
