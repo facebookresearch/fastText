@@ -36,20 +36,26 @@ namespace info {
   double allLoss(0.0);
 }
 
+void getVector(Dictionary& dict, Matrix& input, Vector& vec, std::string ws) {
+  vec.zero();
+  const std::vector<int32_t>& ngrams = dict.getNgrams(ws);
+  for (auto it = ngrams.begin(); it != ngrams.end(); ++it) {
+    vec.addRow(input, *it);
+  }
+  vec.mul(1.0 / ngrams.size());
+}
+
 void saveVectors(Dictionary& dict, Matrix& input, Matrix& output) {
   int32_t N = dict.nwords();
   std::ofstream ofs(args.output + ".vec");
+  std::string ws;
   if (ofs.is_open()) {
     ofs << N << ' ' << args.dim << std::endl;
+    Vector vec(args.dim);
     for (int32_t i = 0; i < N; i++) {
-      ofs << dict.getWord(i) << ' ';
-      Vector vec(args.dim);
-      vec.zero();
-      const std::vector<int32_t>& ngrams = dict.getNgrams(i);
-      for (auto it = ngrams.begin(); it != ngrams.end(); ++it) {
-        vec.addRow(input, *it);
-      }
-      vec.mul(1.0 / ngrams.size());
+      ws = dict.getWord(i);
+      ofs << ws << ' ';
+      getVector(dict, input, vec, ws);
       vec.writeToStream(ofs);
       ofs << std::endl;
     }
@@ -59,17 +65,12 @@ void saveVectors(Dictionary& dict, Matrix& input, Matrix& output) {
   }
 }
 
-void printVectors(Dictionary& dict, Matrix& input, Matrix& output) {
+void printVectors(Dictionary& dict, Matrix& input) {
   std::string ws;
+  Vector vec(args.dim);
   while (std::cin >> ws) {
     std::cout << ws << " ";
-    Vector vec(args.dim);
-    vec.zero();
-    const std::vector<int32_t> ngrams = dict.getNgrams(ws);
-    for (auto it = ngrams.begin(); it != ngrams.end(); ++it) {
-      vec.addRow(input, *it);
-    }
-    vec.mul(1.0 / ngrams.size());
+    getVector(dict, input, vec, ws);
     vec.writeToStream(std::cout);
     std::cout << std::endl;
   }
@@ -335,7 +336,7 @@ void printVectors(int argc, char** argv) {
   Dictionary dict;
   Matrix input, output;
   loadModel(std::string(argv[2]), dict, input, output);
-  printVectors(dict, input, output);
+  printVectors(dict, input);
   exit(0);
 }
 
