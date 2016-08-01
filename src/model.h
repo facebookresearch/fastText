@@ -53,14 +53,14 @@ class Model {
     void setLearningRate(real);
     real getLearningRate();
 
-    void binaryLogistic(int32_t, bool, double&);
-    void negativeSampling(int32_t, double&, int32_t&);
-    void hierarchicalSoftmax(int32_t, double&, int32_t&);
-    void softmax(int32_t, double&, int32_t&);
+    real binaryLogistic(int32_t, bool);
+    real negativeSampling(int32_t);
+    real hierarchicalSoftmax(int32_t);
+    real softmax(int32_t);
 
     int32_t predict(const std::vector<int32_t>&);
     void dfs(int32_t, real, real&, int32_t&);
-    void update(const std::vector<int32_t>&, int32_t, double&, int32_t&);
+    real update(const std::vector<int32_t>&, int32_t);
 
     void setLabelFreq(const std::vector<int64_t>&);
     void initTableNegatives(const std::vector<int64_t>&);

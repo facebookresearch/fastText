@@ -124,7 +124,8 @@ void supervised(Model& model,
     if (labels.size() == 0 || line.size() == 0) return;
     std::uniform_int_distribution<> uniform(0, labels.size() - 1);
     int32_t i = uniform(model.rng);
-    model.update(line, labels[i], loss, N);
+    loss += model.update(line, labels[i]);
+    N++;
 }
 
 void cbow(Dictionary& dict, Model& model,
@@ -144,7 +145,8 @@ void cbow(Dictionary& dict, Model& model,
         }
       }
     }
-    model.update(bow, line[w], loss, N);
+    loss += model.update(bow, line[w]);
+    N++;
   }
 }
 
@@ -159,7 +161,8 @@ void skipGram(Dictionary& dict, Model& model,
     for (int32_t c = -wb; c <= wb; c++) {
       if (c != 0 && w + c >= 0 && w + c < n) {
         int32_t target = line[w + c];
-        model.update(ngrams, target, loss, N);
+        loss += model.update(ngrams, target);
+        N++;
       }
     }
   }
@@ -258,9 +261,9 @@ void trainThread(Dictionary& dict, Matrix& input, Matrix& output,
     printInfo(model, ntokens);
     std::cout << std::endl;
   }
-  /*if (args.model == model_name::sup && threadId == 0) {
+  if (args.model == model_name::sup && threadId == 0) {
     test(dict, model, args.test);
-    }*/
+  }
   ifs.close();
 }
 
