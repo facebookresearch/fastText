@@ -39,6 +39,7 @@ void Args::parseArgs(int argc, char** argv) {
   if (command == "supervised") {
     model = model_name::sup;
     loss = loss_name::softmax;
+    minCount = 1;
   } else if (command == "cbow") {
     model = model_name::cbow;
   }

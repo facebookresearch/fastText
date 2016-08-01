@@ -107,6 +107,15 @@ std::string Dictionary::getWord(int32_t id) {
   return words_[id].word;
 }
 
+uint32_t Dictionary::hash(const std::string& str) {
+  uint32_t h = 2166136261;
+  for (size_t i = 0; i < str.size(); i++) {
+    h = h ^ uint32_t(str[i]);
+    h = h * 16777619;
+  }
+  return h;
+}
+
 void Dictionary::computeNgrams(const std::string& word,
                                std::vector<int32_t>& ngrams) {
   for (size_t i = 0; i < word.size(); i++) {
@@ -118,8 +127,8 @@ void Dictionary::computeNgrams(const std::string& word,
         ngram.push_back(word[j++]);
       }
       if (n >= args.minn) {
-        int32_t hash = hashFn(ngram) % args.bucket;
-        ngrams.push_back(nwords + hash);
+        int32_t h = hash(ngram) % args.bucket;
+        ngrams.push_back(nwords + h);
       }
     }
   }
