@@ -161,8 +161,7 @@ std::string Dictionary::readWord(std::ifstream& fin)
   return word;
 }
 
-void Dictionary::readFromFile(const std::string& fname) {
-  std::ifstream ifs(fname);
+void Dictionary::readFromFile(std::ifstream& ifs) {
   std::string word = readWord(ifs);
   while (!word.empty()) {
     add(word);
@@ -275,7 +274,7 @@ int32_t Dictionary::getLine(std::ifstream& ifs,
 }
 
 std::string Dictionary::getLabel(int32_t lid) {
-  return words_[lid + nwords].word; 
+  return words_[lid + nwords].word;
 }
 
 void Dictionary::save(std::ofstream& ofs) {

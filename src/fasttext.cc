@@ -87,6 +87,10 @@ void saveModel(Dictionary& dict, Matrix& input, Matrix& output) {
 void loadModel(std::string filename, Dictionary& dict,
                Matrix& input, Matrix& output) {
   std::ifstream ifs(filename);
+  if (!ifs.is_open()) {
+    std::cerr << "Model file cannot be opened for loading!" << std::endl;
+    exit(EXIT_FAILURE);
+  }
   args.load(ifs);
   dict.load(ifs);
   input.load(ifs);
@@ -165,6 +169,10 @@ void test(Dictionary& dict, Model& model, std::string filename) {
   double precision = 0.0;
   std::vector<int32_t> line, labels;
   std::ifstream ifs(filename);
+  if (!ifs.is_open()) {
+    std::cerr << "Test file cannot be opened!" << std::endl;
+    exit(EXIT_FAILURE);
+  }
   while (ifs.peek() != EOF) {
     dict.getLine(ifs, line, labels, model.rng);
     dict.addNgrams(line, args.wordNgrams);
@@ -187,6 +195,10 @@ void predict(Dictionary& dict, Model& model, std::string filename) {
   double precision = 0.0;
   std::vector<int32_t> line, labels;
   std::ifstream ifs(filename);
+  if (!ifs.is_open()) {
+    std::cerr << "Test file cannot be opened!" << std::endl;
+    exit(EXIT_FAILURE);
+  }
   while (ifs.peek() != EOF) {
     dict.getLine(ifs, line, labels, model.rng);
     dict.addNgrams(line, args.wordNgrams);
@@ -331,7 +343,14 @@ void train(int argc, char** argv) {
   args.parseArgs(argc, argv);
 
   Dictionary dict;
-  dict.readFromFile(args.input);
+  std::ifstream ifs(args.input);
+  if (!ifs.is_open()) {
+    std::cerr << "Input file cannot be opened!" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+  dict.readFromFile(ifs);
+  ifs.close();
+
   Matrix input(dict.getNumWords() + args.bucket, args.dim);
   Matrix output;
   if (args.model == model_name::sup) {
