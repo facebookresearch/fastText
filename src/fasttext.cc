@@ -46,7 +46,7 @@ void getVector(Dictionary& dict, Matrix& input, Vector& vec, std::string ws) {
 }
 
 void saveVectors(Dictionary& dict, Matrix& input, Matrix& output) {
-  int32_t N = dict.getNumWords();
+  int32_t N = dict.nwords();
   std::ofstream ofs(args.output + ".vec");
   std::string ws;
   if (ofs.is_open()) {
@@ -225,7 +225,7 @@ void trainThread(Dictionary& dict, Matrix& input, Matrix& output,
     model.setLabelFreq(dict.getWordFreq());
   }
 
-  const int64_t ntokens = dict.getNumTokens();
+  const int64_t ntokens = dict.ntokens();
   int64_t tokenCount = 0;
   double loss = 0.0;
   int32_t N = 0;
@@ -258,9 +258,9 @@ void trainThread(Dictionary& dict, Matrix& input, Matrix& output,
     printInfo(model, ntokens);
     std::cout << std::endl;
   }
-  if (args.model == model_name::sup && threadId == 0) {
+  /*if (args.model == model_name::sup && threadId == 0) {
     test(dict, model, args.test);
-  }
+    }*/
   ifs.close();
 }
 
@@ -352,12 +352,12 @@ void train(int argc, char** argv) {
   dict.readFromFile(ifs);
   ifs.close();
 
-  Matrix input(dict.getNumWords() + args.bucket, args.dim);
+  Matrix input(dict.nwords() + args.bucket, args.dim);
   Matrix output;
   if (args.model == model_name::sup) {
-    output = Matrix(dict.getNumLabels(), args.dim);
+    output = Matrix(dict.nlabels(), args.dim);
   } else {
-    output = Matrix(dict.getNumWords(), args.dim);
+    output = Matrix(dict.nwords(), args.dim);
   }
   input.uniform(1.0 / args.dim);
   output.zero();
