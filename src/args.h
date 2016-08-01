@@ -13,7 +13,7 @@
 #include <string>
 
 enum class model_name : int {cbow=1, sg, sup};
-enum class sampling_name : int {sqrt=1, log, uni};
+enum class sampling_name : int {sqrt=1, log, uni, tf};
 enum class loss_name : int {hs=1, ns, softmax};
 
 class Args {

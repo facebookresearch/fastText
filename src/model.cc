@@ -168,6 +168,8 @@ void Model::initTableNegatives(const std::vector<int64_t>& freq) {
       N += log(freq[i]);
     } else if (args.sampling == sampling_name::sqrt) {
       N += sqrt(freq[i]);
+    } else if (args.sampling == sampling_name::tf) {
+      N += pow(freq[i], 0.75);
     } else {
       N += 1.0;
     }
@@ -178,6 +180,8 @@ void Model::initTableNegatives(const std::vector<int64_t>& freq) {
       c = log(freq[i]);
     } else if (args.sampling == sampling_name::sqrt) {
       c = sqrt(freq[i]);
+    } else if (args.sampling == sampling_name::tf) {
+      c = pow(freq[i], 0.75);
     } else {
       c = 1.0;
     }

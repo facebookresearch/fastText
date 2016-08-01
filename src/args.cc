@@ -79,6 +79,8 @@ void Args::parseArgs(int argc, char** argv) {
         sampling = sampling_name::sqrt;
       } else if (strcmp(argv[ai + 1], "log") == 0) {
         sampling = sampling_name::log;
+      } else if (strcmp(argv[ai + 1], "tf") == 0) {
+        sampling = sampling_name::tf;
       } else if (strcmp(argv[ai + 1], "uni") == 0) {
         sampling = sampling_name::uni;
       } else {
@@ -142,7 +144,7 @@ void Args::printHelp() {
     << "  -minCount   minimal number of word occurences [" << minCount << "]\n"
     << "  -neg        number of negatives sampled [" << neg << "]\n"
     << "  -wordNgrams max length of word ngram [" << wordNgrams << "]\n"
-    << "  -sampling   sampling distribution {sqrt, log, uni} [log]\n"
+    << "  -sampling   sampling distribution {sqrt, log, tf, uni} [log]\n"
     << "  -loss       loss function {ns, hs, softmax}   [ns]\n"
     << "  -bucket     number of buckets [" << bucket << "]\n"
     << "  -minn       min length of char ngram [" << minn << "]\n"
