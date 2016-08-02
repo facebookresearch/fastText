@@ -49,13 +49,6 @@ void Vector::addRow(const Matrix& A, int64_t i, real a) {
   }
 }
 
-void Vector::writeToStream(std::ostream& os) {
-  os << std::setprecision(5);
-  for (int64_t j = 0; j < m_; j++) {
-    os << data_[j] << ' ';
-  }
-}
-
 void Vector::mul(const Matrix& A, const Vector& vec) {
   assert(A.m_ == m_ && A.n_ == vec.m_);
   for (int64_t i = 0; i < m_; i++) {
@@ -84,4 +77,13 @@ real& Vector::operator[](int64_t i) {
 
 const real& Vector::operator[](int64_t i) const {
   return data_[i];
+}
+
+std::ostream& operator<<(std::ostream& os, const Vector& v)
+{
+  os << std::setprecision(5);
+  for (int64_t j = 0; j < v.m_; j++) {
+    os << v.data_[j] << ' ';
+  }
+  return os;
 }
