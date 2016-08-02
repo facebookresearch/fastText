@@ -27,9 +27,6 @@ Model::Model(Matrix& wi, Matrix& wo, int32_t hsz, real lr, int32_t seed)
   npos = 0;
 }
 
-Model::~Model() {
-}
-
 void Model::setLearningRate(real lr) {
   lr_ = (lr < MIN_LR) ? MIN_LR : lr;
 }
@@ -38,41 +35,43 @@ real Model::getLearningRate() {
   return lr_;
 }
 
-void Model::binaryLogistic(int32_t target, bool label, double& loss) {
+real Model::binaryLogistic(int32_t target, bool label) {
   real score = utils::sigmoid(wo_.dotRow(hidden_, target));
   real alpha = lr_ * (real(label) - score);
   grad_.addRow(wo_, target, alpha);
   wo_.addRow(hidden_, target, alpha);
   if (label) {
-    loss -= utils::log(score);
+    return -utils::log(score);
   } else {
-    loss -= utils::log(1.0 - score);
+    return -utils::log(1.0 - score);
   }
 }
 
-void Model::negativeSampling(int32_t target, double& loss, int32_t& N) {
+real Model::negativeSampling(int32_t target) {
+  real loss = 0.0;
   grad_.zero();
   for (int32_t n = 0; n <= args.neg; n++) {
     if (n == 0) {
-      binaryLogistic(target, true, loss);
+      loss += binaryLogistic(target, true);
     } else {
-      binaryLogistic(getNegative(target), false, loss);
+      loss += binaryLogistic(getNegative(target), false);
     }
-    N += 1;
   }
+  return loss;
 }
 
-void Model::hierarchicalSoftmax(int32_t target, double& loss, int32_t& N) {
+real Model::hierarchicalSoftmax(int32_t target) {
+  real loss = 0.0;
   grad_.zero();
   const std::vector<bool>& binaryCode = codes[target];
   const std::vector<int32_t>& pathToRoot = paths[target];
   for (int32_t i = 0; i < pathToRoot.size(); i++) {
-    binaryLogistic(pathToRoot[i], binaryCode[i], loss);
+    loss += binaryLogistic(pathToRoot[i], binaryCode[i]);
   }
-  N += 1;
+  return loss;
 }
 
-void Model::softmax(int32_t target, double& loss, int32_t& N) {
+real Model::softmax(int32_t target) {
   grad_.zero();
   output_.mul(wo_, hidden_);
   real max = 0.0, z = 0.0;
@@ -90,8 +89,7 @@ void Model::softmax(int32_t target, double& loss, int32_t& N) {
     grad_.addRow(wo_, i, alpha);
     wo_.addRow(hidden_, i, alpha);
   }
-  loss -= utils::log(output_[target]);
-  N++;
+  return -utils::log(output_[target]);
 }
 
 int32_t Model::predict(const std::vector<int32_t>& input) {
@@ -124,23 +122,22 @@ void Model::dfs(int32_t node, real score, real& max, int32_t& argmax) {
   dfs(tree[node].right, score + utils::log(f), max, argmax);
 }
 
-void Model::update(const std::vector<int32_t>& input, int32_t target, double& loss,
-                   int32_t& N) {
+real Model::update(const std::vector<int32_t>& input, int32_t target) {
   assert(target >= 0 && target < osz_);
-  if (input.size() == 0) return;
-
+  if (input.size() == 0) return 0.0;
   hidden_.zero();
   for (auto it = input.cbegin(); it != input.cend(); ++it) {
     hidden_.addRow(wi_, *it);
   }
   hidden_.mul(1.0 / input.size());
 
+  real loss;
   if (args.loss == loss_name::ns) {
-    negativeSampling(target, loss, N);
+    loss = negativeSampling(target);
   } else if (args.loss == loss_name::hs) {
-    hierarchicalSoftmax(target, loss, N);
+    loss = hierarchicalSoftmax(target);
   } else {
-    softmax(target, loss, N);
+    loss = softmax(target);
   }
 
   if (args.model == model_name::sup) {
@@ -149,39 +146,40 @@ void Model::update(const std::vector<int32_t>& input, int32_t target, double& lo
   for (auto it = input.cbegin(); it != input.cend(); ++it) {
     wi_.addRow(grad_, *it, 1.0);
   }
+  return loss;
 }
 
-void Model::setLabelFreq(const std::vector<int64_t>& freq) {
-  assert(freq.size() == osz_);
+void Model::setTargetCounts(const std::vector<int64_t>& counts) {
+  assert(counts.size() == osz_);
   if (args.loss == loss_name::ns) {
-    initTableNegatives(freq);
+    initTableNegatives(counts);
   }
   if (args.loss == loss_name::hs) {
-    buildTree(freq);
+    buildTree(counts);
   }
 }
 
-void Model::initTableNegatives(const std::vector<int64_t>& freq) {
+void Model::initTableNegatives(const std::vector<int64_t>& counts) {
   real N = 0.0;
-  for (int32_t i = 0; i < freq.size(); i++) {
+  for (int32_t i = 0; i < counts.size(); i++) {
     if (args.sampling == sampling_name::log) {
-      N += log(freq[i]);
+      N += log(counts[i]);
     } else if (args.sampling == sampling_name::sqrt) {
-      N += sqrt(freq[i]);
+      N += sqrt(counts[i]);
     } else if (args.sampling == sampling_name::tf) {
-      N += pow(freq[i], 0.75);
+      N += pow(counts[i], 0.75);
     } else {
       N += 1.0;
     }
   }
-  for (int32_t i = 0; i < freq.size(); i++) {
+  for (int32_t i = 0; i < counts.size(); i++) {
     real c = 0.0;
     if (args.sampling == sampling_name::log) {
-      c = log(freq[i]);
+      c = log(counts[i]);
     } else if (args.sampling == sampling_name::sqrt) {
-      c = sqrt(freq[i]);
+      c = sqrt(counts[i]);
     } else if (args.sampling == sampling_name::tf) {
-      c = pow(freq[i], 0.75);
+      c = pow(counts[i], 0.75);
     } else {
       c = 1.0;
     }
@@ -202,24 +200,24 @@ int32_t Model::getNegative(int32_t target) {
   return negative;
 }
 
-void Model::buildTree(const std::vector<int64_t>& freq) {
+void Model::buildTree(const std::vector<int64_t>& counts) {
   tree.resize(2 * osz_ - 1);
   for (int32_t i = 0; i < 2 * osz_ - 1; i++) {
     tree[i].parent = -1;
     tree[i].left = -1;
     tree[i].right = -1;
-    tree[i].freq = 1e15;
+    tree[i].count = 1e15;
     tree[i].binary = false;
   }
   for (int32_t i = 0; i < osz_; i++) {
-    tree[i].freq = freq[i];
+    tree[i].count = counts[i];
   }
   int32_t leaf = osz_ - 1;
   int32_t node = osz_;
   for (int32_t i = osz_; i < 2 * osz_ - 1; i++) {
     int32_t mini[2];
     for (int32_t j = 0; j < 2; j++) {
-      if (leaf >= 0 && tree[leaf].freq < tree[node].freq) {
+      if (leaf >= 0 && tree[leaf].count < tree[node].count) {
         mini[j] = leaf--;
       } else {
         mini[j] = node++;
@@ -227,7 +225,7 @@ void Model::buildTree(const std::vector<int64_t>& freq) {
     }
     tree[i].left = mini[0];
     tree[i].right = mini[1];
-    tree[i].freq = tree[mini[0]].freq + tree[mini[1]].freq;
+    tree[i].count = tree[mini[0]].count + tree[mini[1]].count;
     tree[mini[0]].parent = i;
     tree[mini[1]].parent = i;
     tree[mini[1]].binary = true;

@@ -17,12 +17,12 @@
 #include <random>
 
 typedef int32_t id_type;
+enum class entry_type : int8_t {word=0, label=1};
 
 struct entry {
   std::string word;
-  int32_t id;
-  int64_t uf;
-  int8_t type;
+  int64_t count;
+  entry_type type;
   std::vector<int32_t> subwords;
 };
 
@@ -48,15 +48,13 @@ class Dictionary {
     static const std::string EOS;
     static const std::string BOW;
     static const std::string EOW;
-    static const std::hash<std::string> hashFn;
 
     Dictionary();
-    ~Dictionary();
     int32_t nwords();
     int32_t nlabels();
     int64_t ntokens();
     int32_t getId(const std::string&);
-    int8_t getType(int32_t);
+    entry_type getType(int32_t);
     bool discard(int32_t, real);
     std::string getWord(int32_t);
     const std::vector<int32_t>& getNgrams(int32_t);
@@ -69,8 +67,7 @@ class Dictionary {
     std::string getLabel(int32_t);
     void save(std::ofstream&);
     void load(std::ifstream&);
-    std::vector<int64_t> getWordFreq();
-    std::vector<int64_t> getLabelFreq();
+    std::vector<int64_t> getCounts(entry_type);
     void addNgrams(std::vector<int32_t>&, int32_t);
     int32_t getLine(std::ifstream&, std::vector<int32_t>&,
                     std::vector<int32_t>&, std::minstd_rand&);

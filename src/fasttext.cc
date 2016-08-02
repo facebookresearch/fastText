@@ -78,6 +78,10 @@ void printVectors(Dictionary& dict, Matrix& input) {
 
 void saveModel(Dictionary& dict, Matrix& input, Matrix& output) {
   std::ofstream ofs(args.output + ".bin");
+  if (!ofs.is_open()) {
+    std::cerr << "Model file cannot be opened for saving!" << std::endl;
+    exit(EXIT_FAILURE);
+  }
   args.save(ofs);
   dict.save(ofs);
   input.save(ofs);
@@ -121,10 +125,11 @@ void supervised(Model& model,
                 const std::vector<int32_t>& line,
                 const std::vector<int32_t>& labels,
                 double& loss, int32_t& N) {
-    if (labels.size() == 0 || line.size() == 0) return;
-    std::uniform_int_distribution<> uniform(0, labels.size() - 1);
-    int32_t i = uniform(model.rng);
-    model.update(line, labels[i], loss, N);
+  if (labels.size() == 0 || line.size() == 0) return;
+  std::uniform_int_distribution<> uniform(0, labels.size() - 1);
+  int32_t i = uniform(model.rng);
+  loss += model.update(line, labels[i]);
+  N++;
 }
 
 void cbow(Dictionary& dict, Model& model,
@@ -144,7 +149,8 @@ void cbow(Dictionary& dict, Model& model,
         }
       }
     }
-    model.update(bow, line[w], loss, N);
+    loss += model.update(bow, line[w]);
+    N++;
   }
 }
 
@@ -159,7 +165,8 @@ void skipGram(Dictionary& dict, Model& model,
     for (int32_t c = -wb; c <= wb; c++) {
       if (c != 0 && w + c >= 0 && w + c < n) {
         int32_t target = line[w + c];
-        model.update(ngrams, target, loss, N);
+        loss += model.update(ngrams, target);
+        N++;
       }
     }
   }
@@ -220,9 +227,9 @@ void trainThread(Dictionary& dict, Matrix& input, Matrix& output,
 
   Model model(input, output, args.dim, args.lr, threadId);
   if (args.model == model_name::sup) {
-    model.setLabelFreq(dict.getLabelFreq());
+    model.setTargetCounts(dict.getCounts(entry_type::label));
   } else {
-    model.setLabelFreq(dict.getWordFreq());
+    model.setTargetCounts(dict.getCounts(entry_type::word));
   }
 
   const int64_t ntokens = dict.ntokens();
@@ -306,7 +313,7 @@ void test(int argc, char** argv) {
   Matrix input, output;
   loadModel(std::string(argv[2]), dict, input, output);
   Model model(input, output, args.dim, args.lr, 1);
-  model.setLabelFreq(dict.getLabelFreq());
+  model.setTargetCounts(dict.getCounts(entry_type::label));
   test(dict, model, std::string(argv[3]));
   exit(0);
 }
@@ -320,7 +327,7 @@ void predict(int argc, char** argv) {
   Matrix input, output;
   loadModel(std::string(argv[2]), dict, input, output);
   Model model(input, output, args.dim, args.lr, 1);
-  model.setLabelFreq(dict.getLabelFreq());
+  model.setTargetCounts(dict.getCounts(entry_type::label));
   predict(dict, model, std::string(argv[3]));
   exit(0);
 }
