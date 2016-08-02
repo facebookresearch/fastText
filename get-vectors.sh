@@ -8,18 +8,26 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-export LC_ALL=en_US.UTF-8
-export LANG=en_US.UTF-8
-export LANGUAGE=en_US.UTF-8
-
-make
-
-export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH
-
 RESULTDIR=result
 DATADIR=data
 
 mkdir -p "${RESULTDIR}"
+mkdir -p "${DATADIR}"
+
+if [ ! -f "${DATADIR}/text9" ]
+then
+  wget -c http://mattmahoney.net/dc/enwik9.zip -P "${DATADIR}"
+  unzip "${DATADIR}/enwik9.zip" -d "${DATADIR}"
+  perl wikifil.pl "${DATADIR}/enwik9" > "${DATADIR}"/text9
+fi
+
+if [ ! -f "${DATADIR}/rw/rw.txt" ]
+then
+  wget -c http://www-nlp.stanford.edu/~lmthang/morphoNLM/rw.zip -P "${DATADIR}"
+  unzip "${DATADIR}/rw.zip" -d "${DATADIR}"
+fi
+
+make
 
 ./fasttext skipgram -input "${DATADIR}"/text9 -output "${RESULTDIR}"/text9 -lr 0.025 -dim 100 \
   -ws 5 -epoch 1 -minCount 5 -neg 5 -sampling tf -loss ns \

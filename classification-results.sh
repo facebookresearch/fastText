@@ -8,10 +8,38 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-make
+myshuf() {
+  perl -MList::Util=shuffle -e 'print shuffle(<>);' "$@";
+}
 
-DATASET=( ag_news sogou_news dbpedia yelp_review_polarity \
-  yelp_review_full yahoo_answers amazon_review_full amazon_review_polarity )
+normalize_text() {
+  tr '[:upper:]' '[:lower:]' | sed -e 's/^/__label__/g' | \
+    sed -e "s/'/ ' /g" -e 's/"//g' -e 's/\./ \. /g' -e 's/<br \/>/ /g' \
+        -e 's/,/ , /g' -e 's/(/ ( /g' -e 's/)/ ) /g' -e 's/\!/ \! /g' \
+        -e 's/\?/ \? /g' -e 's/\;/ /g' -e 's/\:/ /g' | tr -s " " | myshuf
+}
+
+DATASET=(
+  ag_news
+  sogou_news
+  dbpedia
+  yelp_review_polarity
+  yelp_review_full
+  yahoo_answers
+  amazon_review_full
+  amazon_review_polarity
+)
+
+ID=(
+  0Bz8a_Dbh9QhbUDNpeUdjb0wxRms # ag_news
+  0Bz8a_Dbh9QhbUkVqNEszd0pHaFE # sogou_news
+  0Bz8a_Dbh9QhbQ2Vic1kxMmZZQ1k # dbpedia
+  0Bz8a_Dbh9QhbNUpYQ2N3SGlFaDg # yelp_review_polarity
+  0Bz8a_Dbh9QhbZlU4dXhHTFhZQU0 # yelp_review_full
+  0Bz8a_Dbh9Qhbd2JNdDBsQUdocVU # yahoo_answers
+  0Bz8a_Dbh9QhbZVhsUnRWRDhETzA # amazon_review_full
+  0Bz8a_Dbh9QhbaW12WVVZS2drcnM # amazon_review_polarity
+)
 
 LR=( 0.25 0.5 0.5 0.1 0.1 0.1 0.05 0.05 )
 
@@ -19,8 +47,23 @@ RESULTDIR=result
 DATADIR=data
 
 mkdir -p "${RESULTDIR}"
+mkdir -p "${DATADIR}"
 
-for i in {0..1}
+for i in {0..7}
+do
+  echo "Downloading dataset ${DATASET[i]}"
+  if [ ! -f "${DATADIR}/${DATASET[i]}.train" ]
+  then
+    wget -c "https://googledrive.com/host/${ID[i]}" -O "${DATADIR}/${DATASET[i]}_csv.tar.gz"
+    tar -xzvf "${DATADIR}/${DATASET[i]}_csv.tar.gz" -C "${DATADIR}"
+    cat "${DATADIR}/${DATASET[i]}_csv/train.csv" | normalize_text > "${DATADIR}/${DATASET[i]}.train"
+    cat "${DATADIR}/${DATASET[i]}_csv/test.csv" | normalize_text > "${DATADIR}/${DATASET[i]}.test"
+  fi
+done
+
+make
+
+for i in {0..7}
 do
   echo "Working on dataset ${DATASET[i]}"
   ./fasttext supervised -input "${DATADIR}/${DATASET[i]}.train" \

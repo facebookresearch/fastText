@@ -8,17 +8,35 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-make
+myshuf() {
+  perl -MList::Util=shuffle -e 'print shuffle(<>);' "$@";
+}
 
-export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH
+normalize_text() {
+  tr '[:upper:]' '[:lower:]' | sed -e 's/^/__label__/g' | \
+    sed -e "s/'/ ' /g" -e 's/"//g' -e 's/\./ \. /g' -e 's/<br \/>/ /g' \
+        -e 's/,/ , /g' -e 's/(/ ( /g' -e 's/)/ ) /g' -e 's/\!/ \! /g' \
+        -e 's/\?/ \? /g' -e 's/\;/ /g' -e 's/\:/ /g' | tr -s " " | myshuf
+}
 
 RESULTDIR=result
 DATADIR=data
 
 mkdir -p "${RESULTDIR}"
+mkdir -p "${DATADIR}"
 
-./fasttext supervised -input "${DATADIR}/yelp_review_full.train" -output "${RESULTDIR}/yelp_review_full" -dim 10 -lr 0.1 -wordNgrams 2 -minCount 1 -bucket 10000000 -epoch 5 -thread 4
+if [ ! -f "${DATADIR}/dbpedia.train" ]
+then
+  wget -c "https://googledrive.com/host/0Bz8a_Dbh9QhbQ2Vic1kxMmZZQ1k" -O "${DATADIR}/dbpedia_csv.tar.gz"
+  tar -xzvf "${DATADIR}/dbpedia_csv.tar.gz" -C "${DATADIR}"
+  cat "${DATADIR}/dbpedia_csv/train.csv" | normalize_text > "${DATADIR}/dbpedia.train"
+  cat "${DATADIR}/dbpedia_csv/test.csv" | normalize_text > "${DATADIR}/dbpedia.test"
+fi
 
-./fasttext test "${RESULTDIR}/yelp_review_full.bin" "${DATADIR}/yelp_review_full.test"
+make
 
-./fasttext predict "${RESULTDIR}/yelp_review_full.bin" "${DATADIR}/yelp_review_full.test" > "${RESULTDIR}/yelp_review_full.test.predict"
+./fasttext supervised -input "${DATADIR}/dbpedia.train" -output "${RESULTDIR}/dbpedia" -dim 10 -lr 0.1 -wordNgrams 2 -minCount 1 -bucket 10000000 -epoch 5 -thread 4
+
+./fasttext test "${RESULTDIR}/dbpedia.bin" "${DATADIR}/dbpedia.test"
+
+./fasttext predict "${RESULTDIR}/dbpedia.bin" "${DATADIR}/dbpedia.test" > "${RESULTDIR}/dbpedia.test.predict"
