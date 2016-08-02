@@ -20,7 +20,6 @@ typedef int32_t id_type;
 
 struct entry {
   std::string word;
-  int32_t id;
   int64_t uf;
   int8_t type;
   std::vector<int32_t> subwords;

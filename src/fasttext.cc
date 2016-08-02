@@ -78,6 +78,10 @@ void printVectors(Dictionary& dict, Matrix& input) {
 
 void saveModel(Dictionary& dict, Matrix& input, Matrix& output) {
   std::ofstream ofs(args.output + ".bin");
+  if (!ofs.is_open()) {
+    std::cerr << "Model file cannot be opened for saving!" << std::endl;
+    exit(EXIT_FAILURE);
+  }
   args.save(ofs);
   dict.save(ofs);
   input.save(ofs);
@@ -121,11 +125,11 @@ void supervised(Model& model,
                 const std::vector<int32_t>& line,
                 const std::vector<int32_t>& labels,
                 double& loss, int32_t& N) {
-    if (labels.size() == 0 || line.size() == 0) return;
-    std::uniform_int_distribution<> uniform(0, labels.size() - 1);
-    int32_t i = uniform(model.rng);
-    loss += model.update(line, labels[i]);
-    N++;
+  if (labels.size() == 0 || line.size() == 0) return;
+  std::uniform_int_distribution<> uniform(0, labels.size() - 1);
+  int32_t i = uniform(model.rng);
+  loss += model.update(line, labels[i]);
+  N++;
 }
 
 void cbow(Dictionary& dict, Model& model,
