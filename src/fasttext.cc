@@ -227,9 +227,9 @@ void trainThread(Dictionary& dict, Matrix& input, Matrix& output,
 
   Model model(input, output, args.dim, args.lr, threadId);
   if (args.model == model_name::sup) {
-    model.setLabelFreq(dict.getLabelFreq());
+    model.setTargetCounts(dict.getCounts(entry_type::label));
   } else {
-    model.setLabelFreq(dict.getWordFreq());
+    model.setTargetCounts(dict.getCounts(entry_type::word));
   }
 
   const int64_t ntokens = dict.ntokens();
@@ -316,7 +316,7 @@ void test(int argc, char** argv) {
   Matrix input, output;
   loadModel(std::string(argv[2]), dict, input, output);
   Model model(input, output, args.dim, args.lr, 1);
-  model.setLabelFreq(dict.getLabelFreq());
+  model.setTargetCounts(dict.getCounts(entry_type::label));
   test(dict, model, std::string(argv[3]));
   exit(0);
 }
@@ -330,7 +330,7 @@ void predict(int argc, char** argv) {
   Matrix input, output;
   loadModel(std::string(argv[2]), dict, input, output);
   Model model(input, output, args.dim, args.lr, 1);
-  model.setLabelFreq(dict.getLabelFreq());
+  model.setTargetCounts(dict.getCounts(entry_type::label));
   predict(dict, model, std::string(argv[3]));
   exit(0);
 }

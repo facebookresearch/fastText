@@ -20,7 +20,7 @@ struct Node {
   int32_t parent;
   int32_t left;
   int32_t right;
-  int64_t freq;
+  int64_t count;
   bool binary;
 };
 
@@ -48,7 +48,6 @@ class Model {
 
   public:
     Model(Matrix&, Matrix&, int32_t, real, int32_t);
-    ~Model();
 
     void setLearningRate(real);
     real getLearningRate();
@@ -62,7 +61,7 @@ class Model {
     void dfs(int32_t, real, real&, int32_t&);
     real update(const std::vector<int32_t>&, int32_t);
 
-    void setLabelFreq(const std::vector<int64_t>&);
+    void setTargetCounts(const std::vector<int64_t>&);
     void initTableNegatives(const std::vector<int64_t>&);
     int32_t getNegative(int32_t target);
     void buildTree(const std::vector<int64_t>&);
