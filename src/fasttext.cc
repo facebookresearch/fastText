@@ -28,17 +28,15 @@
 Args args;
 
 namespace info {
-  time_t startTime;
-  time_t nowTime;
   clock_t start;
   std::atomic<int64_t> allWords(0);
   std::atomic<int64_t> allN(0);
   double allLoss(0.0);
 }
 
-void getVector(Dictionary& dict, Matrix& input, Vector& vec, std::string ws) {
+void getVector(Dictionary& dict, Matrix& input, Vector& vec, std::string word) {
+  const std::vector<int32_t>& ngrams = dict.getNgrams(word);
   vec.zero();
-  const std::vector<int32_t>& ngrams = dict.getNgrams(ws);
   for (auto it = ngrams.begin(); it != ngrams.end(); ++it) {
     vec.addRow(input, *it);
   }
@@ -46,33 +44,27 @@ void getVector(Dictionary& dict, Matrix& input, Vector& vec, std::string ws) {
 }
 
 void saveVectors(Dictionary& dict, Matrix& input, Matrix& output) {
-  int32_t N = dict.nwords();
   std::ofstream ofs(args.output + ".vec");
-  std::string ws;
-  if (ofs.is_open()) {
-    ofs << N << ' ' << args.dim << std::endl;
-    Vector vec(args.dim);
-    for (int32_t i = 0; i < N; i++) {
-      ws = dict.getWord(i);
-      ofs << ws << ' ';
-      getVector(dict, input, vec, ws);
-      vec.writeToStream(ofs);
-      ofs << std::endl;
-    }
-    ofs.close();
-  } else {
+  if (!ofs.is_open()) {
     std::cout << "Error opening file for saving vectors." << std::endl;
+    exit(EXIT_FAILURE);
   }
+  ofs << dict.nwords() << " " << args.dim << std::endl;
+  Vector vec(args.dim);
+  for (int32_t i = 0; i < dict.nwords(); i++) {
+    std::string word = dict.getWord(i);
+    getVector(dict, input, vec, word);
+    ofs << word << " " << vec << std::endl;
+  }
+  ofs.close();
 }
 
 void printVectors(Dictionary& dict, Matrix& input) {
-  std::string ws;
+  std::string word;
   Vector vec(args.dim);
-  while (std::cin >> ws) {
-    std::cout << ws << " ";
-    getVector(dict, input, vec, ws);
-    vec.writeToStream(std::cout);
-    std::cout << std::endl;
+  while (std::cin >> word) {
+    getVector(dict, input, vec, word);
+    std::cout << word << " " << vec << std::endl;
   }
 }
 
@@ -103,70 +95,63 @@ void loadModel(std::string filename, Dictionary& dict,
   ifs.close();
 }
 
-void printInfo(Model& model, int64_t numTokens) {
-  real progress = real(info::allWords) / (args.epoch * numTokens);
-  real avLoss = info::allLoss / info::allN;
-  float time = float(clock() - info::start) / CLOCKS_PER_SEC;
-  float wst = float(info::allWords) / time;
-  int eta = int(time / progress * (1 - progress) / args.thread);
+void printInfo(Model& model, real progress) {
+  real loss = info::allLoss / info::allN;
+  real t = real(clock() - info::start) / CLOCKS_PER_SEC;
+  real wst = real(info::allWords) / t;
+  int eta = int(t / progress * (1 - progress) / args.thread);
   int etah = eta / 3600;
   int etam = (eta - etah * 3600) / 60;
-
   std::cout << std::fixed;
   std::cout << "\rProgress: " << std::setprecision(1) << 100 * progress << "%";
   std::cout << "  words/sec/thread: " << std::setprecision(0) << wst;
   std::cout << "  lr: " << std::setprecision(6) << model.getLearningRate();
-  std::cout << "  loss: " << std::setprecision(6) << avLoss;
-  std::cout << "  eta: " << etah << "h" << etam << "m  ";
+  std::cout << "  loss: " << std::setprecision(6) << loss;
+  std::cout << "  eta: " << etah << "h" << etam << "m";
   std::cout << std::flush;
 }
 
 void supervised(Model& model,
                 const std::vector<int32_t>& line,
                 const std::vector<int32_t>& labels,
-                double& loss, int32_t& N) {
+                double& loss, int32_t& nexamples) {
   if (labels.size() == 0 || line.size() == 0) return;
   std::uniform_int_distribution<> uniform(0, labels.size() - 1);
   int32_t i = uniform(model.rng);
   loss += model.update(line, labels[i]);
-  N++;
+  nexamples++;
 }
 
 void cbow(Dictionary& dict, Model& model,
           const std::vector<int32_t>& line,
-          double& loss, int32_t& N) {
-  int32_t n = line.size();
+          double& loss, int32_t& nexamples) {
   std::vector<int32_t> bow;
   std::uniform_int_distribution<> uniform(1, args.ws);
-  for (int32_t w = 0; w < n; w++) {
-    int32_t wb = uniform(model.rng);
+  for (int32_t w = 0; w < line.size(); w++) {
+    int32_t boundary = uniform(model.rng);
     bow.clear();
-    for (int32_t c = -wb; c <= wb; c++) {
-      if (c != 0 && w + c >= 0 && w + c < n) {
+    for (int32_t c = -boundary; c <= boundary; c++) {
+      if (c != 0 && w + c >= 0 && w + c < line.size()) {
         const std::vector<int32_t>& ngrams = dict.getNgrams(line[w + c]);
-        for (auto it = ngrams.cbegin(); it != ngrams.cend(); ++it) {
-          bow.push_back(*it);
-        }
+        bow.insert(bow.end(), ngrams.cbegin(), ngrams.cend());
       }
     }
     loss += model.update(bow, line[w]);
-    N++;
+    nexamples++;
   }
 }
 
-void skipGram(Dictionary& dict, Model& model,
+void skipgram(Dictionary& dict, Model& model,
               const std::vector<int32_t>& line,
-              double& loss, int32_t& N) {
-  int32_t n = line.size();
+              double& loss, int32_t& nexamples) {
   std::uniform_int_distribution<> uniform(1, args.ws);
-  for (int32_t w = 0; w < n; w++) {
-    int32_t wb = uniform(model.rng);
+  for (int32_t w = 0; w < line.size(); w++) {
+    int32_t boundary = uniform(model.rng);
     const std::vector<int32_t>& ngrams = dict.getNgrams(line[w]);
-    for (int32_t c = -wb; c <= wb; c++) {
-      if (c != 0 && w + c >= 0 && w + c < n) {
-        int32_t target = line[w + c];
-        loss += model.update(ngrams, target);
-        N++;
+    for (int32_t c = -boundary; c <= boundary; c++) {
+      if (c != 0 && w + c >= 0 && w + c < line.size()) {
+        loss += model.update(ngrams, line[w + c]);
+        nexamples++;
       }
     }
   }
@@ -235,38 +220,34 @@ void trainThread(Dictionary& dict, Matrix& input, Matrix& output,
   const int64_t ntokens = dict.ntokens();
   int64_t tokenCount = 0;
   double loss = 0.0;
-  int32_t N = 0;
+  int32_t nexamples = 0;
   std::vector<int32_t> line, labels;
-
   while (info::allWords < args.epoch * ntokens) {
     tokenCount += dict.getLine(ifs, line, labels, model.rng);
     if (args.model == model_name::sup) {
       dict.addNgrams(line, args.wordNgrams);
-      supervised(model, line, labels, loss, N);
+      supervised(model, line, labels, loss, nexamples);
     } else if (args.model == model_name::cbow) {
-      cbow(dict, model, line, loss, N);
+      cbow(dict, model, line, loss, nexamples);
     } else if (args.model == model_name::sg) {
-      skipGram(dict, model, line, loss, N);
+      skipgram(dict, model, line, loss, nexamples);
     }
 
     if (tokenCount > 10000) {
       info::allWords += tokenCount;
       info::allLoss += loss;
-      info::allN += N;
+      info::allN += nexamples;
       tokenCount = 0;
       loss = 0.0;
-      N = 0;
+      nexamples = 0;
       real progress = real(info::allWords) / (args.epoch * ntokens);
       model.setLearningRate(args.lr * (1.0 - progress));
-      if (threadId == 0) printInfo(model, ntokens);
+      if (threadId == 0) printInfo(model, progress);
     }
   }
   if (threadId == 0) {
-    printInfo(model, ntokens);
+    printInfo(model, 1.0);
     std::cout << std::endl;
-  }
-  if (args.model == model_name::sup && threadId == 0) {
-    test(dict, model, args.test);
   }
   ifs.close();
 }
@@ -370,7 +351,7 @@ void train(int argc, char** argv) {
   output.zero();
 
   info::start = clock();
-  time(&info::startTime);
+  time_t t0 = time(nullptr);
   std::vector<std::thread> threads;
   for (int32_t i = 0; i < args.thread; i++) {
     threads.push_back(std::thread(&trainThread, std::ref(dict),
@@ -379,9 +360,8 @@ void train(int argc, char** argv) {
   for (auto it = threads.begin(); it != threads.end(); ++it) {
     it->join();
   }
-  time(&info::nowTime);
-  double trainTime = difftime(info::nowTime, info::startTime);
-  std::cout << "training took: " << trainTime << " sec" << std::endl;
+  double trainTime = difftime(time(nullptr), t0);
+  std::cout << "Train time: " << trainTime << " sec" << std::endl;
 
   if (args.output.size() != 0) {
     saveModel(dict, input, output);

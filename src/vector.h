@@ -28,8 +28,6 @@ class Vector {
     real& operator[](int64_t);
     const real& operator[](int64_t) const;
 
-    void writeToStream(std::ostream&);
-
     void zero();
     void mul(real);
     void addRow(const Matrix&, int64_t);
@@ -37,5 +35,7 @@ class Vector {
     void mul(const Matrix&, const Vector&);
     int64_t argmax();
 };
+
+std::ostream& operator<<(std::ostream&, const Vector&);
 
 #endif
