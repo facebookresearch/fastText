@@ -258,9 +258,6 @@ void trainThread(Dictionary& dict, Matrix& input, Matrix& output,
     printInfo(model, ntokens);
     std::cout << std::endl;
   }
-  /*if (args.model == model_name::sup && threadId == 0) {
-    test(dict, model, args.test);
-    }*/
   ifs.close();
 }
 
