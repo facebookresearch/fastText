@@ -36,8 +36,6 @@ In order to train a text classifier following [2], please follow the compilation
 $ ./fasttext supervised -input train.txt -output model
 ```
 
-### predicting labels
-
 where `train.txt` is a text file containing a training sentence per line along with the labels. By default, we assume that labels are words in a sentence that are prefixed by `__label__`. This will output two files: `model.bin` and `model.vec`. Once the model was trained, you can compute the test precision at 1 (P@1) using:
 
 ```
@@ -63,7 +61,7 @@ $ ./fasttext skipgram -input data.txt -output model
 This will launch the optimization and save two files: `model.bin` and `model.vec`.
 `model.vec` is a text file containing the word vectors, one per line. `model.bin` is the binary containing all the parameters of the model. It can be used later to compute word vectors or to restart the optimization.
 
-### obtaining word vectors For out-of-vocabulary words
+### Obtaining word vectors for out-of-vocabulary words
 
 Provided you have a text file `queries.txt` containing words for which you want to compute vectors, please issue the following command
 
@@ -122,6 +120,7 @@ will compile the code, download data, compute the word vectors and evaluate on t
 ## References
 
 [1] Piotr Bojanowski, Edouard Grave, Armand Joulin, Tomas Mikolov, Enriching Word Vectors with Subword Information, arXiv 1607.04606, 2016
+
 [2] Armand Joulin, Edouard Grave, Piotr Bojanowski, Tomas Mikolov, Bag of Tricks for Efficient Text Classification, arXiv 1607.01759, 2016
 
 ## Join the fastText community
