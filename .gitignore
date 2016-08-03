@@ -3,7 +3,5 @@
 *.bin
 *.vec
 data
-classify
 fasttext
-print-vectors
 result

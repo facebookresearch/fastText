@@ -66,7 +66,7 @@ $ cat queries.txt | ./fasttext print-vectors model.bin
 See the provided scripts for an example. For instance, running:
 
 ```
-$ ./get-vectors.sh
+$ ./word-vector-example.sh
 ```
 
 will compile the code, download data, compute word vectors and evaluate them on the rare words similarity dataset RW [Thang et al. 2013].
@@ -97,7 +97,7 @@ $ ./fasttext predict model.bin test.txt
 
 where `test.txt` contains a piece of text to classify per line.
 Doing so will output to the standard output the most likely label per line.
-See `classification.sh` for an example use case.
+See `classification-example.sh` for an example use case.
 In order to reproduce results from the paper [2], run `classification-results.sh`, this will download all the datasets and reproduce the results from Table 1.
 
 ## Full documentation
@@ -126,6 +126,8 @@ The following arguments are optional:
 ```
 
 ## References
+
+Please cite [1] if using this code for learning word representations or [2] if using for text classification.
 
 [1] Piotr Bojanowski, Edouard Grave, Armand Joulin, Tomas Mikolov, Enriching Word Vectors with Subword Information, arXiv 1607.04606, 2016
 
