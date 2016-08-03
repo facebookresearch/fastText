@@ -129,14 +129,14 @@ The following arguments are optional:
 
 Please cite [1] if using this code for learning word representations or [2] if using for text classification.
 
-[1] Piotr Bojanowski, Edouard Grave, Armand Joulin, Tomas Mikolov, Enriching Word Vectors with Subword Information, arXiv 1607.04606, 2016
+[1] Piotr Bojanowski, Edouard Grave, Armand Joulin, Tomas Mikolov, *Enriching Word Vectors with Subword Information*, arXiv:1607.04606, 2016
 
-[2] Armand Joulin, Edouard Grave, Piotr Bojanowski, Tomas Mikolov, Bag of Tricks for Efficient Text Classification, arXiv 1607.01759, 2016
+[2] Armand Joulin, Edouard Grave, Piotr Bojanowski, Tomas Mikolov, *Bag of Tricks for Efficient Text Classification*, arXiv:1607.01759, 2016
 
 ## Join the fastText community
 
 * Facebook page: https://www.facebook.com/groups/1174547215919768
-* Contact: [egrave@fb.com](mailto:egrave@fb.com) [bojanowski@fb.com](mailto:bojanowski@fb.com) [ajoulin@fb.com](mailto:ajoulin@fb.com) [tmikolov@fb.com](mailto:tmikolov@fb.com)
+* Contact: [egrave@fb.com](mailto:egrave@fb.com), [bojanowski@fb.com](mailto:bojanowski@fb.com), [ajoulin@fb.com](mailto:ajoulin@fb.com), [tmikolov@fb.com](mailto:tmikolov@fb.com)
 
 See the CONTRIBUTING file for information about how to help out.
 
