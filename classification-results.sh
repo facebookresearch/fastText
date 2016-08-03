@@ -9,7 +9,7 @@
 #
 
 # This script produces the results from Table 1 in the following paper: 
-# Armand Joulin, Edouard Grave, Piotr Bojanowski, Tomas Mikolov, Bag of Tricks for Efficient Text Classification, arXiv 1607.01759, 2016
+# Bag of Tricks for Efficient Text Classification, arXiv 1607.01759, 2016
 
 myshuf() {
   perl -MList::Util=shuffle -e 'print shuffle(<>);' "$@";
@@ -44,6 +44,7 @@ ID=(
   0Bz8a_Dbh9QhbaW12WVVZS2drcnM # amazon_review_polarity
 )
 
+# These learning rates were chosen by validation on a subset of the training set.
 LR=( 0.25 0.5 0.5 0.1 0.1 0.1 0.05 0.05 )
 
 RESULTDIR=result
