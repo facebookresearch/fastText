@@ -8,6 +8,9 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
+# This script produces the results from Table 1 in the following paper: 
+# Armand Joulin, Edouard Grave, Piotr Bojanowski, Tomas Mikolov, Bag of Tricks for Efficient Text Classification, arXiv 1607.01759, 2016
+
 myshuf() {
   perl -MList::Util=shuffle -e 'print shuffle(<>);' "$@";
 }
