@@ -30,9 +30,8 @@ fi
 make
 
 ./fasttext skipgram -input "${DATADIR}"/text9 -output "${RESULTDIR}"/text9 -lr 0.025 -dim 100 \
-  -ws 5 -epoch 1 -minCount 5 -neg 5 -sampling tf -loss ns \
-  -bucket 2000000 -minn 3 -maxn 6 -onlyWord 0 -thread 4 -verbose 1000 \
-  -t 1e-4
+  -ws 5 -epoch 1 -minCount 5 -neg 5 -loss ns -bucket 2000000 \
+  -minn 3 -maxn 6 -thread 4 -verbose 1000 -t 1e-4
 
 cut -f 1,2 "${DATADIR}"/rw/rw.txt | awk '{print tolower($0)}' | tr '\t' '\n' > "${DATADIR}"/queries.txt
 
