@@ -13,6 +13,7 @@ Compilation is carried out using a Makefile, so you will need to have a working 
 For the word-similarity evaluation script you will need:
 
 * python 2.6 or newer
+* numpy & scipy
 
 ## Building fastText
 
