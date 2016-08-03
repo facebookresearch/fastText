@@ -1,11 +1,10 @@
 # fastText
 
-fastText is a library for efficient computation of word representations and sentence classification.
+fastText is a library for efficient learning of word representations and sentence classification.
 
 ## Requirements
 
-fastText compiles on all modern platforms including Mac OS and Linux.
-Because of the use of C++ 11 features, it requires the use of a C++ 11 compatible compiler.
+fastText uses C++11 features and therefore it requires a compiler with good C++11 support.
 These include :
 
 * (gcc-4.6.3 or newer) or (clang-3.3 or newer)
@@ -26,16 +25,16 @@ $ make
 ```
 
 This will produce object files for all the classes as well as the main binary `fasttext`.
-If you do not plan on using the default system-wide compiler, please update the two macros defined at the beginning of the Makefile (CC and INCLUDES).
+If you do not plan on using the default system-wide compiler, update the two macros defined at the beginning of the Makefile (CC and INCLUDES).
 
 ## Example use cases
 
-This library has two main use cases that we will describe here.
-These two uses correspond to papers [1] and [2].
+This library has two main use cases: word representation learning and text classification.
+These were described in the two papers [1] and [2].
 
-### Word representation
+### Word representation learning
 
-In order to compute word vectors as described in [1] do:
+In order to learn word vectors, as described in [1], do:
 
 ```
 $ ./fasttext skipgram -input data.txt -output model
@@ -45,19 +44,19 @@ where `data.txt` is a training file containing `utf-8` encoded text.
 By default the word vectors will take into account character n-grams from 3 to 6 characters.
 At the end of optimization the program will save two files: `model.bin` and `model.vec`.
 `model.vec` is a text file containing the word vectors, one per line.
-`model.bin` is the binary containing, the parameters of the model along with the dictionary and all hyper parameters.
-It can be used later to compute word vectors or to restart the optimization.
+`model.bin` is a binary file containing the parameters of the model along with the dictionary and all hyper parameters.
+The binary file can be used later to compute word vectors or to restart the optimization.
 
 ### Obtaining word vectors for out-of-vocabulary words
 
-The previously trained model can be reused to compute word vectors for out-of-vocabulary words.
-Provided you have a text file `queries.txt` containing words for which you want to compute vectors, please issue the following command:
+The previously trained model can be used to compute word vectors for out-of-vocabulary words.
+Provided you have a text file `queries.txt` containing words for which you want to compute vectors, use the following command:
 
 ```
 $ ./fasttext print-vectors model.bin < queries.txt
 ```
 
-This will output to standard output, the word and its vector, one word per line.
+This will output word vectors to the standard output, one vector per line.
 This can also be used with pipes:
 
 ```
@@ -70,19 +69,19 @@ See the provided scripts for an example. For instance, running:
 $ ./get-vectors.sh
 ```
 
-will compile the code, download data, compute the word vectors and evaluate on the rare words similarity dataset RW [Thang et al. 2013].
+will compile the code, download data, compute word vectors and evaluate them on the rare words similarity dataset RW [Thang et al. 2013].
 
 ### Text classification
 
 This library can also be used to train supervised text classifiers, for instance for sentiment analysis.
-In order to train a text classifier using the method described in [2], issue:
+In order to train a text classifier using the method described in [2], use:
 
 ```
 $ ./fasttext supervised -input train.txt -output model
 ```
 
 where `train.txt` is a text file containing a training sentence per line along with the labels.
-By default, we assume that labels are words in a sentence that are prefixed by `__label__`.
+By default, we assume that labels are words that are prefixed by the string `__label__`.
 This will output two files: `model.bin` and `model.vec`.
 Once the model was trained, you can evaluate it by computing the precision at 1 (P@1) on a test set using:
 
@@ -90,16 +89,16 @@ Once the model was trained, you can evaluate it by computing the precision at 1 
 $ ./fasttext test model.bin test.txt
 ```
 
-If you want to obtain the most likely label for a piece of text, please use:
+In order to obtain the most likely label for a piece of text, use:
 
 ```
 $ ./fasttext predict model.bin test.txt
 ```
 
-where test.txt contains a piece of text to classify per line.
-Doing so will output to standard output the most likely label per line.
-Please check `classification.sh` for an example use case.
-In order to reproduce results from the paper [2] please run `classification-results.sh`, this will download all the datasets and reproduce the results from Table 1.
+where `test.txt` contains a piece of text to classify per line.
+Doing so will output to the standard output the most likely label per line.
+See `classification.sh` for an example use case.
+In order to reproduce results from the paper [2], run `classification-results.sh`, this will download all the datasets and reproduce the results from Table 1.
 
 ## Full documentation
 
@@ -116,12 +115,10 @@ The following arguments are optional:
   -minCount   minimal number of word occurences [1]
   -neg        number of negatives sampled [5]
   -wordNgrams max length of word ngram [1]
-  -sampling   sampling distribution {sqrt, log, tf, uni} [log]
-  -loss       loss function {ns, hs, softmax}   [ns]
+  -loss       loss function {ns, hs, softmax} [ns]
   -bucket     number of buckets [2000000]
   -minn       min length of char ngram [3]
   -maxn       max length of char ngram [6]
-  -onlyWord   number of words with no ngrams [0]
   -thread     number of threads [12]
   -verbose    how often to print to stdout [1000]
   -t          sampling threshold [0.0001]
