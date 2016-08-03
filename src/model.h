@@ -38,7 +38,7 @@ class Model {
     static real lr_;
 
     std::vector<int32_t> negatives;
-    size_t npos;
+    size_t negpos;
     std::vector< std::vector<int32_t> > paths;
     std::vector< std::vector<bool> > codes;
     std::vector<Node> tree;

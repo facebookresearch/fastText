@@ -107,7 +107,7 @@ void printInfo(Model& model, real progress) {
   std::cout << "  words/sec/thread: " << std::setprecision(0) << wst;
   std::cout << "  lr: " << std::setprecision(6) << model.getLearningRate();
   std::cout << "  loss: " << std::setprecision(6) << loss;
-  std::cout << "  eta: " << etah << "h" << etam << "m";
+  std::cout << "  eta: " << etah << "h" << etam << "m ";
   std::cout << std::flush;
 }
 
@@ -370,7 +370,6 @@ void train(int argc, char** argv) {
 }
 
 int main(int argc, char** argv) {
-  std::locale::global(std::locale(""));
   utils::initTables();
   if (argc < 2) {
     printUsage();

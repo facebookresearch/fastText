@@ -13,7 +13,6 @@
 #include <string>
 
 enum class model_name : int {cbow=1, sg, sup};
-enum class sampling_name : int {sqrt=1, log, uni, tf};
 enum class loss_name : int {hs=1, ns, softmax};
 
 class Args {
@@ -29,13 +28,11 @@ class Args {
     int minCount;
     int neg;
     int wordNgrams;
-    sampling_name sampling;
     loss_name loss;
     model_name model;
     int bucket;
     int minn;
     int maxn;
-    int onlyWord;
     int thread;
     int verbose;
     double t;

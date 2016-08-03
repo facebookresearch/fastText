@@ -21,13 +21,11 @@ Args::Args() {
   minCount = 5;
   neg = 5;
   wordNgrams = 1;
-  sampling = sampling_name::sqrt;
   loss = loss_name::ns;
   model = model_name::sg;
   bucket = 2000000;
   minn = 3;
   maxn = 6;
-  onlyWord = 0;
   thread = 12;
   verbose = 1000;
   t = 1e-4;
@@ -74,20 +72,6 @@ void Args::parseArgs(int argc, char** argv) {
       neg = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-wordNgrams") == 0) {
       wordNgrams = atoi(argv[ai + 1]);
-    } else if (strcmp(argv[ai], "-sampling") == 0) {
-      if (strcmp(argv[ai + 1], "sqrt") == 0) {
-        sampling = sampling_name::sqrt;
-      } else if (strcmp(argv[ai + 1], "log") == 0) {
-        sampling = sampling_name::log;
-      } else if (strcmp(argv[ai + 1], "tf") == 0) {
-        sampling = sampling_name::tf;
-      } else if (strcmp(argv[ai + 1], "uni") == 0) {
-        sampling = sampling_name::uni;
-      } else {
-        std::cout << "Unknown sampling: " << argv[ai + 1] << std::endl;
-        printHelp();
-        exit(EXIT_FAILURE);
-      }
     } else if (strcmp(argv[ai], "-loss") == 0) {
       if (strcmp(argv[ai + 1], "hs") == 0) {
         loss = loss_name::hs;
@@ -106,8 +90,6 @@ void Args::parseArgs(int argc, char** argv) {
       minn = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-maxn") == 0) {
       maxn = atoi(argv[ai + 1]);
-    } else if (strcmp(argv[ai], "-onlyWord") == 0) {
-      onlyWord = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-thread") == 0) {
       thread = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-verbose") == 0) {
@@ -144,12 +126,10 @@ void Args::printHelp() {
     << "  -minCount   minimal number of word occurences [" << minCount << "]\n"
     << "  -neg        number of negatives sampled [" << neg << "]\n"
     << "  -wordNgrams max length of word ngram [" << wordNgrams << "]\n"
-    << "  -sampling   sampling distribution {sqrt, log, tf, uni} [log]\n"
-    << "  -loss       loss function {ns, hs, softmax}   [ns]\n"
+    << "  -loss       loss function {ns, hs, softmax} [ns]\n"
     << "  -bucket     number of buckets [" << bucket << "]\n"
     << "  -minn       min length of char ngram [" << minn << "]\n"
     << "  -maxn       max length of char ngram [" << maxn << "]\n"
-    << "  -onlyWord   number of words with no ngrams [" << onlyWord << "]\n"
     << "  -thread     number of threads [" << thread << "]\n"
     << "  -verbose    how often to print to stdout [" << verbose << "]\n"
     << "  -t          sampling threshold [" << t << "]\n"
@@ -165,13 +145,11 @@ void Args::save(std::ofstream& ofs) {
     ofs.write((char*) &(minCount), sizeof(int));
     ofs.write((char*) &(neg), sizeof(int));
     ofs.write((char*) &(wordNgrams), sizeof(int));
-    ofs.write((char*) &(sampling), sizeof(sampling_name));
     ofs.write((char*) &(loss), sizeof(loss_name));
     ofs.write((char*) &(model), sizeof(model_name));
     ofs.write((char*) &(bucket), sizeof(int));
     ofs.write((char*) &(minn), sizeof(int));
     ofs.write((char*) &(maxn), sizeof(int));
-    ofs.write((char*) &(onlyWord), sizeof(int));
     ofs.write((char*) &(verbose), sizeof(int));
     ofs.write((char*) &(t), sizeof(double));
   }
@@ -185,13 +163,11 @@ void Args::load(std::ifstream& ifs) {
     ifs.read((char*) &(minCount), sizeof(int));
     ifs.read((char*) &(neg), sizeof(int));
     ifs.read((char*) &(wordNgrams), sizeof(int));
-    ifs.read((char*) &(sampling), sizeof(sampling_name));
     ifs.read((char*) &(loss), sizeof(loss_name));
     ifs.read((char*) &(model), sizeof(model_name));
     ifs.read((char*) &(bucket), sizeof(int));
     ifs.read((char*) &(minn), sizeof(int));
     ifs.read((char*) &(maxn), sizeof(int));
-    ifs.read((char*) &(onlyWord), sizeof(int));
     ifs.read((char*) &(verbose), sizeof(int));
     ifs.read((char*) &(t), sizeof(double));
   }

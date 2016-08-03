@@ -24,7 +24,7 @@ Model::Model(Matrix& wi, Matrix& wo, int32_t hsz, real lr, int32_t seed)
   osz_ = wo.m_;
   hsz_ = hsz;
   lr_ = lr;
-  npos = 0;
+  negpos = 0;
 }
 
 void Model::setLearningRate(real lr) {
@@ -160,31 +160,13 @@ void Model::setTargetCounts(const std::vector<int64_t>& counts) {
 }
 
 void Model::initTableNegatives(const std::vector<int64_t>& counts) {
-  real N = 0.0;
-  for (int32_t i = 0; i < counts.size(); i++) {
-    if (args.sampling == sampling_name::log) {
-      N += log(counts[i]);
-    } else if (args.sampling == sampling_name::sqrt) {
-      N += sqrt(counts[i]);
-    } else if (args.sampling == sampling_name::tf) {
-      N += pow(counts[i], 0.75);
-    } else {
-      N += 1.0;
-    }
+  real z = 0.0;
+  for (size_t i = 0; i < counts.size(); i++) {
+    z += pow(counts[i], 0.5);
   }
-  for (int32_t i = 0; i < counts.size(); i++) {
-    real c = 0.0;
-    if (args.sampling == sampling_name::log) {
-      c = log(counts[i]);
-    } else if (args.sampling == sampling_name::sqrt) {
-      c = sqrt(counts[i]);
-    } else if (args.sampling == sampling_name::tf) {
-      c = pow(counts[i], 0.75);
-    } else {
-      c = 1.0;
-    }
-    int32_t n = (int32_t)ceil(c * ((real)NEGATIVE_TABLE_SIZE / N));
-    for (int32_t j = 0; j < n; j++) {
+  for (size_t i = 0; i < counts.size(); i++) {
+    real c = pow(counts[i], 0.5);
+    for (size_t j = 0; j < c * NEGATIVE_TABLE_SIZE / z; j++) {
       negatives.push_back(i);
     }
   }
@@ -194,8 +176,8 @@ void Model::initTableNegatives(const std::vector<int64_t>& counts) {
 int32_t Model::getNegative(int32_t target) {
   int32_t negative;
   do {
-    negative = negatives[npos];
-    npos = (npos + 1) % negatives.size();
+    negative = negatives[negpos];
+    negpos = (negpos + 1) % negatives.size();
   } while (target == negative);
   return negative;
 }

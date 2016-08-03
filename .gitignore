@@ -1,5 +1,7 @@
 .*.swp
 *.o
+*.bin
+*.vec
 data
 classify
 fasttext
