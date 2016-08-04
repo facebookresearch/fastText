@@ -129,9 +129,27 @@ The following arguments are optional:
 
 Please cite [1] if using this code for learning word representations or [2] if using for text classification.
 
-[1] Piotr Bojanowski, Edouard Grave, Armand Joulin, Tomas Mikolov, Enriching Word Vectors with Subword Information, arXiv 1607.04606, 2016
+[1] P. Bojanowski, E. Grave, A. Joulin, T. Mikolov, *Enriching Word Vectors with Subword Information*
 
-[2] Armand Joulin, Edouard Grave, Piotr Bojanowski, Tomas Mikolov, Bag of Tricks for Efficient Text Classification, arXiv 1607.01759, 2016
+```
+@article{bojanowski2016enriching,
+  title={Enriching Word Vectors with Subword Information},
+  author={Bojanowski, Piotr and Grave, Edouard and Joulin, Armand and Mikolov, Tomas},
+  journal={arXiv preprint arXiv:1607.04606},
+  year={2016}
+}
+```
+
+[2] A. Joulin, E. Grave, P. Bojanowski, T. Mikolov, *Bag of Tricks for Efficient Text Classification*
+
+```
+@article{joulin2016bag,
+  title={Bag of Tricks for Efficient Text Classification},
+  author={Joulin, Armand and Grave, Edouard and Bojanowski, Piotr and Mikolov, Tomas},
+  journal={arXiv preprint arXiv:1607.01759},
+  year={2016}
+}
+```
 
 ## Join the fastText community
 
