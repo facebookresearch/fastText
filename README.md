@@ -130,7 +130,7 @@ The following arguments are optional:
 
 Please cite [1] if using this code for learning word representations or [2] if using for text classification.
 
-[1] P. Bojanowski, E. Grave, A. Joulin, T. Mikolov, *Enriching Word Vectors with Subword Information*
+[1] P. Bojanowski\*, E. Grave\*, A. Joulin, T. Mikolov, *Enriching Word Vectors with Subword Information*
 
 ```
 @article{bojanowski2016enriching,
@@ -151,6 +151,8 @@ Please cite [1] if using this code for learning word representations or [2] if u
   year={2016}
 }
 ```
+
+(\* These authors contributed equally.)
 
 ## Join the fastText community
 
