@@ -27,7 +27,7 @@ Args::Args() {
   minn = 3;
   maxn = 6;
   thread = 12;
-  verbose = 1000;
+  verbose = 10000;
   t = 1e-4;
   label = "__label__";
 }

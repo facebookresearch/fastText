@@ -233,7 +233,7 @@ void trainThread(Dictionary& dict, Matrix& input, Matrix& output,
       skipgram(dict, model, line, loss, nexamples);
     }
 
-    if (tokenCount > 10000) {
+    if (tokenCount > args.verbose) {
       info::allWords += tokenCount;
       info::allLoss += loss;
       info::allN += nexamples;
