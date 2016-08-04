@@ -13,6 +13,7 @@ Compilation is carried out using a Makefile, so you will need to have a working 
 For the word-similarity evaluation script you will need:
 
 * python 2.6 or newer
+* numpy & scipy
 
 ## Building fastText
 
@@ -154,7 +155,7 @@ Please cite [1] if using this code for learning word representations or [2] if u
 ## Join the fastText community
 
 * Facebook page: https://www.facebook.com/groups/1174547215919768
-* Contact: [egrave@fb.com](mailto:egrave@fb.com) [bojanowski@fb.com](mailto:bojanowski@fb.com) [ajoulin@fb.com](mailto:ajoulin@fb.com) [tmikolov@fb.com](mailto:tmikolov@fb.com)
+* Contact: [egrave@fb.com](mailto:egrave@fb.com), [bojanowski@fb.com](mailto:bojanowski@fb.com), [ajoulin@fb.com](mailto:ajoulin@fb.com), [tmikolov@fb.com](mailto:tmikolov@fb.com)
 
 See the CONTRIBUTING file for information about how to help out.
 
