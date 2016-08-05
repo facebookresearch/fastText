@@ -31,11 +31,11 @@ If you do not plan on using the default system-wide compiler, update the two mac
 ## Example use cases
 
 This library has two main use cases: word representation learning and text classification.
-These were described in the two papers [1] and [2].
+These were described in the two papers [1](#enriching-word-vectors-with-subword-information) and [2](#bag-of-tricks-for-efficient-text-classification).
 
 ### Word representation learning
 
-In order to learn word vectors, as described in [1], do:
+In order to learn word vectors, as described in [1](#enriching-word-vectors-with-subword-information), do:
 
 ```
 $ ./fasttext skipgram -input data.txt -output model
@@ -75,7 +75,7 @@ will compile the code, download data, compute word vectors and evaluate them on 
 ### Text classification
 
 This library can also be used to train supervised text classifiers, for instance for sentiment analysis.
-In order to train a text classifier using the method described in [2], use:
+In order to train a text classifier using the method described in [2](#bag-of-tricks-for-efficient-text-classification), use:
 
 ```
 $ ./fasttext supervised -input train.txt -output model
@@ -99,7 +99,7 @@ $ ./fasttext predict model.bin test.txt
 where `test.txt` contains a piece of text to classify per line.
 Doing so will output to the standard output the most likely label per line.
 See `classification-example.sh` for an example use case.
-In order to reproduce results from the paper [2], run `classification-results.sh`, this will download all the datasets and reproduce the results from Table 1.
+In order to reproduce results from the paper [2](#bag-of-tricks-for-efficient-text-classification), run `classification-results.sh`, this will download all the datasets and reproduce the results from Table 1.
 
 ## Full documentation
 
@@ -128,9 +128,11 @@ The following arguments are optional:
 
 ## References
 
-Please cite [1] if using this code for learning word representations or [2] if using for text classification.
+Please cite [1](#enriching-word-vectors-with-subword-information) if using this code for learning word representations or [2](#bag-of-tricks-for-efficient-text-classification) if using for text classification.
 
-[1] P. Bojanowski\*, E. Grave\*, A. Joulin, T. Mikolov, *Enriching Word Vectors with Subword Information*
+### Enriching Word Vectors with Subword Information
+
+[1] P. Bojanowski\*, E. Grave\*, A. Joulin, T. Mikolov, [*Enriching Word Vectors with Subword Information*](https://arxiv.org/pdf/1607.04606v1.pdf)
 
 ```
 @article{bojanowski2016enriching,
@@ -141,7 +143,9 @@ Please cite [1] if using this code for learning word representations or [2] if u
 }
 ```
 
-[2] A. Joulin, E. Grave, P. Bojanowski, T. Mikolov, *Bag of Tricks for Efficient Text Classification*
+### Bag of Tricks for Efficient Text Classification
+
+[2] A. Joulin, E. Grave, P. Bojanowski, T. Mikolov, [*Bag of Tricks for Efficient Text Classification*](https://arxiv.org/pdf/1607.01759v2.pdf)
 
 ```
 @article{joulin2016bag,
