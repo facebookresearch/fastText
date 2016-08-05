@@ -158,6 +158,10 @@ Please cite [1](#enriching-word-vectors-with-subword-information) if using this 
 
 (\* These authors contributed equally.)
 
+### Discussion on HN
+
+[3] Some valuable comments on [Hacker News](https://news.ycombinator.com/item?id=12226988).
+
 ## Join the fastText community
 
 * Facebook page: https://www.facebook.com/groups/1174547215919768
