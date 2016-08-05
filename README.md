@@ -20,7 +20,7 @@ For the word-similarity evaluation script you will need:
 In order to build `fastText`, use the following:
 
 ```
-$ git clone git@github.com:facebookresearch/fastText.git
+$ git clone https://github.com/facebookresearch/fastText.git
 $ cd fastText
 $ make
 ```
