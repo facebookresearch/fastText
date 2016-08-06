@@ -10,12 +10,14 @@
 #include "utils.h"
 #include <cmath>
 #include <ios>
+#include <assert.h>
 
 namespace utils {
   real* t_sigmoid;
   real* t_log;
 
   real log(real x) {
+    assert(t_log != NULL);
     if (x > 1.0) {
       return 0.0;
     }
@@ -24,6 +26,7 @@ namespace utils {
   }
 
   real sigmoid(real x) {
+    assert(t_sigmoid != NULL);
     if (x < -MAX_SIGMOID) {
       return 0.0;
     } else if (x > MAX_SIGMOID) {
