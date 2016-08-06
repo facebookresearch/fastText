@@ -113,7 +113,7 @@ The following arguments are optional:
   -dim        size of word vectors [100]
   -ws         size of the context window [5]
   -epoch      number of epochs [5]
-  -minCount   minimal number of word occurences [1]
+  -minCount   minimal number of word occurences [5]
   -neg        number of negatives sampled [5]
   -wordNgrams max length of word ngram [1]
   -loss       loss function {ns, hs, softmax} [ns]
@@ -121,7 +121,7 @@ The following arguments are optional:
   -minn       min length of char ngram [3]
   -maxn       max length of char ngram [6]
   -thread     number of threads [12]
-  -verbose    how often to print to stdout [1000]
+  -verbose    how often to print to stdout [10000]
   -t          sampling threshold [0.0001]
   -label      labels prefix [__label__]
 ```
