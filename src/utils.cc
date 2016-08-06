@@ -58,6 +58,8 @@ namespace utils {
   void freeTables() {
     delete[] t_sigmoid;
     delete[] t_log;
+    t_sigmoid = NULL;
+    t_log = NULL;
   }
 
   int64_t size(std::ifstream& ifs) {
