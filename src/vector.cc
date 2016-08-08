@@ -8,9 +8,12 @@
  */
 
 #include "vector.h"
+
 #include <assert.h>
+
 #include <iostream>
 #include <iomanip>
+
 #include "matrix.h"
 #include "utils.h"
 

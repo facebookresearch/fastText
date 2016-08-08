@@ -8,11 +8,14 @@
  */
 
 #include "dictionary.h"
+
 #include <assert.h>
+
 #include <iostream>
 #include <algorithm>
 #include <iterator>
 #include <unordered_map>
+
 #include "args.h"
 
 extern Args args;

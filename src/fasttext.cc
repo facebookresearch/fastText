@@ -7,6 +7,18 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#include <fenv.h>
+#include <time.h>
+#include <math.h>
+
+#include <iostream>
+#include <iomanip>
+#include <thread>
+#include <string>
+#include <vector>
+#include <atomic>
+#include <algorithm>
+
 #include "matrix.h"
 #include "vector.h"
 #include "dictionary.h"
@@ -14,16 +26,6 @@
 #include "utils.h"
 #include "real.h"
 #include "args.h"
-#include <iostream>
-#include <iomanip>
-#include <thread>
-#include <time.h>
-#include <string>
-#include <math.h>
-#include <vector>
-#include <atomic>
-#include <algorithm>
-#include <fenv.h>
 
 Args args;
 

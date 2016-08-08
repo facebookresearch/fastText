@@ -10,11 +10,12 @@
 #ifndef MODEL_H
 #define MODEL_H
 
+#include <vector>
+#include <random>
+
 #include "matrix.h"
 #include "vector.h"
 #include "real.h"
-#include <vector>
-#include <random>
 
 struct Node {
   int32_t parent;
