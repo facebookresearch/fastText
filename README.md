@@ -4,7 +4,8 @@ fastText is a library for efficient learning of word representations and sentenc
 
 ## Requirements
 
-fastText uses C++11 features and therefore it requires a compiler with good C++11 support.
+**fastText** builds on modern Mac OS and Linux distributions.
+Since it uses C++11 features, it requires a compiler with good C++11 support.
 These include :
 
 * (gcc-4.6.3 or newer) or (clang-3.3 or newer)
