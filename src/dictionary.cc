@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <iterator>
 #include <unordered_map>
+#include <cctype>
 #include "args.h"
 
 extern Args args;
@@ -145,7 +146,7 @@ std::string Dictionary::readWord(std::ifstream& fin)
   std::string word;
   while (!fin.eof()) {
     fin.get(c);
-    if (iswspace(c)) {
+    if (isspace(c)) {
       if (word.empty()) {
         if (c == '\n') return EOS;
         continue;
