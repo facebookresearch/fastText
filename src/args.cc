@@ -29,7 +29,7 @@ Args::Args() {
   minn = 3;
   maxn = 6;
   thread = 12;
-  verbose = 10000;
+  lrUpdateRate = 100;
   t = 1e-4;
   label = "__label__";
 }
@@ -62,6 +62,8 @@ void Args::parseArgs(int argc, char** argv) {
       output = std::string(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-lr") == 0) {
       lr = atof(argv[ai + 1]);
+    } else if (strcmp(argv[ai], "-lrUpdateRate") == 0) {
+      lrUpdateRate = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-dim") == 0) {
       dim = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-ws") == 0) {
@@ -94,8 +96,6 @@ void Args::parseArgs(int argc, char** argv) {
       maxn = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-thread") == 0) {
       thread = atoi(argv[ai + 1]);
-    } else if (strcmp(argv[ai], "-verbose") == 0) {
-      verbose = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-t") == 0) {
       t = atof(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-label") == 0) {
@@ -118,24 +118,24 @@ void Args::printHelp() {
   std::cout
     << "\n"
     << "The following arguments are mandatory:\n"
-    << "  -input      training file path\n"
-    << "  -output     output file path\n\n"
+    << "  -input        training file path\n"
+    << "  -output       output file path\n\n"
     << "The following arguments are optional:\n"
-    << "  -lr         learning rate [" << lr << "]\n"
-    << "  -dim        size of word vectors [" << dim << "]\n"
-    << "  -ws         size of the context window [" << ws << "]\n"
-    << "  -epoch      number of epochs [" << epoch << "]\n"
-    << "  -minCount   minimal number of word occurences [" << minCount << "]\n"
-    << "  -neg        number of negatives sampled [" << neg << "]\n"
-    << "  -wordNgrams max length of word ngram [" << wordNgrams << "]\n"
-    << "  -loss       loss function {ns, hs, softmax} [ns]\n"
-    << "  -bucket     number of buckets [" << bucket << "]\n"
-    << "  -minn       min length of char ngram [" << minn << "]\n"
-    << "  -maxn       max length of char ngram [" << maxn << "]\n"
-    << "  -thread     number of threads [" << thread << "]\n"
-    << "  -verbose    how often to print to stdout [" << verbose << "]\n"
-    << "  -t          sampling threshold [" << t << "]\n"
-    << "  -label      labels prefix [" << label << "]\n"
+    << "  -lr           learning rate [" << lr << "]\n"
+    << "  -lrUpdateRate change the rate of updates for the learning rate [" << lrUpdateRate << "]\n"
+    << "  -dim          size of word vectors [" << dim << "]\n"
+    << "  -ws           size of the context window [" << ws << "]\n"
+    << "  -epoch        number of epochs [" << epoch << "]\n"
+    << "  -minCount     minimal number of word occurences [" << minCount << "]\n"
+    << "  -neg          number of negatives sampled [" << neg << "]\n"
+    << "  -wordNgrams   max length of word ngram [" << wordNgrams << "]\n"
+    << "  -loss         loss function {ns, hs, softmax} [ns]\n"
+    << "  -bucket       number of buckets [" << bucket << "]\n"
+    << "  -minn         min length of char ngram [" << minn << "]\n"
+    << "  -maxn         max length of char ngram [" << maxn << "]\n"
+    << "  -thread       number of threads [" << thread << "]\n"
+    << "  -t            sampling threshold [" << t << "]\n"
+    << "  -label        labels prefix [" << label << "]\n"
     << std::endl;
 }
 
@@ -152,7 +152,7 @@ void Args::save(std::ofstream& ofs) {
     ofs.write((char*) &(bucket), sizeof(int));
     ofs.write((char*) &(minn), sizeof(int));
     ofs.write((char*) &(maxn), sizeof(int));
-    ofs.write((char*) &(verbose), sizeof(int));
+    ofs.write((char*) &(lrUpdateRate), sizeof(int));
     ofs.write((char*) &(t), sizeof(double));
   }
 }
@@ -170,7 +170,7 @@ void Args::load(std::ifstream& ifs) {
     ifs.read((char*) &(bucket), sizeof(int));
     ifs.read((char*) &(minn), sizeof(int));
     ifs.read((char*) &(maxn), sizeof(int));
-    ifs.read((char*) &(verbose), sizeof(int));
+    ifs.read((char*) &(lrUpdateRate), sizeof(int));
     ifs.read((char*) &(t), sizeof(double));
   }
 }
