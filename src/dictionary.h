@@ -7,8 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#ifndef DICTIONARY_H
-#define DICTIONARY_H
+#ifndef FASTTEXT_DICTIONARY_H
+#define FASTTEXT_DICTIONARY_H
 
 #include <vector>
 #include <string>

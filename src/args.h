@@ -7,8 +7,8 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#ifndef ARGS_H
-#define ARGS_H
+#ifndef FASTTEXT_ARGS_H
+#define FASTTEXT_ARGS_H
 
 #include <string>
 
