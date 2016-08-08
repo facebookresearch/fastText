@@ -103,7 +103,12 @@ In order to reproduce results from the paper [2], run `classification-results.sh
 
 ## Full documentation
 
+Invoke a command without arguments to list available arguments and their default values:
+
 ```
+$ ./fasttext supervised
+Empty input or output path.
+
 The following arguments are mandatory:
   -input      training file path
   -output     output file path
@@ -113,7 +118,7 @@ The following arguments are optional:
   -dim        size of word vectors [100]
   -ws         size of the context window [5]
   -epoch      number of epochs [5]
-  -minCount   minimal number of word occurences [5]
+  -minCount   minimal number of word occurences [1]
   -neg        number of negatives sampled [5]
   -wordNgrams max length of word ngram [1]
   -loss       loss function {ns, hs, softmax} [ns]
@@ -125,6 +130,8 @@ The following arguments are optional:
   -t          sampling threshold [0.0001]
   -label      labels prefix [__label__]
 ```
+
+Defaults may vary by mode. (Word-representation modes `skipgram` and `cbow` use a default `-minCount` of 5.)
 
 ## References
 
