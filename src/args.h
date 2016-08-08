@@ -22,6 +22,7 @@ class Args {
     std::string test;
     std::string output;
     double lr;
+    int lrUpdateRate;
     int dim;
     int ws;
     int epoch;
@@ -34,7 +35,6 @@ class Args {
     int minn;
     int maxn;
     int thread;
-    int verbose;
     double t;
     std::string label;
 
