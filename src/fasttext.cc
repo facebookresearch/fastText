@@ -7,6 +7,18 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#include <fenv.h>
+#include <time.h>
+#include <math.h>
+
+#include <iostream>
+#include <iomanip>
+#include <thread>
+#include <string>
+#include <vector>
+#include <atomic>
+#include <algorithm>
+
 #include "matrix.h"
 #include "vector.h"
 #include "dictionary.h"
@@ -14,16 +26,6 @@
 #include "utils.h"
 #include "real.h"
 #include "args.h"
-#include <iostream>
-#include <iomanip>
-#include <thread>
-#include <time.h>
-#include <string>
-#include <math.h>
-#include <vector>
-#include <atomic>
-#include <algorithm>
-#include <fenv.h>
 
 Args args;
 
@@ -217,13 +219,16 @@ void trainThread(Dictionary& dict, Matrix& input, Matrix& output,
     model.setTargetCounts(dict.getCounts(entry_type::word));
   }
 
+  real progress;
   const int64_t ntokens = dict.ntokens();
-  int64_t tokenCount = 0;
+  int64_t tokenCount = 0, printCount = 0, deltaCount = 0;
   double loss = 0.0;
   int32_t nexamples = 0;
   std::vector<int32_t> line, labels;
   while (info::allWords < args.epoch * ntokens) {
-    tokenCount += dict.getLine(ifs, line, labels, model.rng);
+    deltaCount = dict.getLine(ifs, line, labels, model.rng);
+    tokenCount += deltaCount;
+    printCount += deltaCount;
     if (args.model == model_name::sup) {
       dict.addNgrams(line, args.wordNgrams);
       supervised(model, line, labels, loss, nexamples);
@@ -232,17 +237,18 @@ void trainThread(Dictionary& dict, Matrix& input, Matrix& output,
     } else if (args.model == model_name::sg) {
       skipgram(dict, model, line, loss, nexamples);
     }
-
-    if (tokenCount > args.verbose) {
+    if (tokenCount > args.lrUpdateRate) {
       info::allWords += tokenCount;
       info::allLoss += loss;
       info::allN += nexamples;
       tokenCount = 0;
       loss = 0.0;
       nexamples = 0;
-      real progress = real(info::allWords) / (args.epoch * ntokens);
+      progress = real(info::allWords) / (args.epoch * ntokens);
       model.setLearningRate(args.lr * (1.0 - progress));
-      if (threadId == 0) printInfo(model, progress);
+      if (threadId == 0) {
+        printInfo(model, progress);
+      }
     }
   }
   if (threadId == 0) {

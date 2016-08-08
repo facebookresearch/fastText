@@ -7,11 +7,12 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#ifndef MATRIX_H
-#define MATRIX_H
+#ifndef FASTTEXT_MATRIX_H
+#define FASTTEXT_MATRIX_H
 
 #include <cstdint>
 #include <fstream>
+
 #include "real.h"
 
 class Vector;

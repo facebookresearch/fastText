@@ -8,8 +8,11 @@
  */
 
 #include "model.h"
+
 #include <assert.h>
+
 #include <algorithm>
+
 #include "args.h"
 #include "utils.h"
 

@@ -8,8 +8,11 @@
  */
 
 #include "matrix.h"
+
 #include <assert.h>
+
 #include <random>
+
 #include "utils.h"
 #include "vector.h"
 

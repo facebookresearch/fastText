@@ -7,14 +7,15 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#ifndef DICTIONARY_H
-#define DICTIONARY_H
+#ifndef FASTTEXT_DICTIONARY_H
+#define FASTTEXT_DICTIONARY_H
 
-#include "real.h"
 #include <vector>
 #include <string>
 #include <fstream>
 #include <random>
+
+#include "real.h"
 
 typedef int32_t id_type;
 enum class entry_type : int8_t {word=0, label=1};
