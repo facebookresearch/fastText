@@ -7,10 +7,11 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef FASTTEXT_UTILS_H
+#define FASTTEXT_UTILS_H
 
 #include <fstream>
+
 #include "real.h"
 
 #define SIGMOID_TABLE_SIZE 512

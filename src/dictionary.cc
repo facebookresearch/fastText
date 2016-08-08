@@ -8,11 +8,14 @@
  */
 
 #include "dictionary.h"
+
 #include <assert.h>
+
 #include <iostream>
 #include <algorithm>
 #include <iterator>
 #include <unordered_map>
+
 #include "args.h"
 
 extern Args args;
@@ -258,6 +261,7 @@ int32_t Dictionary::getLine(std::ifstream& ifs,
 }
 
 std::string Dictionary::getLabel(int32_t lid) {
+  assert(lid >= 0 && lid < nlabels_);
   return words_[lid + nwords_].word;
 }
 

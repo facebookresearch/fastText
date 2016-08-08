@@ -7,14 +7,15 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#ifndef MODEL_H
-#define MODEL_H
+#ifndef FASTTEXT_MODEL_H
+#define FASTTEXT_MODEL_H
+
+#include <vector>
+#include <random>
 
 #include "matrix.h"
 #include "vector.h"
 #include "real.h"
-#include <vector>
-#include <random>
 
 struct Node {
   int32_t parent;
