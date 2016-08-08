@@ -71,7 +71,8 @@ int64_t Dictionary::ntokens() {
 }
 
 const std::vector<int32_t>& Dictionary::getNgrams(int32_t i) {
-  assert(i >= 0 && i < nwords_);
+  assert(i >= 0);
+  assert(i < nwords_);
   return words_[i].subwords;
 }
 
@@ -87,7 +88,8 @@ const std::vector<int32_t> Dictionary::getNgrams(const std::string& word) {
 }
 
 bool Dictionary::discard(int32_t id, real rand) {
-  assert(id >= 0 && id < nwords_);
+  assert(id >= 0);
+  assert(id < nwords_);
   if (args.model == model_name::sup) return false;
   return rand > pdiscard_[id];
 }
@@ -98,12 +100,14 @@ int32_t Dictionary::getId(const std::string& w) {
 }
 
 entry_type Dictionary::getType(int32_t id) {
-  assert(id >= 0 && id < size_);
+  assert(id >= 0);
+  assert(id < size_);
   return words_[id].type;
 }
 
 std::string Dictionary::getWord(int32_t id) {
-  assert(id >= 0 && id < size_);
+  assert(id >= 0);
+  assert(id < size_);
   return words_[id].word;
 }
 
@@ -261,7 +265,8 @@ int32_t Dictionary::getLine(std::ifstream& ifs,
 }
 
 std::string Dictionary::getLabel(int32_t lid) {
-  assert(lid >= 0 && lid < nlabels_);
+  assert(lid >= 0);
+  assert(lid < nlabels_);
   return words_[lid + nwords_].word;
 }
 

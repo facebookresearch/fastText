@@ -126,7 +126,8 @@ void Model::dfs(int32_t node, real score, real& max, int32_t& argmax) {
 }
 
 real Model::update(const std::vector<int32_t>& input, int32_t target) {
-  assert(target >= 0 && target < osz_);
+  assert(target >= 0);
+  assert(target < osz_);
   if (input.size() == 0) return 0.0;
   hidden_.zero();
   for (auto it = input.cbegin(); it != input.cend(); ++it) {

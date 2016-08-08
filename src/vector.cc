@@ -39,21 +39,26 @@ void Vector::mul(real a) {
 }
 
 void Vector::addRow(const Matrix& A, int64_t i) {
-  assert(i >= 0 && i < A.m_ && m_ == A.n_);
+  assert(i >= 0);
+  assert(i < A.m_);
+  assert(m_ == A.n_);
   for (int64_t j = 0; j < A.n_; j++) {
     data_[j] += A.data_[i * A.n_ + j];
   }
 }
 
 void Vector::addRow(const Matrix& A, int64_t i, real a) {
-  assert(i >= 0 && i < A.m_ && m_ == A.n_);
+  assert(i >= 0);
+  assert(i < A.m_);
+  assert(m_ == A.n_);
   for (int64_t j = 0; j < A.n_; j++) {
     data_[j] += a * A.data_[i * A.n_ + j];
   }
 }
 
 void Vector::mul(const Matrix& A, const Vector& vec) {
-  assert(A.m_ == m_ && A.n_ == vec.m_);
+  assert(A.m_ == m_);
+  assert(A.n_ == vec.m_);
   for (int64_t i = 0; i < m_; i++) {
     data_[i] = 0.0;
     for (int64_t j = 0; j < A.n_; j++) {

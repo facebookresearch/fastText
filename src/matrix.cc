@@ -64,14 +64,18 @@ void Matrix::uniform(real a) {
 }
 
 void Matrix::addRow(const Vector& vec, int64_t i, real a) {
-  assert(i >= 0 && i < m_ && vec.m_ == n_);
+  assert(i >= 0);
+  assert(i < m_);
+  assert(vec.m_ == n_);
   for (int64_t j = 0; j < n_; j++) {
     data_[i * n_ + j] += a * vec.data_[j];
   }
 }
 
 real Matrix::dotRow(const Vector& vec, int64_t i) {
-  assert(i >= 0 && i < m_ && vec.m_ == n_);
+  assert(i >= 0);
+  assert(i < m_);
+  assert(vec.m_ == n_);
   real d = 0.0;
   for (int64_t j = 0; j < n_; j++) {
     d += data_[i * n_ + j] * vec.data_[j];
