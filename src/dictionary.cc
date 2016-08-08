@@ -261,6 +261,7 @@ int32_t Dictionary::getLine(std::ifstream& ifs,
 }
 
 std::string Dictionary::getLabel(int32_t lid) {
+  assert(lid >= 0 && lid < nlabels_);
   return words_[lid + nwords_].word;
 }
 
