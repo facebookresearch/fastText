@@ -42,7 +42,9 @@ void getVector(Dictionary& dict, Matrix& input, Vector& vec, std::string word) {
   for (auto it = ngrams.begin(); it != ngrams.end(); ++it) {
     vec.addRow(input, *it);
   }
-  vec.mul(1.0 / ngrams.size());
+  if (ngrams.size() > 0) {
+    vec.mul(1.0 / ngrams.size());
+  }
 }
 
 void saveVectors(Dictionary& dict, Matrix& input, Matrix& output) {
