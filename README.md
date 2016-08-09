@@ -29,6 +29,10 @@ $ make
 This will produce object files for all the classes as well as the main binary `fasttext`.
 If you do not plan on using the default system-wide compiler, update the two macros defined at the beginning of the Makefile (CC and INCLUDES).
 
+### Building with Docker
+
+To build with Docker, see [fastText-Docker](https://github.com/xeb/fastText-docker) repository.
+
 ## Example use cases
 
 This library has two main use cases: word representation learning and text classification.
