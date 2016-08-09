@@ -151,7 +151,7 @@ std::string Dictionary::readWord(std::ifstream& fin)
 {
   char c;
   std::string word;
-  while (!fin.eof()) {
+  while (fin.peek() != EOF) {
     fin.get(c);
     if (isspace(c)) {
       if (word.empty()) {
@@ -249,11 +249,11 @@ int32_t Dictionary::getLine(std::ifstream& ifs,
     ifs.seekg(std::streampos(0));
   }
   while (!(token = readWord(ifs)).empty()) {
+    ntokens++;
     if (token == EOS) break;
     int32_t wid = getId(token);
     if (wid < 0) continue;
     entry_type type = getType(wid);
-    ntokens++;
     if (type == entry_type::word && !discard(wid, uniform(rng))) {
       words.push_back(wid);
     }

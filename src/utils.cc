@@ -72,8 +72,5 @@ namespace utils {
     char c;
     ifs.clear();
     ifs.seekg(std::streampos(pos));
-    do {
-      ifs.get(c);
-    } while (!iswspace(c));
   }
 }
