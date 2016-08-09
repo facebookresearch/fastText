@@ -21,7 +21,7 @@ For the word-similarity evaluation script you will need:
 In order to build `fastText`, use the following:
 
 ```
-$ git clone git@github.com:facebookresearch/fastText.git
+$ git clone https://github.com/facebookresearch/fastText.git
 $ cd fastText
 $ make
 ```
@@ -31,7 +31,7 @@ If you do not plan on using the default system-wide compiler, update the two mac
 
 ### Building with Docker
 
-To build with Docker, see [fastText-Docker](https://github.com/xeb/fastText-docker) repository.
+If you inted to build with Docker, a Docker file is available here [fastText-Docker](https://github.com/xeb/fastText-docker).
 
 ## Example use cases
 
@@ -169,10 +169,6 @@ Please cite [1](#enriching-word-vectors-with-subword-information) if using this 
 ```
 
 (\* These authors contributed equally.)
-
-### Discussion on HN
-
-[3] Some valuable comments on [Hacker News](https://news.ycombinator.com/item?id=12226988).
 
 ## Join the fastText community
 
