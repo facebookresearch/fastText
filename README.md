@@ -104,7 +104,12 @@ In order to reproduce results from the paper [2](#bag-of-tricks-for-efficient-te
 
 ## Full documentation
 
+Invoke a command without arguments to list available arguments and their default values:
+
 ```
+$ ./fasttext supervised
+Empty input or output path.
+
 The following arguments are mandatory:
   -input      training file path
   -output     output file path
@@ -122,10 +127,12 @@ The following arguments are optional:
   -minn       min length of char ngram [3]
   -maxn       max length of char ngram [6]
   -thread     number of threads [12]
-  -verbose    how often to print to stdout [1000]
+  -verbose    how often to print to stdout [10000]
   -t          sampling threshold [0.0001]
   -label      labels prefix [__label__]
 ```
+
+Defaults may vary by mode. (Word-representation modes `skipgram` and `cbow` use a default `-minCount` of 5.)
 
 ## References
 
