@@ -141,36 +141,36 @@ void Args::printHelp() {
 
 void Args::save(std::ofstream& ofs) {
   if (ofs.is_open()) {
-    ofs.write((char*) &(dim), sizeof(int));
-    ofs.write((char*) &(ws), sizeof(int));
-    ofs.write((char*) &(epoch), sizeof(int));
-    ofs.write((char*) &(minCount), sizeof(int));
-    ofs.write((char*) &(neg), sizeof(int));
-    ofs.write((char*) &(wordNgrams), sizeof(int));
-    ofs.write((char*) &(loss), sizeof(loss_name));
-    ofs.write((char*) &(model), sizeof(model_name));
-    ofs.write((char*) &(bucket), sizeof(int));
-    ofs.write((char*) &(minn), sizeof(int));
-    ofs.write((char*) &(maxn), sizeof(int));
-    ofs.write((char*) &(lrUpdateRate), sizeof(int));
-    ofs.write((char*) &(t), sizeof(double));
+    ofs.write((char*) &(dim), sizeof(dim));
+    ofs.write((char*) &(ws), sizeof(ws));
+    ofs.write((char*) &(epoch), sizeof(epoch));
+    ofs.write((char*) &(minCount), sizeof(minCount));
+    ofs.write((char*) &(neg), sizeof(neg));
+    ofs.write((char*) &(wordNgrams), sizeof(wordNgrams));
+    ofs.write((char*) &(loss), sizeof(loss));
+    ofs.write((char*) &(model), sizeof(model));
+    ofs.write((char*) &(bucket), sizeof(bucket));
+    ofs.write((char*) &(minn), sizeof(minn));
+    ofs.write((char*) &(maxn), sizeof(maxn));
+    ofs.write((char*) &(lrUpdateRate), sizeof(lrUpdateRate));
+    ofs.write((char*) &(t), sizeof(t));
   }
 }
 
 void Args::load(std::ifstream& ifs) {
   if (ifs.is_open()) {
-    ifs.read((char*) &(dim), sizeof(int));
-    ifs.read((char*) &(ws), sizeof(int));
-    ifs.read((char*) &(epoch), sizeof(int));
-    ifs.read((char*) &(minCount), sizeof(int));
-    ifs.read((char*) &(neg), sizeof(int));
-    ifs.read((char*) &(wordNgrams), sizeof(int));
-    ifs.read((char*) &(loss), sizeof(loss_name));
-    ifs.read((char*) &(model), sizeof(model_name));
-    ifs.read((char*) &(bucket), sizeof(int));
-    ifs.read((char*) &(minn), sizeof(int));
-    ifs.read((char*) &(maxn), sizeof(int));
-    ifs.read((char*) &(lrUpdateRate), sizeof(int));
-    ifs.read((char*) &(t), sizeof(double));
+    ifs.read((char*) &(dim), sizeof(dim));
+    ifs.read((char*) &(ws), sizeof(ws));
+    ifs.read((char*) &(epoch), sizeof(epoch));
+    ifs.read((char*) &(minCount), sizeof(minCount));
+    ifs.read((char*) &(neg), sizeof(neg));
+    ifs.read((char*) &(wordNgrams), sizeof(wordNgrams));
+    ifs.read((char*) &(loss), sizeof(loss));
+    ifs.read((char*) &(model), sizeof(model));
+    ifs.read((char*) &(bucket), sizeof(bucket));
+    ifs.read((char*) &(minn), sizeof(minn));
+    ifs.read((char*) &(maxn), sizeof(maxn));
+    ifs.read((char*) &(lrUpdateRate), sizeof(lrUpdateRate));
+    ifs.read((char*) &(t), sizeof(t));
   }
 }
