@@ -272,16 +272,16 @@ std::string Dictionary::getLabel(int32_t lid) {
 }
 
 void Dictionary::save(std::ofstream& ofs) {
-  ofs.write((char*) &size_, sizeof(int32_t));
-  ofs.write((char*) &nwords_, sizeof(int32_t));
-  ofs.write((char*) &nlabels_, sizeof(int32_t));
-  ofs.write((char*) &ntokens_, sizeof(int64_t));
+  ofs.write((char*) &size_, sizeof(size_));
+  ofs.write((char*) &nwords_, sizeof(nwords_));
+  ofs.write((char*) &nlabels_, sizeof(nlabels_));
+  ofs.write((char*) &ntokens_, sizeof(ntokens_));
   for (int32_t i = 0; i < size_; i++) {
     entry e = words_[i];
     ofs.write(e.word.data(), e.word.size() * sizeof(char));
     ofs.put(0);
-    ofs.write((char*) &(e.count), sizeof(int64_t));
-    ofs.write((char*) &(e.type), sizeof(entry_type));
+    ofs.write((char*) &(e.count), sizeof(e.count));
+    ofs.write((char*) &(e.type), sizeof(e.type));
   }
 }
 
@@ -290,18 +290,18 @@ void Dictionary::load(std::ifstream& ifs) {
   for (int32_t i = 0; i < MAX_VOCAB_SIZE; i++) {
     word2int_[i] = -1;
   }
-  ifs.read((char*) &size_, sizeof(int32_t));
-  ifs.read((char*) &nwords_, sizeof(int32_t));
-  ifs.read((char*) &nlabels_, sizeof(int32_t));
-  ifs.read((char*) &ntokens_, sizeof(int64_t));
+  ifs.read((char*) &size_, sizeof(size_));
+  ifs.read((char*) &nwords_, sizeof(nwords_));
+  ifs.read((char*) &nlabels_, sizeof(nlabels_));
+  ifs.read((char*) &ntokens_, sizeof(ntokens_));
   for (int32_t i = 0; i < size_; i++) {
     char c;
     entry e;
     while ((c = ifs.get()) != 0) {
       e.word.push_back(c);
     }
-    ifs.read((char*) &e.count, sizeof(int64_t));
-    ifs.read((char*) &e.type, sizeof(entry_type));
+    ifs.read((char*) &e.count, sizeof(e.count));
+    ifs.read((char*) &e.type, sizeof(e.type));
     words_.push_back(e);
     word2int_[find(e.word)] = i;
   }
