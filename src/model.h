@@ -12,6 +12,7 @@
 
 #include <vector>
 #include <random>
+#include <utility>
 
 #include "matrix.h"
 #include "vector.h"
@@ -59,7 +60,9 @@ class Model {
     real softmax(int32_t);
 
     int32_t predict(const std::vector<int32_t>&);
+    std::vector<int32_t> predict(int32_t, const std::vector<int32_t>&);
     void dfs(int32_t, real, real&, int32_t&);
+    void dfs(int32_t, int32_t, real, std::vector<std::pair<real, int32_t>>&);
     real update(const std::vector<int32_t>&, int32_t);
 
     void setTargetCounts(const std::vector<int64_t>&);
