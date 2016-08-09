@@ -7,37 +7,35 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-CXX = c++
-CXXFLAGS = -pthread -std=c++0x
-OBJS = args.o dictionary.o matrix.o vector.o model.o utils.o
-INCLUDES = -I.
+CXX=c++
 
-opt: CXXFLAGS += -O3 -funroll-loops
-opt: fasttext
+CXXFLAGS=-std=c++0x -pthread
 
-debug: CXXFLAGS += -g -O0 -fno-inline
-debug: fasttext
+opt: CXXFLAGS+=-O3 -funroll-loops
+opt: lib fasttext
 
-args.o: src/args.cc src/args.h
-	$(CXX) $(CXXFLAGS) -c src/args.cc
+debug: CXXFLAGS+=-g -O0 -fno-inline
+debug: lib fasttext
 
-dictionary.o: src/dictionary.cc src/dictionary.h src/args.h
-	$(CXX) $(CXXFLAGS) -c src/dictionary.cc
+INCLUDES=-Isrc/
 
-matrix.o: src/matrix.cc src/matrix.h src/utils.h
-	$(CXX) $(CXXFLAGS) -c src/matrix.cc
+SOURCES=${wildcard src/*.cc}
 
-vector.o: src/vector.cc src/vector.h src/utils.h
-	$(CXX) $(CXXFLAGS) -c src/vector.cc
+OBJECTS=${SOURCES:.cc=.o}
 
-model.o: src/model.cc src/model.h src/args.h
-	$(CXX) $(CXXFLAGS) -c src/model.cc
+LIB=src/libfasttext.a
 
-utils.o: src/utils.cc src/utils.h
-	$(CXX) $(CXXFLAGS) -c src/utils.cc
+all: lib fasttext
 
-fasttext : $(OBJS) src/fasttext.cc
-	$(CXX) $(CXXFLAGS) $(OBJS) src/fasttext.cc -o fasttext
+lib: ${OBJECTS}
+	ar -cq ${LIB} ${OBJECTS}
+	ranlib ${LIB}
+
+fasttext: src/fasttext.cc ${OBJECTS}
+	${CXX} ${CXXFLAGS} ${INCLUDES} -o fasttext src/fasttext.cc ${LIB}
+
+%.o: %.cc
+	${CXX} ${CXXFLAGS} ${INCLUDES} -c $< -o $@
 
 clean:
-	rm -rf *.o fasttext
+	${RM} ${LIB} ${OBJECTS} fasttext
