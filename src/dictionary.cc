@@ -45,6 +45,8 @@ int32_t Dictionary::find(const std::string& w) {
 }
 
 void Dictionary::add(const std::string& w) {
+  //discard word which contains 0
+  if(w.find('\0')!=std::string::npos)return;
   int32_t h = find(w);
   ntokens_++;
   if (word2int_[h] == -1) {
