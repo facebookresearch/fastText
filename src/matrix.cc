@@ -50,9 +50,7 @@ Matrix::~Matrix() {
 }
 
 void Matrix::zero() {
-  for (int64_t i = 0; i < (m_ * n_); i++) {
-      data_[i] = 0.0;
-  }
+  std::fill(data_, data_ + (m_*n_), 0.0);
 }
 
 void Matrix::uniform(real a) {
