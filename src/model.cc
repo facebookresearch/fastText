@@ -115,7 +115,7 @@ namespace {
     std::vector<int32_t> indices;
     indices.reserve(k + 1);
     for (int32_t i = 0; i < v.m_; i += 1) {
-      if (indices.size() == k && v[i] < indices.front()) {
+      if (indices.size() == k && v[i] < v[indices.front()]) {
         continue;
       }
       indices.push_back(i);
