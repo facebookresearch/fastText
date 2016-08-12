@@ -157,7 +157,7 @@ Please cite [1](#enriching-word-vectors-with-subword-information) if using this 
 
 ### Bag of Tricks for Efficient Text Classification
 
-[2] A. Joulin, E. Grave, P. Bojanowski, T. Mikolov, [*Bag of Tricks for Efficient Text Classification*](https://arxiv.org/pdf/1607.01759v2.pdf)
+[2] A. Joulin, E. Grave, P. Bojanowski, T. Mikolov, [*Bag of Tricks for Efficient Text Classification*](https://arxiv.org/pdf/1607.01759v3.pdf)
 
 ```
 @article{joulin2016bag,
