@@ -27,9 +27,7 @@ Vector::~Vector() {
 }
 
 void Vector::zero() {
-  for (int64_t i = 0; i < m_; i++) {
-    data_[i] = 0.0;
-  }
+  std::fill(data_, data_ + m_, 0.0);
 }
 
 void Vector::mul(real a) {
