@@ -29,9 +29,9 @@ if [ ! -f "${DATADIR}/dbpedia.train" ]
 then
   if [ "`command -v wget`" != "" ]
   	then
-  		wget -c "https://8c47f35de2544a202d525720f08188d254682381.googledrive.com/host/0Bz8a_Dbh9QhbQ2Vic1kxMmZZQ1k" -O "${DATADIR}/dbpedia_csv.tar.gz"
+  		wget -c "https://googledrive.com/host/0Bz8a_Dbh9QhbQ2Vic1kxMmZZQ1k" -O "${DATADIR}/dbpedia_csv.tar.gz"
   	else
-  		curl "https://8c47f35de2544a202d525720f08188d254682381.googledrive.com/host/0Bz8a_Dbh9QhbQ2Vic1kxMmZZQ1k" -o "${DATADIR}/dbpedia_csv.tar.gz"
+  		curl -L "https://googledrive.com/host/0Bz8a_Dbh9QhbQ2Vic1kxMmZZQ1k" > "${DATADIR}/dbpedia_csv.tar.gz"
   fi  
   tar -xzvf "${DATADIR}/dbpedia_csv.tar.gz" -C "${DATADIR}"
   cat "${DATADIR}/dbpedia_csv/train.csv" | normalize_text > "${DATADIR}/dbpedia.train"
