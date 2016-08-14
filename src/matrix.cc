@@ -9,8 +9,10 @@
 
 #include "matrix.h"
 
-#include <assert.h>
+#include <iostream>
+#include <iomanip>
 
+#include <assert.h>
 #include <random>
 
 #include "utils.h"
@@ -55,6 +57,10 @@ void Matrix::zero() {
   }
 }
 
+void Matrix::incr(int64_t m, int64_t n) {
+  data_[m + n * n_] = data_[m + n * n_] + 1;
+}
+
 void Matrix::uniform(real a) {
   std::minstd_rand rng(1);
   std::uniform_real_distribution<> uniform(-a, a);
@@ -95,4 +101,17 @@ void Matrix::load(std::ifstream& ifs) {
   delete[] data_;
   data_ = new real[m_ * n_];
   ifs.read((char*) data_, m_ * n_ * sizeof(real));
+}
+
+void Matrix::print_summary(){
+  std::cout << "\n";
+  for (int64_t i = 0; i < m_; i++) {
+    for (int64_t j = 0; j < n_; j++) {
+      if (j>0) std::cout << std::internal << std::setw(3) << std::setfill(' ') << "|";
+      std::cout << std::internal << std::setw(5) << std::setfill(' ');
+      std::cout << int(data_[i + j*n_]);
+    }
+    std::cout << "\n";
+  }
+  std::cout << std::endl;
 }

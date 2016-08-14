@@ -31,12 +31,14 @@ class Matrix {
     ~Matrix();
 
     void zero();
+    void incr(int64_t, int64_t);
     void uniform(real);
     real dotRow(const Vector&, int64_t);
     void addRow(const Vector&, int64_t, real);
 
     void save(std::ofstream&);
     void load(std::ifstream&);
+    void print_summary();
 };
 
 #endif
