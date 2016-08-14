@@ -188,8 +188,6 @@ void test(Dictionary& dict, Model& model, std::string filename) {
 }
 
 void predict(int32_t top_k, Dictionary& dict, Model& model, std::string filename) {
-  int32_t nexamples = 0;
-  double precision = 0.0;
   std::vector<int32_t> line, labels;
   std::ifstream ifs(filename);
   if (!ifs.is_open()) {
@@ -208,7 +206,7 @@ void predict(int32_t top_k, Dictionary& dict, Model& model, std::string filename
       int32_t i = model.predict(line);
       std::cout << dict.getLabel(i) << std::endl;
     } else {
-      std::vector<int32_t> label_indices = model.predict(top_k, line);
+      std::vector<int64_t> label_indices = model.predict(top_k, line);
       for (auto iter = label_indices.cbegin(); iter != label_indices.cend(); iter++) {
         if (iter != label_indices.cbegin()) {
           std::cout << ' ';

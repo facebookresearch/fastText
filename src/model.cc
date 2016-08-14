@@ -18,6 +18,70 @@
 
 extern Args args;
 
+TopIndexScoresCollector::TopIndexScoresCollector(int64_t top_k)
+  : top_k_(top_k),
+    result_(top_k == 1 ? some_index_score_t::single : some_index_score_t::multi) {
+  assert(top_k_ >= 1);
+  if (top_k_ == 1) {
+    result_.datum.first = -1;
+    result_.datum.second = -1e10;
+  } else {
+    result_.data.reserve(top_k_ + 1);
+  }
+}
+
+bool TopIndexScoresCollector::shouldAdd(real score) {
+  if (top_k_ == 1) {
+    return score > result_.datum.second;
+  } else {
+    return
+      result_.data.size() < static_cast<size_t>(top_k_) ||
+      score > result_.data.front().second;
+  }
+}
+
+bool TopIndexScoresCollector::compIndexScorePairs(
+    const index_score_t &l,
+    const index_score_t &r
+  ) {
+  return l.second > r.second;
+}
+
+void TopIndexScoresCollector::add(int64_t index, real score) {
+  assert(shouldAdd(score));
+  if (top_k_ == 1) {
+    result_.datum.first = index;
+    result_.datum.second = score;
+    return;
+  }
+  result_.data.push_back(std::make_pair(index, score));
+  std::push_heap(
+    result_.data.begin(),
+    result_.data.end(),
+    TopIndexScoresCollector::compIndexScorePairs
+  );
+  if (result_.data.size() > static_cast<size_t>(top_k_)) {
+    std::pop_heap(
+      result_.data.begin(),
+      result_.data.end(),
+      TopIndexScoresCollector::compIndexScorePairs
+    );
+    result_.data.pop_back();
+  }
+}
+
+some_index_score_t TopIndexScoresCollector::result() {
+  if (top_k_ > 1) {
+    std::sort_heap(
+      result_.data.begin(),
+      result_.data.end(),
+      TopIndexScoresCollector::compIndexScorePairs
+    );
+  }
+
+  return std::move(result_);
+}
+
 real Model::lr_ = MIN_LR;
 
 Model::Model(Matrix& wi, Matrix& wo, int32_t hsz, real lr, int32_t seed)
@@ -95,104 +159,56 @@ real Model::softmax(int32_t target) {
   return -utils::log(output_[target]);
 }
 
-namespace {
-  void computeHidden(Vector& hidden, const Matrix& wi, const std::vector<int32_t>& input) {
-    hidden.zero();
-    for (auto it = input.cbegin(); it != input.cend(); ++it) {
-      hidden.addRow(wi, *it);
-    }
-    hidden.mul(1.0 / input.size());
+some_index_score_t Model::predictOneOrMore(int32_t top_k, const std::vector<int32_t>& input) {
+  hidden_.zero();
+  for (auto it = input.cbegin(); it != input.cend(); ++it) {
+    hidden_.addRow(wi_, *it);
   }
+  hidden_.mul(1.0 / input.size());
 
-  bool compScoreNodePairs(const std::pair<real, int32_t> &l, const std::pair<real, int32_t> &r) {
-    return l.first > r.first;
-  }
-
-  std::vector<int32_t> findKLargestIndices(const Vector& v, int32_t k) {
-    auto cmp = [&v] (int32_t i, int32_t j) {
-      return v[i] > v[j];
-    };
-    std::vector<int32_t> indices;
-    indices.reserve(k + 1);
-    for (int32_t i = 0; i < v.m_; i += 1) {
-      if (indices.size() == k && v[i] < v[indices.front()]) {
-        continue;
-      }
-      indices.push_back(i);
-      std::push_heap(indices.begin(), indices.end(), cmp);
-      if (indices.size() > k) {
-        std::pop_heap(indices.begin(), indices.end(), cmp);
-        indices.pop_back();
+  TopIndexScoresCollector collector(top_k);
+  if (args.loss == loss_name::hs) {
+    dfs(2 * osz_ - 2, 0.0, collector);
+  } else {
+    output_.mul(wo_, hidden_);
+    for (int64_t i = 0; i < output_.m_; i += 1) {
+      if (collector.shouldAdd(output_[i])) {
+        collector.add(i, output_[i]);
       }
     }
-    std::sort_heap(indices.begin(), indices.end(), cmp);
-    return indices;
   }
+
+  return collector.result();
 }
 
 int32_t Model::predict(const std::vector<int32_t>& input) {
-  computeHidden(hidden_, wi_, input);
-  if (args.loss == loss_name::hs) {
-    real max = -1e10;
-    int32_t argmax = -1;
-    dfs(2 * osz_ - 2, 0.0, max, argmax);
-    return argmax;
-  } else {
-    output_.mul(wo_, hidden_);
-    return output_.argmax();
-  }
+  auto result = predictOneOrMore(1, input);
+  return result.datum.first;
 }
 
-std::vector<int32_t> Model::predict(int32_t top_k, const std::vector<int32_t>& input) {
-  assert(top_k > 0);
-  computeHidden(hidden_, wi_, input);
-  if (args.loss == loss_name::hs) {
-    std::vector<std::pair<real, int32_t>> heap;
-    heap.reserve(top_k + 1);
-    dfs(top_k, 2 * osz_ - 2, 0.0, heap);
-    std::sort_heap(heap.begin(), heap.end(), compScoreNodePairs);
-    std::vector<int32_t> label_indices;
-    label_indices.reserve(top_k);
-    for (auto iter = heap.cbegin(); iter != heap.cend(); iter++) {
-      label_indices.push_back(iter->second);
-    }
-    return label_indices;
-  } else {
-    output_.mul(wo_, hidden_);
-    return findKLargestIndices(output_, top_k);
+std::vector<int64_t> Model::predict(int32_t top_k, const std::vector<int32_t>& input) {
+  assert(top_k > 1);
+  auto result = predictOneOrMore(top_k, input);
+  std::vector<int64_t> label_indices;
+  label_indices.reserve(top_k);
+  for (const auto& pair : result.data) {
+    label_indices.push_back(pair.first);
   }
+  return label_indices;
 }
 
-void Model::dfs(int32_t node, real score, real& max, int32_t& argmax) {
-  if (score < max) return;
-  if (tree[node].left == -1 && tree[node].right == -1) {
-    max = score;
-    argmax = node;
+void Model::dfs(int32_t node, real score, TopIndexScoresCollector& collector) {
+  if (!collector.shouldAdd(score)) {
     return;
   }
-  real f = utils::sigmoid(wo_.dotRow(hidden_, node - osz_));
-  dfs(tree[node].left, score + utils::log(1.0 - f), max, argmax);
-  dfs(tree[node].right, score + utils::log(f), max, argmax);
-}
-
-void Model::dfs(int32_t top_k, int32_t node, real score, std::vector<std::pair<real, int32_t>>& heap) {
-  if (heap.size() == top_k && score < heap.front().first) {
-    return;
-  }
-
   if (tree[node].left == -1 && tree[node].right == -1) {
-    heap.push_back(std::make_pair(score, node));
-    std::push_heap(heap.begin(), heap.end(), compScoreNodePairs);
-    if (heap.size() > top_k) {
-      std::pop_heap(heap.begin(), heap.end(), compScoreNodePairs);
-      heap.pop_back();
-    }
+    collector.add(node, score);
     return;
   }
 
   real f = utils::sigmoid(wo_.dotRow(hidden_, node - osz_));
-  dfs(top_k, tree[node].left, score + utils::log(1.0 - f), heap);
-  dfs(top_k, tree[node].right, score + utils::log(f), heap);
+  dfs(tree[node].left, score + utils::log(1.0 - f), collector);
+  dfs(tree[node].right, score + utils::log(f), collector);
 }
 
 real Model::update(const std::vector<int32_t>& input, int32_t target) {
