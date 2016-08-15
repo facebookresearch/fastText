@@ -21,4 +21,4 @@ set(SOURCE_FILES
 
 add_library(fasttext ${SOURCE_FILES})
 add_executable(fastText src/fasttext.cc)
-target_link_libraries(fastText pthread fasttext)
+target_link_libraries(fastText pthread fastText)
