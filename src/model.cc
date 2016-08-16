@@ -159,7 +159,8 @@ real Model::softmax(int32_t target) {
   return -utils::log(output_[target]);
 }
 
-some_index_score_t Model::predictOneOrMore(int32_t top_k, const std::vector<int32_t>& input) {
+some_index_score_t Model::predictOneOrMore(
+    int32_t top_k, const std::vector<int32_t>& input, bool prob_score) {
   hidden_.zero();
   for (auto it = input.cbegin(); it != input.cend(); ++it) {
     hidden_.addRow(wi_, *it);
@@ -167,10 +168,20 @@ some_index_score_t Model::predictOneOrMore(int32_t top_k, const std::vector<int3
   hidden_.mul(1.0 / input.size());
 
   TopIndexScoresCollector collector(top_k);
+  real z = 0.0;
   if (args.loss == loss_name::hs) {
     dfs(2 * osz_ - 2, 0.0, collector);
   } else {
     output_.mul(wo_, hidden_);
+
+    if (prob_score) {
+      real max = *std::max_element(output_.data_, output_.data_ + output_.m_);
+      for (int64_t i = 0; i < output_.m_; i += 1) {
+        output_[i] = exp(output_[i] - max);
+        z += output_[i];
+      }
+    }
+
     for (int64_t i = 0; i < output_.m_; i += 1) {
       if (collector.shouldAdd(output_[i])) {
         collector.add(i, output_[i]);
@@ -178,12 +189,37 @@ some_index_score_t Model::predictOneOrMore(int32_t top_k, const std::vector<int3
     }
   }
 
-  return collector.result();
+  auto result = collector.result();
+
+  if (prob_score) {
+    auto transform_score = [z] (real& score) {
+      if (::args.loss == loss_name::hs) {
+        score = exp(score);
+      } else {
+        score /= z;
+      }
+    };
+
+    if (top_k == 1) {
+      transform_score(result.datum.second);
+    } else {
+      for (auto& pair : result.data) {
+        transform_score(pair.second);
+      }
+    }
+  }
+
+  return result;
 }
 
 int32_t Model::predict(const std::vector<int32_t>& input) {
   auto result = predictOneOrMore(1, input);
   return result.datum.first;
+}
+
+index_score_t Model::predictProb(const std::vector<int32_t>& input) {
+  auto result = predictOneOrMore(1, input, true);
+  return result.datum;
 }
 
 std::vector<int64_t> Model::predict(int32_t top_k, const std::vector<int32_t>& input) {
@@ -195,6 +231,12 @@ std::vector<int64_t> Model::predict(int32_t top_k, const std::vector<int32_t>& i
     label_indices.push_back(pair.first);
   }
   return label_indices;
+}
+
+std::vector<index_score_t> Model::predictProb(int32_t top_k, const std::vector<int32_t>& input) {
+  assert(top_k > 1);
+  auto result = predictOneOrMore(top_k, input, true);
+  return result.data;
 }
 
 void Model::dfs(int32_t node, real score, TopIndexScoresCollector& collector) {

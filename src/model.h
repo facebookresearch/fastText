@@ -67,7 +67,7 @@ class Model {
     static constexpr real MIN_LR = 0.000001;
 
     void dfs(int32_t, real, TopIndexScoresCollector&);
-    some_index_score_t predictOneOrMore(int32_t, const std::vector<int32_t>&);
+    some_index_score_t predictOneOrMore(int32_t, const std::vector<int32_t>&, bool = false);
 
   public:
     Model(Matrix&, Matrix&, int32_t, real, int32_t);
@@ -81,7 +81,9 @@ class Model {
     real softmax(int32_t);
 
     int32_t predict(const std::vector<int32_t>&);
+    index_score_t predictProb(const std::vector<int32_t>&);
     std::vector<int64_t> predict(int32_t, const std::vector<int32_t>&);
+    std::vector<index_score_t> predictProb(int32_t, const std::vector<int32_t>&);
     real update(const std::vector<int32_t>&, int32_t);
 
     void setTargetCounts(const std::vector<int64_t>&);
