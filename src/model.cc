@@ -77,7 +77,7 @@ real Model::hierarchicalSoftmax(int32_t target) {
 real Model::softmax(int32_t target) {
   grad_.zero();
   output_.mul(wo_, hidden_);
-  real max = 0.0, z = 0.0;
+  real max = output_[0], z = 0.0;
   for (int32_t i = 0; i < osz_; i++) {
     max = std::max(output_[i], max);
   }
