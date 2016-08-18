@@ -188,8 +188,6 @@ void test(Dictionary& dict, Model& model, std::string filename) {
 }
 
 void predict(Dictionary& dict, Model& model, std::string filename) {
-  int32_t nexamples = 0;
-  double precision = 0.0;
   std::vector<int32_t> line, labels;
   std::ifstream ifs(filename);
   if (!ifs.is_open()) {
