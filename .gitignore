@@ -5,3 +5,7 @@
 data
 fasttext
 result
+*.VC.db
+*.VC.VC.opendb
+Debug
+Release
