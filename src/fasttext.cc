@@ -164,17 +164,21 @@ void skipgram(Dictionary& dict, Model& model,
 void test(Dictionary& dict, Model& model, std::string filename) {
   int32_t nexamples = 0;
   double precision = 0.0;
+  int32_t nlabels = dict.nlabels();
+  Matrix::Matrix confusion_matrix = Matrix::Matrix(nlabels, nlabels);
   std::vector<int32_t> line, labels;
   std::ifstream ifs(filename);
   if (!ifs.is_open()) {
     std::cerr << "Test file cannot be opened!" << std::endl;
     exit(EXIT_FAILURE);
   }
+  confusion_matrix.zero();
   while (ifs.peek() != EOF) {
     dict.getLine(ifs, line, labels, model.rng);
     dict.addNgrams(line, args.wordNgrams);
     if (labels.size() > 0 && line.size() > 0) {
       int32_t i = model.predict(line);
+      confusion_matrix.incr(i, labels[0]);
       if (std::find(labels.begin(), labels.end(), i) != labels.end()) {
         precision += 1.0;
       }
@@ -184,6 +188,8 @@ void test(Dictionary& dict, Model& model, std::string filename) {
   ifs.close();
   std::cout << std::setprecision(3);
   std::cout << "P@1: " << precision / nexamples << std::endl;
+  std::cout << "Confusion Matrix: " << std::endl;
+  confusion_matrix.print_summary(); 
   std::cout << "Number of examples: " << nexamples << std::endl;
 }
 
