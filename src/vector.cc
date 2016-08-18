@@ -67,6 +67,18 @@ void Vector::mul(const Matrix& A, const Vector& vec) {
   }
 }
 
+int64_t Vector::argmax() {
+  real max = data_[0];
+  int64_t argmax = 0;
+  for (int64_t i = 1; i < m_; i++) {
+    if (data_[i] > max) {
+      max = data_[i];
+      argmax = i;
+    }
+  }
+  return argmax;
+}
+
 real& Vector::operator[](int64_t i) {
   return data_[i];
 }
