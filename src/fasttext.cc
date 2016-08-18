@@ -187,9 +187,7 @@ void test(Dictionary& dict, Model& model, std::string filename) {
   std::cout << "Number of examples: " << nexamples << std::endl;
 }
 
-void predict(Dictionary& dict, Model& model, std::string filename) {
-  int32_t nexamples = 0;
-  double precision = 0.0;
+void predict(int32_t top_k, Dictionary& dict, Model& model, std::string filename) {
   std::vector<int32_t> line, labels;
   std::ifstream ifs(filename);
   if (!ifs.is_open()) {
@@ -199,13 +197,26 @@ void predict(Dictionary& dict, Model& model, std::string filename) {
   while (ifs.peek() != EOF) {
     dict.getLine(ifs, line, labels, model.rng);
     dict.addNgrams(line, args.wordNgrams);
-    if (line.size() > 0) {
+    if (line.empty()) {
+      std::cout << "n/a" << std::endl;
+      continue;
+    }
+
+    if (top_k == 1) {
       int32_t i = model.predict(line);
       std::cout << dict.getLabel(i) << std::endl;
     } else {
-      std::cout << "n/a" << std::endl;
+      std::vector<int64_t> label_indices = model.predict(top_k, line);
+      for (auto iter = label_indices.cbegin(); iter != label_indices.cend(); iter++) {
+        if (iter != label_indices.cbegin()) {
+          std::cout << ' ';
+        }
+        std::cout << dict.getLabel(*iter);
+      }
+      std::cout << std::endl;
     }
   }
+
   ifs.close();
 }
 
@@ -283,7 +294,8 @@ void printTestUsage() {
 
 void printPredictUsage() {
   std::cout
-    << "usage: fasttext predict <model> <test-data>\n\n"
+    << "usage: fasttext predict [<k>] <model> <test-data>\n\n"
+    << "  <k>          (optional; 1 by default) predict top k labels\n"
     << "  <model>      model filename\n"
     << "  <test-data>  test data filename\n"
     << std::endl;
@@ -311,16 +323,27 @@ void test(int argc, char** argv) {
 }
 
 void predict(int argc, char** argv) {
-  if (argc != 4) {
+  int32_t top_k;
+  char *model_file, *test_file;
+  if (argc == 4) {
+    top_k = 1;
+    model_file = argv[2];
+    test_file = argv[3];
+  } else if (argc == 5) {
+    top_k = atoi(argv[2]);
+    model_file = argv[3];
+    test_file = argv[4];
+  } else {
     printPredictUsage();
     exit(EXIT_FAILURE);
   }
+
   Dictionary dict;
   Matrix input, output;
-  loadModel(std::string(argv[2]), dict, input, output);
+  loadModel(model_file, dict, input, output);
   Model model(input, output, args.dim, args.lr, 1);
   model.setTargetCounts(dict.getCounts(entry_type::label));
-  predict(dict, model, std::string(argv[3]));
+  predict(top_k, dict, model, test_file);
   exit(0);
 }
 
