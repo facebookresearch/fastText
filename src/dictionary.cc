@@ -249,11 +249,11 @@ int32_t Dictionary::getLine(std::ifstream& ifs,
     ifs.seekg(std::streampos(0));
   }
   while (!(token = readWord(ifs)).empty()) {
-    ntokens++;
     if (token == EOS) break;
     int32_t wid = getId(token);
     if (wid < 0) continue;
     entry_type type = getType(wid);
+    ntokens++;
     if (type == entry_type::word && !discard(wid, uniform(rng))) {
       words.push_back(wid);
     }
