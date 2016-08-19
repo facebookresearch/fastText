@@ -89,20 +89,23 @@ $ ./fasttext supervised -input train.txt -output model
 where `train.txt` is a text file containing a training sentence per line along with the labels.
 By default, we assume that labels are words that are prefixed by the string `__label__`.
 This will output two files: `model.bin` and `model.vec`.
-Once the model was trained, you can evaluate it by computing the precision at 1 (P@1) on a test set using:
+Once the model was trained, you can evaluate it by computing the precision and recall at k (P@k and R@k) on a test set using:
 
 ```
-$ ./fasttext test model.bin test.txt
+$ ./fasttext test model.bin test.txt k
 ```
 
-In order to obtain the most likely label for a piece of text, use:
+The argument `k` is optional, and is equal to `1` by default.
+
+In order to obtain the k most likely labels for a piece of text, use:
 
 ```
-$ ./fasttext predict model.bin test.txt
+$ ./fasttext predict model.bin test.txt k
 ```
 
 where `test.txt` contains a piece of text to classify per line.
-Doing so will output to the standard output the most likely label per line.
+Doing so will output to the standard output the k most likely labels per line.
+The argument `k` is optional, and equal to `1` by default.
 See `classification-example.sh` for an example use case.
 In order to reproduce results from the paper [2](#bag-of-tricks-for-efficient-text-classification), run `classification-results.sh`, this will download all the datasets and reproduce the results from Table 1.
 
