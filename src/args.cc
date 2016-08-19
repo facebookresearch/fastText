@@ -43,8 +43,7 @@ void Args::parseArgs(int argc, char** argv) {
   } else if (command == "cbow") {
     model = model_name::cbow;
   }
-  int ai = 2;
-  while (ai < argc) {
+  for (int ai = 2; ai < argc; ai += 2) {
     if (argv[ai][0] != '-') {
       std::cout << "Provided argument without a dash! Usage:" << std::endl;
       printHelp();
@@ -105,7 +104,6 @@ void Args::parseArgs(int argc, char** argv) {
       printHelp();
       exit(EXIT_FAILURE);
     }
-    ai += 2;
   }
   if (input.empty() || output.empty()) {
     std::cout << "Empty input or output path." << std::endl;
