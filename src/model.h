@@ -12,6 +12,7 @@
 
 #include <vector>
 #include <random>
+#include <utility>
 
 #include "matrix.h"
 #include "vector.h"
@@ -38,6 +39,9 @@ class Model {
 
     static real lr_;
 
+    static bool comparePairs(const std::pair<real, int32_t>&,
+                             const std::pair<real, int32_t>&);
+
     std::vector<int32_t> negatives;
     size_t negpos;
     std::vector< std::vector<int32_t> > paths;
@@ -58,9 +62,12 @@ class Model {
     real hierarchicalSoftmax(int32_t);
     real softmax(int32_t);
 
-    int32_t predict(const std::vector<int32_t>&);
-    void dfs(int32_t, real, real&, int32_t&);
+    void predict(const std::vector<int32_t>&, int32_t,
+                 std::vector<std::pair<real, int32_t>>&);
+    void dfs(int32_t, int32_t, real, std::vector<std::pair<real, int32_t>>&);
+    void findKBest(int32_t, std::vector<std::pair<real, int32_t>>&);
     real update(const std::vector<int32_t>&, int32_t);
+    void computeHidden(const std::vector<int32_t>&);
 
     void setTargetCounts(const std::vector<int64_t>&);
     void initTableNegatives(const std::vector<int64_t>&);

@@ -95,34 +95,66 @@ real Model::softmax(int32_t target) {
   return -utils::log(output_[target]);
 }
 
-int32_t Model::predict(const std::vector<int32_t>& input) {
+void Model::computeHidden(const std::vector<int32_t>& input) {
   hidden_.zero();
   for (auto it = input.cbegin(); it != input.cend(); ++it) {
     hidden_.addRow(wi_, *it);
   }
   hidden_.mul(1.0 / input.size());
+}
 
+bool Model::comparePairs(const std::pair<real, int32_t> &l,
+                         const std::pair<real, int32_t> &r) {
+  return l.first > r.first;
+}
+
+void Model::predict(const std::vector<int32_t>& input, int32_t k,
+                    std::vector<std::pair<real, int32_t>>& heap) {
+  assert(k > 0);
+  heap.reserve(k + 1);
+  computeHidden(input);
   if (args.loss == loss_name::hs) {
-    real max = -1e10;
-    int32_t argmax = -1;
-    dfs(2 * osz_ - 2, 0.0, max, argmax);
-    return argmax;
+    dfs(k, 2 * osz_ - 2, 0.0, heap);
   } else {
     output_.mul(wo_, hidden_);
-    return output_.argmax();
+    findKBest(k, heap);
+  }
+  std::sort_heap(heap.begin(), heap.end(), comparePairs);
+}
+
+void Model::findKBest(int32_t k, std::vector<std::pair<real, int32_t>>& heap) {
+  for (int32_t i = 0; i < osz_; i++) {
+    if (heap.size() == k && output_[i] < heap.front().first) {
+      continue;
+    }
+    heap.push_back(std::make_pair(output_[i], i));
+    std::push_heap(heap.begin(), heap.end(), comparePairs);
+    if (heap.size() > k) {
+      std::pop_heap(heap.begin(), heap.end(), comparePairs);
+      heap.pop_back();
+    }
   }
 }
 
-void Model::dfs(int32_t node, real score, real& max, int32_t& argmax) {
-  if (score < max) return;
-  if (tree[node].left == -1 && tree[node].right == -1) {
-    max = score;
-    argmax = node;
+void Model::dfs(int32_t k, int32_t node, real score,
+                std::vector<std::pair<real, int32_t>>& heap) {
+  if (heap.size() == k && score < heap.front().first) {
     return;
   }
+
+  if (tree[node].left == -1 && tree[node].right == -1) {
+    heap.push_back(std::make_pair(score, node));
+    std::push_heap(heap.begin(), heap.end(), comparePairs);
+    if (heap.size() > k) {
+      std::pop_heap(heap.begin(), heap.end(), comparePairs);
+      heap.pop_back();
+    }
+    return;
+  }
+
   real f = utils::sigmoid(wo_.dotRow(hidden_, node - osz_));
-  dfs(tree[node].left, score + utils::log(1.0 - f), max, argmax);
-  dfs(tree[node].right, score + utils::log(f), max, argmax);
+  dfs(k, tree[node].left, score + utils::log(1.0 - f), heap);
+  dfs(k, tree[node].right, score + utils::log(f), heap);
 }
 
 real Model::update(const std::vector<int32_t>& input, int32_t target) {
