@@ -104,7 +104,7 @@ $ ./fasttext predict model.bin test.txt k
 ```
 
 where `test.txt` contains a piece of text to classify per line.
-Doing so will output to the standard output the k most likely labels per line.
+Doing so will print to the standard output the k most likely labels for each line.
 The argument `k` is optional, and equal to `1` by default.
 See `classification-example.sh` for an example use case.
 In order to reproduce results from the paper [2](#bag-of-tricks-for-efficient-text-classification), run `classification-results.sh`, this will download all the datasets and reproduce the results from Table 1.
