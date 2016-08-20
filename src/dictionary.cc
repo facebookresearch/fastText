@@ -151,9 +151,9 @@ std::string Dictionary::readWord(std::ifstream& fin)
 {
   char c;
   std::string word;
-  while (!fin.eof()) {
+  while (fin.peek() != EOF) {
     fin.get(c);
-    if (isspace(c)) {
+    if (isspace(c) || c == 0) {
       if (word.empty()) {
         if (c == '\n') return EOS;
         continue;

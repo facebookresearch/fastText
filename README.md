@@ -21,13 +21,17 @@ For the word-similarity evaluation script you will need:
 In order to build `fastText`, use the following:
 
 ```
-$ git clone git@github.com:facebookresearch/fastText.git
+$ git clone https://github.com/facebookresearch/fastText.git
 $ cd fastText
 $ make
 ```
 
 This will produce object files for all the classes as well as the main binary `fasttext`.
 If you do not plan on using the default system-wide compiler, update the two macros defined at the beginning of the Makefile (CC and INCLUDES).
+
+### Building with Docker
+
+If you inted to build with Docker, a Docker file is available here [fastText-Docker](https://github.com/xeb/fastText-docker).
 
 ## Example use cases
 
@@ -85,20 +89,23 @@ $ ./fasttext supervised -input train.txt -output model
 where `train.txt` is a text file containing a training sentence per line along with the labels.
 By default, we assume that labels are words that are prefixed by the string `__label__`.
 This will output two files: `model.bin` and `model.vec`.
-Once the model was trained, you can evaluate it by computing the precision at 1 (P@1) on a test set using:
+Once the model was trained, you can evaluate it by computing the precision and recall at k (P@k and R@k) on a test set using:
 
 ```
-$ ./fasttext test model.bin test.txt
+$ ./fasttext test model.bin test.txt k
 ```
 
-In order to obtain the most likely label for a piece of text, use:
+The argument `k` is optional, and is equal to `1` by default.
+
+In order to obtain the k most likely labels for a piece of text, use:
 
 ```
-$ ./fasttext predict model.bin test.txt
+$ ./fasttext predict model.bin test.txt k
 ```
 
 where `test.txt` contains a piece of text to classify per line.
-Doing so will output to the standard output the most likely label per line.
+Doing so will print to the standard output the k most likely labels for each line.
+The argument `k` is optional, and equal to `1` by default.
 See `classification-example.sh` for an example use case.
 In order to reproduce results from the paper [2](#bag-of-tricks-for-efficient-text-classification), run `classification-results.sh`, this will download all the datasets and reproduce the results from Table 1.
 
@@ -166,13 +173,10 @@ Please cite [1](#enriching-word-vectors-with-subword-information) if using this 
 
 (\* These authors contributed equally.)
 
-### Discussion on HN
-
-[3] Some valuable comments on [Hacker News](https://news.ycombinator.com/item?id=12226988).
-
 ## Join the fastText community
 
 * Facebook page: https://www.facebook.com/groups/1174547215919768
+* Google group: https://groups.google.com/forum/#!forum/fasttext-library
 * Contact: [egrave@fb.com](mailto:egrave@fb.com), [bojanowski@fb.com](mailto:bojanowski@fb.com), [ajoulin@fb.com](mailto:ajoulin@fb.com), [tmikolov@fb.com](mailto:tmikolov@fb.com)
 
 See the CONTRIBUTING file for information about how to help out.

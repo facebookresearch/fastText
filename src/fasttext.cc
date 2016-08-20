@@ -161,8 +161,8 @@ void skipgram(Dictionary& dict, Model& model,
   }
 }
 
-void test(Dictionary& dict, Model& model, std::string filename) {
-  int32_t nexamples = 0;
+void test(Dictionary& dict, Model& model, std::string filename, int32_t k) {
+  int32_t nexamples = 0, nlabels = 0;
   double precision = 0.0;
   std::vector<int32_t> line, labels;
   std::ifstream ifs(filename);
@@ -174,20 +174,25 @@ void test(Dictionary& dict, Model& model, std::string filename) {
     dict.getLine(ifs, line, labels, model.rng);
     dict.addNgrams(line, args.wordNgrams);
     if (labels.size() > 0 && line.size() > 0) {
-      int32_t i = model.predict(line);
-      if (std::find(labels.begin(), labels.end(), i) != labels.end()) {
-        precision += 1.0;
+      std::vector<std::pair<real, int32_t>> predictions;
+      model.predict(line, k, predictions);
+      for (auto it = predictions.cbegin(); it != predictions.cend(); it++) {
+        if (std::find(labels.begin(), labels.end(), it->second) != labels.end()) {
+          precision += 1.0;
+        }
       }
       nexamples++;
+      nlabels += labels.size();
     }
   }
   ifs.close();
   std::cout << std::setprecision(3);
-  std::cout << "P@1: " << precision / nexamples << std::endl;
+  std::cout << "P@" << k << ": " << precision / (k * nexamples) << std::endl;
+  std::cout << "R@" << k << ": " << precision / nlabels << std::endl;
   std::cout << "Number of examples: " << nexamples << std::endl;
 }
 
-void predict(int32_t top_k, Dictionary& dict, Model& model, std::string filename, bool print_prob) {
+void predict(Dictionary& dict, Model& model, std::string filename, int32_t k, bool print_probabilities) {
   std::vector<int32_t> line, labels;
   std::ifstream ifs(filename);
   if (!ifs.is_open()) {
@@ -201,37 +206,19 @@ void predict(int32_t top_k, Dictionary& dict, Model& model, std::string filename
       std::cout << "n/a" << std::endl;
       continue;
     }
-
-    if (top_k == 1) {
-      if (print_prob) {
-        auto index_prob = model.predictProb(line);
-        std::cout << dict.getLabel(index_prob.first) << ' ' << index_prob.second << std::endl;
-      } else {
-        int32_t i = model.predict(line);
-        std::cout << dict.getLabel(i) << std::endl;
+    std::vector<std::pair<real, int32_t>> predictions;
+    model.predict(line, k, predictions, print_probabilities);
+    for (auto it = predictions.cbegin(); it != predictions.cend(); it++) {
+      if (it != predictions.cbegin()) {
+        std::cout << ' ';
       }
-    } else {
-      if (print_prob) {
-        auto index_prob_pairs = model.predictProb(top_k, line);
-        for (auto iter = index_prob_pairs.cbegin(); iter != index_prob_pairs.cend(); iter++) {
-          if (iter != index_prob_pairs.cbegin()) {
-            std::cout << ' ';
-          }
-          std::cout << dict.getLabel(iter->first) << ' ' << iter->second;
-        }
-      } else {
-        std::vector<int64_t> label_indices = model.predict(top_k, line);
-        for (auto iter = label_indices.cbegin(); iter != label_indices.cend(); iter++) {
-          if (iter != label_indices.cbegin()) {
-            std::cout << ' ';
-          }
-          std::cout << dict.getLabel(*iter);
-        }
+      std::cout << dict.getLabel(it->second);
+      if (print_probabilities) {
+        std::cout << ' ' << it->first;
       }
-      std::cout << std::endl;
     }
+    std::cout << std::endl;
   }
-
   ifs.close();
 }
 
@@ -292,7 +279,8 @@ void printUsage() {
     << "The commands supported by fasttext are:\n\n"
     << "  supervised       train a supervised classifier\n"
     << "  test             evaluate a supervised classifier\n"
-    << "  predict[-prob]   predict most likely label(s) (with probabilities)\n"
+    << "  predict          predict most likely labels\n"
+    << "  predict-prob     predict most likely labels with probabilities\n"
     << "  skipgram         train a skipgram model\n"
     << "  cbow             train a cbow model\n"
     << "  print-vectors    print vectors given a trained model\n"
@@ -301,18 +289,19 @@ void printUsage() {
 
 void printTestUsage() {
   std::cout
-    << "usage: fasttext test <model> <test-data>\n\n"
+    << "usage: fasttext test <model> <test-data> [<k>]\n\n"
     << "  <model>      model filename\n"
     << "  <test-data>  test data filename\n"
+    << "  <k>          (optional; 1 by default) predict top k labels\n"
     << std::endl;
 }
 
 void printPredictUsage() {
   std::cout
-    << "usage: fasttext predict[-prob] [<k>] <model> <test-data>\n\n"
-    << "  <k>          (optional; 1 by default) predict top k labels\n"
+    << "usage: fasttext predict[-prob] <model> <test-data> [<k>]\n\n"
     << "  <model>      model filename\n"
     << "  <test-data>  test data filename\n"
+    << "  <k>          (optional; 1 by default) predict top k labels\n"
     << std::endl;
 }
 
@@ -324,7 +313,12 @@ void printPrintVectorsUsage() {
 }
 
 void test(int argc, char** argv) {
-  if (argc != 4) {
+  int32_t k;
+  if (argc == 4) {
+    k = 1;
+  } else if (argc == 5) {
+    k = atoi(argv[4]);
+  } else {
     printTestUsage();
     exit(EXIT_FAILURE);
   }
@@ -333,33 +327,27 @@ void test(int argc, char** argv) {
   loadModel(std::string(argv[2]), dict, input, output);
   Model model(input, output, args.dim, args.lr, 1);
   model.setTargetCounts(dict.getCounts(entry_type::label));
-  test(dict, model, std::string(argv[3]));
+  test(dict, model, std::string(argv[3]), k);
   exit(0);
 }
 
 void predict(int argc, char** argv) {
-  int32_t top_k;
-  char *model_file, *test_file;
-  bool print_prob = std::string(argv[1]) == "predict-prob";
+  int32_t k;
   if (argc == 4) {
-    top_k = 1;
-    model_file = argv[2];
-    test_file = argv[3];
+    k = 1;
   } else if (argc == 5) {
-    top_k = atoi(argv[2]);
-    model_file = argv[3];
-    test_file = argv[4];
+    k = atoi(argv[4]);
   } else {
     printPredictUsage();
     exit(EXIT_FAILURE);
   }
-
   Dictionary dict;
   Matrix input, output;
-  loadModel(model_file, dict, input, output);
+  loadModel(std::string(argv[2]), dict, input, output);
   Model model(input, output, args.dim, args.lr, 1);
   model.setTargetCounts(dict.getCounts(entry_type::label));
-  predict(top_k, dict, model, test_file, print_prob);
+  bool print_probabilities = std::string(argv[1]) == "predict-prob";
+  predict(dict, model, std::string(argv[3]), k, print_probabilities);
   exit(0);
 }
 
@@ -429,7 +417,7 @@ int main(int argc, char** argv) {
     test(argc, argv);
   } else if (command == "print-vectors") {
     printVectors(argc, argv);
-  } else if (command == "predict" || command == "predict-prob") {
+  } else if (command == "predict" || command == "predict-prob" ) {
     predict(argc, argv);
   } else {
     printUsage();

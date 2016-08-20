@@ -18,70 +18,6 @@
 
 extern Args args;
 
-TopIndexScoresCollector::TopIndexScoresCollector(int64_t top_k)
-  : top_k_(top_k),
-    result_(top_k == 1 ? some_index_score_t::single : some_index_score_t::multi) {
-  assert(top_k_ >= 1);
-  if (top_k_ == 1) {
-    result_.datum.first = -1;
-    result_.datum.second = -1e10;
-  } else {
-    result_.data.reserve(top_k_ + 1);
-  }
-}
-
-bool TopIndexScoresCollector::shouldAdd(real score) {
-  if (top_k_ == 1) {
-    return score > result_.datum.second;
-  } else {
-    return
-      result_.data.size() < static_cast<size_t>(top_k_) ||
-      score > result_.data.front().second;
-  }
-}
-
-bool TopIndexScoresCollector::compIndexScorePairs(
-    const index_score_t &l,
-    const index_score_t &r
-  ) {
-  return l.second > r.second;
-}
-
-void TopIndexScoresCollector::add(int64_t index, real score) {
-  assert(shouldAdd(score));
-  if (top_k_ == 1) {
-    result_.datum.first = index;
-    result_.datum.second = score;
-    return;
-  }
-  result_.data.push_back(std::make_pair(index, score));
-  std::push_heap(
-    result_.data.begin(),
-    result_.data.end(),
-    TopIndexScoresCollector::compIndexScorePairs
-  );
-  if (result_.data.size() > static_cast<size_t>(top_k_)) {
-    std::pop_heap(
-      result_.data.begin(),
-      result_.data.end(),
-      TopIndexScoresCollector::compIndexScorePairs
-    );
-    result_.data.pop_back();
-  }
-}
-
-some_index_score_t TopIndexScoresCollector::result() {
-  if (top_k_ > 1) {
-    std::sort_heap(
-      result_.data.begin(),
-      result_.data.end(),
-      TopIndexScoresCollector::compIndexScorePairs
-    );
-  }
-
-  return std::move(result_);
-}
-
 real Model::lr_ = MIN_LR;
 
 Model::Model(Matrix& wi, Matrix& wo, int32_t hsz, real lr, int32_t seed)
@@ -141,7 +77,7 @@ real Model::hierarchicalSoftmax(int32_t target) {
 real Model::softmax(int32_t target) {
   grad_.zero();
   output_.mul(wo_, hidden_);
-  real max = 0.0, z = 0.0;
+  real max = output_[0], z = 0.0;
   for (int32_t i = 0; i < osz_; i++) {
     max = std::max(output_[i], max);
   }
@@ -159,98 +95,82 @@ real Model::softmax(int32_t target) {
   return -utils::log(output_[target]);
 }
 
-some_index_score_t Model::predictOneOrMore(
-    int32_t top_k, const std::vector<int32_t>& input, bool prob_score) {
+void Model::computeHidden(const std::vector<int32_t>& input) {
   hidden_.zero();
   for (auto it = input.cbegin(); it != input.cend(); ++it) {
     hidden_.addRow(wi_, *it);
   }
   hidden_.mul(1.0 / input.size());
+}
 
-  TopIndexScoresCollector collector(top_k);
-  real z = 0.0;
+bool Model::comparePairs(const std::pair<real, int32_t> &l,
+                         const std::pair<real, int32_t> &r) {
+  return l.first > r.first;
+}
+
+void Model::predict(const std::vector<int32_t>& input, int32_t k,
+                    std::vector<std::pair<real, int32_t>>& heap,
+                    bool probabilities) {
+  assert(k > 0);
+  heap.reserve(k + 1);
+  computeHidden(input);
   if (args.loss == loss_name::hs) {
-    dfs(2 * osz_ - 2, 0.0, collector);
+    dfs(k, 2 * osz_ - 2, 0.0, heap);
+    if (probabilities) {
+      for (auto& pair : heap) {
+        pair.first = exp(pair.first);
+      }
+    }
   } else {
     output_.mul(wo_, hidden_);
-
-    if (prob_score) {
+    findKBest(k, heap);
+    if (probabilities) {
       real max = *std::max_element(output_.data_, output_.data_ + output_.m_);
+      real z = 0;
       for (int64_t i = 0; i < output_.m_; i += 1) {
-        output_[i] = exp(output_[i] - max);
-        z += output_[i];
+        z += exp(output_[i] - max);
       }
-    }
-
-    for (int64_t i = 0; i < output_.m_; i += 1) {
-      if (collector.shouldAdd(output_[i])) {
-        collector.add(i, output_[i]);
+      for (auto& pair : heap) {
+        pair.first = exp(pair.first - max) / z;
       }
     }
   }
+  std::sort_heap(heap.begin(), heap.end(), comparePairs);
+}
 
-  auto result = collector.result();
-
-  if (prob_score) {
-    auto transform_score = [z] (real& score) {
-      if (::args.loss == loss_name::hs) {
-        score = exp(score);
-      } else {
-        score /= z;
-      }
-    };
-
-    if (top_k == 1) {
-      transform_score(result.datum.second);
-    } else {
-      for (auto& pair : result.data) {
-        transform_score(pair.second);
-      }
+void Model::findKBest(int32_t k, std::vector<std::pair<real, int32_t>>& heap) {
+  for (int32_t i = 0; i < osz_; i++) {
+    if (heap.size() == k && output_[i] < heap.front().first) {
+      continue;
+    }
+    heap.push_back(std::make_pair(output_[i], i));
+    std::push_heap(heap.begin(), heap.end(), comparePairs);
+    if (heap.size() > k) {
+      std::pop_heap(heap.begin(), heap.end(), comparePairs);
+      heap.pop_back();
     }
   }
-
-  return result;
 }
 
-int32_t Model::predict(const std::vector<int32_t>& input) {
-  auto result = predictOneOrMore(1, input);
-  return result.datum.first;
-}
-
-index_score_t Model::predictProb(const std::vector<int32_t>& input) {
-  auto result = predictOneOrMore(1, input, true);
-  return result.datum;
-}
-
-std::vector<int64_t> Model::predict(int32_t top_k, const std::vector<int32_t>& input) {
-  assert(top_k > 1);
-  auto result = predictOneOrMore(top_k, input);
-  std::vector<int64_t> label_indices;
-  label_indices.reserve(top_k);
-  for (const auto& pair : result.data) {
-    label_indices.push_back(pair.first);
-  }
-  return label_indices;
-}
-
-std::vector<index_score_t> Model::predictProb(int32_t top_k, const std::vector<int32_t>& input) {
-  assert(top_k > 1);
-  auto result = predictOneOrMore(top_k, input, true);
-  return result.data;
-}
-
-void Model::dfs(int32_t node, real score, TopIndexScoresCollector& collector) {
-  if (!collector.shouldAdd(score)) {
+void Model::dfs(int32_t k, int32_t node, real score,
+                std::vector<std::pair<real, int32_t>>& heap) {
+  if (heap.size() == k && score < heap.front().first) {
     return;
   }
+
   if (tree[node].left == -1 && tree[node].right == -1) {
-    collector.add(node, score);
+    heap.push_back(std::make_pair(score, node));
+    std::push_heap(heap.begin(), heap.end(), comparePairs);
+    if (heap.size() > k) {
+      std::pop_heap(heap.begin(), heap.end(), comparePairs);
+      heap.pop_back();
+    }
     return;
   }
 
   real f = utils::sigmoid(wo_.dotRow(hidden_, node - osz_));
-  dfs(tree[node].left, score + utils::log(1.0 - f), collector);
-  dfs(tree[node].right, score + utils::log(f), collector);
+  dfs(k, tree[node].left, score + utils::log(1.0 - f), heap);
+  dfs(k, tree[node].right, score + utils::log(f), heap);
 }
 
 real Model::update(const std::vector<int32_t>& input, int32_t target) {
