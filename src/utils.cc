@@ -69,7 +69,6 @@ namespace utils {
   }
 
   void seek(std::ifstream& ifs, int64_t pos) {
-    char c;
     ifs.clear();
     ifs.seekg(std::streampos(pos));
   }
