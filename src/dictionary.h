@@ -63,7 +63,7 @@ class Dictionary {
     void computeNgrams(const std::string&, std::vector<int32_t>&);
     uint32_t hash(const std::string& str);
     void add(const std::string&);
-    std::string readWord(std::ifstream&);
+    bool readWord(std::ifstream&, std::string&);
     void readFromFile(std::ifstream&);
     std::string getLabel(int32_t);
     void save(std::ofstream&);
