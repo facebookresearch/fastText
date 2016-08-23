@@ -5,3 +5,6 @@
 data
 fasttext
 result
+vs2015/.vs
+vs2015/x86
+vs2015/x64

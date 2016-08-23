@@ -73,7 +73,7 @@ void printVectors(Dictionary& dict, Matrix& input) {
 }
 
 void saveModel(Dictionary& dict, Matrix& input, Matrix& output) {
-  std::ofstream ofs(args.output + ".bin");
+  std::ofstream ofs(args.output + ".bin", std::ofstream::binary);
   if (!ofs.is_open()) {
     std::cerr << "Model file cannot be opened for saving!" << std::endl;
     exit(EXIT_FAILURE);
@@ -87,7 +87,7 @@ void saveModel(Dictionary& dict, Matrix& input, Matrix& output) {
 
 void loadModel(std::string filename, Dictionary& dict,
                Matrix& input, Matrix& output) {
-  std::ifstream ifs(filename);
+  std::ifstream ifs(filename, std::ifstream::binary);
   if (!ifs.is_open()) {
     std::cerr << "Model file cannot be opened for loading!" << std::endl;
     exit(EXIT_FAILURE);
