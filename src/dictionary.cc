@@ -147,30 +147,33 @@ void Dictionary::initNgrams() {
   }
 }
 
-std::string Dictionary::readWord(std::ifstream& fin)
+bool Dictionary::readWord(std::ifstream& fin, std::string& word)
 {
   char c;
-  std::string word;
+  word.clear();
   while (fin.peek() != EOF) {
     fin.get(c);
     if (isspace(c) || c == 0) {
       if (word.empty()) {
-        if (c == '\n') return EOS;
+        if (c == '\n') {
+          word += EOS;
+          return true;
+        }
         continue;
       } else {
         if (c == '\n') fin.unget();
-        return word;
+        return true;
       }
     }
     word.push_back(c);
   }
-  return word;
+  return !word.empty();
 }
 
 void Dictionary::readFromFile(std::ifstream& ifs) {
   std::string word;
   int64_t minThreshold = 1;
-  while (!(word = readWord(ifs)).empty()) {
+  while (readWord(ifs, word)) {
     add(word);
     if (ntokens_ % 1000000 == 0) {
       std::cout << "\rRead " << ntokens_  / 1000000 << "M words" << std::flush;
@@ -248,7 +251,7 @@ int32_t Dictionary::getLine(std::ifstream& ifs,
     ifs.clear();
     ifs.seekg(std::streampos(0));
   }
-  while (!(token = readWord(ifs)).empty()) {
+  while (readWord(ifs, token)) {
     if (token == EOS) break;
     int32_t wid = getId(token);
     if (wid < 0) continue;

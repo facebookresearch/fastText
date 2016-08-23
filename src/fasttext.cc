@@ -393,8 +393,8 @@ void train(int argc, char** argv) {
   double trainTime = difftime(time(nullptr), t0);
   std::cout << "Train time: " << trainTime << " sec" << std::endl;
 
-  if (args.output.size() != 0) {
-    saveModel(dict, input, output);
+  saveModel(dict, input, output);
+  if (args.model != model_name::sup) {
     saveVectors(dict, input, output);
   }
 }
