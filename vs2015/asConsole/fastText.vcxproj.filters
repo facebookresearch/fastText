@@ -6,48 +6,48 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\args.cc">
+    <ClCompile Include="..\..\src\args.cc">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\dictionary.cc">
+    <ClCompile Include="..\..\src\dictionary.cc">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\fasttext.cc">
+    <ClCompile Include="..\..\src\fasttext.cc">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\matrix.cc">
+    <ClCompile Include="..\..\src\matrix.cc">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\model.cc">
+    <ClCompile Include="..\..\src\model.cc">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\utils.cc">
+    <ClCompile Include="..\..\src\utils.cc">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\vector.cc">
+    <ClCompile Include="..\..\src\vector.cc">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\args.h">
+    <ClInclude Include="..\..\src\args.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\dictionary.h">
+    <ClInclude Include="..\..\src\dictionary.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\matrix.h">
+    <ClInclude Include="..\..\src\matrix.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\model.h">
+    <ClInclude Include="..\..\src\model.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\real.h">
+    <ClInclude Include="..\..\src\real.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\utils.h">
+    <ClInclude Include="..\..\src\utils.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\vector.h">
+    <ClInclude Include="..\..\src\vector.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

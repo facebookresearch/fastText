@@ -91,7 +91,7 @@ const std::vector<int32_t> Dictionary::getNgrams(const std::string& word) {
 bool Dictionary::discard(int32_t id, real rand) {
   assert(id >= 0);
   assert(id < nwords_);
-  if (args.model == model_name::sup) return false;
+  if (args.model == model_name::sup) { return false; }
   return rand > pdiscard_[id];
 }
 
@@ -147,7 +147,7 @@ void Dictionary::initNgrams() {
   }
 }
 
-bool Dictionary::readWord(std::ifstream& fin, std::string& word)
+bool Dictionary::readWord(std::istream& fin, std::string& word)
 {
   char c;
   word.clear();
@@ -170,7 +170,7 @@ bool Dictionary::readWord(std::ifstream& fin, std::string& word)
   return !word.empty();
 }
 
-void Dictionary::readFromFile(std::ifstream& ifs) {
+void Dictionary::readFromFile(std::istream& ifs) {
   std::string word;
   int64_t minThreshold = 1;
   while (readWord(ifs, word)) {
@@ -238,7 +238,7 @@ void Dictionary::addNgrams(std::vector<int32_t>& line, int32_t n) {
   }
 }
 
-int32_t Dictionary::getLine(std::ifstream& ifs,
+int32_t Dictionary::getLine(std::istream& ifs,
                             std::vector<int32_t>& words,
                             std::vector<int32_t>& labels,
                             std::minstd_rand& rng) {
@@ -257,7 +257,7 @@ int32_t Dictionary::getLine(std::ifstream& ifs,
     if (wid < 0) continue;
     entry_type type = getType(wid);
     ntokens++;
-    if (type == entry_type::word && !discard(wid, uniform(rng))) {
+    if (type == entry_type::word && !discard(wid, uniform(rng))) { 
       words.push_back(wid);
     }
     if (type == entry_type::label) {
