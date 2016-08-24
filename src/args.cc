@@ -40,6 +40,9 @@ void Args::parseArgs(int argc, char** argv) {
     model = model_name::sup;
     loss = loss_name::softmax;
     minCount = 1;
+    minn = 0;
+    maxn = 0;
+    lr = 0.1;
   } else if (command == "cbow") {
     model = model_name::cbow;
   }
@@ -111,6 +114,9 @@ void Args::parseArgs(int argc, char** argv) {
     std::cout << "Empty input or output path." << std::endl;
     printHelp();
     exit(EXIT_FAILURE);
+  }
+  if (wordNgrams <= 1 && maxn == 0) {
+    bucket = 0;
   }
 }
 
