@@ -186,6 +186,8 @@ void Dictionary::readFromFile(std::ifstream& ifs) {
   threshold(args.minCount);
   initTableDiscard();
   initNgrams();
+  std::cout << "Number of words:  " << nwords_ << std::endl;
+  std::cout << "Number of labels: " << nlabels_ << std::endl;
 }
 
 void Dictionary::threshold(int64_t t) {
@@ -194,7 +196,7 @@ void Dictionary::threshold(int64_t t) {
       return e1.count > e2.count;
     });
   words_.erase(remove_if(words_.begin(), words_.end(), [&](const entry& e) {
-        return e.count < t;
+        return e.type == entry_type::word && e.count < t;
       }), words_.end());
   words_.shrink_to_fit();
   size_ = 0;
