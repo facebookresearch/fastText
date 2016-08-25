@@ -109,15 +109,31 @@ bool Model::comparePairs(const std::pair<real, int32_t> &l,
 }
 
 void Model::predict(const std::vector<int32_t>& input, int32_t k,
-                    std::vector<std::pair<real, int32_t>>& heap) {
+                    std::vector<std::pair<real, int32_t>>& heap,
+                    bool probabilities) {
   assert(k > 0);
   heap.reserve(k + 1);
   computeHidden(input);
   if (args.loss == loss_name::hs) {
     dfs(k, 2 * osz_ - 2, 0.0, heap);
+    if (probabilities) {
+      for (auto& pair : heap) {
+        pair.first = exp(pair.first);
+      }
+    }
   } else {
     output_.mul(wo_, hidden_);
     findKBest(k, heap);
+    if (probabilities) {
+      real max = *std::max_element(output_.data_, output_.data_ + output_.m_);
+      real z = 0;
+      for (int64_t i = 0; i < output_.m_; i += 1) {
+        z += exp(output_[i] - max);
+      }
+      for (auto& pair : heap) {
+        pair.first = exp(pair.first - max) / z;
+      }
+    }
   }
   std::sort_heap(heap.begin(), heap.end(), comparePairs);
 }

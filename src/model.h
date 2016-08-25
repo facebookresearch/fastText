@@ -63,7 +63,8 @@ class Model {
     real softmax(int32_t);
 
     void predict(const std::vector<int32_t>&, int32_t,
-                 std::vector<std::pair<real, int32_t>>&);
+                 std::vector<std::pair<real, int32_t>>&,
+                 bool = false);
     void dfs(int32_t, int32_t, real, std::vector<std::pair<real, int32_t>>&);
     void findKBest(int32_t, std::vector<std::pair<real, int32_t>>&);
     real update(const std::vector<int32_t>&, int32_t);

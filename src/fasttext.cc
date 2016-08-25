@@ -192,7 +192,7 @@ void test(Dictionary& dict, Model& model, std::string filename, int32_t k) {
   std::cout << "Number of examples: " << nexamples << std::endl;
 }
 
-void predict(Dictionary& dict, Model& model, std::string filename, int32_t k) {
+void predict(Dictionary& dict, Model& model, std::string filename, int32_t k, bool print_probabilities) {
   std::vector<int32_t> line, labels;
   std::ifstream ifs(filename);
   if (!ifs.is_open()) {
@@ -207,12 +207,15 @@ void predict(Dictionary& dict, Model& model, std::string filename, int32_t k) {
       continue;
     }
     std::vector<std::pair<real, int32_t>> predictions;
-    model.predict(line, k, predictions);
+    model.predict(line, k, predictions, print_probabilities);
     for (auto it = predictions.cbegin(); it != predictions.cend(); it++) {
       if (it != predictions.cbegin()) {
         std::cout << ' ';
       }
       std::cout << dict.getLabel(it->second);
+      if (print_probabilities) {
+        std::cout << ' ' << it->first;
+      }
     }
     std::cout << std::endl;
   }
@@ -276,7 +279,8 @@ void printUsage() {
     << "The commands supported by fasttext are:\n\n"
     << "  supervised       train a supervised classifier\n"
     << "  test             evaluate a supervised classifier\n"
-    << "  predict          predict most likely label\n"
+    << "  predict          predict most likely labels\n"
+    << "  predict-prob     predict most likely labels with probabilities\n"
     << "  skipgram         train a skipgram model\n"
     << "  cbow             train a cbow model\n"
     << "  print-vectors    print vectors given a trained model\n"
@@ -294,7 +298,7 @@ void printTestUsage() {
 
 void printPredictUsage() {
   std::cout
-    << "usage: fasttext predict <model> <test-data> [<k>]\n\n"
+    << "usage: fasttext predict[-prob] <model> <test-data> [<k>]\n\n"
     << "  <model>      model filename\n"
     << "  <test-data>  test data filename\n"
     << "  <k>          (optional; 1 by default) predict top k labels\n"
@@ -342,7 +346,8 @@ void predict(int argc, char** argv) {
   loadModel(std::string(argv[2]), dict, input, output);
   Model model(input, output, args.dim, args.lr, 1);
   model.setTargetCounts(dict.getCounts(entry_type::label));
-  predict(dict, model, std::string(argv[3]), k);
+  bool print_probabilities = std::string(argv[1]) == "predict-prob";
+  predict(dict, model, std::string(argv[3]), k, print_probabilities);
   exit(0);
 }
 
@@ -412,7 +417,7 @@ int main(int argc, char** argv) {
     test(argc, argv);
   } else if (command == "print-vectors") {
     printVectors(argc, argv);
-  } else if (command == "predict") {
+  } else if (command == "predict" || command == "predict-prob" ) {
     predict(argc, argv);
   } else {
     printUsage();
