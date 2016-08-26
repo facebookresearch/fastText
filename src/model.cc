@@ -74,8 +74,7 @@ real Model::hierarchicalSoftmax(int32_t target) {
   return loss;
 }
 
-real Model::softmax(int32_t target) {
-  grad_.zero();
+void Model::computeOutputSoftmax() {
   output_.mul(wo_, hidden_);
   real max = output_[0], z = 0.0;
   for (int32_t i = 0; i < osz_; i++) {
@@ -86,8 +85,15 @@ real Model::softmax(int32_t target) {
     z += output_[i];
   }
   for (int32_t i = 0; i < osz_; i++) {
-    real label = (i == target) ? 1.0 : 0.0;
     output_[i] /= z;
+  }
+}
+
+real Model::softmax(int32_t target) {
+  grad_.zero();
+  computeOutputSoftmax();
+  for (int32_t i = 0; i < osz_; i++) {
+    real label = (i == target) ? 1.0 : 0.0;
     real alpha = lr_ * (label - output_[i]);
     grad_.addRow(wo_, i, alpha);
     wo_.addRow(hidden_, i, alpha);
@@ -116,18 +122,18 @@ void Model::predict(const std::vector<int32_t>& input, int32_t k,
   if (args.loss == loss_name::hs) {
     dfs(k, 2 * osz_ - 2, 0.0, heap);
   } else {
-    output_.mul(wo_, hidden_);
     findKBest(k, heap);
   }
   std::sort_heap(heap.begin(), heap.end(), comparePairs);
 }
 
 void Model::findKBest(int32_t k, std::vector<std::pair<real, int32_t>>& heap) {
+  computeOutputSoftmax();
   for (int32_t i = 0; i < osz_; i++) {
-    if (heap.size() == k && output_[i] < heap.front().first) {
+    if (heap.size() == k && utils::log(output_[i]) < heap.front().first) {
       continue;
     }
-    heap.push_back(std::make_pair(output_[i], i));
+    heap.push_back(std::make_pair(utils::log(output_[i]), i));
     std::push_heap(heap.begin(), heap.end(), comparePairs);
     if (heap.size() > k) {
       std::pop_heap(heap.begin(), heap.end(), comparePairs);

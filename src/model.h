@@ -68,6 +68,7 @@ class Model {
     void findKBest(int32_t, std::vector<std::pair<real, int32_t>>&);
     real update(const std::vector<int32_t>&, int32_t);
     void computeHidden(const std::vector<int32_t>&);
+    void computeOutputSoftmax();
 
     void setTargetCounts(const std::vector<int64_t>&);
     void initTableNegatives(const std::vector<int64_t>&);
