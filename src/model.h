@@ -13,7 +13,9 @@
 #include <vector>
 #include <random>
 #include <utility>
+#include <memory>
 
+#include "args.h"
 #include "matrix.h"
 #include "vector.h"
 #include "real.h"
@@ -28,8 +30,9 @@ struct Node {
 
 class Model {
   private:
-    Matrix& wi_;
-    Matrix& wo_;
+    std::shared_ptr<Matrix> wi_;
+    std::shared_ptr<Matrix> wo_;
+    std::shared_ptr<Args> args_;
     Vector hidden_;
     Vector output_;
     Vector grad_;
@@ -52,7 +55,8 @@ class Model {
     static constexpr real MIN_LR = 0.000001;
 
   public:
-    Model(Matrix&, Matrix&, int32_t, real, int32_t);
+    Model(std::shared_ptr<Matrix>, std::shared_ptr<Matrix>,
+          std::shared_ptr<Args>, int32_t);
 
     void setLearningRate(real);
     real getLearningRate();

@@ -15,7 +15,9 @@
 #include <istream>
 #include <ostream>
 #include <random>
+#include <memory>
 
+#include "args.h"
 #include "real.h"
 
 typedef int32_t id_type;
@@ -38,6 +40,7 @@ class Dictionary {
     void initNgrams();
     void threshold(int64_t);
 
+    std::shared_ptr<Args> args_;
     std::vector<int32_t> word2int_;
     std::vector<entry> words_;
     std::vector<real> pdiscard_;
@@ -51,7 +54,7 @@ class Dictionary {
     static const std::string BOW;
     static const std::string EOW;
 
-    Dictionary();
+    explicit Dictionary(std::shared_ptr<Args>);
     int32_t nwords();
     int32_t nlabels();
     int64_t ntokens();
