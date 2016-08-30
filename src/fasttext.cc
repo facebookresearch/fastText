@@ -18,15 +18,7 @@
 #include <thread>
 #include <string>
 #include <vector>
-#include <atomic>
 #include <algorithm>
-
-namespace info {
-  clock_t start;
-  std::atomic<int64_t> allWords(0);
-  std::atomic<int64_t> allN(0);
-  double allLoss(0.0);
-}
 
 void FastText::getVector(Vector& vec, const std::string& word) {
   const std::vector<int32_t>& ngrams = dict_->getNgrams(word);
@@ -100,10 +92,9 @@ void FastText::loadModel(const std::string& filename) {
   ifs.close();
 }
 
-void FastText::printInfo(real progress) {
-  real loss = info::allLoss / info::allN;
-  real t = real(clock() - info::start) / CLOCKS_PER_SEC;
-  real wst = real(info::allWords) / t;
+void FastText::printInfo(real progress, real loss) {
+  real t = real(clock() - start) / CLOCKS_PER_SEC;
+  real wst = real(tokenCount) / t;
   real lr = args_->lr * (1.0 - progress);
   int eta = int(t / progress * (1 - progress) / args_->thread);
   int etah = eta / 3600;
@@ -119,18 +110,15 @@ void FastText::printInfo(real progress) {
 
 void FastText::supervised(Model& model, real lr,
                           const std::vector<int32_t>& line,
-                          const std::vector<int32_t>& labels,
-                          double& loss, int32_t& nexamples) {
+                          const std::vector<int32_t>& labels) {
   if (labels.size() == 0 || line.size() == 0) return;
   std::uniform_int_distribution<> uniform(0, labels.size() - 1);
   int32_t i = uniform(model.rng);
-  loss += model.update(line, labels[i], lr);
-  nexamples++;
+  model.update(line, labels[i], lr);
 }
 
 void FastText::cbow(Model& model, real lr,
-                    const std::vector<int32_t>& line,
-                    double& loss, int32_t& nexamples) {
+                    const std::vector<int32_t>& line) {
   std::vector<int32_t> bow;
   std::uniform_int_distribution<> uniform(1, args_->ws);
   for (int32_t w = 0; w < line.size(); w++) {
@@ -142,22 +130,19 @@ void FastText::cbow(Model& model, real lr,
         bow.insert(bow.end(), ngrams.cbegin(), ngrams.cend());
       }
     }
-    loss += model.update(bow, line[w], lr);
-    nexamples++;
+    model.update(bow, line[w], lr);
   }
 }
 
 void FastText::skipgram(Model& model, real lr,
-                        const std::vector<int32_t>& line,
-                        double& loss, int32_t& nexamples) {
+                        const std::vector<int32_t>& line) {
   std::uniform_int_distribution<> uniform(1, args_->ws);
   for (int32_t w = 0; w < line.size(); w++) {
     int32_t boundary = uniform(model.rng);
     const std::vector<int32_t>& ngrams = dict_->getNgrams(line[w]);
     for (int32_t c = -boundary; c <= boundary; c++) {
       if (c != 0 && w + c >= 0 && w + c < line.size()) {
-        loss += model.update(ngrams, line[w + c], lr);
-        nexamples++;
+        model.update(ngrams, line[w + c], lr);
       }
     }
   }
@@ -236,36 +221,30 @@ void FastText::trainThread(int32_t threadId) {
   }
 
   const int64_t ntokens = dict_->ntokens();
-  int64_t tokenCount = 0;
-  double loss = 0.0;
-  int32_t nexamples = 0;
+  int64_t localTokenCount = 0;
   std::vector<int32_t> line, labels;
-  while (info::allWords < args_->epoch * ntokens) {
-    real progress = real(info::allWords) / (args_->epoch * ntokens);
+  while (tokenCount < args_->epoch * ntokens) {
+    real progress = real(tokenCount) / (args_->epoch * ntokens);
     real lr = args_->lr * (1.0 - progress);
-    tokenCount += dict_->getLine(ifs, line, labels, model.rng);
+    localTokenCount += dict_->getLine(ifs, line, labels, model.rng);
     if (args_->model == model_name::sup) {
       dict_->addNgrams(line, args_->wordNgrams);
-      supervised(model, lr, line, labels, loss, nexamples);
+      supervised(model, lr, line, labels);
     } else if (args_->model == model_name::cbow) {
-      cbow(model, lr, line, loss, nexamples);
+      cbow(model, lr, line);
     } else if (args_->model == model_name::sg) {
-      skipgram(model, lr, line, loss, nexamples);
+      skipgram(model, lr, line);
     }
-    if (tokenCount > args_->lrUpdateRate) {
-      info::allWords += tokenCount;
-      info::allLoss += loss;
-      info::allN += nexamples;
-      tokenCount = 0;
-      loss = 0.0;
-      nexamples = 0;
+    if (localTokenCount > args_->lrUpdateRate) {
+      tokenCount += localTokenCount;
+      localTokenCount = 0;
       if (threadId == 0) {
-        printInfo(progress);
+        printInfo(progress, model.getLoss());
       }
     }
   }
   if (threadId == 0) {
-    printInfo(1.0);
+    printInfo(1.0, model.getLoss());
     std::cout << std::endl;
   }
   ifs.close();
@@ -291,7 +270,8 @@ void FastText::train(std::shared_ptr<Args> args) {
   input_->uniform(1.0 / args_->dim);
   output_->zero();
 
-  info::start = clock();
+  start = clock();
+  tokenCount = 0;
   std::vector<std::thread> threads;
   for (int32_t i = 0; i < args_->thread; i++) {
     threads.push_back(std::thread([=]() { trainThread(i); }));

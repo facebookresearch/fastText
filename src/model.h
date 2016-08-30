@@ -39,6 +39,8 @@ class Model {
     int32_t hsz_;
     int32_t isz_;
     int32_t osz_;
+    real loss_;
+    int64_t nexamples_;
 
     static bool comparePairs(const std::pair<real, int32_t>&,
                              const std::pair<real, int32_t>&);
@@ -64,7 +66,7 @@ class Model {
                  std::vector<std::pair<real, int32_t>>&);
     void dfs(int32_t, int32_t, real, std::vector<std::pair<real, int32_t>>&);
     void findKBest(int32_t, std::vector<std::pair<real, int32_t>>&);
-    real update(const std::vector<int32_t>&, int32_t, real);
+    void update(const std::vector<int32_t>&, int32_t, real);
     void computeHidden(const std::vector<int32_t>&);
     void computeOutputSoftmax();
 
@@ -72,6 +74,7 @@ class Model {
     void initTableNegatives(const std::vector<int64_t>&);
     int32_t getNegative(int32_t target);
     void buildTree(const std::vector<int64_t>&);
+    real getLoss();
 
     std::minstd_rand rng;
 };

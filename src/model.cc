@@ -28,6 +28,8 @@ Model::Model(std::shared_ptr<Matrix> wi,
   osz_ = wo->m_;
   hsz_ = args->dim;
   negpos = 0;
+  loss_ = 0.0;
+  nexamples_ = 1;
 }
 
 real Model::binaryLogistic(int32_t target, bool label, real lr) {
@@ -155,24 +157,24 @@ void Model::dfs(int32_t k, int32_t node, real score,
   dfs(k, tree[node].right, score + utils::log(f), heap);
 }
 
-real Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
+void Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
   assert(target >= 0);
   assert(target < osz_);
-  if (input.size() == 0) return 0.0;
+  if (input.size() == 0) return;
   hidden_.zero();
   for (auto it = input.cbegin(); it != input.cend(); ++it) {
     hidden_.addRow(*wi_, *it);
   }
   hidden_.mul(1.0 / input.size());
 
-  real loss;
   if (args_->loss == loss_name::ns) {
-    loss = negativeSampling(target, lr);
+    loss_ += negativeSampling(target, lr);
   } else if (args_->loss == loss_name::hs) {
-    loss = hierarchicalSoftmax(target, lr);
+    loss_ += hierarchicalSoftmax(target, lr);
   } else {
-    loss = softmax(target, lr);
+    loss_ += softmax(target, lr);
   }
+  nexamples_ += 1;
 
   if (args_->model == model_name::sup) {
     grad_.mul(1.0 / input.size());
@@ -180,7 +182,6 @@ real Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
   for (auto it = input.cbegin(); it != input.cend(); ++it) {
     wi_->addRow(grad_, *it, 1.0);
   }
-  return loss;
 }
 
 void Model::setTargetCounts(const std::vector<int64_t>& counts) {
@@ -258,4 +259,8 @@ void Model::buildTree(const std::vector<int64_t>& counts) {
     paths.push_back(path);
     codes.push_back(code);
   }
+}
+
+real Model::getLoss() {
+  return loss_ / nexamples_;
 }

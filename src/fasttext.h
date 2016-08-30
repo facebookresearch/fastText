@@ -10,6 +10,7 @@
 #ifndef FASTTEXT_FASTTEXT_H
 #define FASTTEXT_FASTTEXT_H
 
+#include <atomic>
 #include <memory>
 
 #include "matrix.h"
@@ -27,6 +28,8 @@ class FastText {
     std::shared_ptr<Matrix> input_;
     std::shared_ptr<Matrix> output_;
     std::shared_ptr<Model> model_;
+    std::atomic<int64_t> tokenCount;
+    clock_t start;
 
   public:
     void getVector(Vector&, const std::string&);
@@ -34,12 +37,12 @@ class FastText {
     void printVectors();
     void saveModel();
     void loadModel(const std::string&);
-    void printInfo(real progress);
+    void printInfo(real, real);
 
     void supervised(Model&, real, const std::vector<int32_t>&,
-                    const std::vector<int32_t>&, double&, int32_t&);
-    void cbow(Model&, real, const std::vector<int32_t>&, double&, int32_t&);
-    void skipgram(Model&, real, const std::vector<int32_t>&, double&, int32_t&);
+                    const std::vector<int32_t>&);
+    void cbow(Model&, real, const std::vector<int32_t>&);
+    void skipgram(Model&, real, const std::vector<int32_t>&);
     void test(const std::string&, int32_t);
     void predict(const std::string&, int32_t, bool);
     void trainThread(int32_t);
