@@ -11,7 +11,8 @@
 #define FASTTEXT_MATRIX_H
 
 #include <cstdint>
-#include <fstream>
+#include <istream>
+#include <ostream>
 
 #include "real.h"
 
@@ -35,8 +36,8 @@ class Matrix {
     real dotRow(const Vector&, int64_t);
     void addRow(const Vector&, int64_t, real);
 
-    void save(std::ofstream&);
-    void load(std::ifstream&);
+    void save(std::ostream&);
+    void load(std::istream&);
 };
 
 #endif

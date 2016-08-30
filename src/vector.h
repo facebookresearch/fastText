@@ -11,7 +11,7 @@
 #define FASTTEXT_VECTOR_H
 
 #include <cstdint>
-#include <fstream>
+#include <ostream>
 
 #include "real.h"
 

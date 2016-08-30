@@ -13,7 +13,6 @@
 #include <string.h>
 
 #include <iostream>
-#include <fstream>
 
 Args::Args() {
   lr = 0.05;
@@ -145,38 +144,34 @@ void Args::printHelp() {
     << std::endl;
 }
 
-void Args::save(std::ofstream& ofs) {
-  if (ofs.is_open()) {
-    ofs.write((char*) &(dim), sizeof(int));
-    ofs.write((char*) &(ws), sizeof(int));
-    ofs.write((char*) &(epoch), sizeof(int));
-    ofs.write((char*) &(minCount), sizeof(int));
-    ofs.write((char*) &(neg), sizeof(int));
-    ofs.write((char*) &(wordNgrams), sizeof(int));
-    ofs.write((char*) &(loss), sizeof(loss_name));
-    ofs.write((char*) &(model), sizeof(model_name));
-    ofs.write((char*) &(bucket), sizeof(int));
-    ofs.write((char*) &(minn), sizeof(int));
-    ofs.write((char*) &(maxn), sizeof(int));
-    ofs.write((char*) &(lrUpdateRate), sizeof(int));
-    ofs.write((char*) &(t), sizeof(double));
-  }
+void Args::save(std::ostream& out) {
+  out.write((char*) &(dim), sizeof(int));
+  out.write((char*) &(ws), sizeof(int));
+  out.write((char*) &(epoch), sizeof(int));
+  out.write((char*) &(minCount), sizeof(int));
+  out.write((char*) &(neg), sizeof(int));
+  out.write((char*) &(wordNgrams), sizeof(int));
+  out.write((char*) &(loss), sizeof(loss_name));
+  out.write((char*) &(model), sizeof(model_name));
+  out.write((char*) &(bucket), sizeof(int));
+  out.write((char*) &(minn), sizeof(int));
+  out.write((char*) &(maxn), sizeof(int));
+  out.write((char*) &(lrUpdateRate), sizeof(int));
+  out.write((char*) &(t), sizeof(double));
 }
 
-void Args::load(std::ifstream& ifs) {
-  if (ifs.is_open()) {
-    ifs.read((char*) &(dim), sizeof(int));
-    ifs.read((char*) &(ws), sizeof(int));
-    ifs.read((char*) &(epoch), sizeof(int));
-    ifs.read((char*) &(minCount), sizeof(int));
-    ifs.read((char*) &(neg), sizeof(int));
-    ifs.read((char*) &(wordNgrams), sizeof(int));
-    ifs.read((char*) &(loss), sizeof(loss_name));
-    ifs.read((char*) &(model), sizeof(model_name));
-    ifs.read((char*) &(bucket), sizeof(int));
-    ifs.read((char*) &(minn), sizeof(int));
-    ifs.read((char*) &(maxn), sizeof(int));
-    ifs.read((char*) &(lrUpdateRate), sizeof(int));
-    ifs.read((char*) &(t), sizeof(double));
-  }
+void Args::load(std::istream& in) {
+  in.read((char*) &(dim), sizeof(int));
+  in.read((char*) &(ws), sizeof(int));
+  in.read((char*) &(epoch), sizeof(int));
+  in.read((char*) &(minCount), sizeof(int));
+  in.read((char*) &(neg), sizeof(int));
+  in.read((char*) &(wordNgrams), sizeof(int));
+  in.read((char*) &(loss), sizeof(loss_name));
+  in.read((char*) &(model), sizeof(model_name));
+  in.read((char*) &(bucket), sizeof(int));
+  in.read((char*) &(minn), sizeof(int));
+  in.read((char*) &(maxn), sizeof(int));
+  in.read((char*) &(lrUpdateRate), sizeof(int));
+  in.read((char*) &(t), sizeof(double));
 }
