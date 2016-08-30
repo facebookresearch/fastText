@@ -15,8 +15,6 @@
 
 #include "utils.h"
 
-real Model::lr_ = MIN_LR;
-
 Model::Model(std::shared_ptr<Matrix> wi,
              std::shared_ptr<Matrix> wo,
              std::shared_ptr<Args> args,
@@ -29,21 +27,12 @@ Model::Model(std::shared_ptr<Matrix> wi,
   isz_ = wi->m_;
   osz_ = wo->m_;
   hsz_ = args->dim;
-  lr_ = args->lr;
   negpos = 0;
 }
 
-void Model::setLearningRate(real lr) {
-  lr_ = (lr < MIN_LR) ? MIN_LR : lr;
-}
-
-real Model::getLearningRate() {
-  return lr_;
-}
-
-real Model::binaryLogistic(int32_t target, bool label) {
+real Model::binaryLogistic(int32_t target, bool label, real lr) {
   real score = utils::sigmoid(wo_->dotRow(hidden_, target));
-  real alpha = lr_ * (real(label) - score);
+  real alpha = lr * (real(label) - score);
   grad_.addRow(*wo_, target, alpha);
   wo_->addRow(hidden_, target, alpha);
   if (label) {
@@ -53,26 +42,26 @@ real Model::binaryLogistic(int32_t target, bool label) {
   }
 }
 
-real Model::negativeSampling(int32_t target) {
+real Model::negativeSampling(int32_t target, real lr) {
   real loss = 0.0;
   grad_.zero();
   for (int32_t n = 0; n <= args_->neg; n++) {
     if (n == 0) {
-      loss += binaryLogistic(target, true);
+      loss += binaryLogistic(target, true, lr);
     } else {
-      loss += binaryLogistic(getNegative(target), false);
+      loss += binaryLogistic(getNegative(target), false, lr);
     }
   }
   return loss;
 }
 
-real Model::hierarchicalSoftmax(int32_t target) {
+real Model::hierarchicalSoftmax(int32_t target, real lr) {
   real loss = 0.0;
   grad_.zero();
   const std::vector<bool>& binaryCode = codes[target];
   const std::vector<int32_t>& pathToRoot = paths[target];
   for (int32_t i = 0; i < pathToRoot.size(); i++) {
-    loss += binaryLogistic(pathToRoot[i], binaryCode[i]);
+    loss += binaryLogistic(pathToRoot[i], binaryCode[i], lr);
   }
   return loss;
 }
@@ -92,12 +81,12 @@ void Model::computeOutputSoftmax() {
   }
 }
 
-real Model::softmax(int32_t target) {
+real Model::softmax(int32_t target, real lr) {
   grad_.zero();
   computeOutputSoftmax();
   for (int32_t i = 0; i < osz_; i++) {
     real label = (i == target) ? 1.0 : 0.0;
-    real alpha = lr_ * (label - output_[i]);
+    real alpha = lr * (label - output_[i]);
     grad_.addRow(*wo_, i, alpha);
     wo_->addRow(hidden_, i, alpha);
   }
@@ -166,7 +155,7 @@ void Model::dfs(int32_t k, int32_t node, real score,
   dfs(k, tree[node].right, score + utils::log(f), heap);
 }
 
-real Model::update(const std::vector<int32_t>& input, int32_t target) {
+real Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
   assert(target >= 0);
   assert(target < osz_);
   if (input.size() == 0) return 0.0;
@@ -178,11 +167,11 @@ real Model::update(const std::vector<int32_t>& input, int32_t target) {
 
   real loss;
   if (args_->loss == loss_name::ns) {
-    loss = negativeSampling(target);
+    loss = negativeSampling(target, lr);
   } else if (args_->loss == loss_name::hs) {
-    loss = hierarchicalSoftmax(target);
+    loss = hierarchicalSoftmax(target, lr);
   } else {
-    loss = softmax(target);
+    loss = softmax(target, lr);
   }
 
   if (args_->model == model_name::sup) {

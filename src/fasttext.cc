@@ -104,30 +104,31 @@ void FastText::printInfo(real progress) {
   real loss = info::allLoss / info::allN;
   real t = real(clock() - info::start) / CLOCKS_PER_SEC;
   real wst = real(info::allWords) / t;
+  real lr = args_->lr * (1.0 - progress);
   int eta = int(t / progress * (1 - progress) / args_->thread);
   int etah = eta / 3600;
   int etam = (eta - etah * 3600) / 60;
   std::cout << std::fixed;
   std::cout << "\rProgress: " << std::setprecision(1) << 100 * progress << "%";
   std::cout << "  words/sec/thread: " << std::setprecision(0) << wst;
-  std::cout << "  lr: " << std::setprecision(6) << model_->getLearningRate();
+  std::cout << "  lr: " << std::setprecision(6) << lr;
   std::cout << "  loss: " << std::setprecision(6) << loss;
   std::cout << "  eta: " << etah << "h" << etam << "m ";
   std::cout << std::flush;
 }
 
-void FastText::supervised(Model& model,
+void FastText::supervised(Model& model, real lr,
                           const std::vector<int32_t>& line,
                           const std::vector<int32_t>& labels,
                           double& loss, int32_t& nexamples) {
   if (labels.size() == 0 || line.size() == 0) return;
   std::uniform_int_distribution<> uniform(0, labels.size() - 1);
   int32_t i = uniform(model.rng);
-  loss += model.update(line, labels[i]);
+  loss += model.update(line, labels[i], lr);
   nexamples++;
 }
 
-void FastText::cbow(Model& model,
+void FastText::cbow(Model& model, real lr,
                     const std::vector<int32_t>& line,
                     double& loss, int32_t& nexamples) {
   std::vector<int32_t> bow;
@@ -141,12 +142,12 @@ void FastText::cbow(Model& model,
         bow.insert(bow.end(), ngrams.cbegin(), ngrams.cend());
       }
     }
-    loss += model.update(bow, line[w]);
+    loss += model.update(bow, line[w], lr);
     nexamples++;
   }
 }
 
-void FastText::skipgram(Model& model,
+void FastText::skipgram(Model& model, real lr,
                         const std::vector<int32_t>& line,
                         double& loss, int32_t& nexamples) {
   std::uniform_int_distribution<> uniform(1, args_->ws);
@@ -155,7 +156,7 @@ void FastText::skipgram(Model& model,
     const std::vector<int32_t>& ngrams = dict_->getNgrams(line[w]);
     for (int32_t c = -boundary; c <= boundary; c++) {
       if (c != 0 && w + c >= 0 && w + c < line.size()) {
-        loss += model.update(ngrams, line[w + c]);
+        loss += model.update(ngrams, line[w + c], lr);
         nexamples++;
       }
     }
@@ -234,21 +235,22 @@ void FastText::trainThread(int32_t threadId) {
     model.setTargetCounts(dict_->getCounts(entry_type::word));
   }
 
-  real progress;
   const int64_t ntokens = dict_->ntokens();
   int64_t tokenCount = 0;
   double loss = 0.0;
   int32_t nexamples = 0;
   std::vector<int32_t> line, labels;
   while (info::allWords < args_->epoch * ntokens) {
+    real progress = real(info::allWords) / (args_->epoch * ntokens);
+    real lr = args_->lr * (1.0 - progress);
     tokenCount += dict_->getLine(ifs, line, labels, model.rng);
     if (args_->model == model_name::sup) {
       dict_->addNgrams(line, args_->wordNgrams);
-      supervised(model, line, labels, loss, nexamples);
+      supervised(model, lr, line, labels, loss, nexamples);
     } else if (args_->model == model_name::cbow) {
-      cbow(model, line, loss, nexamples);
+      cbow(model, lr, line, loss, nexamples);
     } else if (args_->model == model_name::sg) {
-      skipgram(model, line, loss, nexamples);
+      skipgram(model, lr, line, loss, nexamples);
     }
     if (tokenCount > args_->lrUpdateRate) {
       info::allWords += tokenCount;
@@ -257,8 +259,6 @@ void FastText::trainThread(int32_t threadId) {
       tokenCount = 0;
       loss = 0.0;
       nexamples = 0;
-      progress = real(info::allWords) / (args_->epoch * ntokens);
-      model.setLearningRate(args_->lr * (1.0 - progress));
       if (threadId == 0) {
         printInfo(progress);
       }
