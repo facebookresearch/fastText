@@ -279,6 +279,7 @@ void FastText::train(std::shared_ptr<Args> args) {
   for (auto it = threads.begin(); it != threads.end(); ++it) {
     it->join();
   }
+  model_ = std::make_shared<Model>(input_, output_, args_, 0);
 
   saveModel();
   if (args_->model != model_name::sup) {
