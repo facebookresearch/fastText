@@ -31,7 +31,7 @@ If you do not plan on using the default system-wide compiler, update the two mac
 
 ### Building with Docker
 
-If you inted to build with Docker, a Docker file is available here [fastText-Docker](https://github.com/xeb/fastText-docker).
+If you intend to build with Docker, a Docker file is available here [fastText-Docker](https://github.com/xeb/fastText-docker).
 
 ## Example use cases
 
