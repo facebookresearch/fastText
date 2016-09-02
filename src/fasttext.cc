@@ -10,7 +10,6 @@
 #include "fasttext.h"
 
 #include <fenv.h>
-#include <time.h>
 #include <math.h>
 
 #include <iostream>

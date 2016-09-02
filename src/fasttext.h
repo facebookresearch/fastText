@@ -10,6 +10,8 @@
 #ifndef FASTTEXT_FASTTEXT_H
 #define FASTTEXT_FASTTEXT_H
 
+#include <time.h>
+
 #include <atomic>
 #include <memory>
 
