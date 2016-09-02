@@ -185,6 +185,10 @@ void Dictionary::readFromFile(std::istream& in) {
   initNgrams();
   std::cout << "Number of words:  " << nwords_ << std::endl;
   std::cout << "Number of labels: " << nlabels_ << std::endl;
+  if (size_ == 0) {
+    std::cerr << "Empty vocabulary. Try a smaller -minCount value." << std::endl;
+    exit(EXIT_FAILURE);
+  }
 }
 
 void Dictionary::threshold(int64_t t) {
