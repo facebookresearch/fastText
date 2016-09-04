@@ -18,6 +18,12 @@ using System.Threading;
 
 namespace FastText
 {
+
+    public struct prediction
+    {
+        public string label;
+        public double intensity;
+    }
     public class fastText
     {
         [DllImport("fastText.dll", EntryPoint = "initialize", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
@@ -27,55 +33,80 @@ namespace FastText
         private static extern void dispose();
 
         [DllImport("fastText.dll", EntryPoint = "loadModel", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.I1)]
-        private static extern bool loadModel([MarshalAs(UnmanagedType.LPStr)] string filename);
+        [return: MarshalAs(UnmanagedType.I4)]
+        private static extern int loadModel([MarshalAs(UnmanagedType.LPStr)] string filename);
 
         [DllImport("fastText.dll", EntryPoint = "predict", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void predict(StringBuilder text, int k);
+        private static extern void predict(int model_index, StringBuilder text, int k);
 
         [DllImport("fastText.dll", EntryPoint = "getPredictionBufferSize", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I4)]
-        private static extern int getPredictionBufferSize();
+        private static extern int getPredictionBufferSize(int model_index);
 
         [DllImport("fastText.dll", EntryPoint = "getPrediction", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void getPrediction(StringBuilder output);
+        private static extern void getPrediction(int model_index, StringBuilder output);
 
         [DllImport("fastText.dll", EntryPoint = "getVector", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void getVector([MarshalAs(UnmanagedType.LPStr)] string word, double[] output);
+        private static extern void getVector(int model_index, [MarshalAs(UnmanagedType.LPStr)] string word, double[] output);
 
         [DllImport("fastText.dll", EntryPoint = "getVectorSize", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I4)]
-        private static extern int getVectorSize();
+        private static extern int getVectorSize(int model_index);
 
 
-        public static bool InitializeWithModel(string filename)
+        public static void InitializeFastText()
         {
             initialize();
-            return loadModel(filename);
         }
+
+
 
         public static void Release()
         {
             dispose();
         }
 
+        public string labelStartMarker = "__label__";
+        public string labelEndMarker = "__";
+
         public static List<string> Punctuation {get;set;} = new List<string>() { " ", ".", ",", ";", ":", "-", "/", @"\", "!", "?", "'", "\"", "[", "]", "{", "}", "(", ")", "<", ">", "$", "%", "&", "*", "+", "_", "#" };
 
         public static List<string> StopWords { get; set; } = new List<string>() { "a", "able", "about", "across", "after", "all", "almost", "also", "am", "among", "an", "and", "any", "are", "as", "at", "be", "because", "been", "but", "by", "can", "cannot", "could", "dear", "did", "do", "does", "either", "else", "ever", "every", "for", "from", "get", "got", "had", "has", "have", "he", "her", "hers", "him", "his", "how", "however", "i", "if", "in", "into", "is", "it", "its", "just", "least", "let", "like", "likely", "may", "me", "might", "most", "must", "my", "neither", "no", "nor", "not", "of", "off", "often", "on", "only", "or", "other", "our", "own", "rather", "said", "say", "says", "she", "should", "since", "so", "some", "than", "that", "the", "their", "them", "then", "there", "these", "they", "this", "tis", "to", "too", "twas", "us", "wants", "was", "we", "were", "what", "when", "where", "which", "while", "who", "whom", "why", "will", "with", "would", "yet", "you", "your" };
 
-        public static string GetPrediction(string text, int numberOfTopLabelsToReturn)
+
+        private int ModelIndex;
+
+        public fastText(string filename)
         {
-            var buffer = new StringBuilder(text + "\n");
-            predict(buffer, numberOfTopLabelsToReturn);
-            var out_buffer = new StringBuilder(getPredictionBufferSize());
-            getPrediction(out_buffer);
-            return out_buffer.ToString().TrimEnd(new char[] { '\n', '\r' });
+            InitializeFastText();
+            ModelIndex = loadModel(filename);
         }
 
-        public static double[] GetParagraphVector(string text)
+        public List<prediction> GetPrediction(string text, int numberOfTopLabelsToReturn)
+        {
+            var buffer = new StringBuilder(text + "\n");
+            predict(ModelIndex, buffer, numberOfTopLabelsToReturn);
+            var out_buffer = new StringBuilder(getPredictionBufferSize(ModelIndex));
+            getPrediction(ModelIndex,out_buffer);
+
+            string tmp = out_buffer.ToString().TrimEnd(new char[] { '\n', '\r' });
+            
+            var labels = tmp.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+
+            var predictions = new List<prediction>();
+            foreach(var lbl in labels)
+            {
+                var parts = lbl.Replace("]","").Split('[').ToList();
+                predictions.Add(new prediction() { label = parts.First().Replace(labelStartMarker,"").Replace(labelEndMarker,""), intensity = double.Parse(parts.Last())});
+            }
+
+            return predictions;
+        }
+
+        public double[] GetParagraphVector(string text)
         {
             var words = text.Split(Punctuation.ToArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
-            var vecSum = new double[fastText.getVectorSize()];
+            var vecSum = new double[getVectorSize(ModelIndex)];
 
             words = words.Except(StopWords).ToList();
 
@@ -90,18 +121,27 @@ namespace FastText
             return vecSum;
         }
 
-        public static double[] GetWordVector(string word)
+        public double[] GetWordVector(string word)
         {
-            var vecWord = new double[fastText.getVectorSize()];
-            getVector(word, vecWord);
+            var vecWord = new double[getVectorSize(ModelIndex)];
+            getVector(ModelIndex,word, vecWord);
             return vecWord;
         }
 
 
+        public double[] GetWordDifference(string wordA, string wordB)
+        {
+            return Add(GetWordVector(wordA), Multiply(GetWordVector(wordB),-1));
+        }
 
-        public static double GetWordSimilarity(string wordA, string wordB)
+        public double GetWordSimilarity(string wordA, string wordB)
         {
             return CalculateCosineSimilarity(GetWordVector(wordA), GetWordVector(wordB));
+        }
+
+        public double GetWordSimilarity(string wordA, double[] vector)
+        {
+            return CalculateCosineSimilarity(GetWordVector(wordA), vector);
         }
 
         public static double CalculateCosineSimilarity(double[] vecA, double[] vecB)

@@ -10,9 +10,111 @@ using System.Threading.Tasks;
 
 namespace TestConsole
 {
+    class WordAndSim
+    {
+        public string word;
+        public double sim;
+    }
     class Program
     {
+
         static void Main(string[] args)
+        {
+            //Ensures that we are consistent against culture-specific number formating, etc...
+            CultureInfo culture = CultureInfo.CreateSpecificCulture("en-US");
+
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
+
+            Thread.CurrentThread.CurrentCulture = culture;
+            Thread.CurrentThread.CurrentUICulture = culture;
+
+            string model = @"C:\BigData\NLPmodels\FastText\aviation-caseinsensitive";
+            if(args.Length > 0) { model = args[0]; }
+
+            var words = File.ReadAllLines(model + @".vec").Skip(2).Select((l) => new WordAndSim() { word = l.Split(' ').First() }).ToList();
+            //words.RemoveAll(x => x.word.Length < 6);
+
+
+            var fastTextModel = new fastText(model + @".bin");
+
+            //var utterances = File.ReadAllLines(@"C:\stanford-nlp\classifier_training\test.tsv").Select(l => new IntentExample() { Intent = l.Split('\t').First(), Example = l.Split('\t').Last().ToLowerInvariant() }).ToList();
+            
+
+            while (true)
+            {
+
+                //Console.Write("Word: "); var w1 = Console.ReadLine();
+                //var wV = fastText.GetParagraphVector(w1);
+                //foreach (var u in utterances)
+                //{
+                //    u.Similarity = fastText.CalculateCosineSimilarity(fastText.GetParagraphVector(u.Example), wV);
+                //}
+
+                //utterances.Sort((a, b) => b.Similarity.CompareTo(a.Similarity));
+
+
+                //Console.WriteLine("Most similar:");
+                //foreach (var w in utterances.Take(5))
+                //{
+                //    Console.WriteLine($"{w.Intent} -> {w.Similarity} (i.e. {w.Example})");
+                //}
+
+                //utterances.Reverse();
+                //Console.WriteLine("Least similar:");
+                //foreach (var w in utterances.Take(5))
+                //{
+                //    Console.WriteLine($"{w.Intent} -> {w.Similarity} (i.e. {w.Example})");
+                //}
+
+
+
+                Console.WriteLine();
+
+                Console.Write("Word: "); var w1 = Console.ReadLine();
+
+                if(string.IsNullOrWhiteSpace(w1)) { break; }
+
+                foreach (var w in words)
+                {
+                    w.sim = fastTextModel.GetWordSimilarity(w1, w.word);
+                }
+
+                words.Sort((a, b) => b.sim.CompareTo(a.sim));
+
+
+                Console.WriteLine("Most similar:");
+                foreach (var w in words.Take(20))
+                {
+                    Console.WriteLine($"\t{w.word} -> {w.sim}");
+                }
+
+                words.Reverse();
+
+                Console.WriteLine();
+
+                Console.WriteLine("Least similar:");
+                foreach (var w in words.Take(5))
+                {
+                    Console.WriteLine($"\t{w.word} -> {w.sim}");
+                }
+
+
+
+                Console.WriteLine();
+            }
+
+            fastText.Release();
+            //while (true)
+            //{
+            //    Console.Write("First word: "); var w1 = Console.ReadLine();
+            //    Console.Write("Second word: "); var w2 = Console.ReadLine();
+            //    Console.WriteLine($"Similarity between {w1} and {w2} is {fastText.GetWordSimilarity(w1, w2)}");
+            //    Console.WriteLine();
+            //}
+        }
+
+        static void Main2(string[] args)
         {
             //Ensures that we are consistent against culture-specific number formating, etc...
             CultureInfo culture = CultureInfo.CreateSpecificCulture("en-US");
@@ -32,12 +134,8 @@ namespace TestConsole
             }
 
             Console.WriteLine("Loading model, please wait");
-            bool res = fastText.InitializeWithModel(@"cheeseDisease.bin");
-            if (!res)
-            {
-                Console.WriteLine("Failed to load the model, might be damaged or you run out of memory!");
-                return;
-            }
+            var fastTextModel  = new fastText(@"cheeseDisease.bin");
+ 
             Console.WriteLine("... done!");
 
             var tests = GetTestData();
@@ -45,10 +143,10 @@ namespace TestConsole
 
             foreach(var test in tests)
             {
-                var label = fastText.GetPrediction(test.Text, 1).Replace("__label__","").Replace("__","");
+                var label = fastTextModel.GetPrediction(test.Text, 1).First().label.Replace("__label__","").Replace("__","");
                 if(label == "n/a")
                 {
-                    label = fastText.GetPrediction(test.Text, 1).Replace("__label__", "").Replace("__", "");
+                    label = fastTextModel.GetPrediction(test.Text, 1).First().label.Replace("__label__", "").Replace("__", "");
                 }
                 Console.WriteLine($"{test.Text} -> P:{label} / C:{test.Label}");
                 correct += (label == test.Label) ? 1 : 0;
@@ -273,5 +371,13 @@ namespace TestConsole
 
             return Data;
         }
+    }
+
+    class IntentExample
+    {
+
+        public string Example { get; set; }
+        public string Intent { get; set; }
+        public double Similarity { get; set; }
     }
 }

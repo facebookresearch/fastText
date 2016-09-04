@@ -48,5 +48,6 @@
     <ClInclude Include="..\..\src\vector.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="fastTextLibrary.h" />
   </ItemGroup>
 </Project>

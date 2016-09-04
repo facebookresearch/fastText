@@ -8,36 +8,12 @@
 * of patent rights can be found in the PATENTS file in the same directory.
 */
 
-#include <fenv.h>
-#include <time.h>
-#include <math.h>
+#include "fastTextLibrary.h"
 
-#include <iostream>
-#include <iomanip>
-#include <thread>
-#include <string>
-#include <vector>
-#include <atomic>
-#include <algorithm>
-#include <sstream>
-#include <istream>
-#include <iostream>
-
-#include "matrix.h"
-#include "vector.h"
-#include "dictionary.h"
-#include "model.h"
-#include "utils.h"
-#include "real.h"
-#include "args.h"
-
-std::shared_ptr<Dictionary> dict;
-std::shared_ptr<Matrix>     input;
-std::shared_ptr<Matrix>     output;
-std::shared_ptr<Model>      model;
 Args                        args;
-bool                        modelInitialized;
-std::string                 lastPrediction;
+
+
+std::vector<std::shared_ptr<fastTextModelData>> models;
 
 extern "C" __declspec(dllexport) void __cdecl initialize()
 {
@@ -50,11 +26,15 @@ extern "C" __declspec(dllexport) void __cdecl dispose()
     utils::freeTables();
 }
 
-extern "C" __declspec(dllexport) bool __cdecl loadModel(const char *filename)
+extern "C" __declspec(dllexport) int __cdecl loadModel(const char *filename)
 {
-    dict   = std::make_shared<Dictionary>();
-    input  = std::make_shared<Matrix>();
-    output = std::make_shared<Matrix>();
+    auto& modelData = std::make_shared<fastTextModelData>();
+
+    modelData->args   = std::make_shared<Args>();
+    modelData->dict   = std::make_shared<Dictionary>();
+    modelData->input  = std::make_shared<Matrix>();
+    modelData->output = std::make_shared<Matrix>();
+
 
     std::ifstream ifs(filename, std::ifstream::binary);
 
@@ -63,27 +43,44 @@ extern "C" __declspec(dllexport) bool __cdecl loadModel(const char *filename)
         return false;
     }
 
-    args.load(ifs);
-    dict->load(ifs);
-    input->load(ifs);
-    output->load(ifs);
+    modelData->args->load(ifs);
+    modelData->dict->load(ifs);
+    modelData->input->load(ifs);
+    modelData->output->load(ifs);
+
     ifs.close();
-    modelInitialized = false;
-    
-    return true;
-}
+    modelData->modelInitialized = false;
 
-void initializeModelForPredict()
-{
-    model = std::make_shared<Model>(*input.get(), *output.get(), args.dim, args.lr, 1);
-    model->setTargetCounts(dict->getCounts(entry_type::label));
-    modelInitialized = true;
+    modelData->path = std::string(filename);
+
+    models.push_back(modelData);
+
+    return models.size() - 1;
 }
 
 
-extern "C" __declspec(dllexport) void __cdecl predict(const char *text, const int32_t k)
+std::shared_ptr<fastTextModelData> getModel(int model_index)
 {
-    if (!modelInitialized) { initializeModelForPredict(); }
+    auto& model = models[model_index];
+    args = *(model->args.get());
+    return model;
+}
+
+
+void initializeModelForPredict(int model_index)
+{
+    auto& model = getModel(model_index);
+    model->model = std::make_shared<Model>(*(model->input.get()), *(model->output.get()), args.dim, args.lr, 1);
+    model->model->setTargetCounts(model->dict->getCounts(entry_type::label));
+    model->modelInitialized = true;
+}
+
+
+extern "C" __declspec(dllexport) void __cdecl predict(int model_index, const char *text, const int32_t k)
+{
+    auto& model = getModel(model_index);
+
+    if (!model->modelInitialized) { initializeModelForPredict(model_index); }
 
     std::string inputstr(text);
     std::istringstream ifs(inputstr);
@@ -92,8 +89,8 @@ extern "C" __declspec(dllexport) void __cdecl predict(const char *text, const in
 
     while (ifs.peek() != EOF) 
     {
-        dict->getLine(ifs, line, labels, model->rng);
-        dict->addNgrams(line, args.wordNgrams);
+        model->dict->getLine(ifs, line, labels, model->model->rng);
+        model->dict->addNgrams(line, args.wordNgrams);
 
         if (line.empty()) 
         {
@@ -102,47 +99,52 @@ extern "C" __declspec(dllexport) void __cdecl predict(const char *text, const in
         }
 
         std::vector<std::pair<real, int32_t>> predictions;
-        model->predict(line, k, predictions);
+        model->model->predict(line, k, predictions);
 
         for (auto it = predictions.cbegin(); it != predictions.cend(); it++) 
         {
-            if (it != predictions.cbegin()) { oss << ' '; }
+            if (it != predictions.cbegin()) { oss << ';'; }
 
-            oss << dict->getLabel(it->second);
+            oss << model->dict->getLabel(it->second) << "[" << std::to_string(it->first) << "]";
         }
         oss << std::endl;
     }
 
-    lastPrediction = oss.str();
+    model->lastPrediction = oss.str();
     
     //output.copy(out,output.size());
 }
 
-extern "C" __declspec(dllexport) int __cdecl  getPredictionBufferSize()
+extern "C" __declspec(dllexport) int __cdecl  getPredictionBufferSize(int model_index)
 {
-    return lastPrediction.size();
+    auto& model = getModel(model_index);
+    return model->lastPrediction.size();
 }
 
-extern "C" __declspec(dllexport) void __cdecl getPrediction(char* out)
+extern "C" __declspec(dllexport) void __cdecl getPrediction(int model_index, char* out)
 {
-    std::strcpy(out, lastPrediction.c_str());
+    auto& model = getModel(model_index);
+    std::strcpy(out, model->lastPrediction.c_str());
 }
 
-extern "C" __declspec(dllexport) int __cdecl getVectorSize()
+extern "C" __declspec(dllexport) int __cdecl getVectorSize(int model_index)
 {
+    auto& model = getModel(model_index);
     return args.dim;
 }
 
-extern "C" __declspec(dllexport) void __cdecl getVector(const char *word, double* out)
+extern "C" __declspec(dllexport) void __cdecl getVector(int model_index, const char *word, double* out)
 {
+    auto& model = getModel(model_index);
+
     Vector vec(args.dim);
     std::string word_str(word);
 
-    const std::vector<int32_t> ngrams = dict->getNgrams(word_str);
+    const std::vector<int32_t> ngrams = model->dict->getNgrams(word_str);
     vec.zero();
     for (auto it = ngrams.begin(); it != ngrams.end(); ++it) 
     {
-        vec.addRow(*input.get(), *it);
+        vec.addRow(*(model->input.get()), *it);
     }
     if (ngrams.size() > 0) {
         vec.mul(1.0 / ngrams.size());

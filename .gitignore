@@ -8,3 +8,12 @@ result
 vs2015/.vs
 vs2015/bin
 vs2015/obj
+vs2015/debug
+vs2015/fastTextDotNet/bin
+vs2015/fastTextDotNet/obj
+*.nupkg
+*.nuspec
+*.bat
+vs2015/TestConsole/obj
+vs2015/TestConsole/bin
+
