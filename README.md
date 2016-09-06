@@ -13,8 +13,8 @@ These include :
 Compilation is carried out using a Makefile, so you will need to have a working **make**.
 For the word-similarity evaluation script you will need:
 
-* python 2.6 or newer
-* numpy & scipy
+* Python 2.6 or newer
+* NumPy & SciPy
 
 ## Building fastText
 
@@ -31,7 +31,7 @@ If you do not plan on using the default system-wide compiler, update the two mac
 
 ### Building with Docker
 
-If you inted to build with Docker, a Docker file is available here [fastText-Docker](https://github.com/xeb/fastText-docker).
+If you intend to build with Docker, a Docker file is available here: [fastText-Docker](https://github.com/xeb/fastText-docker).
 
 ## Example use cases
 
@@ -46,7 +46,7 @@ In order to learn word vectors, as described in [1](#enriching-word-vectors-with
 $ ./fasttext skipgram -input data.txt -output model
 ```
 
-where `data.txt` is a training file containing `utf-8` encoded text.
+where `data.txt` is a training file containing `UTF-8` encoded text.
 By default the word vectors will take into account character n-grams from 3 to 6 characters.
 At the end of optimization the program will save two files: `model.bin` and `model.vec`.
 `model.vec` is a text file containing the word vectors, one per line.
