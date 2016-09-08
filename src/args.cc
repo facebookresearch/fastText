@@ -31,6 +31,7 @@ Args::Args() {
   lrUpdateRate = 100;
   t = 1e-4;
   label = "__label__";
+  verbose = 2;
 }
 
 void Args::parseArgs(int argc, char** argv) {
@@ -102,6 +103,8 @@ void Args::parseArgs(int argc, char** argv) {
       t = atof(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-label") == 0) {
       label = std::string(argv[ai + 1]);
+    } else if (strcmp(argv[ai], "-verbose") == 0) {
+      verbose = atoi(argv[ai + 1]);
     } else {
       std::cout << "Unknown argument: " << argv[ai] << std::endl;
       printHelp();
@@ -141,6 +144,7 @@ void Args::printHelp() {
     << "  -thread       number of threads [" << thread << "]\n"
     << "  -t            sampling threshold [" << t << "]\n"
     << "  -label        labels prefix [" << label << "]\n"
+    << "  -verbose      verbosity level [" << verbose << "]\n"
     << std::endl;
 }
 

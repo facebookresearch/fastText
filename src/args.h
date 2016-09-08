@@ -39,6 +39,7 @@ class Args {
     int thread;
     double t;
     std::string label;
+    int verbose;
 
     void parseArgs(int, char**);
     void printHelp();
