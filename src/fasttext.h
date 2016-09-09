@@ -36,7 +36,6 @@ class FastText {
   public:
     void getVector(Vector&, const std::string&);
     void saveVectors();
-    void printVectors();
     void saveModel();
     void loadModel(const std::string&);
     void printInfo(real, real);
@@ -47,6 +46,9 @@ class FastText {
     void skipgram(Model&, real, const std::vector<int32_t>&);
     void test(const std::string&, int32_t);
     void predict(const std::string&, int32_t, bool);
+    void wordVectors();
+    void textVectors();
+    void printVectors();
     void trainThread(int32_t);
     void train(std::shared_ptr<Args>);
 };

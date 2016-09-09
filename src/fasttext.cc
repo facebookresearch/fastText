@@ -46,15 +46,6 @@ void FastText::saveVectors() {
   ofs.close();
 }
 
-void FastText::printVectors() {
-  std::string word;
-  Vector vec(args_->dim);
-  while (std::cin >> word) {
-    getVector(vec, word);
-    std::cout << word << " " << vec << std::endl;
-  }
-}
-
 void FastText::saveModel() {
   std::ofstream ofs(args_->output + ".bin");
   if (!ofs.is_open()) {
@@ -208,6 +199,40 @@ void FastText::predict(const std::string& filename, int32_t k, bool print_prob) 
   ifs.close();
 }
 
+void FastText::wordVectors() {
+  std::string word;
+  Vector vec(args_->dim);
+  while (std::cin >> word) {
+    getVector(vec, word);
+    std::cout << word << " " << vec << std::endl;
+  }
+}
+
+void FastText::textVectors() {
+  std::vector<int32_t> line, labels;
+  Vector vec(args_->dim);
+  while (std::cin.peek() != EOF) {
+    dict_->getLine(std::cin, line, labels, model_->rng);
+    dict_->addNgrams(line, args_->wordNgrams);
+    vec.zero();
+    for (auto it = line.cbegin(); it != line.cend(); ++it) {
+      vec.addRow(*input_, *it);
+    }
+    if (!line.empty()) {
+      vec.mul(1.0 / line.size());
+    }
+    std::cout << vec << std::endl;
+  }
+}
+
+void FastText::printVectors() {
+  if (args_->model == model_name::sup) {
+    textVectors();
+  } else {
+    wordVectors();
+  }
+}
+
 void FastText::trainThread(int32_t threadId) {
   std::ifstream ifs(args_->input);
   utils::seek(ifs, threadId * utils::size(ifs) / args_->thread);
@@ -290,13 +315,13 @@ void printUsage() {
   std::cout
     << "usage: fasttext <command> <args>\n\n"
     << "The commands supported by fasttext are:\n\n"
-    << "  supervised       train a supervised classifier\n"
-    << "  test             evaluate a supervised classifier\n"
-    << "  predict          predict most likely labels\n"
-    << "  predict-prob     predict most likely labels with probabilities\n"
-    << "  skipgram         train a skipgram model\n"
-    << "  cbow             train a cbow model\n"
-    << "  print-vectors    print vectors given a trained model\n"
+    << "  supervised          train a supervised classifier\n"
+    << "  test                evaluate a supervised classifier\n"
+    << "  predict             predict most likely labels\n"
+    << "  predict-prob        predict most likely labels with probabilities\n"
+    << "  skipgram            train a skipgram model\n"
+    << "  cbow                train a cbow model\n"
+    << "  print-vectors       print vectors given a trained model\n"
     << std::endl;
 }
 
