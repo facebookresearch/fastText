@@ -47,7 +47,7 @@ void FastText::saveVectors() {
 }
 
 void FastText::saveModel() {
-  std::ofstream ofs(args_->output + ".bin");
+  std::ofstream ofs(args_->output + ".bin", std::ofstream::binary);
   if (!ofs.is_open()) {
     std::cerr << "Model file cannot be opened for saving!" << std::endl;
     exit(EXIT_FAILURE);
@@ -60,7 +60,7 @@ void FastText::saveModel() {
 }
 
 void FastText::loadModel(const std::string& filename) {
-  std::ifstream ifs(filename);
+  std::ifstream ifs(filename, std::ifstream::binary);
   if (!ifs.is_open()) {
     std::cerr << "Model file cannot be opened for loading!" << std::endl;
     exit(EXIT_FAILURE);
