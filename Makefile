@@ -12,7 +12,7 @@ CXXFLAGS = -pthread -std=c++0x
 OBJS = args.o dictionary.o matrix.o vector.o model.o utils.o buffered.o
 INCLUDES = -I.
 
-opt: CXXFLAGS += -O3 -funroll-loops
+opt: CXXFLAGS += -O3 -funroll-loops -flto
 opt: fasttext
 
 debug: CXXFLAGS += -g -O0 -fno-inline
