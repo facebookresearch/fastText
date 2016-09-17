@@ -19,6 +19,8 @@
 #include <vector>
 #include <algorithm>
 
+#include "buffered.h"
+
 void FastText::getVector(Vector& vec, const std::string& word) {
   const std::vector<int32_t>& ngrams = dict_->getNgrams(word);
   vec.zero();
@@ -142,13 +144,14 @@ void FastText::test(const std::string& filename, int32_t k) {
   int32_t nexamples = 0, nlabels = 0;
   double precision = 0.0;
   std::vector<int32_t> line, labels;
-  std::ifstream ifs(filename);
-  if (!ifs.is_open()) {
+  std::unique_ptr<std::ifstream> ifs(new std::ifstream(filename));
+  if (!ifs->is_open()) {
     std::cerr << "Test file cannot be opened!" << std::endl;
     exit(EXIT_FAILURE);
   }
-  while (ifs.peek() != EOF) {
-    dict_->getLine(ifs, line, labels, model_->rng);
+  Buffered bin(std::move(ifs));
+  while (!bin.eof()) {
+    dict_->getLine(bin, line, labels, model_->rng);
     dict_->addNgrams(line, args_->wordNgrams);
     if (labels.size() > 0 && line.size() > 0) {
       std::vector<std::pair<real, int32_t>> predictions;
@@ -162,7 +165,6 @@ void FastText::test(const std::string& filename, int32_t k) {
       nlabels += labels.size();
     }
   }
-  ifs.close();
   std::cout << std::setprecision(3);
   std::cout << "P@" << k << ": " << precision / (k * nexamples) << std::endl;
   std::cout << "R@" << k << ": " << precision / nlabels << std::endl;
@@ -171,13 +173,14 @@ void FastText::test(const std::string& filename, int32_t k) {
 
 void FastText::predict(const std::string& filename, int32_t k, bool print_prob) {
   std::vector<int32_t> line, labels;
-  std::ifstream ifs(filename);
-  if (!ifs.is_open()) {
+  std::unique_ptr<std::ifstream> ifs(new std::ifstream(filename));
+  if (!ifs->is_open()) {
     std::cerr << "Test file cannot be opened!" << std::endl;
     exit(EXIT_FAILURE);
   }
-  while (ifs.peek() != EOF) {
-    dict_->getLine(ifs, line, labels, model_->rng);
+  Buffered bin(std::move(ifs));
+  while (!bin.eof()) {
+    dict_->getLine(bin, line, labels, model_->rng);
     dict_->addNgrams(line, args_->wordNgrams);
     if (line.empty()) {
       std::cout << "n/a" << std::endl;
@@ -196,7 +199,6 @@ void FastText::predict(const std::string& filename, int32_t k, bool print_prob) 
     }
     std::cout << std::endl;
   }
-  ifs.close();
 }
 
 void FastText::wordVectors() {
@@ -209,10 +211,12 @@ void FastText::wordVectors() {
 }
 
 void FastText::textVectors() {
+  std::unique_ptr<std::istream> ifs(new std::istream(std::cin.rdbuf()));
+  Buffered bin(std::move(ifs));
   std::vector<int32_t> line, labels;
   Vector vec(args_->dim);
-  while (std::cin.peek() != EOF) {
-    dict_->getLine(std::cin, line, labels, model_->rng);
+  while (!bin.eof()) {
+    dict_->getLine(bin, line, labels, model_->rng);
     dict_->addNgrams(line, args_->wordNgrams);
     vec.zero();
     for (auto it = line.cbegin(); it != line.cend(); ++it) {
@@ -234,8 +238,9 @@ void FastText::printVectors() {
 }
 
 void FastText::trainThread(int32_t threadId) {
-  std::ifstream ifs(args_->input);
-  utils::seek(ifs, threadId * utils::size(ifs) / args_->thread);
+  std::unique_ptr<std::ifstream> ifs(new std::ifstream(args_->input));
+  utils::seek(*ifs, threadId * utils::size(*ifs) / args_->thread);
+  Buffered bin(std::move(ifs));
 
   Model model(input_, output_, args_, threadId);
   if (args_->model == model_name::sup) {
@@ -250,7 +255,7 @@ void FastText::trainThread(int32_t threadId) {
   while (tokenCount < args_->epoch * ntokens) {
     real progress = real(tokenCount) / (args_->epoch * ntokens);
     real lr = args_->lr * (1.0 - progress);
-    localTokenCount += dict_->getLine(ifs, line, labels, model.rng);
+    localTokenCount += dict_->getLine(bin, line, labels, model.rng);
     if (args_->model == model_name::sup) {
       dict_->addNgrams(line, args_->wordNgrams);
       supervised(model, lr, line, labels);
@@ -271,19 +276,20 @@ void FastText::trainThread(int32_t threadId) {
     printInfo(1.0, model.getLoss());
     std::cout << std::endl;
   }
-  ifs.close();
 }
 
 void FastText::train(std::shared_ptr<Args> args) {
   args_ = args;
   dict_ = std::make_shared<Dictionary>(args_);
-  std::ifstream ifs(args_->input);
-  if (!ifs.is_open()) {
-    std::cerr << "Input file cannot be opened!" << std::endl;
-    exit(EXIT_FAILURE);
+  {
+    std::unique_ptr<std::ifstream> ifs(new std::ifstream(args_->input));
+    if (!ifs->is_open()) {
+      std::cerr << "Input file cannot be opened!" << std::endl;
+      exit(EXIT_FAILURE);
+    }
+    Buffered bin(std::move(ifs));
+    dict_->readFromFile(bin);
   }
-  dict_->readFromFile(ifs);
-  ifs.close();
 
   input_ = std::make_shared<Matrix>(dict_->nwords()+args_->bucket, args_->dim);
   if (args_->model == model_name::sup) {

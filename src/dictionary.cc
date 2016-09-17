@@ -144,33 +144,35 @@ void Dictionary::initNgrams() {
   }
 }
 
-bool Dictionary::readWord(std::istream& in, std::string& word)
+bool Dictionary::readWord(Buffered& bin, std::string& word)
 {
   char c;
   word.clear();
-  while (in.peek() != EOF) {
-    in.get(c);
-    if (isspace(c) || c == 0) {
+  while (bin.peek(c)) {
+    if (c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == '\v' || c == '\f' || c == '\0') {
       if (word.empty()) {
+        bin.advance();
         if (c == '\n') {
           word += EOS;
           return true;
         }
         continue;
       } else {
-        if (c == '\n') in.unget();
+        if (c != '\n')
+          bin.advance();
         return true;
       }
     }
+    bin.advance();
     word.push_back(c);
   }
   return !word.empty();
 }
 
-void Dictionary::readFromFile(std::istream& in) {
+void Dictionary::readFromFile(Buffered& bin) {
   std::string word;
   int64_t minThreshold = 1;
-  while (readWord(in, word)) {
+  while (readWord(bin, word)) {
     add(word);
     if (ntokens_ % 1000000 == 0 && args_->verbose > 1) {
       std::cout << "\rRead " << ntokens_  / 1000000 << "M words" << std::flush;
@@ -241,7 +243,7 @@ void Dictionary::addNgrams(std::vector<int32_t>& line, int32_t n) {
   }
 }
 
-int32_t Dictionary::getLine(std::istream& in,
+int32_t Dictionary::getLine(Buffered& bin,
                             std::vector<int32_t>& words,
                             std::vector<int32_t>& labels,
                             std::minstd_rand& rng) {
@@ -250,11 +252,10 @@ int32_t Dictionary::getLine(std::istream& in,
   int32_t ntokens = 0;
   words.clear();
   labels.clear();
-  if (in.eof()) {
-    in.clear();
-    in.seekg(std::streampos(0));
+  if (bin.eof()) {
+    bin.reset();
   }
-  while (readWord(in, token)) {
+  while (readWord(bin, token)) {
     if (token == EOS) break;
     int32_t wid = getId(token);
     if (wid < 0) continue;
