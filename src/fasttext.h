@@ -44,8 +44,8 @@ class FastText {
                     const std::vector<int32_t>&);
     void cbow(Model&, real, const std::vector<int32_t>&);
     void skipgram(Model&, real, const std::vector<int32_t>&);
-    void test(const std::string&, int32_t);
-    void predict(const std::string&, int32_t, bool);
+    void test(std::istream&, int32_t);
+    void predict(std::istream&, int32_t, bool);
     void wordVectors();
     void textVectors();
     void printVectors();
