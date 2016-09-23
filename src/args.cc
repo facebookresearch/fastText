@@ -123,6 +123,9 @@ void Args::parseArgs(int argc, char** argv) {
 }
 
 void Args::printHelp() {
+  std::string lname = "ns";
+  if (loss == loss_name::hs) lname = "hs";
+  if (loss == loss_name::softmax) lname = "softmax";
   std::cout
     << "\n"
     << "The following arguments are mandatory:\n"
@@ -137,7 +140,7 @@ void Args::printHelp() {
     << "  -minCount     minimal number of word occurences [" << minCount << "]\n"
     << "  -neg          number of negatives sampled [" << neg << "]\n"
     << "  -wordNgrams   max length of word ngram [" << wordNgrams << "]\n"
-    << "  -loss         loss function {ns, hs, softmax} [ns]\n"
+    << "  -loss         loss function {ns, hs, softmax} [" << lname << "]\n"
     << "  -bucket       number of buckets [" << bucket << "]\n"
     << "  -minn         min length of char ngram [" << minn << "]\n"
     << "  -maxn         max length of char ngram [" << maxn << "]\n"
