@@ -138,17 +138,13 @@ void FastText::skipgram(Model& model, real lr,
   }
 }
 
-void FastText::test(const std::string& filename, int32_t k) {
+void FastText::test(std::istream& inp, int32_t k) {
   int32_t nexamples = 0, nlabels = 0;
   double precision = 0.0;
   std::vector<int32_t> line, labels;
-  std::ifstream ifs(filename);
-  if (!ifs.is_open()) {
-    std::cerr << "Test file cannot be opened!" << std::endl;
-    exit(EXIT_FAILURE);
-  }
-  while (ifs.peek() != EOF) {
-    dict_->getLine(ifs, line, labels, model_->rng);
+
+  while (inp.peek() != EOF) {
+    dict_->getLine(inp, line, labels, model_->rng);
     dict_->addNgrams(line, args_->wordNgrams);
     if (labels.size() > 0 && line.size() > 0) {
       std::vector<std::pair<real, int32_t>> predictions;
@@ -162,22 +158,16 @@ void FastText::test(const std::string& filename, int32_t k) {
       nlabels += labels.size();
     }
   }
-  ifs.close();
   std::cout << std::setprecision(3);
   std::cout << "P@" << k << ": " << precision / (k * nexamples) << std::endl;
   std::cout << "R@" << k << ": " << precision / nlabels << std::endl;
   std::cout << "Number of examples: " << nexamples << std::endl;
 }
 
-void FastText::predict(const std::string& filename, int32_t k, bool print_prob) {
+void FastText::predict(std::istream& inp, int32_t k, bool print_prob) {
   std::vector<int32_t> line, labels;
-  std::ifstream ifs(filename);
-  if (!ifs.is_open()) {
-    std::cerr << "Test file cannot be opened!" << std::endl;
-    exit(EXIT_FAILURE);
-  }
-  while (ifs.peek() != EOF) {
-    dict_->getLine(ifs, line, labels, model_->rng);
+  while (inp.peek() != EOF) {
+    dict_->getLine(inp, line, labels, model_->rng);
     dict_->addNgrams(line, args_->wordNgrams);
     if (line.empty()) {
       std::cout << "n/a" << std::endl;
@@ -196,7 +186,6 @@ void FastText::predict(const std::string& filename, int32_t k, bool print_prob) 
     }
     std::cout << std::endl;
   }
-  ifs.close();
 }
 
 void FastText::wordVectors() {
@@ -277,6 +266,11 @@ void FastText::trainThread(int32_t threadId) {
 void FastText::train(std::shared_ptr<Args> args) {
   args_ = args;
   dict_ = std::make_shared<Dictionary>(args_);
+  if (args_->input == "-") {
+    // manage expectations
+    std::cerr << "Cannot use stdin for training!" << std::endl;
+    exit(EXIT_FAILURE);
+  }
   std::ifstream ifs(args_->input);
   if (!ifs.is_open()) {
     std::cerr << "Input file cannot be opened!" << std::endl;
@@ -329,7 +323,7 @@ void printTestUsage() {
   std::cout
     << "usage: fasttext test <model> <test-data> [<k>]\n\n"
     << "  <model>      model filename\n"
-    << "  <test-data>  test data filename\n"
+    << "  <test-data>  test data filename (if -, read from stdin)\n"
     << "  <k>          (optional; 1 by default) predict top k labels\n"
     << std::endl;
 }
@@ -338,7 +332,7 @@ void printPredictUsage() {
   std::cout
     << "usage: fasttext predict[-prob] <model> <test-data> [<k>]\n\n"
     << "  <model>      model filename\n"
-    << "  <test-data>  test data filename\n"
+    << "  <test-data>  test data filename (if -, read from stdin)\n"
     << "  <k>          (optional; 1 by default) predict top k labels\n"
     << std::endl;
 }
@@ -362,7 +356,18 @@ void test(int argc, char** argv) {
   }
   FastText fasttext;
   fasttext.loadModel(std::string(argv[2]));
-  fasttext.test(std::string(argv[3]), k);
+  std::string infile(argv[3]);
+  if (infile=="-") {
+    fasttext.test(std::cin, k);
+  } else {
+    std::ifstream ifs(infile);
+    if (!ifs.is_open()) {
+      std::cerr << "Test file cannot be opened!" << std::endl;
+      exit(EXIT_FAILURE);
+    }
+    fasttext.test(ifs, k);
+    ifs.close();
+  }
   exit(0);
 }
 
@@ -379,7 +384,20 @@ void predict(int argc, char** argv) {
   bool print_prob = std::string(argv[1]) == "predict-prob";
   FastText fasttext;
   fasttext.loadModel(std::string(argv[2]));
-  fasttext.predict(std::string(argv[3]), k, print_prob);
+
+  std::string infile(argv[3]);
+  if (infile=="-") {
+    fasttext.predict(std::cin, k, print_prob);
+  } else {
+    std::ifstream ifs(infile);
+    if (!ifs.is_open()) {
+      std::cerr << "Input file cannot be opened!" << std::endl;
+      exit(EXIT_FAILURE);
+    }
+    fasttext.predict(ifs, k, print_prob);
+    ifs.close();
+  }
+
   exit(0);
 }
 
