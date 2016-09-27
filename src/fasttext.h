@@ -51,6 +51,8 @@ class FastText {
     void printVectors();
     void trainThread(int32_t);
     void train(std::shared_ptr<Args>);
+
+    void loadVectors(std::string);
 };
 
 #endif

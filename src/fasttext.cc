@@ -263,6 +263,46 @@ void FastText::trainThread(int32_t threadId) {
   ifs.close();
 }
 
+void FastText::loadVectors(std::string filename) {
+  std::ifstream in(filename);
+  std::vector<std::string> words;
+  std::shared_ptr<Matrix> mat; // temp. matrix for pretrained vectors
+  int64_t n, dim;
+  if (!in.is_open()) {
+    std::cerr << "Pretrained vectors file cannot be opened!" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+  in >> n >> dim;
+  if (dim != args_->dim) {
+    std::cerr << "Dimension of pretrained vectors does not match -dim option"
+              << std::endl;
+    exit(EXIT_FAILURE);
+  }
+  mat = std::make_shared<Matrix>(n, dim);
+  for (size_t i = 0; i < n; i++) {
+    std::string word;
+    in >> word;
+    words.push_back(word);
+    dict_->add(word);
+    for (size_t j = 0; j < dim; j++) {
+      in >> mat->data_[i * dim + j];
+    }
+  }
+  in.close();
+
+  dict_->threshold(1);
+  input_ = std::make_shared<Matrix>(dict_->nwords()+args_->bucket, args_->dim);
+  input_->uniform(1.0 / args_->dim);
+
+  for (size_t i = 0; i < n; i++) {
+    int32_t idx = dict_->getId(words[i]);
+    if (idx < 0 || idx >= dict_->nwords()) continue;
+    for (size_t j = 0; j < dim; j++) {
+      input_->data_[idx * dim + j] = mat->data_[i * dim + j];
+    }
+  }
+}
+
 void FastText::train(std::shared_ptr<Args> args) {
   args_ = args;
   dict_ = std::make_shared<Dictionary>(args_);
@@ -279,13 +319,18 @@ void FastText::train(std::shared_ptr<Args> args) {
   dict_->readFromFile(ifs);
   ifs.close();
 
-  input_ = std::make_shared<Matrix>(dict_->nwords()+args_->bucket, args_->dim);
+  if (args_->pretrainedVectors.size() != 0) {
+    loadVectors(args_->pretrainedVectors);
+  } else {
+    input_ = std::make_shared<Matrix>(dict_->nwords()+args_->bucket, args_->dim);
+    input_->uniform(1.0 / args_->dim);
+  }
+
   if (args_->model == model_name::sup) {
     output_ = std::make_shared<Matrix>(dict_->nlabels(), args_->dim);
   } else {
     output_ = std::make_shared<Matrix>(dict_->nwords(), args_->dim);
   }
-  input_->uniform(1.0 / args_->dim);
   output_->zero();
 
   start = clock();

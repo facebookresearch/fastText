@@ -40,6 +40,7 @@ class Args {
     double t;
     std::string label;
     int verbose;
+    std::string pretrainedVectors;
 
     void parseArgs(int, char**);
     void printHelp();
