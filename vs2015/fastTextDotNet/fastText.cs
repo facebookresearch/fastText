@@ -24,6 +24,12 @@ namespace FastText
         public string label;
         public double intensity;
     }
+
+    public struct WordAndVector
+    {
+        public string   Word;
+        public double[] Vector;
+    }
     public class fastText
     {
         [DllImport("fastText.dll", EntryPoint = "initialize", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
@@ -35,6 +41,18 @@ namespace FastText
         [DllImport("fastText.dll", EntryPoint = "loadModel", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I4)]
         private static extern int loadModel([MarshalAs(UnmanagedType.LPStr)] string filename);
+
+
+        
+        [DllImport("fastText.dll", EntryPoint = "getWordCount", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I4)]
+        private static extern int getWordCount(int model_index);
+
+        
+        [DllImport("fastText.dll", EntryPoint = "getWord", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void getWord(int model_index, int k, StringBuilder output);
+
+
 
         [DllImport("fastText.dll", EntryPoint = "predict", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         private static extern void predict(int model_index, StringBuilder text, int k);
@@ -76,24 +94,70 @@ namespace FastText
 
         private int ModelIndex;
 
+        private List<WordAndVector> WordsAndVectors { get; set; } = new List<WordAndVector>();
+
         public fastText(string filename)
         {
             InitializeFastText();
             ModelIndex = loadModel(filename);
         }
 
+        
+        public List<WordAndVector> GetWords()
+        {
+            int nwords = getWordCount(ModelIndex);
+            if(WordsAndVectors.Count != nwords)
+            {
+                WordsAndVectors.Clear();
+                var out_buffer = new StringBuilder(1000); //Must be enough :D
+                for(int i = 0; i < nwords; i++)
+                {
+                    getWord(ModelIndex, i, out_buffer);
+                    var wv    = new WordAndVector();
+                    wv.Word   = out_buffer.ToString();
+                    wv.Vector = GetWordVector(wv.Word);
+                    WordsAndVectors.Add(wv);
+                }
+            }
+            return WordsAndVectors;
+        }
+
+        public List<Tuple<string,double>> GetMostSimilar(string word, int count)
+        {
+            var wordVector = GetParagraphVector(word);
+            return GetWords().Select(w => new Tuple<string,double>(w.Word, CalculateCosineSimilarity(wordVector, w.Vector)))
+                             .OrderBy(t => -t.Item2)
+                             .Take(count).ToList();
+        }
+
+        public List<Tuple<string,double>> GetLeastSimilar(string word, int count)
+        {
+            var wordVector = GetParagraphVector(word);
+            return GetWords().Select(w => new Tuple<string,double>(w.Word, CalculateCosineSimilarity(wordVector, w.Vector)))
+                             .OrderBy(t => t.Item2)
+                             .Take(count).ToList();
+        }
+
+
+        public int GetVectorSize()
+        {
+            return getVectorSize(ModelIndex);
+        }
+
         public List<prediction> GetPrediction(string text, int numberOfTopLabelsToReturn)
         {
+            var predictions = new List<prediction>();
+
             var buffer = new StringBuilder(text + "\n");
             predict(ModelIndex, buffer, numberOfTopLabelsToReturn);
             var out_buffer = new StringBuilder(getPredictionBufferSize(ModelIndex));
             getPrediction(ModelIndex,out_buffer);
 
             string tmp = out_buffer.ToString().TrimEnd(new char[] { '\n', '\r' });
-            
-            var labels = tmp.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            if(tmp=="n/a") { return predictions; }
 
-            var predictions = new List<prediction>();
+            var labels = tmp.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            
             foreach(var lbl in labels)
             {
                 var parts = lbl.Replace("]","").Split('[').ToList();
@@ -131,7 +195,7 @@ namespace FastText
 
         public double[] GetWordDifference(string wordA, string wordB)
         {
-            return Add(GetWordVector(wordA), Multiply(GetWordVector(wordB),-1));
+            return Add(GetWordVector(wordA), Multiply(GetWordVector(wordB),-1.0));
         }
 
         public double GetWordSimilarity(string wordA, string wordB)
@@ -149,7 +213,7 @@ namespace FastText
             return DotProduct(vecA, vecB) / (Magnitude(vecA) * Magnitude(vecB));
         }
 
-        private static double DotProduct(double[] vecA, double[] vecB)
+        public static double DotProduct(double[] vecA, double[] vecB)
         {
             if(vecA.Length != vecB.Length) { throw new Exception("Invalid vector input size"); }
 
@@ -163,7 +227,7 @@ namespace FastText
             return dotProduct;
         }
 
-        private static double[] Add(double[] vecA, double[] vecB)
+        public static double[] Add(double[] vecA, double[] vecB)
         {
             var vecS = new double[vecA.Length];
 
@@ -175,7 +239,7 @@ namespace FastText
             return vecS;
         }
 
-        private static double[] Multiply(double[] vecA, double f)
+        public static double[] Multiply(double[] vecA, double f)
         {
             var vecM = new double[vecA.Length];
 
@@ -187,7 +251,7 @@ namespace FastText
             return vecM;
         }
 
-        private static double Magnitude(double[] vector)
+        public static double Magnitude(double[] vector)
         {
             return Math.Sqrt(DotProduct(vector, vector));
         }

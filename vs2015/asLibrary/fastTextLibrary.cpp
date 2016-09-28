@@ -76,6 +76,19 @@ void initializeModelForPredict(int model_index)
 }
 
 
+extern "C" __declspec(dllexport) int __cdecl getWordCount(int model_index)
+{
+    auto& model = getModel(model_index);
+    return model->dict->nwords();
+}
+
+extern "C" __declspec(dllexport) void __cdecl getWord(int model_index, const int32_t k, char* out)
+{
+    auto& model = getModel(model_index);
+    std::string word = model->dict->getWord(k);
+    std::strcpy(out, word.c_str());
+}
+
 extern "C" __declspec(dllexport) void __cdecl predict(int model_index, const char *text, const int32_t k)
 {
     auto& model = getModel(model_index);

@@ -11,7 +11,6 @@
 
 #include <assert.h>
 
-#include <iostream>
 #include <iomanip>
 
 #include "matrix.h"

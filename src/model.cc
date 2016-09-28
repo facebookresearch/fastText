@@ -13,36 +13,30 @@
 
 #include <algorithm>
 
-#include "args.h"
 #include "utils.h"
 
-extern Args args;
-
-real Model::lr_ = MIN_LR;
-
-Model::Model(Matrix& wi, Matrix& wo, int32_t hsz, real lr, int32_t seed)
-            : wi_(wi), wo_(wo), hidden_(hsz), output_(wo.m_),
-              grad_(hsz), rng(seed) {
-  isz_ = wi.m_;
-  osz_ = wo.m_;
-  hsz_ = hsz;
-  lr_ = lr;
+Model::Model(std::shared_ptr<Matrix> wi,
+             std::shared_ptr<Matrix> wo,
+             std::shared_ptr<Args> args,
+             int32_t seed)
+  : hidden_(args->dim), output_(wo->m_), grad_(args->dim), rng(seed)
+{
+  wi_ = wi;
+  wo_ = wo;
+  args_ = args;
+  isz_ = wi->m_;
+  osz_ = wo->m_;
+  hsz_ = args->dim;
   negpos = 0;
+  loss_ = 0.0;
+  nexamples_ = 1;
 }
 
-void Model::setLearningRate(real lr) {
-  lr_ = (lr < MIN_LR) ? MIN_LR : lr;
-}
-
-real Model::getLearningRate() {
-  return lr_;
-}
-
-real Model::binaryLogistic(int32_t target, bool label) {
-  real score = utils::sigmoid(wo_.dotRow(hidden_, target));
-  real alpha = lr_ * (real(label) - score);
-  grad_.addRow(wo_, target, alpha);
-  wo_.addRow(hidden_, target, alpha);
+real Model::binaryLogistic(int32_t target, bool label, real lr) {
+  real score = utils::sigmoid(wo_->dotRow(hidden_, target));
+  real alpha = lr * (real(label) - score);
+  grad_.addRow(*wo_, target, alpha);
+  wo_->addRow(hidden_, target, alpha);
   if (label) {
     return -utils::log(score);
   } else {
@@ -50,33 +44,32 @@ real Model::binaryLogistic(int32_t target, bool label) {
   }
 }
 
-real Model::negativeSampling(int32_t target) {
+real Model::negativeSampling(int32_t target, real lr) {
   real loss = 0.0;
   grad_.zero();
-  for (int32_t n = 0; n <= args.neg; n++) {
+  for (int32_t n = 0; n <= args_->neg; n++) {
     if (n == 0) {
-      loss += binaryLogistic(target, true);
+      loss += binaryLogistic(target, true, lr);
     } else {
-      loss += binaryLogistic(getNegative(target), false);
+      loss += binaryLogistic(getNegative(target), false, lr);
     }
   }
   return loss;
 }
 
-real Model::hierarchicalSoftmax(int32_t target) {
+real Model::hierarchicalSoftmax(int32_t target, real lr) {
   real loss = 0.0;
   grad_.zero();
   const std::vector<bool>& binaryCode = codes[target];
   const std::vector<int32_t>& pathToRoot = paths[target];
   for (int32_t i = 0; i < pathToRoot.size(); i++) {
-    loss += binaryLogistic(pathToRoot[i], binaryCode[i]);
+    loss += binaryLogistic(pathToRoot[i], binaryCode[i], lr);
   }
   return loss;
 }
 
-real Model::softmax(int32_t target) {
-  grad_.zero();
-  output_.mul(wo_, hidden_);
+void Model::computeOutputSoftmax() {
+  output_.mul(*wo_, hidden_);
   real max = output_[0], z = 0.0;
   for (int32_t i = 0; i < osz_; i++) {
     max = std::max(output_[i], max);
@@ -86,11 +79,18 @@ real Model::softmax(int32_t target) {
     z += output_[i];
   }
   for (int32_t i = 0; i < osz_; i++) {
-    real label = (i == target) ? 1.0 : 0.0;
     output_[i] /= z;
-    real alpha = lr_ * (label - output_[i]);
-    grad_.addRow(wo_, i, alpha);
-    wo_.addRow(hidden_, i, alpha);
+  }
+}
+
+real Model::softmax(int32_t target, real lr) {
+  grad_.zero();
+  computeOutputSoftmax();
+  for (int32_t i = 0; i < osz_; i++) {
+    real label = (i == target) ? 1.0 : 0.0;
+    real alpha = lr * (label - output_[i]);
+    grad_.addRow(*wo_, i, alpha);
+    wo_->addRow(hidden_, i, alpha);
   }
   return -utils::log(output_[target]);
 }
@@ -98,7 +98,7 @@ real Model::softmax(int32_t target) {
 void Model::computeHidden(const std::vector<int32_t>& input) {
   hidden_.zero();
   for (auto it = input.cbegin(); it != input.cend(); ++it) {
-    hidden_.addRow(wi_, *it);
+    hidden_.addRow(*wi_, *it);
   }
   hidden_.mul(1.0 / input.size());
 }
@@ -113,21 +113,21 @@ void Model::predict(const std::vector<int32_t>& input, int32_t k,
   assert(k > 0);
   heap.reserve(k + 1);
   computeHidden(input);
-  if (args.loss == loss_name::hs) {
+  if (args_->loss == loss_name::hs) {
     dfs(k, 2 * osz_ - 2, 0.0, heap);
   } else {
-    output_.mul(wo_, hidden_);
     findKBest(k, heap);
   }
   std::sort_heap(heap.begin(), heap.end(), comparePairs);
 }
 
 void Model::findKBest(int32_t k, std::vector<std::pair<real, int32_t>>& heap) {
+  computeOutputSoftmax();
   for (int32_t i = 0; i < osz_; i++) {
-    if (heap.size() == k && output_[i] < heap.front().first) {
+    if (heap.size() == k && utils::log(output_[i]) < heap.front().first) {
       continue;
     }
-    heap.push_back(std::make_pair(output_[i], i));
+    heap.push_back(std::make_pair(utils::log(output_[i]), i));
     std::push_heap(heap.begin(), heap.end(), comparePairs);
     if (heap.size() > k) {
       std::pop_heap(heap.begin(), heap.end(), comparePairs);
@@ -152,45 +152,44 @@ void Model::dfs(int32_t k, int32_t node, real score,
     return;
   }
 
-  real f = utils::sigmoid(wo_.dotRow(hidden_, node - osz_));
+  real f = utils::sigmoid(wo_->dotRow(hidden_, node - osz_));
   dfs(k, tree[node].left, score + utils::log(1.0 - f), heap);
   dfs(k, tree[node].right, score + utils::log(f), heap);
 }
 
-real Model::update(const std::vector<int32_t>& input, int32_t target) {
+void Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
   assert(target >= 0);
   assert(target < osz_);
-  if (input.size() == 0) return 0.0;
+  if (input.size() == 0) return;
   hidden_.zero();
   for (auto it = input.cbegin(); it != input.cend(); ++it) {
-    hidden_.addRow(wi_, *it);
+    hidden_.addRow(*wi_, *it);
   }
   hidden_.mul(1.0 / input.size());
 
-  real loss;
-  if (args.loss == loss_name::ns) {
-    loss = negativeSampling(target);
-  } else if (args.loss == loss_name::hs) {
-    loss = hierarchicalSoftmax(target);
+  if (args_->loss == loss_name::ns) {
+    loss_ += negativeSampling(target, lr);
+  } else if (args_->loss == loss_name::hs) {
+    loss_ += hierarchicalSoftmax(target, lr);
   } else {
-    loss = softmax(target);
+    loss_ += softmax(target, lr);
   }
+  nexamples_ += 1;
 
-  if (args.model == model_name::sup) {
+  if (args_->model == model_name::sup) {
     grad_.mul(1.0 / input.size());
   }
   for (auto it = input.cbegin(); it != input.cend(); ++it) {
-    wi_.addRow(grad_, *it, 1.0);
+    wi_->addRow(grad_, *it, 1.0);
   }
-  return loss;
 }
 
 void Model::setTargetCounts(const std::vector<int64_t>& counts) {
   assert(counts.size() == osz_);
-  if (args.loss == loss_name::ns) {
+  if (args_->loss == loss_name::ns) {
     initTableNegatives(counts);
   }
-  if (args.loss == loss_name::hs) {
+  if (args_->loss == loss_name::hs) {
     buildTree(counts);
   }
 }
@@ -260,4 +259,8 @@ void Model::buildTree(const std::vector<int64_t>& counts) {
     paths.push_back(path);
     codes.push_back(code);
   }
+}
+
+real Model::getLoss() {
+  return loss_ / nexamples_;
 }

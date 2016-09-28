@@ -83,16 +83,16 @@ real Matrix::dotRow(const Vector& vec, int64_t i) {
   return d;
 }
 
-void Matrix::save(std::ofstream& ofs) {
-  ofs.write((char*) &m_, sizeof(int64_t));
-  ofs.write((char*) &n_, sizeof(int64_t));
-  ofs.write((char*) data_, m_ * n_ * sizeof(real));
+void Matrix::save(std::ostream& out) {
+  out.write((char*) &m_, sizeof(int64_t));
+  out.write((char*) &n_, sizeof(int64_t));
+  out.write((char*) data_, m_ * n_ * sizeof(real));
 }
 
-void Matrix::load(std::ifstream& ifs) {
-  ifs.read((char*) &m_, sizeof(int64_t));
-  ifs.read((char*) &n_, sizeof(int64_t));
+void Matrix::load(std::istream& in) {
+  in.read((char*) &m_, sizeof(int64_t));
+  in.read((char*) &n_, sizeof(int64_t));
   delete[] data_;
   data_ = new real[m_ * n_];
-  ifs.read((char*) data_, m_ * n_ * sizeof(real));
+  in.read((char*) data_, m_ * n_ * sizeof(real));
 }

@@ -11,6 +11,7 @@ vs2015/obj
 vs2015/debug
 vs2015/fastTextDotNet/bin
 vs2015/fastTextDotNet/obj
+vs2015/packages
 *.nupkg
 *.nuspec
 *.bat

@@ -1,4 +1,5 @@
 ﻿using FastText;
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -10,15 +11,236 @@ using System.Threading.Tasks;
 
 namespace TestConsole
 {
+
+
     class WordAndSim
     {
         public string word;
         public double sim;
     }
+
+    namespace FastTextNER
+    { 
+        using QuickGraph;
+        using QuickGraph.Algorithms;
+    public class RecognizedToken
+    {
+        public RecognizedToken(string type) { Type = type.Split('_').Last(); }
+        public List<Token> Tokens = new List<Token>();
+        public string Type;
+
+        public RecognizedToken Add(Token token) { Tokens.Add(token); return this; }
+    }
+    public class Token
+    {
+        public Token(string value, string label, double intensity) { Value = value; Label = label; Intensity = intensity; }
+        public string Value { get; set; }
+        public string Label { get; set; }
+        public double Intensity { get; set; }
+    }
+    public class SentenceEdge : Edge<Token>
+    {
+        public SentenceEdge(Token source, Token target, string source_type, string target_type, double probability) : base(source, target) { SourceType = source_type; TargetType = target_type; Probability = probability; }
+        public double Probability { get; set; }
+        public string SourceType        { get; set; }
+        public string TargetType        { get; set; }
+
+        public string ToString()
+        {
+            return SourceType + "[" + Probability.ToString("0.00") + "]" + TargetType;
+        }
+    }
+
+    public class SentenceInterpretation
+    {
+        public List<RecognizedToken> Sentence = new List<RecognizedToken>();
+        public double Probability { get; set; }
+
+        public void Add(RecognizedToken curToken)
+        {
+            Sentence.Add(curToken);
+        }
+    }
+        public class SentenceGraph : AdjacencyGraph<Token, SentenceEdge>
+        {
+            public SentenceGraph() : base(allowParallelEdges: true) { }
+
+            public const string NullType = "O";
+            public const char BeginTag = 'B';
+            public const char MiddleTag = 'M';
+            public const char EndTag = 'E';
+            public const char SingleTag = 'S';
+
+            public static bool IsTransitionAllowed(string currentLabel, string nextLabel)
+            {
+                char currentTag = currentLabel[0];
+                char nextTag = nextLabel[0];
+
+                string currentType = currentLabel.Substring(2);
+                string nextType = nextLabel.Substring(2);
+
+                bool typesMatch = currentType == NullType || nextType == NullType || currentType == nextType;
+
+                switch (currentTag)
+                {
+                    case BeginTag: { return typesMatch && (nextTag == MiddleTag || nextTag == EndTag); }
+                    case MiddleTag: { return typesMatch && (nextTag == MiddleTag || nextTag == EndTag); }
+                    case EndTag: { return typesMatch && (nextTag == SingleTag || nextTag == BeginTag); }
+                    case SingleTag: { return (nextTag == SingleTag || nextTag == BeginTag); }
+                }
+                throw new Exception("Invalid tag " + currentTag);
+            }
+            public List<SentenceInterpretation> GetAllPossibleSentenceInterpretations(Token source, Token destination, int pathCount = 5)
+            {
+                Func<SentenceEdge, double> edgeWeights = (e) =>
+                {
+                //Console.WriteLine(e.Source.Value + "[" + e.SourceType + "]" + "->" + e.Target.Value + "[" + e.TargetType + "]" + (1 - e.Probability).ToString("0.00"));
+                return (1 - e.Probability);
+                };// IMPROVE!
+                var AllPaths = new List<SentenceInterpretation>();
+
+
+                //var tryGetPath = this.ShortestPathsDijkstra(edgeWeights, source);
+                //IEnumerable<SentenceEdge> result;
+                //var tmp = tryGetPath(destination, out result);
+
+
+                foreach (IEnumerable<SentenceEdge> path in AlgorithmExtensions.RankedShortestPathHoffmanPavley(this.ToBidirectionalGraph(), edgeWeights, source, destination, pathCount))
+                //var path = result.ToList();
+                {
+                    RecognizedToken curToken = new RecognizedToken(path.First().SourceType).Add(path.First().Source);
+
+                    var currentInterpretation = new SentenceInterpretation();
+
+                    bool fullCapture = false;
+                    double probability = 1;
+
+                    foreach (var edge in path)
+                    {
+                        probability *= edge.Probability;
+
+                        switch (edge.SourceType[0])
+                        {
+                            case BeginTag: { curToken = new RecognizedToken(edge.SourceType).Add(edge.Source); fullCapture = false; break; }
+                            case MiddleTag: { curToken.Add(edge.Source); fullCapture = false; break; }
+                            case EndTag: { curToken.Add(edge.Source); fullCapture = true; break; }
+                            case SingleTag: { curToken = new RecognizedToken(edge.SourceType).Add(edge.Source); fullCapture = true; break; }
+                        }
+
+                        if (fullCapture && edge.Source != source) { currentInterpretation.Add(curToken); curToken = null; }
+                    }
+
+                    var lastEdge = path.Last();
+                    probability *= lastEdge.Probability;
+
+                    switch (lastEdge.TargetType[0])
+                    {
+                        case BeginTag: { curToken = new RecognizedToken(lastEdge.TargetType).Add(lastEdge.Target); fullCapture = false; break; }
+                        case MiddleTag: { curToken.Add(lastEdge.Target); fullCapture = false; break; }
+                        case EndTag: { curToken.Add(lastEdge.Target); fullCapture = true; break; }
+                        case SingleTag: { curToken = new RecognizedToken(lastEdge.TargetType).Add(lastEdge.Target); fullCapture = true; break; }
+                    }
+                    if (fullCapture && lastEdge.Target != destination) { currentInterpretation.Add(curToken); curToken = null; }
+
+                    currentInterpretation.Probability = probability;
+
+                    AllPaths.Add(currentInterpretation);
+                }
+
+                return AllPaths;
+            }
+
+            public static List<SentenceInterpretation> IdentifyEntities(fastText fastTextModel, string text, int numberOfPossibilities)
+            {
+                var paths = new List<SentenceInterpretation>();
+
+                var words = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToList(); //IMPROVE TOKENIZATION HERE
+
+                if (words.Count == 0) { return paths; }
+
+                var tokens = new List<List<Token>>();
+
+                foreach (var w in words)
+                {
+                    var pred = fastTextModel.GetPrediction(w, 5);
+
+                    if (pred.Count == 0)
+                    {
+                        pred.Add(new prediction() { label = "S_O", intensity = 1 });
+                    }
+
+                    tokens.Add(pred.Select(p => new Token(w, (p.label.Contains("_") ? p.label : "S_" + p.label), p.intensity)).ToList());
+                }
+
+                var graph = new SentenceGraph();
+
+                tokens.ForEach(t => graph.AddVertexRange(t));
+
+                //tokens.ForEach(p => Console.WriteLine("\t" + string.Join(" ", p.Select(t => t.Label + "[" + t.Intensity.ToString("0.0") + "]"))));
+
+
+                for (int i = 0; i < (words.Count - 1); i++)
+                {
+                    double maxIntensityC = tokens[i].Max(p => p.Intensity);
+                    double maxIntensityN = tokens[i + 1].Max(p => p.Intensity);
+                    foreach (var source in tokens[i])
+                    {
+                        foreach (var dest in tokens[i + 1])
+                        {
+                            string clabel = source.Label;
+                            string nlabel = dest.Label;
+                            if (!source.Label.Contains("_")) { clabel = SentenceGraph.SingleTag + "_" + source.Label; }
+                            if (!dest.Label.Contains("_")) { nlabel = SentenceGraph.SingleTag + "_" + dest.Label; }
+                            if (SentenceGraph.IsTransitionAllowed(clabel, nlabel))
+                            {
+                                double probability = (source.Intensity / maxIntensityC) * (dest.Intensity / maxIntensityN);
+                                if (source.Intensity < 0 || dest.Intensity < 0) { probability = 0; }
+
+                                graph.AddEdge(new SentenceEdge(source, dest, clabel, nlabel, probability));
+                                //Console.WriteLine($"\tFound {source.Value}[{clabel}] -> {dest.Value}[{nlabel}] with probablity {probability} and intensities {source.Intensity} and {dest.Intensity}");
+                            }
+                        }
+                    }
+                }
+
+                var BoS = new Token("__BEGIN__", "", 1);
+                var EoS = new Token("__END__", "", 1);
+                graph.AddVertex(BoS); graph.AddVertex(EoS);
+
+                foreach (var t in tokens.First())
+                {
+                    string tlabel = t.Label;
+                    if (!t.Label.Contains("_")) { tlabel = SentenceGraph.SingleTag + "_" + t.Label; }
+                    if (SentenceGraph.IsTransitionAllowed("S_O", tlabel))
+                    {
+                        graph.AddEdge(new SentenceEdge(BoS, t, "S_O", tlabel, 1.0));
+                    }
+                }
+
+                foreach (var t in tokens.Last())
+                {
+                    string tlabel = t.Label;
+                    if (!t.Label.Contains("_")) { tlabel = SentenceGraph.SingleTag + "_" + t.Label; }
+                    if (SentenceGraph.IsTransitionAllowed(tlabel, "S_O"))
+                    {
+                        graph.AddEdge(new SentenceEdge(t, EoS, tlabel, "S_O", 1.0));
+                    }
+                }
+
+
+                paths = graph.GetAllPossibleSentenceInterpretations(BoS, EoS, numberOfPossibilities);
+
+                //paths.ForEach(p => Console.WriteLine("Probability: " + p.Probability.ToString("0.00") + "\t" + string.Join(" ", p.Sentence.Select(n => string.Join(" ", n.Tokens.Select(t => t.Value + "[" + t.Label + "]" ) ) ))));
+                return paths;
+            }
+        }
+
+    }
+
     class Program
     {
 
-        static void Main(string[] args)
+        static void Main3(string[] args)
         {
             //Ensures that we are consistent against culture-specific number formating, etc...
             CultureInfo culture = CultureInfo.CreateSpecificCulture("en-US");
@@ -29,79 +251,133 @@ namespace TestConsole
             Thread.CurrentThread.CurrentCulture = culture;
             Thread.CurrentThread.CurrentUICulture = culture;
 
+            string model = @"C:\IW\VS\PROJECTS\BOSON\Boson.Testing.CreateLuisApp\bin\x64\Debug\training\ner-caseinsensitive-fasttext";
+            var fastTextModel = new fastText(model + ".bin");
+
+            //var tags = File.ReadAllLines(model + @".vec").Skip(2).Where(l => l.StartsWith("nertag")).Select(l => l.Split(' ').First()).ToList();
+
+            while (true)
+            {
+                var text = Console.ReadLine();
+
+                var paths = FastTextNER.SentenceGraph.IdentifyEntities(fastTextModel, text, 5);
+                paths.ForEach(p => Console.WriteLine("Probability: " + p.Probability.ToString("0.00") + "\t" + string.Join(" ", p.Sentence.Select(n => string.Join(" ", n.Tokens.Select(t => t.Value + "[" + t.Label + "]" ) ) ))));
+
+
+                //var pred = fastTextModel.GetPrediction(text, 5);
+                //pred.ForEach(p => Console.WriteLine(p.label + "[" + p.intensity.ToString("0.00") + "]"));
+                //foreach (var t in tags)
+                //{
+                //    Console.WriteLine(t + " [" + fastTextModel.GetWordSimilarity(text, t).ToString("0.00") + "]");
+                //}
+            }
+            return;
+        }
+
+ 
+
+
+        static void Main(string[] args)
+        { 
+
+
             string model = @"C:\BigData\NLPmodels\FastText\aviation-caseinsensitive";
+
             if(args.Length > 0) { model = args[0]; }
 
-            var words = File.ReadAllLines(model + @".vec").Skip(2).Select((l) => new WordAndSim() { word = l.Split(' ').First() }).ToList();
+            //var words = File.ReadAllLines(model + @".vec").Skip(2).Select((l) => new WordAndSim() { word = l.Split(' ').First() }).ToList();
             //words.RemoveAll(x => x.word.Length < 6);
 
 
             var fastTextModel = new fastText(model + @".bin");
 
+            var words = fastTextModel.GetWords();
+
+
             //var utterances = File.ReadAllLines(@"C:\stanford-nlp\classifier_training\test.tsv").Select(l => new IntentExample() { Intent = l.Split('\t').First(), Example = l.Split('\t').Last().ToLowerInvariant() }).ToList();
-            
+
 
             while (true)
             {
 
-                //Console.Write("Word: "); var w1 = Console.ReadLine();
-                //var wV = fastText.GetParagraphVector(w1);
-                //foreach (var u in utterances)
+                Console.Write("\nWord: "); var w1 = Console.ReadLine();
+
+                Console.WriteLine("\nMost similar:");
+                fastTextModel.GetMostSimilar(w1, 20).ForEach(ws => Console.WriteLine("\t" + ws.Item1.PadLeft(15) + " " + ws.Item2.ToString("0.00")));
+
+                Console.WriteLine("\nLeast similar:");
+                fastTextModel.GetLeastSimilar(w1, 5).ForEach(ws => Console.WriteLine("\t" + ws.Item1.PadLeft(15) + " " + ws.Item2.ToString("0.00")));
+
+
+
+                //Console.WriteLine();
+
+                //Console.Write("Parent: "); var parent = Console.ReadLine();
+
+                //double[] averageDiff = new double[fastTextModel.GetVectorSize()];
+                //double count = 0;
+                //while(true)
                 //{
-                //    u.Similarity = fastText.CalculateCosineSimilarity(fastText.GetParagraphVector(u.Example), wV);
+                //    Console.Write("Child : "); var child = Console.ReadLine();
+
+                //    if(string.IsNullOrWhiteSpace(child)) { break; }
+
+                //    var tmpdiff= fastTextModel.GetWordDifference(child, parent);
+                //    averageDiff = fastText.Add(averageDiff, tmpdiff);
                 //}
 
-                //utterances.Sort((a, b) => b.Similarity.CompareTo(a.Similarity));
+                //fastText.Multiply(averageDiff, 1 / count);
+                
+
+                //Console.Write("New Parent : "); var newParent = Console.ReadLine();
+                //Console.Write("New Child  : "); var newChild  = Console.ReadLine();
+
+                ////var diff = fastTextModel.GetWordDifference(child, parent);
+                //var newDiff = fastTextModel.GetWordDifference(newChild,newParent);
+
+                //Console.WriteLine(string.Join("; ", averageDiff.Select(a => a.ToString("0.00"))));
+                //Console.WriteLine(string.Join("; ", newDiff.Select(a => a.ToString("0.00"))));
+
+                //Console.WriteLine("Similarity between diff vectors:" + fastText.CalculateCosineSimilarity(averageDiff, newDiff));
+
+                
+
+
+                //if(string.IsNullOrWhiteSpace(parent) || string.IsNullOrWhiteSpace(newParent)) { break; }
+
+
+                //var newChildVector = fastText.Add(fastTextModel.GetWordVector(newParent), averageDiff);
+
+                //Console.WriteLine("Similarity between projected new parent and new child: " + fastTextModel.GetWordSimilarity(newChild, newChildVector));
+
+
+                //foreach (var w in words)
+                //{
+                //    w.sim = fastTextModel.GetWordSimilarity(w.word, newChildVector);
+                //}
+
+                //words.Sort((a, b) => b.sim.CompareTo(a.sim));
 
 
                 //Console.WriteLine("Most similar:");
-                //foreach (var w in utterances.Take(5))
+                //foreach (var w in words.Take(20))
                 //{
-                //    Console.WriteLine($"{w.Intent} -> {w.Similarity} (i.e. {w.Example})");
+                //    Console.WriteLine($"\t{w.word} -> {w.sim}");
                 //}
 
-                //utterances.Reverse();
-                //Console.WriteLine("Least similar:");
-                //foreach (var w in utterances.Take(5))
-                //{
-                //    Console.WriteLine($"{w.Intent} -> {w.Similarity} (i.e. {w.Example})");
-                //}
+                ////words.Reverse();
+
+                ////Console.WriteLine();
+
+                ////Console.WriteLine("Least similar:");
+                ////foreach (var w in words.Take(5))
+                ////{
+                ////    Console.WriteLine($"\t{w.word} -> {w.sim}");
+                ////}
 
 
 
-                Console.WriteLine();
-
-                Console.Write("Word: "); var w1 = Console.ReadLine();
-
-                if(string.IsNullOrWhiteSpace(w1)) { break; }
-
-                foreach (var w in words)
-                {
-                    w.sim = fastTextModel.GetWordSimilarity(w1, w.word);
-                }
-
-                words.Sort((a, b) => b.sim.CompareTo(a.sim));
-
-
-                Console.WriteLine("Most similar:");
-                foreach (var w in words.Take(20))
-                {
-                    Console.WriteLine($"\t{w.word} -> {w.sim}");
-                }
-
-                words.Reverse();
-
-                Console.WriteLine();
-
-                Console.WriteLine("Least similar:");
-                foreach (var w in words.Take(5))
-                {
-                    Console.WriteLine($"\t{w.word} -> {w.sim}");
-                }
-
-
-
-                Console.WriteLine();
+                //Console.WriteLine();
             }
 
             fastText.Release();

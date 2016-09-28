@@ -13,7 +13,9 @@
 #include <vector>
 #include <random>
 #include <utility>
+#include <memory>
 
+#include "args.h"
 #include "matrix.h"
 #include "vector.h"
 #include "real.h"
@@ -28,16 +30,17 @@ struct Node {
 
 class Model {
   private:
-    Matrix& wi_;
-    Matrix& wo_;
+    std::shared_ptr<Matrix> wi_;
+    std::shared_ptr<Matrix> wo_;
+    std::shared_ptr<Args> args_;
     Vector hidden_;
     Vector output_;
     Vector grad_;
     int32_t hsz_;
     int32_t isz_;
     int32_t osz_;
-
-    static real lr_;
+    real loss_;
+    int64_t nexamples_;
 
     static bool comparePairs(const std::pair<real, int32_t>&,
                              const std::pair<real, int32_t>&);
@@ -49,30 +52,29 @@ class Model {
     std::vector<Node> tree;
 
     static const int32_t NEGATIVE_TABLE_SIZE = 10000000;
-    static constexpr real MIN_LR = 0.000001;
 
   public:
-    Model(Matrix&, Matrix&, int32_t, real, int32_t);
+    Model(std::shared_ptr<Matrix>, std::shared_ptr<Matrix>,
+          std::shared_ptr<Args>, int32_t);
 
-    void setLearningRate(real);
-    real getLearningRate();
-
-    real binaryLogistic(int32_t, bool);
-    real negativeSampling(int32_t);
-    real hierarchicalSoftmax(int32_t);
-    real softmax(int32_t);
+    real binaryLogistic(int32_t, bool, real);
+    real negativeSampling(int32_t, real);
+    real hierarchicalSoftmax(int32_t, real);
+    real softmax(int32_t, real);
 
     void predict(const std::vector<int32_t>&, int32_t,
                  std::vector<std::pair<real, int32_t>>&);
     void dfs(int32_t, int32_t, real, std::vector<std::pair<real, int32_t>>&);
     void findKBest(int32_t, std::vector<std::pair<real, int32_t>>&);
-    real update(const std::vector<int32_t>&, int32_t);
+    void update(const std::vector<int32_t>&, int32_t, real);
     void computeHidden(const std::vector<int32_t>&);
+    void computeOutputSoftmax();
 
     void setTargetCounts(const std::vector<int64_t>&);
     void initTableNegatives(const std::vector<int64_t>&);
     int32_t getNegative(int32_t target);
     void buildTree(const std::vector<int64_t>&);
+    real getLoss();
 
     std::minstd_rand rng;
 };
