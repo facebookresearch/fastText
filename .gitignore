@@ -2,6 +2,9 @@
 *.o
 *.bin
 *.vec
+.idea/
+CMakeFiles
+CMakeCache
 data
 fasttext
 result
