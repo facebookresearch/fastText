@@ -88,7 +88,11 @@ const std::vector<int32_t> Dictionary::getNgrams(const std::string& word) {
 bool Dictionary::discard(int32_t id, real rand) {
   assert(id >= 0);
   assert(id < nwords_);
+<<<<<<< HEAD
+  if (args.model == model_name::sup) { return false; }
+=======
   if (args_->model == model_name::sup) return false;
+>>>>>>> refs/remotes/facebookresearch/master
   return rand > pdiscard_[id];
 }
 
@@ -263,7 +267,7 @@ int32_t Dictionary::getLine(std::istream& in,
     if (wid < 0) continue;
     entry_type type = getType(wid);
     ntokens++;
-    if (type == entry_type::word && !discard(wid, uniform(rng))) {
+    if (type == entry_type::word && !discard(wid, uniform(rng))) { 
       words.push_back(wid);
     }
     if (type == entry_type::label) {

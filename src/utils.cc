@@ -12,6 +12,8 @@
 #include <cmath>
 #include <ios>
 
+bool initialized = false;
+
 namespace utils {
   real* t_sigmoid = nullptr;
   real* t_log = nullptr;
@@ -35,9 +37,15 @@ namespace utils {
     }
   }
 
-  void initTables() {
+  void initTables() 
+  {
+      if (initialized)
+      {
+          return;
+      }
     initSigmoid();
     initLog();
+    initialized = true;
   }
 
   void initSigmoid() {

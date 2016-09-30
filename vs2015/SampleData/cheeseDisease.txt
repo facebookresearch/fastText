@@ -1,0 +1,1765 @@
+__label__Disease__ Back Pain
+__label__Disease__ Dissociative Disorders
+__label__Disease__ Lipoma
+__label__Cheese__ Blue Rathgore
+__label__Disease__ Gallstones
+__label__Cheese__ Chevrotin des Aravis
+__label__Disease__ Pulmonary Embolism
+__label__Disease__ Gastroenteritis
+__label__Disease__ Ornithine Carbamoyltransferase Deficiency Disease
+__label__Disease__ Eisenmenger Complex
+__label__Disease__ WiskottAldrich Syndrome
+__label__Cheese__ Dunsyre Blue
+__label__Disease__ Dysphonia, Spasmodic
+__label__Cheese__ Fresh Ricotta
+__label__Cheese__ Finn
+__label__Disease__ Leptospirosis
+__label__Disease__ Poland Syndrome
+__label__Cheese__ Pave de Chirac
+__label__Disease__ Tracheoesophageal Fistula
+__label__Disease__ Hemophilia A
+__label__Cheese__ Civray
+__label__Cheese__ Scamorza
+__label__Cheese__ Swiss
+__label__Cheese__ Mozzarella Fresh, in water
+__label__Disease__ Myocardial Ischemia
+__label__Disease__ Herpes Genitalis
+__label__Disease__ Myelofibrosis
+__label__Disease__ Larsen Syndrome
+__label__Disease__ Evans Syndrome
+__label__Disease__ Craniosynostoses
+__label__Cheese__ Munster
+__label__Disease__ Complementary Therapies
+__label__Disease__ Zoonoses
+__label__Disease__ Myopia
+__label__Disease__ Sepsis
+__label__Cheese__ Reblochon
+__label__Cheese__ Herve
+__label__Cheese__ Toma
+__label__Cheese__ Heidi Gruyere
+__label__Disease__ StevensJohnson Syndrome
+__label__Disease__ Gingivitis
+__label__Disease__ Kartagener Syndrome
+__label__Cheese__ Stilton
+__label__Cheese__ Bosworth
+__label__Disease__ Endocarditis, Bacterial
+__label__Disease__ Granuloma Annulare
+__label__Disease__ Hemorrhagic Disease of Newborn
+__label__Disease__ Crouzon Syndrome
+__label__Disease__ Bird Diseases
+__label__Disease__ Urticaria
+__label__Disease__ Hypervitaminosis A
+__label__Cheese__ Selles sur Cher
+__label__Disease__ WolfHirschhorn Syndrome
+__label__Disease__ Fecal Incontinence
+__label__Disease__ Antithrombin III Deficiency
+__label__Disease__ Adenomyosis
+__label__Disease__ Scabies
+__label__Disease__ Furunculosis
+__label__Disease__ Marasmusp
+__label__Disease__ Atelectasis
+__label__Cheese__ Rabacal
+__label__Disease__ Anencephaly
+__label__Cheese__ Boeren Leidenkaas
+__label__Cheese__ Charolais
+__label__Disease__ Neuromuscular Diseases (Nervous System Diseases)
+__label__Cheese__ Toscanello
+__label__Disease__ Anemia, IronDeficiency
+__label__Disease__ Encopresis
+__label__Disease__ Leg Ulcer
+__label__Disease__ Psittacosis in humans
+__label__Cheese__ Boursin
+__label__Disease__ Dyspraxia
+__label__Disease__ Pica Syndrome
+__label__Disease__ Nails, Ingrown
+__label__Cheese__ Cotija
+__label__Cheese__ Emlett
+__label__Cheese__ Lavistown
+__label__Disease__ Neuroma, Acoustic
+__label__Disease__ Sanfilippo Syndrome
+__label__Disease__ Hernia, Hiatal
+__label__Disease__ Sarcoidosis
+__label__Disease__ Desmoplastic Small Round Cell Tumor
+__label__Disease__ Sciatica
+__label__Disease__ Syphilis, Congenital
+__label__Cheese__ Tourmalet
+__label__Cheese__ Serra da Estrela
+__label__Cheese__ Siraz
+__label__Disease__ Kawasaki Disease
+__label__Cheese__ Pressato
+__label__Cheese__ Langres
+__label__Disease__ Fractures
+__label__Disease__ Barrett Esophagus
+__label__Disease__ Chlamydia Infections
+__label__Cheese__ Poivre d'Ane
+__label__Cheese__ Vacherin-Fribourgeois
+__label__Cheese__ Dessertnyj Belyj
+__label__Disease__ Cochlear Aqueduct
+__label__Cheese__ Brin d' Amour
+__label__Disease__ Myelitis
+__label__Disease__ SmithMagenis Syndrome
+__label__Disease__ Reinke's Edema
+__label__Disease__ Hyperacusis
+__label__Disease__ LeggPerthes Disease
+__label__Cheese__ Crescenza
+__label__Disease__ Supraglottitis
+__label__Cheese__ Balaton
+__label__Cheese__ Celtic Promise
+__label__Disease__ Myositis Ossificans
+__label__Cheese__ Curworthy
+__label__Disease__ Olivopontocerebellar Atrophies
+__label__Disease__ Heart Failure, Congestive
+__label__Disease__ Cellulitis
+__label__Cheese__ Ricotta
+__label__Disease__ Memory Disorders
+__label__Disease__ Epiglottitis
+__label__Cheese__ Lajta
+__label__Disease__ Cyclothymic Disorder
+__label__Disease__ Torture
+__label__Cheese__ Greve
+__label__Disease__ Varicose Veins
+__label__Disease__ Blood Coagulation Disorders
+__label__Disease__ Pierre Robin Syndrome
+__label__Cheese__ Oaxaca
+__label__Disease__ Fasciitis
+__label__Cheese__ Jubilee Blue
+__label__Disease__ Fibromuscular Dysplasia
+__label__Disease__ Craniocerebral Trauma
+__label__Disease__ Pseudogout
+__label__Disease__ Labyrinth Diseases
+__label__Disease__ Bruxism
+__label__Disease__ Multiple Chemical Sensitivity
+__label__Disease__ Periodic Disease
+__label__Cheese__ Bergader
+__label__Disease__ Temporomandibular Joint Disorders (Stomatognathic Diseases)
+__label__Disease__ Stargardt Disease
+__label__Cheese__ San Simon
+__label__Disease__ Cartilage Diseases
+__label__Disease__ Pseudomyxoma Peritonei
+__label__Disease__ Paraganglioma
+__label__Disease__ Otorhinolaryngologic Neoplasms
+__label__Disease__ Thrombosis
+__label__Disease__ Panniculitis
+__label__Disease__ Testicular Cancer
+__label__Cheese__ Feta
+__label__Disease__ Edward Syndrome
+__label__Disease__ Wegener's Granulomatosis
+__label__Cheese__ Cougar Gold
+__label__Cheese__ Brin
+__label__Disease__ CarbohydrateDeficient Glycoprotein Syndrome
+__label__Cheese__ Aubisque Pyrenees
+__label__Cheese__ Babybel
+__label__Cheese__ Butte
+__label__Disease__ Dehydration
+__label__Disease__ Cornelia de Lange Syndrome
+__label__Cheese__ Fontainebleau
+__label__Disease__ Attention Deficit Disorder with Hyperactivity
+__label__Disease__ Pregnancy Complications
+__label__Disease__ Anoxia
+__label__Disease__ Protein S Deficiency
+__label__Disease__ Hemiplegia
+__label__Cheese__ Fribourgeois
+__label__Cheese__ Yarra Valley Pyramid
+__label__Cheese__ Cold Pack
+__label__Cheese__ Menallack Farmhouse
+__label__Cheese__ Leyden
+__label__Cheese__ Iberico
+__label__Cheese__ Mamirolle
+__label__Cheese__ Blue Castello
+__label__Disease__ Infertility (.. Male Genital Diseases)
+__label__Disease__ Dentigerous Cyst
+__label__Disease__ Dysphagia
+__label__Disease__ Adiposis Dolorosa
+__label__Disease__ NailPatella Syndrome
+__label__Disease__ Hypoxia
+__label__Disease__ Hyphema
+__label__Disease__ Myeloid Metaplasia
+__label__Disease__ Periodic Paralysis
+__label__Disease__ Keloid
+__label__Cheese__ Neufchatel
+__label__Disease__ Hives
+__label__Disease__ Death
+__label__Disease__ Behcet's Syndrome
+__label__Disease__ Jacobsen Syndrome
+__label__Disease__ Myiasis
+__label__Cheese__ P'tit Berrichon
+__label__Disease__ Christmas Disease
+__label__Disease__ Tularemia
+__label__Disease__ Sezary Syndrome
+__label__Disease__ Anemia, Megaloblastic
+__label__Disease__ Fragile X Syndrome
+__label__Disease__ Kala Azar
+__label__Disease__ Fasciitis, Necrotizing
+__label__Cheese__ Gabriel
+__label__Cheese__ Caciocavallo
+__label__Disease__ Hypercalcemia
+__label__Cheese__ Abbaye de Belloc
+__label__Disease__ Adrenal Hyperplasia, Congenital
+__label__Cheese__ Danbo
+__label__Cheese__ Xynotyro
+__label__Disease__ Exfoliation Syndrome
+__label__Disease__ Lichen Planus
+__label__Disease__ Hemangioma
+__label__Cheese__ Tamie
+__label__Disease__ Scheie Syndrome
+__label__Disease__ Yellow Fever
+__label__Cheese__ Duddleswell
+__label__Cheese__ Peekskill Pyramid
+__label__Cheese__ Picodon de Chevre
+__label__Disease__ Arteriovenous Malformations
+__label__Disease__ Tinnitus
+__label__Disease__ PortWine Stain
+__label__Disease__ Hashimoto's Disease
+__label__Cheese__ Chabis de Gatine
+__label__Cheese__ Cheddar
+__label__Cheese__ Spenwood
+__label__Cheese__ Bleu Des Causses
+__label__Cheese__ Brillat-Savarin
+__label__Disease__ Menkes Kinky Hair Syndrome
+__label__Disease__ Glossitis, Benign Migratory
+__label__Disease__ Stress
+__label__Disease__ Diabetic Neuropathies
+__label__Disease__ Diplopia
+__label__Disease__ Cryoglobulinemia
+__label__Disease__ SubstanceRelated Disorders
+__label__Disease__ Sarcoidosis, Pulmonary
+__label__Disease__ Trichotillomania
+__label__Cheese__ Sirene
+__label__Disease__ Ventricular Fibrillation
+__label__Disease__ Paraphilias
+__label__Cheese__ Anthoriro
+__label__Disease__ Penile Induration
+__label__Disease__ Bursitis
+__label__Disease__ Edema
+__label__Disease__ Syringomyelia
+__label__Disease__ Proteinuria
+__label__Disease__ Rhinitis
+__label__Disease__ Diphtheria
+__label__Cheese__ Queso Blanco
+__label__Disease__ Gaucher Disease
+__label__Disease__ Ophthalmoplegia
+__label__Disease__ Esophageal Diseases
+__label__Disease__ Pneumothorax
+__label__Cheese__ Devon Blue
+__label__Cheese__ Tomme Brulee
+__label__Disease__ Histiocytosis, Sinus
+__label__Disease__ Usher Syndrome
+__label__Disease__ Dysmorphophobia
+__label__Disease__ Listeria Infections
+__label__Disease__ Chromosome Disorders
+__label__Disease__ Purpura
+__label__Disease__ Synesthesia
+__label__Disease__ Hematospermia
+__label__Disease__ Hernia
+__label__Cheese__ Gubbeen
+__label__Cheese__ Brie de Meaux
+__label__Disease__ Diabetic Ketoacidosis
+__label__Cheese__ Fourme de Haute Loire
+__label__Cheese__ Double Gloucester
+__label__Disease__ Cerebral Hemorrhage
+__label__Cheese__ Cypress Grove Chevre
+__label__Disease__ Loiasis
+__label__Disease__ Leishmaniasis
+__label__Cheese__ Romans Part Dieu
+__label__Cheese__ Zanetti Grana Padano
+__label__Disease__ Darier Disease
+__label__Cheese__ Coeur de Camembert au Calvados
+__label__Disease__ Fournier Gangrene
+__label__Disease__ Lichen Sclerosus et Atrophicus
+__label__Disease__ Whipworm Infections
+__label__Disease__ Bourneville's Disease
+__label__Cheese__ Queso Fresco
+__label__Disease__ Metabolic Syndrome X
+__label__Disease__ Hepatic Vein Thrombosis
+__label__Disease__ StuartPrower Deficiency
+__label__Disease__ Retropharyngeal Abscesser
+__label__Disease__ Hand, Foot and Mouth Disease
+__label__Disease__ Pituitary Diseases
+__label__Cheese__ Tibet
+__label__Cheese__ Roquefort
+__label__Disease__ Glomerulonephritis
+__label__Cheese__ Beyaz Peynir
+__label__Disease__ Leigh Disease
+__label__Disease__ Genital Neoplasms, Female
+__label__Disease__ Ecchymosis
+__label__Cheese__ Carre de l'Est
+__label__Cheese__ Bavarian Bergkase
+__label__Disease__ Central Pain Syndrome
+__label__Cheese__ Mycella
+__label__Cheese__ Havarti
+__label__Cheese__ Olivet Bleu
+__label__Disease__ LouisBar Syndrome
+__label__Cheese__ Bra
+__label__Disease__ Urinary Tract Infections
+__label__Disease__ Hartnup Disease
+__label__Cheese__ Golden Cross
+__label__Cheese__ Gammelost
+__label__Disease__ Syncope
+__label__Disease__ SmithLemli-Opitz Syndrome
+__label__Disease__ Inflammatory Bowel Diseases
+__label__Cheese__ Dolcelatte
+__label__Cheese__ Vieux Corse
+__label__Cheese__ Ubriaco
+__label__Disease__ Incontinentia Pigmenti
+__label__Disease__ Eye Hemorrhage
+__label__Disease__ Rhabdomyosarcoma
+__label__Disease__ Mumps
+__label__Disease__ LennoxGastaut Syndrome
+__label__Disease__ Onchocerciasis
+__label__Disease__ Aggression
+__label__Disease__ Scrub Typhus
+__label__Disease__ Periodontal Diseases
+__label__Disease__ Uterine Fibroids
+__label__Disease__ Floaters
+__label__Disease__ Paget Disease of Bone
+__label__Disease__ Tourette Syndrome
+__label__Disease__ Gyrate Atrophy
+__label__Cheese__ Baby Swiss
+__label__Disease__ Strabismus
+__label__Disease__ Bullying
+__label__Disease__ Eye Neoplasms
+__label__Disease__ Keratosis, Actinic
+__label__Disease__ Acne Vulgaris
+__label__Disease__ Schistosomiasis
+__label__Disease__ Fasciculation
+__label__Disease__ Frostbite
+__label__Disease__ Acrodynia
+__label__Disease__ CHARGE Syndrome
+__label__Disease__ Pulmonary Alveolar Proteinosis
+__label__Disease__ Osteoarthritis
+__label__Disease__ Alkalosis
+__label__Cheese__ Buxton Blue
+__label__Disease__ Tietze's Syndrome (Costochondritis)
+__label__Cheese__ Filetta
+__label__Disease__ TickBorne Diseases (Parasitic Diseases)
+__label__Cheese__ Cambazola
+__label__Cheese__ Kadchgall
+__label__Disease__ Vibrio Infections
+__label__Disease__ Sarcoma
+__label__Cheese__ Croghan
+__label__Cheese__ Cheshire
+__label__Cheese__ Crowdie
+__label__Disease__ Choroideremia
+__label__Disease__ Hermaphroditism
+__label__Disease__ Berger's Disease
+__label__Cheese__ Margotin
+__label__Cheese__ Le Roule
+__label__Cheese__ Bath Cheese
+__label__Disease__ Chagas Disease
+__label__Disease__ Munchausen Syndrome
+__label__Disease__ Vasospasm, Intracranial
+__label__Disease__ Balanitis
+__label__Cheese__ Rustinu
+__label__Disease__ Sty
+__label__Cheese__ Queso Fresco (Adobera)
+__label__Cheese__ Beer Cheese
+__label__Disease__ Morton's Neuroma
+__label__Cheese__ Texas Goat Cheese
+__label__Disease__ Aniridia
+__label__Disease__ Herpes Zoster Oticus
+__label__Disease__ Oculocerebrorenal (Lowe) Sydrome
+__label__Disease__ Meningitis, Viral
+__label__Disease__ Hematuria
+__label__Disease__ AdamsStokes Disease
+__label__Disease__ Twins, Conjoined
+__label__Disease__ Myopathies, Structural, Congenital
+__label__Cheese__ Saanenkaese
+__label__Disease__ Allergy
+__label__Disease__ Schizencephaly
+__label__Disease__ Mitral Valve Prolapse
+__label__Cheese__ Baguette Laonnaise
+__label__Disease__ Fucosidosis
+__label__Cheese__ Le Lacandou
+__label__Disease__ Arteriosclerosis
+__label__Disease__ Epilepsy
+__label__Disease__ Pelvic Inflammatory Disease
+__label__Disease__ Spasmodic Torticollis
+__label__Cheese__ Kikorangi
+__label__Disease__ Fistula
+__label__Disease__ Williams Syndrome
+__label__Disease__ SturgeWeber Syndrome
+__label__Disease__ Cytosporidiosis
+__label__Disease__ Legionellosis
+__label__Cheese__ Chabichou
+__label__Disease__ Tonsillitis
+__label__Disease__ Glucosephosphate Dehydrogenase Deficiency
+__label__Disease__ StiffPerson Syndrome
+__label__Disease__ Lacrimal Duct Obstruction
+__label__Disease__ XLinked Myotubular Myopathy
+__label__Cheese__ Leerdammer
+__label__Cheese__ Romano
+__label__Disease__ Airway Obstruction
+__label__Disease__ Lung Diseases, Interstitial
+__label__Cheese__ Mozzarella Rolls
+__label__Disease__ Tic Disorders
+__label__Disease__ Motion Sickness
+__label__Disease__ Botulism
+__label__Cheese__ Acorn
+__label__Disease__ Uveitis
+__label__Cheese__ Le Fium Orbo
+__label__Disease__ Presbycusis
+__label__Disease__ Ovarian Cysts
+__label__Cheese__ Blarney
+__label__Disease__ Altitude Sickness
+__label__Disease__ Hypoplastic Left Heart Syndrome
+__label__Cheese__ Braudostur
+__label__Disease__ Zygomycosis
+__label__Disease__ Retinal Detachment
+__label__Disease__ BannayanZonana Syndrome
+__label__Cheese__ Pecorino Romano
+__label__Disease__ Hyperostosis
+__label__Disease__ Cyclosporiasis
+__label__Disease__ Robinow Syndrome (Foetal Face Syndrome)
+__label__Disease__ LaurenceMoon Syndrome
+__label__Disease__ Central Cord Syndrome
+__label__Cheese__ Brick
+__label__Disease__ Factor V Leiden
+__label__Disease__ Urethral Stricture
+__label__Disease__ Coxsackievirus Infections
+__label__Disease__ Dyspareunia
+__label__Disease__ Erysipelas
+__label__Cheese__ Fleur du Maquis
+__label__Cheese__ Ile d'Yeu
+__label__Disease__ Mastalgia
+__label__Disease__ Pulmonary Emphysema
+__label__Disease__ Anophthalmos
+__label__Disease__ Human Endogenous Retrovirus
+__label__Disease__ Hyperhidrosis
+__label__Disease__ Salivary Gland Diseases
+__label__Cheese__ Fresh Jack
+__label__Disease__ Neutropenia
+__label__Disease__ Placenta Diseases
+__label__Disease__ Ellisvan Creveld Syndrome
+__label__Disease__ Lyme Disease
+__label__Disease__ Chondritis, Costal
+__label__Disease__ Cancer
+__label__Disease__ Nervous System Neoplasms
+__label__Disease__ Neurofibromatoses
+__label__Cheese__ Bleu de Septmoncel
+__label__Cheese__ Tillamook Cheddar
+__label__Cheese__ Manchego
+__label__Disease__ Snoring
+__label__Cheese__ Daralagjazsky
+__label__Disease__ Uterine Prolapse
+__label__Cheese__ Castelleno
+__label__Disease__ Aphasia
+__label__Disease__ Neurocysticercosis
+__label__Cheese__ Grabetto
+__label__Disease__ Leiomyoma
+__label__Disease__ Kidney, Sponge
+__label__Disease__ Dermatitis, Exfoliative
+__label__Cheese__ Kaseri
+__label__Disease__ Apert Syndrome
+__label__Disease__ Otitis
+__label__Disease__ Insomnia, Fatal Familial
+__label__Disease__ Thyroid Nodule
+__label__Disease__ Cystitis, Interstitial
+__label__Disease__ Gorlin's Syndrome
+__label__Disease__ Fibrous Dysplasia of Bone
+__label__Cheese__ Brebis du Lochois
+__label__Disease__ Adnexitis
+__label__Disease__ Hodgkin Disease
+__label__Disease__ Gastrointestinal Hemorrhage
+__label__Disease__ Leiomyosarcoma
+__label__Cheese__ Fromage de Montagne de Savoie
+__label__Disease__ Pupil Disorders
+__label__Cheese__ Le Brin
+__label__Disease__ Canker Sores
+__label__Disease__ Spinal Stenosis
+__label__Disease__ Hepatitis
+__label__Disease__ Compartment Syndromes
+__label__Disease__ Melanoma
+__label__Disease__ Homocystinuria
+__label__Disease__ Magnesium Deficiency
+__label__Disease__ Alopecia
+__label__Disease__ Fibrocystic Disease of Breast
+__label__Disease__ Hemianopsia (Hemianopia)
+__label__Disease__ Refsum Disease
+__label__Cheese__ Boursault
+__label__Disease__ DejerineSottas Disease
+__label__Disease__ Antiphospholipid Syndrome
+__label__Cheese__ Morbier
+__label__Disease__ Thrush
+__label__Disease__ WerdnigHoffmann Disease
+__label__Disease__ Depression, Postpartum
+__label__Disease__ Spina Bifida Occulta
+__label__Disease__ Babesiosis
+__label__Disease__ Dyslexia
+__label__Disease__ Osteonecrosis
+__label__Disease__ Impotence
+__label__Disease__ Social Behavior
+__label__Cheese__ Liptauer
+__label__Disease__ Empty Sella Syndrome
+__label__Cheese__ Halloumy (Australian)
+__label__Cheese__ Orkney Extra Mature Cheddar
+__label__Disease__ Myelodysplastic Syndromes
+__label__Disease__ Wilson's Disease
+__label__Disease__ Exanthema Subitum
+__label__Disease__ Ramsay Hunt (Paralysis) Syndrome
+__label__Disease__ Drug Toxicity
+__label__Cheese__ Friesekaas
+__label__Disease__ Bone Diseases, Metabolic
+__label__Disease__ Pulmonary Atresia
+__label__Disease__ Dysthymic Disorder
+__label__Disease__ Dysentery
+__label__Disease__ Pharyngeal Diseases
+__label__Disease__ Multiple System Atrophy
+__label__Disease__ Chondromalacia
+__label__Disease__ Chromosome 16 Abnormalities
+__label__Disease__ Peyronie's Disease
+__label__Cheese__ Torta del Casar
+__label__Cheese__ Montasio
+__label__Disease__ Keratosis, Seborrheic
+__label__Disease__ Mucopolysaccharidoses
+__label__Disease__ Temporomandibular Joint Dysfuntion Syndrome (Musculoskeletal Diseases)
+__label__Cheese__ Flower Marie
+__label__Disease__ Giant Lymph Node Hyperplasia
+__label__Disease__ Trigeminal Neuralgia
+__label__Disease__ Myasthenia Gravis
+__label__Cheese__ Shelburne Cheddar
+__label__Disease__ Empyema, Pleural
+__label__Cheese__ Teifi
+__label__Cheese__ Tronchon
+__label__Disease__ Burning Mouth Syndrome
+__label__Disease__ Kraurosis Vulvae
+__label__Disease__ Ataxia Telangiectasia
+__label__Cheese__ Danablu (Danish Blue)
+__label__Disease__ Paralysis
+__label__Disease__ Dry Eye Syndromes
+__label__Disease__ Russell Silver Syndrome
+__label__Disease__ Diseases of Invertebrates
+__label__Cheese__ Mixte
+__label__Disease__ IgA Nephropathy
+__label__Disease__ KlippelTrenaunay-Weber Syndrome
+__label__Disease__ Raccoon Diseases
+__label__Disease__ Rabies
+__label__Disease__ Pancreatic Neoplasms
+__label__Disease__ Still's Disease
+__label__Disease__ Treacher Collins Syndrome
+__label__Cheese__ Fromage Corse
+__label__Disease__ Scotoma
+__label__Cheese__ Pelardon des Cevennes
+__label__Cheese__ Broccio Demi-Affine
+__label__Disease__ Laryngeal Neoplasms
+__label__Disease__ Urination Disorders
+__label__Disease__ Lissencephaly
+__label__Disease__ Dermatitis
+__label__Disease__ Iritis
+__label__Disease__ German Measles
+__label__Disease__ Mental Retardation
+__label__Cheese__ Bonchester
+__label__Disease__ Athetosis
+__label__Disease__ Pemphigus
+__label__Cheese__ Butterkase
+__label__Cheese__ Aisy Cendre
+__label__Disease__ Bechterew Disease
+__label__Disease__ Coma
+__label__Disease__ Down Syndrome
+__label__Cheese__ Leicester
+__label__Disease__ Fabry Disease
+__label__Cheese__ Oxford Blue
+__label__Cheese__ Fourme de Montbrison
+__label__Disease__ Hydronephrosis
+__label__Disease__ Fusobacterium Infections
+__label__Disease__ Leukemia
+__label__Disease__ Chorea
+__label__Disease__ Berylliosis
+__label__Disease__ Carnitine Palmitoyl Transferase Deficinecy
+__label__Disease__ HippelLindau Disease
+__label__Disease__ Hughe's Syndrome
+__label__Cheese__ Emental Grand Cru
+__label__Disease__ Croup
+__label__Disease__ Lou Gehrig's Disease
+__label__Disease__ Spinal Muscular Atrophies of Childhood
+__label__Disease__ Hurler's Syndrome
+__label__Disease__ Agnosia
+__label__Disease__ Hypothyroidism
+__label__Cheese__ Olde York
+__label__Disease__ Tricuspid Atresia
+__label__Disease__ ObsessiveCompulsive Disorder
+__label__Cheese__ Sharpam
+__label__Disease__ Ecthyma, Contagious
+__label__Disease__ Myocarditis
+__label__Disease__ Pemphigoid, Bullous
+__label__Disease__ Emetophobia
+__label__Disease__ de Quervain's Tendinitis
+__label__Disease__ Holoprosencephaly
+__label__Disease__ Tinea Pedis (Athlete's Foot; > Dermatomycoses)
+__label__Disease__ Vasculitis
+__label__Disease__ Seasonal Affective Disorder
+__label__Disease__ Hemorrhagic Fevers, Viral
+__label__Disease__ Nystagmus, Pathologic
+__label__Disease__ Dracunculiasis
+__label__Disease__ Syndrome X
+__label__Disease__ Meniere's Disease
+__label__Cheese__ Crowley
+__label__Disease__ XYY Karyotype
+__label__Disease__ Pearson's Syndrome
+__label__Disease__ CreutzfeldtJakob Syndrome
+__label__Disease__ Foot and Mouth Disease
+__label__Disease__ Phenylketonurias
+__label__Disease__ Osteomalacia
+__label__Disease__ Vertigo
+__label__Disease__ Osteomyelitis
+__label__Disease__ Bites and Stings
+__label__Disease__ Pterygium
+__label__Cheese__ Lanark Blue
+__label__Disease__ Starvation
+__label__Cheese__ Gaperon a l'Ail
+__label__Disease__ Konzo
+__label__Cheese__ Dunbarra
+__label__Cheese__ Yorkshire Blue
+__label__Disease__ Nephrosis
+__label__Disease__ Epidermolysis Bullosa
+__label__Disease__ Fetal Death
+__label__Cheese__ Frinault
+__label__Cheese__ Cabrales
+__label__Disease__ Pseudotumor Cerebri
+__label__Disease__ Zellweger Syndrome
+__label__Disease__ Thrombasthenia
+__label__Disease__ Firesetting Behavior
+__label__Disease__ Phlebotomus Fever
+__label__Cheese__ Durrus
+__label__Cheese__ Comte
+__label__Cheese__ Gorgonzola
+__label__Cheese__ Goutu
+__label__Cheese__ Colby
+__label__Disease__ Spondylolisthesis
+__label__Disease__ Ramsay Hunt Auricular Syndrome
+__label__Disease__ Yersinia Enterocolitica Infection
+__label__Disease__ Pectus Excavatum
+__label__Cheese__ Edelpilz
+__label__Cheese__ Cotherstone
+__label__Disease__ Causalgia
+__label__Cheese__ Niolo
+__label__Disease__ Stridor
+__label__Cheese__ Cottage Cheese
+__label__Disease__ Liver Diseases
+__label__Disease__ Hammertoes
+__label__Disease__ Melanosis (Freckles)
+__label__Disease__ Renal Osteodystrophy
+__label__Disease__ Methemoglobinemia
+__label__Cheese__ Mothais a la Feuille
+__label__Disease__ Lymphangiomyomatosis
+__label__Disease__ Lung Cancer
+__label__Cheese__ Podhalanski
+__label__Disease__ Tennis Elbow
+__label__Disease__ Mannosidosis
+__label__Disease__ Impulse Control Disorders
+__label__Cheese__ Royalp Tilsit
+__label__Disease__ Acquired Hyperostosis Syndrome
+__label__Disease__ Angelman Syndrome
+__label__Disease__ Mandibulofacial Dysostosis
+__label__Cheese__ Cream Cheese
+__label__Disease__ Arthritis, Rheumatoid (Musculoskeletal Diseases)
+__label__Cheese__ La Taupiniere
+__label__Cheese__ Broccio
+__label__Disease__ Infectious Mononucleosis
+__label__Disease__ Dog Diseases
+__label__Cheese__ Brebis du Lavort
+__label__Disease__ Diverticulitis
+__label__Disease__ Cyanosis
+__label__Cheese__ Caboc
+__label__Cheese__ Mozzarella (Australian)
+__label__Disease__ Polyarteritis Nodosa
+__label__Cheese__ Plateau de Herve
+__label__Disease__ Alpers Disease
+__label__Disease__ Coccidioidomycosis
+__label__Disease__ Cryptococcosis
+__label__Disease__ Enchondromatosis
+__label__Cheese__ Cure Nantais
+__label__Disease__ Central Core Disease
+__label__Disease__ Rift Valley Fever
+__label__Disease__ Tyrosinemia
+__label__Disease__ Gastroparesis
+__label__Disease__ Granulomatous Disease, Chronic
+__label__Disease__ PraderWilli Syndrome
+__label__Cheese__ Jarlsberg
+__label__Disease__ Telangiectasis
+__label__Disease__ Prognathism
+__label__Cheese__ Delice des Fiouves
+__label__Disease__ Attitude to Death
+__label__Disease__ Influenza
+__label__Disease__ Telangiectasia, Hereditary Hemorrhagic
+__label__Cheese__ Gratte-Paille
+__label__Cheese__ Ardi Gasna
+__label__Disease__ Cestode infections
+__label__Disease__ Myocardial Infarction
+__label__Disease__ Sudden Infant Death
+__label__Disease__ Clubfoot
+__label__Disease__ Leber's Congenital Amaurosis
+__label__Disease__ Anemia, Aplastic
+__label__Disease__ Hamartoma
+__label__Disease__ Lactation Disorders
+__label__Cheese__ Quark
+__label__Cheese__ Raclette
+__label__Cheese__ Quark (Australian)
+__label__Disease__ Mixed Connective Tissue Disease
+__label__Disease__ SelfInjurious Behavior
+__label__Cheese__ Fresh Truffles
+__label__Disease__ Macroglossia
+__label__Disease__ Meige Syndrome
+__label__Cheese__ Esbareich
+__label__Cheese__ Tyn Grug
+__label__Disease__ Wallenberg's Syndrome
+__label__Disease__ Osteoporosis
+__label__Disease__ Anus Diseases
+__label__Cheese__ Testouri
+__label__Cheese__ Kervella Affine
+__label__Disease__ Mite Infestations
+__label__Disease__ Lassa Fever
+__label__Disease__ Ulnar Nerve Compression Syndromes
+__label__Disease__ Hypertension, Pulmonary
+__label__Disease__ Hemoptysis
+__label__Cheese__ Bergere Bleue
+__label__Cheese__ Beauvoorde
+__label__Cheese__ Maasdam
+__label__Disease__ Laryngomalacia
+__label__Cheese__ Ricotta Salata
+__label__Cheese__ Somerset Brie
+__label__Disease__ Impetigo
+__label__Disease__ Achondroplasia
+__label__Cheese__ Samso
+__label__Cheese__ Grataron d' Areches
+__label__Disease__ Stroke
+__label__Cheese__ Lyonnais
+__label__Disease__ Intermittent Claudication
+__label__Disease__ Bradycardia
+__label__Disease__ ChediakHigashi Syndrome
+__label__Disease__ SAPHO Syndrome
+__label__Cheese__ Meira
+__label__Disease__ Aphakia
+__label__Cheese__ Galette Lyonnaise
+__label__Cheese__ Lairobell
+__label__Disease__ Sotos Syndrome
+__label__Disease__ Muscular Atrophy, Spinal
+__label__Cheese__ Bleu de Laqueuille
+__label__Disease__ Chromosome 5 deletion
+__label__Disease__ Refsum Disease, Infantile
+__label__Disease__ Occupational Diseases
+__label__Disease__ Oculomotor Nerve Diseases
+__label__Disease__ Hypoglycemia
+__label__Cheese__ Manouri
+__label__Disease__ Appendicitis
+__label__Disease__ Corneal Ulcer
+__label__Disease__ Fatty Liver
+__label__Disease__ BlochSulzberger/Siemens Syndrome
+__label__Disease__ Neuronal CeroidLipofuscinosis
+__label__Cheese__ Neufchatel (Australian)
+__label__Cheese__ Brusselae Kaas (Fromage de Bruxelles)
+__label__Disease__ Brain Ischemia
+__label__Disease__ Anthrax
+__label__Disease__ Ebstein's Anomaly
+__label__Disease__ Neurilemmoma
+__label__Disease__ Adie Syndrome
+__label__Cheese__ Provolone (Australian)
+__label__Disease__ Arachnoid Cysts
+__label__Disease__ Mal de Debarquement
+__label__Disease__ Pheochromocytoma
+__label__Disease__ Pruritus Vulvae
+__label__Disease__ Ear Neoplasms
+__label__Disease__ Dyspepsia
+__label__Disease__ Anxiety Disorders
+__label__Disease__ Hypertension
+__label__Disease__ Warthin's Tumor
+__label__Cheese__ Plymouth Cheese
+__label__Disease__ Cryptorchidism
+__label__Cheese__ Castelo Branco
+__label__Disease__ Chromosome 18 Abnormalities
+__label__Cheese__ Airedale
+__label__Disease__ Angiofibroma
+__label__Disease__ Depressive Disorder
+__label__Cheese__ Anejo Enchilado
+__label__Disease__ Cretinism
+__label__Disease__ Uterine Inversion
+__label__Disease__ Stress Disorders, PostTraumatic
+__label__Disease__ General Fibrosis Syndrome
+__label__Disease__ Crohn Disease
+__label__Disease__ BeckwithWiedemann Syndrome
+__label__Disease__ Velocardiofacial Syndrome
+__label__Cheese__ Brie de Melun
+__label__Disease__ Asperger Syndrome
+__label__Disease__ Hypogonadism
+__label__Disease__ Hemophilia B
+__label__Disease__ Best Disease
+__label__Cheese__ Beenleigh Blue
+__label__Disease__ Vitamin B 12 Deficiency
+__label__Disease__ Ebola Virus Infection
+__label__Cheese__ Roule
+__label__Disease__ Basedow's Disease
+__label__Cheese__ Saaland Pfarr
+__label__Disease__ Takayasu's Arteritis
+__label__Disease__ Contraception
+__label__Disease__ Erythema
+__label__Disease__ Reflex Sympathetic Dystrophy
+__label__Disease__ West Syndrome
+__label__Disease__ Fascial Paralysis
+__label__Cheese__ Weichkaese
+__label__Disease__ von Willebrand Disease
+__label__Disease__ Blepharoptosis
+__label__Disease__ Baker's Cyst
+__label__Disease__ Sick Building Syndrome
+__label__Disease__ Intestinal Obstruction
+__label__Disease__ Bartonella Infections
+__label__Cheese__ Dutch Mimolette (Commissiekaas)
+__label__Cheese__ Esrom
+__label__Disease__ Pulmonary Fibrosis
+__label__Disease__ Werner Syndrome
+__label__Cheese__ Limburger
+__label__Disease__ Krabbe's Disease
+__label__Cheese__ Asadero
+__label__Cheese__ Seriously Strong Cheddar
+__label__Disease__ Trisomy 13
+__label__Disease__ Diarrhea
+__label__Cheese__ Petit Morin
+__label__Disease__ Marfan Syndrome
+__label__Disease__ Hyperglycemic Hyperosmolar Nonketotic Coma
+__label__Disease__ HemolyticUremic Syndrome (Hemic .. Diseases)
+__label__Cheese__ Dreux a la Feuille
+__label__Disease__ Hirsutism
+__label__Cheese__ Pave d'Affinois
+__label__Cheese__ Tete de Moine
+__label__Disease__ Crabs
+__label__Disease__ Blood Platelet Disorders
+__label__Disease__ Ascites
+__label__Disease__ Endocrine Gland Neoplasms
+__label__Disease__ Root Canal Therapy
+__label__Disease__ Thalassemia
+__label__Disease__ Erb's Palsy
+__label__Disease__ Keratitis
+__label__Disease__ Polyendocrinopathies, Autoimmune
+__label__Disease__ Pellagra
+__label__Disease__ Adrenal Gland Diseases
+__label__Disease__ Prion Diseases
+__label__Disease__ Chondroma
+__label__Disease__ Acquired Immunodeficiency Syndrome, AIDS
+__label__Disease__ SeptoOptic Dysplasia
+__label__Disease__ Lateral Medullary Syndrome
+__label__Disease__ Dystocia
+__label__Disease__ Cridu-Chat Syndrome
+__label__Disease__ NiemannPick Diseases
+__label__Disease__ Cardiac Tamponade
+__label__Disease__ Halitosis
+__label__Cheese__ Capriole Banon
+__label__Disease__ Poisoning
+__label__Cheese__ Laruns
+__label__Disease__ Hypersensitivity
+__label__Disease__ Fetal Membranes, Premature Rupture
+__label__Disease__ Galactorrhea
+__label__Disease__ Chancroid
+__label__Disease__ Sexual Dysfunctions, Psychological
+__label__Cheese__ Mine-Gabhar
+__label__Disease__ Kuru
+__label__Disease__ Goodpasture Syndrome
+__label__Disease__ Tetralogy of Fallot
+__label__Disease__ Cafeau-Lait Spots
+__label__Disease__ Fibromatosis, Aggressive
+__label__Disease__ Choledochal Cyst
+__label__Disease__ Headache
+__label__Disease__ Poliomyelitis
+__label__Disease__ Romberg's Disorder
+__label__Cheese__ Bandal
+__label__Cheese__ Ossau Fermier
+__label__Disease__ Sexually Transmitted Diseases (, Bacterial)
+__label__Cheese__ Penbryn
+__label__Cheese__ Orla
+__label__Cheese__ Fin-de-Siecle
+__label__Cheese__ Olivet Cendre
+__label__Cheese__ Telemea
+__label__Disease__ Hemoglobinopathies
+__label__Disease__ Plague
+__label__Disease__ Ectropion
+__label__Disease__ Dermatomyositis
+__label__Disease__ Chickenpox
+__label__Disease__ Disseminated Intravascular Coagulation
+__label__Disease__ Anemia, Hemolytic, Congenital Nonspherocytic
+__label__Disease__ Ross River Virus Infection
+__label__Cheese__ Trou du Cru
+__label__Disease__ Varicocele
+__label__Disease__ TripleX Females
+__label__Cheese__ Postel
+__label__Cheese__ Shropshire Blue
+__label__Disease__ Cerebral Palsy
+__label__Disease__ Smallpox
+__label__Disease__ Measles
+__label__Cheese__ Brie
+__label__Disease__ Graft vs Host Disease
+__label__Disease__ Pyoderma Gangrenosum
+__label__Disease__ Spherocytosis, Hereditary
+__label__Disease__ Polymyositis
+__label__Disease__ Mitochondrial Disorders
+__label__Disease__ Optic Atrophies, Hereditary
+__label__Cheese__ Mozzarella di Bufala
+__label__Cheese__ Chabichou du Poitou
+__label__Disease__ Respiratory Syncytial Virus Infections
+__label__Disease__ Burns
+__label__Disease__ Muscle Cramp
+__label__Disease__ Blepharitis
+__label__Disease__ Decubitus Ulcer
+__label__Cheese__ Brousse du Rove
+__label__Cheese__ Fresh Mozzarella
+__label__Disease__ Obesity
+__label__Disease__ Tumor, Warthin
+__label__Cheese__ La Vache Qui Rit
+__label__Cheese__ Juustoleipa
+__label__Disease__ Polycystic Ovary Syndrome
+__label__Cheese__ Maroilles
+__label__Disease__ Pick's Disease
+__label__Disease__ Acromegaly
+__label__Cheese__ Pave d'Auge
+__label__Cheese__ Tala
+__label__Disease__ Digestive System Neoplasms
+__label__Disease__ Primary Lateral Sclerosis
+__label__Disease__ Schmidt's Syndrome
+__label__Cheese__ Parmesan (Parmigiano)
+__label__Disease__ Dermatitis Herpetiformis
+__label__Cheese__ Chaource
+__label__Disease__ Hyperaldosteronism
+__label__Disease__ Molluscum Contagiosum
+__label__Disease__ Fatigue Syndrome, Chronic
+__label__Disease__ Anisocoria
+__label__Disease__ Heart Valve Diseases
+__label__Cheese__ Richelieu
+__label__Disease__ Shwachman(Diamond) Syndrome
+__label__Disease__ Hip Dislocation, Congenital
+__label__Cheese__ Galloway Goat's Milk Gems
+__label__Disease__ Tuberous Sclerosis
+__label__Cheese__ Northumberland
+__label__Cheese__ Bougon
+__label__Disease__ Diabetes Insipidus
+__label__Disease__ RosaiDorfman Disease
+__label__Cheese__ Ami du Chambertin
+__label__Disease__ Triosephosphate Isomerase Deficiency
+__label__Disease__ Cholelithiasis
+__label__Disease__ Carpal Tunnel Syndrome
+__label__Disease__ Roseola
+__label__Disease__ Huntington Disease
+__label__Disease__ Leucine Metabolism Disorders
+__label__Disease__ Thrombocytopenia
+__label__Disease__ Neuroblastoma
+__label__Disease__ Ileus
+__label__Disease__ Mycoplasma Infection
+__label__Disease__ Demyelinating Diseases
+__label__Cheese__ Hushallsost
+__label__Disease__ Basal Cell Nevus Syndrome
+__label__Cheese__ Abbaye du Mont des Cats
+__label__Disease__ Postpoliomyelitis Syndrome
+__label__Cheese__ Lingot Saint Bousquet d'Orb
+__label__Disease__ Common Cold
+__label__Disease__ Seizures
+__label__Cheese__ Xanadu
+__label__Disease__ Scleritis
+__label__Cheese__ Asiago
+__label__Disease__ Glycogen Storage Disease
+__label__Disease__ Nephrotic Syndrome
+__label__Disease__ Addison's Disease
+__label__Disease__ Candidiasis
+__label__Disease__ Meningitis, Bacterial
+__label__Disease__ Papilloma
+__label__Disease__ Echinococcosis
+__label__Cheese__ Mascares
+__label__Disease__ Sprengel's Deformity
+__label__Disease__ McCuneAlbright Syndrome
+__label__Cheese__ Port Nicholson
+__label__Disease__ LeschNyhan Syndrome
+__label__Disease__ Hyperemesis Gravidarum
+__label__Cheese__ Cerney
+__label__Disease__ Scimitar Syndrome
+__label__Disease__ Short Bowel Syndrome
+__label__Disease__ Hair Diseases
+__label__Cheese__ Capricorn Goat
+__label__Disease__ Flatfoot
+__label__Disease__ Relapsing Fever
+__label__Disease__ Migraine
+__label__Disease__ Aicardi Syndrome
+__label__Disease__ Spinal Cord Injuries
+__label__Disease__ MELAS Syndrome
+__label__Cheese__ L'Ecir de l'Aubrac
+__label__Cheese__ Allgauer Emmentaler
+__label__Cheese__ Regal de la Dombes
+__label__Disease__ Gonorrhea
+__label__Disease__ Condylomata Acuminata
+__label__Disease__ Kidney Tubular Necrosis, Acute
+__label__Disease__ TickBorne Diseases (Bacterial .. Infections)
+__label__Cheese__ Dauphin
+__label__Cheese__ Picos de Europa
+__label__Disease__ Cutis Laxa
+__label__Cheese__ Button (Innes)
+__label__Cheese__ Dorset Blue Vinney
+__label__Disease__ Meckel's Diverticulum
+__label__Disease__ XXY Males
+__label__Disease__ Goldenhar Syndrome
+__label__Disease__ Lymphangioma
+__label__Cheese__ Leafield
+__label__Cheese__ Livarot
+__label__Disease__ CharcotMarie-Tooth Disease
+__label__Cheese__ Chaumes
+__label__Disease__ Disease
+__label__Disease__ Corticobasal Ganglionic Degeneration
+__label__Disease__ Maple Syrup Urine Disease
+__label__Disease__ Nerve Compression Syndromes
+__label__Disease__ Carcinoma, Merkel Cell
+__label__Cheese__ Timboon Brie
+__label__Disease__ Rickets
+__label__Cheese__ Hubbardston Blue Cow
+__label__Cheese__ Avaxtskyr
+__label__Disease__ Arthrogryposis
+__label__Disease__ Diseases of Insectivores
+__label__Disease__ Prosopagnosia
+__label__Cheese__ Epoisses de Bourgogne
+__label__Disease__ Pathologic Processes
+__label__Cheese__ Longhorn
+__label__Disease__ Abscess
+__label__Disease__ Enuresis
+__label__Disease__ Salpingitis
+__label__Disease__ Burkholderia Infections
+__label__Cheese__ Mascarpone
+__label__Cheese__ Flor de Guia
+__label__Cheese__ Doppelrhamstufel
+__label__Disease__ Voice Disorders
+__label__Cheese__ Friesian
+__label__Disease__ Samters Syndrome
+__label__Cheese__ Tomme des Chouans
+__label__Disease__ Volvulus
+__label__Cheese__ Corleggy
+__label__Disease__ Bronchitis
+__label__Disease__ Cystinosis
+__label__Disease__ Raynaud's Disease
+__label__Disease__ Keratoconus
+__label__Disease__ Cerebellar Ataxia
+__label__Cheese__ Schloss
+__label__Disease__ Kwashiorkor
+__label__Disease__ Acidosis
+__label__Disease__ Cholera
+__label__Cheese__ Rollot
+__label__Disease__ Unconsciousness
+__label__Cheese__ Swaledale
+__label__Disease__ MachadoJoseph Disease
+__label__Disease__ Myeloproliferative Disorders
+__label__Disease__ Blastocystis hominis infection
+__label__Cheese__ Tomme de Romans
+__label__Disease__ Chondromalacia Patellae
+__label__Cheese__ Piora
+__label__Disease__ Fetal Distress
+__label__Disease__ Xerostomia
+__label__Disease__ Encephalitis
+__label__Disease__ Charles Bonnet Syndrome
+__label__Cheese__ Doolin
+__label__Disease__ Anosmia
+__label__Disease__ Bright's Disease
+__label__Disease__ Diphyllobothriasis
+__label__Cheese__ Pecorino
+__label__Disease__ Pityriasis
+__label__Disease__ Endometriosis
+__label__Disease__ Subacute Sclerosing Panencephalitis
+__label__Cheese__ Ossau-Iraty
+__label__Disease__ Respiratory Distress Syndrome
+__label__Disease__ Hiccup
+__label__Disease__ Blister
+__label__Disease__ Costochondritis
+__label__Disease__ Felty Syndrome
+__label__Disease__ Cataract
+__label__Cheese__ Appenzell
+__label__Disease__ Progeria
+__label__Disease__ Popliteal Cyst
+__label__Disease__ Carcinoid Tumor
+__label__Disease__ Buruli Ulcer
+__label__Disease__ Blepharospasm
+__label__Disease__ Ornithosis
+__label__Disease__ WeberChristian disease
+__label__Cheese__ Morbier Cru de Montagne
+__label__Disease__ Otosclerosis
+__label__Disease__ Immersion Foot
+__label__Cheese__ Herrgardsost
+__label__Disease__ Glandular Fever
+__label__Cheese__ Sussex Slipcote
+__label__Disease__ Wernicke Encephalopathy
+__label__Cheese__ Waimata Farmhouse Blue
+__label__Cheese__ Pithtviers au Foin
+__label__Disease__ Jaundice
+__label__Cheese__ Woodside Cabecou
+__label__Disease__ Skin Diseases, Infectious
+__label__Cheese__ St. Agur Blue Cheese
+__label__Disease__ Cross Infection
+__label__Disease__ Retinoblastoma
+__label__Disease__ DiGeorge Syndrome
+__label__Disease__ Flatulence
+__label__Disease__ Paraplegia
+__label__Cheese__ Queso del Montsec
+__label__Disease__ Sex Chromosome Aberrations
+__label__Disease__ Albinism (Skin Diseases ..)
+__label__Disease__ Fibromyalgia
+__label__Disease__ Rectal Diseases
+__label__Disease__ Retroperitoneal Fibrosis
+__label__Disease__ Alzheimer Disease
+__label__Cheese__ Taupiniere
+__label__Cheese__ Dunlop
+__label__Disease__ Olfaction Disorders
+__label__Disease__ Parkinson Disease
+__label__Disease__ Ischemic Attack, Transient (TIA)
+__label__Disease__ Tardive Dyskinesia
+__label__Cheese__ Serat
+__label__Disease__ Erythroblastosis, Fetal
+__label__Disease__ Hyperthyroidism
+__label__Disease__ Kidney Calculi
+__label__Cheese__ Alverca
+__label__Disease__ LandauKleffner Syndrome
+__label__Disease__ Mitochondrial Myopathies
+__label__Disease__ Wounds, Penetrating and Nonpenetrating
+__label__Cheese__ Four Herb Gouda
+__label__Cheese__ Remedou
+__label__Disease__ Miller Fisher Syndrome
+__label__Disease__ Primate Diseases
+__label__Disease__ Hemosiderosis
+__label__Disease__ Beriberi
+__label__Disease__ Corneal Edema
+__label__Cheese__ Selva
+__label__Disease__ Osteitis Deformans
+__label__Cheese__ Chevres
+__label__Cheese__ Loddiswell Avondale
+__label__Disease__ Nasal Polyps
+__label__Disease__ Quincke's Edema
+__label__Disease__ EhlersDanlos Syndrome
+__label__Disease__ Buerger's Disease
+__label__Disease__ Autoimmune Diseases
+__label__Disease__ Dermatofibroma
+__label__Cheese__ Petit-Suisse
+__label__Cheese__ Rocamadour
+__label__Disease__ Temporal Arteritis
+__label__Disease__ RatBite Fever
+__label__Disease__ Tachycardia
+__label__Disease__ Intervertebral Disk Displacement
+__label__Cheese__ Harbourne Blue
+__label__Disease__ Embolism, Cholesterol
+__label__Cheese__ Fromage a Raclette
+__label__Cheese__ Murol
+__label__Cheese__ Fontina Val d'Aosta
+__label__Disease__ Urogenital Neoplasms
+__label__Cheese__ Tilsit
+__label__Cheese__ Pant ys Gawn
+__label__Cheese__ Adelost
+__label__Cheese__ Gippsland Blue
+__label__Disease__ Hemoglobinuria, Paroxysmal
+__label__Disease__ PallisterKillian Syndrome
+__label__Cheese__ Pencarreg
+__label__Disease__ Autonomic Nervous System Diseases
+__label__Disease__ Xeroderma Pigmentosum
+__label__Disease__ CriglerNajjar Syndrome
+__label__Disease__ Fifth Disease
+__label__Disease__ Pruritus
+__label__Disease__ Tenosynovitis
+__label__Disease__ Ludwig's Angina
+__label__Disease__ FreemanSheldon Syndrome
+__label__Disease__ Heart Defects, Congenital (Cardiovascular Diseases)
+__label__Cheese__ Sainte Maure
+__label__Disease__ Myotubular Myopathy
+__label__Disease__ Injury
+__label__Disease__ Hantavirus Infections
+__label__Disease__ Alport's Syndrome
+__label__Disease__ Frigidity
+__label__Disease__ Cleft Lip
+__label__Disease__ Esophageal Achalasia
+__label__Disease__ Dientamoebiasis
+__label__Disease__ Blastomycosis (in dogs)
+__label__Disease__ Undulant Fever
+__label__Cheese__ Halloumi
+__label__Disease__ Schizophrenia
+__label__Cheese__ Zanetti Parmigiano Reggiano
+__label__Disease__ Gastroesophageal Reflux
+__label__Disease__ Diabetes, Bronze
+__label__Cheese__ Ridder
+__label__Disease__ Costello Syndrome
+__label__Cheese__ Patefine Fort
+__label__Disease__ Cholesteatoma, Middle Ear
+__label__Cheese__ Truffe
+__label__Cheese__ Grand Vatel
+__label__Disease__ Klinefelter Syndrome
+__label__Cheese__ Lancashire
+__label__Disease__ Factor XII Deficiency
+__label__Disease__ Hyponatremia
+__label__Disease__ Cysticercosis
+__label__Cheese__ Passendale
+__label__Disease__ LangerGiedion Syndrome
+__label__Cheese__ Queso de Murcia
+__label__Disease__ Bladder Neoplasms
+__label__Cheese__ Quercy Petit
+__label__Disease__ Sore Throat
+__label__Disease__ Onychomycosis
+__label__Disease__ Yaws
+__label__Disease__ Sjogren's Syndrome
+__label__Disease__ Situs Inversus
+__label__Disease__ Dupuytren's Contracture
+__label__Disease__ Barth Syndrome
+__label__Cheese__ Cooleney
+__label__Disease__ Spinal Diseases
+__label__Disease__ Eclampsia
+__label__Disease__ Dyshidrosis
+__label__Disease__ Lupus Erythematosus, Systemic
+__label__Cheese__ Devon Garland
+__label__Disease__ Leber's Hereditary Optic Neuropathy
+__label__Cheese__ Salers
+__label__Disease__ Kidney Diseases
+__label__Disease__ Tuberculosis
+__label__Disease__ Ferret Diseases
+__label__Disease__ Osteogenesis Imperfecta
+__label__Disease__ Pseudomonas Infections
+__label__Disease__ Milroy Disease
+__label__Disease__ Agammaglobulinemia
+__label__Cheese__ Pate de Fromage
+__label__Disease__ Deafness, Sudden
+__label__Disease__ Trismus
+__label__Disease__ DandyWalker Syndrome
+__label__Disease__ Rocky Mountain Spotted Fever
+__label__Disease__ Hemorrhoids
+__label__Disease__ Mutism
+__label__Disease__ Hyperlipidemia
+__label__Disease__ Reptile Diseases
+__label__Disease__ Hydrocephalus
+__label__Disease__ Factor X Deficiency
+__label__Disease__ Miliaria
+__label__Disease__ Behavioral Symptoms
+__label__Disease__ Sneddon Syndrome
+__label__Disease__ Asthma
+__label__Disease__ Isaac's Syndrome
+__label__Cheese__ Affidelice au Chablis
+__label__Cheese__ Sveciaost
+__label__Cheese__ Derby
+__label__Disease__ McArdle Disease
+__label__Cheese__ Prince-Jean
+__label__Disease__ Thyroiditis, Autoimmune
+__label__Disease__ Toxoplasmosis
+__label__Disease__ Salmonella Infections
+__label__Disease__ Anisakiasis
+__label__Disease__ Xanthomatosis
+__label__Disease__ Chalazion
+__label__Disease__ Peptic Ulcer
+__label__Disease__ Vitiligo
+__label__Disease__ WilliamBeuren Syndrome
+__label__Disease__ Tetanus
+__label__Disease__ Nephritis, Hereditary
+__label__Disease__ Hemochromatosis
+__label__Disease__ Giardiasis
+__label__Cheese__ Vulscombe
+__label__Cheese__ Lebbene
+__label__Cheese__ Buffalo
+__label__Disease__ Long QT Syndrome
+__label__Cheese__ Double Worcester
+__label__Disease__ Stuttering
+__label__Disease__ Puberty, Precocious
+__label__Disease__ Cardiomyopathy, Hypertrophic
+__label__Disease__ Celiac Disease
+__label__Cheese__ Pouligny-Saint-Pierre
+__label__Disease__ Mucocutaneous Lymph Node Syndrome
+__label__Cheese__ Gloucester
+__label__Disease__ Paraproteinemias
+__label__Disease__ Bipolar Disorder
+__label__Cheese__ Boule Du Roves
+__label__Cheese__ Mimolette
+__label__Cheese__ Kugelkase
+__label__Disease__ Latex Hypersensitivity
+__label__Disease__ Colonic Diseases, Functional
+__label__Disease__ PeutzJeghers Syndrome
+__label__Disease__ Suicidal Behavior
+__label__Disease__ Corneal Dystrophies
+__label__Disease__ Gout
+__label__Disease__ Anemia
+__label__Disease__ Lymphedema
+__label__Cheese__ Fontal
+__label__Disease__ Prune Belly Syndrome
+__label__Disease__ Thygeson's Superficial Punctate Keratopathy
+__label__Cheese__ Myzithra
+__label__Disease__ Tremor
+__label__Disease__ Larva Migrans
+__label__Disease__ Fuchs' Endothelial Dystrophy
+__label__Disease__ Neuroma, Morton's
+__label__Disease__ Myopathies, Nemaline
+__label__Cheese__ Feta (Australian)
+__label__Cheese__ Mahoe Aged Gouda
+__label__Disease__ Stomatitis, Aphthous
+__label__Disease__ Job's Syndrome
+__label__Cheese__ Geitost
+__label__Cheese__ Graddost
+__label__Disease__ Lipomatosis, Multiple Symmetrical
+__label__Cheese__ Brinza (Burduf Brinza)
+__label__Disease__ ShyDrager Syndrome
+__label__Disease__ Hyperkalemia
+__label__Cheese__ Metton (Cancoillotte)
+__label__Disease__ HermanskiPudlak Syndrome
+__label__Disease__ Dysautonomia, Familial
+__label__Disease__ Spondylitis, Ankylosing
+__label__Disease__ Toxic Shock Syndrome
+__label__Cheese__ Kefalotyri
+__label__Disease__ Rodent Diseases
+__label__Cheese__ Queso del Tietar
+__label__Disease__ Stickler/Marshall Syndrome
+__label__Disease__ Cholangitis
+__label__Disease__ Epidermal Cyst
+__label__Disease__ Trypanosomiasis, African
+__label__Disease__ Retinal Vein Occlusion
+__label__Cheese__ Pourly
+__label__Disease__ Aortic Valve Stenosis
+__label__Disease__ Narcolepsy
+__label__Cheese__ Trappe (Veritable)
+__label__Cheese__ Camembert de Normandie
+__label__Disease__ Kidney Failure, Acute
+__label__Disease__ Hematoma, Epidural
+__label__Disease__ Pompe's Disease
+__label__Disease__ Porphyria
+__label__Disease__ Fibrodysplasia Ossificans Progressiva
+__label__Disease__ Hyperprolactinemia
+__label__Disease__ Communication Disorders
+__label__Disease__ Blastomycosis (in humans)
+__label__Disease__ Skin Neoplasms
+__label__Cheese__ Meredith Blue
+__label__Disease__ Fish Diseases
+__label__Cheese__ Dry Jack
+__label__Disease__ Nevus
+__label__Cheese__ Grana Padano
+__label__Disease__ Spinal Dysraphism
+__label__Cheese__ Bouyssou
+__label__Disease__ Congenital Central Hypoventilation Syndrome
+__label__Disease__ Muscular Dystrophies
+__label__Cheese__ Provolone
+__label__Disease__ Dementia
+__label__Disease__ Escherichia coli Infections
+__label__Disease__ Amyotrophic Lateral Sclerosis (ALS)
+__label__Disease__ Amebiasis
+__label__Disease__ Amniotic Band Syndrome
+__label__Cheese__ Brebis du Puyfaucon
+__label__Cheese__ Cabecou
+__label__Disease__ Epididymitis
+__label__Disease__ Campylobacter Infections
+__label__Disease__ Elephantiasis
+__label__Cheese__ Herriot Farmhouse
+__label__Disease__ Factor V Deficiency
+__label__Disease__ Entropion
+__label__Disease__ Wolfram Syndrome
+__label__Disease__ Insulin Resistance
+__label__Disease__ Adhesions, Pelvic
+__label__Disease__ Electric Injuries
+__label__Cheese__ King Island Cape Wickham Brie
+__label__Disease__ Reye Syndrome
+__label__Disease__ Moyamoya Disease
+__label__Disease__ Astigmatism
+__label__Disease__ Polyneuropathies
+__label__Disease__ Biliary Atresia
+__label__Disease__ Multiple Sclerosis
+__label__Disease__ Familial Mediterranean Fever
+__label__Cheese__ Wigmore
+__label__Disease__ Scheuermann's Disease
+__label__Cheese__ Greuilh
+__label__Cheese__ Taleggio
+__label__Disease__ Kennedy's Disease
+__label__Disease__ Cervix Dysplasia
+__label__Disease__ Exostoses
+__label__Cheese__ Burgos
+__label__Disease__ Nocardia Infections
+__label__Cheese__ Figue
+__label__Cheese__ Casciotta di Urbino
+__label__Disease__ Erythema Infectiosum
+__label__Cheese__ Crayeux de Roncq
+__label__Disease__ Ankyloglossia
+__label__Disease__ Swine Diseases
+__label__Cheese__ Cornish Pepper
+__label__Cheese__ Cwmtawe Pecorino
+__label__Cheese__ Cachaille
+__label__Disease__ VesicoUreteral Reflux
+__label__Cheese__ Idiazabal
+__label__Disease__ Dystonia
+__label__Cheese__ Bel Paese
+__label__Disease__ Hematoma, Subdural
+__label__Disease__ Lymphoma, NonHodgkin
+__label__Disease__ Sweet's Syndrome
+__label__Disease__ Kearns Syndrome
+__label__Cheese__ Sancerre
+__label__Disease__ CATCH22 Syndrome
+__label__Disease__ Polymyalgia Rheumatica
+__label__Disease__ Splenic Diseases
+__label__Disease__ Cherubism
+__label__Cheese__ Tomme d'Abondance
+__label__Disease__ Laryngitis
+__label__Disease__ Breast Neoplasms
+__label__Disease__ PreEclampsia
+__label__Cheese__ Hipi Iti
+__label__Disease__ Dermatomycoses
+__label__Cheese__ Finlandia Swiss
+__label__Disease__ Kallmann Syndrome
+__label__Disease__ Esophageal Atresia
+__label__Disease__ Brucellosis
+__label__Cheese__ Llanboidy
+__label__Cheese__ Canadian Cheddar
+__label__Cheese__ Penamellera
+__label__Disease__ Thoracic Neoplasms
+__label__Cheese__ Bresse Bleu
+__label__Disease__ Scarlet Fever
+__label__Cheese__ Bierkase
+__label__Disease__ Kissing Disease
+__label__Disease__ Head and Neck Neoplasms
+__label__Disease__ Lewy Body Disease
+__label__Disease__ Streptococcal Infections
+__label__Cheese__ Gjetost
+__label__Cheese__ Graviera
+__label__Cheese__ Sbrinz
+__label__Disease__ Bell Palsy
+__label__Disease__ Cat Diseases
+__label__Disease__ Intestinal Neoplasms
+__label__Cheese__ Yarg Cornish
+__label__Disease__ GuillainBarre Syndrome
+__label__Disease__ Cerebrovascular Disorders
+__label__Cheese__ Reggianito
+__label__Cheese__ Cantal
+__label__Disease__ Pemphigus, Benign Familial
+__label__Disease__ Clostridium Infections
+__label__Disease__ Leukodystrophy, Globoid Cell
+__label__Cheese__ Oszczypek
+__label__Disease__ Shingles
+__label__Disease__ Hyperoxaluria
+__label__Disease__ Kienboecks Disease
+__label__Cheese__ Tymsboro
+__label__Cheese__ Emmental
+__label__Disease__ Lupus Erythematosus, Cutaneous
+__label__Disease__ Fibrous Dysplasia, Polyostotic
+__label__Disease__ Granuloma
+__label__Disease__ HoltOram Syndrome
+__label__Cheese__ Malvern
+__label__Disease__ Multicystic Dysplastic Kidney
+__label__Disease__ Bronchiectasis
+__label__Disease__ Whooping Cough
+__label__Disease__ Pediculosis
+__label__Disease__ Piriformis Syndrome
+__label__Cheese__ Gospel Green
+__label__Disease__ WolffParkinson-White Syndrome
+__label__Disease__ Tinea
+__label__Disease__ Hypoxia, Brain
+__label__Cheese__ Waterloo
+__label__Cheese__ Castigliano
+__label__Disease__ Mucolipidoses
+__label__Disease__ Trichomonas Infections
+__label__Disease__ Macular Degeneration
+__label__Disease__ Sleep Disorders
+__label__Cheese__ Calenzana
+__label__Disease__ Dizziness (Nervous System Diseases)
+__label__Cheese__ Cuajada
+__label__Disease__ Purpura, Thrombotic Thrombocytopenic
+__label__Disease__ Tinea Versicolor
+__label__Disease__ Hypohidrosis
+__label__Disease__ Hidradenitis Suppurativa
+__label__Disease__ Trichothiodystrophy
+__label__Disease__ Parapsoriasis
+__label__Cheese__ Saint-Nectaire
+__label__Disease__ Polychondritis, Relapsing
+__label__Disease__ Supranuclear Palsy, Progressive
+__label__Cheese__ Evora De L'Alentejo
+__label__Disease__ Galactosemias
+__label__Disease__ Motor Neuron Disease
+__label__Disease__ Bacteremia
+__label__Disease__ Hallucinations
+__label__Disease__ TolosaHunt Syndrome
+__label__Disease__ Bunion
+__label__Disease__ Amblyopia
+__label__Cheese__ Baylough
+__label__Cheese__ Aragon
+__label__Cheese__ Ackawi
+__label__Disease__ Typhus, Epidemic LouseBorne
+__label__Disease__ Lymphoma
+__label__Disease__ Arrhythmogenic Right Ventricular Dysplasia
+__label__Disease__ Trypanosomiasis
+__label__Disease__ AntiGlomerular Basement Membrane Disease
+__label__Disease__ Rectal Prolapse
+__label__Disease__ Brown (Tendon Sheath) Syndrome
+__label__Cheese__ Manur
+__label__Cheese__ Pelardon des Corbieres
+__label__Disease__ RomanoWard Syndrome
+__label__Disease__ Anemia, Pernicious
+__label__Disease__ HemolyticUremic Syndrome (Urologic .. Diseases)
+__label__Disease__ Mastocytosis
+__label__Disease__ Tracheal Stenosis
+__label__Disease__ Hypotension
+__label__Cheese__ Creme Fraiche
+__label__Disease__ Favism
+__label__Disease__ Beaver Fever
+__label__Disease__ Meconium Aspiration
+__label__Disease__ Reiter Disease
+__label__Cheese__ Tyning
+__label__Disease__ Graves' Disease
+__label__Disease__ Herpes Simplex (Shingles)
+__label__Disease__ Thoracic Outlet Syndrome
+__label__Disease__ Eosinophilia
+__label__Disease__ Actinomycosis
+__label__Disease__ Gilbert Disease
+__label__Disease__ Wolman Disease
+__label__Disease__ Labyrinthitis
+__label__Disease__ Granuloma Inguinale
+__label__Disease__ Necrosis, Avascular, of Bone
+__label__Cheese__ Perail de Brebis
+__label__Disease__ Albinism, Ocular
+__label__Cheese__ Fromage Frais
+__label__Disease__ Anemia, Sickle Cell
+__label__Cheese__ Whitestone Farmhouse
+__label__Disease__ Hyperinsulinemia
+__label__Disease__ Mercury Poisoning
+__label__Disease__ Rickettsia Infections
+__label__Disease__ HELLP Syndrome
+__label__Disease__ Purpura, Thrombocytopenic
+__label__Cheese__ Haloumi-Style Cheese
+__label__Disease__ Lysosomal Storage Diseases
+__label__Cheese__ Evansdale Farmhouse Brie
+__label__Disease__ Somatoform Disorders
+__label__Disease__ Colitis, Ulcerative
+__label__Disease__ Diffuse Cerebral Sclerosis of Schilder
+__label__Disease__ Presbyopia
+__label__Disease__ Canavan Disease
+__label__Cheese__ Tasmania Highland Chevre Log
+__label__Disease__ Shock
+__label__Disease__ Diabetic Retinopathy
+__label__Disease__ Osgood Schlatter Disease
+__label__Disease__ Funnel Chest
+__label__Disease__ Encephalitis, Arbovirus
+__label__Cheese__ Valencay
+__label__Disease__ Facial Asymmetry
+__label__Cheese__ Beaufort
+__label__Disease__ Brain Abscess
+__label__Cheese__ Galette du Paludier
+__label__Cheese__ Coverdale
+__label__Cheese__ Isle of Mull
+__label__Cheese__ Mascarpone Torta
+__label__Disease__ Malignant Hyperthermia
+__label__Disease__ Ectodermal Dysplasia
+__label__Disease__ Hypertension, Portal
+__label__Cheese__ Sardo Egyptian
+__label__Cheese__ Grafton Village Cheddar
+__label__Disease__ Hepatolenticular Degeneration
+__label__Disease__ Chordoma
+__label__Disease__ Warts
+__label__Cheese__ Fiore Sardo
+__label__Disease__ Tetrahydrobiopterin Deficiency
+__label__Cheese__ Fougerus
+__label__Disease__ Aspergillosis
+__label__Disease__ Superior Vena Cava Syndrome
+__label__Disease__ Priapism
+__label__Disease__ Barotrauma
+__label__Disease__ Arthropathy, Neurogenic
+__label__Disease__ Silicosis
+__label__Cheese__ Rouleau De Beaulieu
+__label__Disease__ Eating Disorders
+__label__Disease__ Pancreatitis
+__label__Disease__ KlippelFeil Syndrome
+__label__Cheese__ Zamorano
+__label__Disease__ Dependent Personality Disorder
+__label__Cheese__ Mihalic Peynir
+__label__Disease__ Adrenoleukodystrophy
+__label__Disease__ Pharyngitis
+__label__Disease__ Nephroblastoma
+__label__Disease__ Restless Legs Syndrome
+__label__Disease__ Acrocephalosyndactylia
+__label__Disease__ Moebius Syndrome
+__label__Disease__ Diabetes Insipidus, Nephrogenic
+__label__Disease__ Alagille Syndrome
+__label__Disease__ Esophagitis
+__label__Cheese__ Brin d'Amour
+__label__Cheese__ Soumaintrain
+__label__Disease__ Optic Neuropathy, Ischemic
+__label__Disease__ Parathyroid Diseases
+__label__Disease__ Craniofacial Dysostosis
+__label__Disease__ TaySachs Disease
+__label__Disease__ Gynecomastia
+__label__Disease__ Sheep and Goat Diseases
+__label__Disease__ Gangrene
+__label__Disease__ Hookworm Infections
+__label__Disease__ Polyradiculoneuropathy
+__label__Cheese__ Tetilla
+__label__Disease__ Pneumonia
+__label__Cheese__ Tomme de Savoie
+__label__Disease__ Adenoma
+__label__Disease__ Cryptosporidiosis
+__label__Cheese__ Gris de Lille
+__label__Disease__ Glioblastoma
+__label__Disease__ Rheumatic Fever
+__label__Cheese__ Sage Derby
+__label__Disease__ Bloom Syndrome
+__label__Cheese__ Raschera
+__label__Disease__ Pertussis
+__label__Cheese__ Bleu d'Auvergne
+__label__Disease__ Hirschsprung Disease
+__label__Disease__ Pigmentation Disorders
+__label__Disease__ Horse Diseases
+__label__Disease__ Mycobacterium Infections
+__label__Disease__ Fever
+__label__Cheese__ Castellano
+__label__Disease__ Afibrinogenemia
+__label__Cheese__ Pyengana Cheddar
+__label__Disease__ Intestinal Neuronal Dysplasia
+__label__Disease__ Protein C Deficiency
+__label__Cheese__ Lou Pevre
+__label__Cheese__ Denhany Dorset Drum
+__label__Disease__ Keratosis Follicularis
+__label__Cheese__ Fourme d' Ambert
+__label__Cheese__ Lou Palou
+__label__Disease__ von Recklinghausen Disease
+__label__Cheese__ Nokkelost
+__label__Disease__ Melioidosis
+__label__Disease__ Alcoholism
+__label__Disease__ Manipulation, Chiropractic
+__label__Disease__ Monosomy 9p syndrome
+__label__Cheese__ King River Gold
+__label__Disease__ Proteus Syndrome
+__label__Cheese__ Berkswell
+__label__Cheese__ Abondance
+__label__Disease__ Hemifacial Microsomia
+__label__Cheese__ Jibneh Arabieh
+__label__Disease__ Acute Zonal Occult Outer Retinopathy
+__label__Disease__ Cat Eye Syndrome
+__label__Cheese__ Olivet au Foin
+__label__Cheese__ Bryndza
+__label__Disease__ Glaucoma
+__label__Cheese__ Bocconcini (Australian)
+__label__Disease__ Noonan Syndrome
+__label__Disease__ Vestibular Neuronitis
+__label__Disease__ Cattle Diseases
+__label__Disease__ Diseases of Leporidae and Rodents
+__label__Disease__ Bronchiolitis Obliterans Organizing Pneumonia (BOOP)
+__label__Disease__ RubinsteinTaybi Syndrome
+__label__Disease__ BernardSoulier Syndrome
+__label__Disease__ Waardenburg's Syndrome
+__label__Disease__ Arthritis
+__label__Disease__ Rhabdomyolysis
+__label__Disease__ Spasmodic Dysphonia
+__label__Cheese__ Rubens
+__label__Cheese__ Cashel Blue
+__label__Disease__ Freiberg's Disease
+__label__Cheese__ Buchette d'Anjou
+__label__Disease__ Mouth Neoplasms
+__label__Disease__ Meningioma
+__label__Disease__ Pyelonephritis
+__label__Disease__ Cholecystitis
+__label__Disease__ Papilledema
+__label__Cheese__ Bleu de Gex
+__label__Disease__ Ondine Curse
+__label__Disease__ Vocal Cord Paralysis
+__label__Disease__ Irritable Bowel Syndrome
+__label__Disease__ Liver Cirrhosis
+__label__Disease__ Nasal Obstruction
+__label__Disease__ Fetofetal Transfusion
+__label__Cheese__ Aromes au Gene de Marc
+__label__Disease__ Friedreich Ataxia
+__label__Cheese__ Guerbigny
+__label__Disease__ Amyloidosis
+__label__Cheese__ Fondant de Brebis
+__label__Disease__ GerstmannStraussler-Scheinker Disease
+__label__Disease__ Convulsions
+__label__Cheese__ Mahon
+__label__Disease__ Thromboangiitis Obliterans
+__label__Cheese__ Polkolbin
+__label__Cheese__ Loch Arthur Farmhouse
+__label__Disease__ Trichinosis
+__label__Disease__ Hyperopia
+__label__Cheese__ Laguiole
+__label__Disease__ Lemierre's Syndrome
+__label__Cheese__ Sonoma Jack
+__label__Disease__ Hepatitis, Chronic
+__label__Disease__ Waldenstrom Macroglobulinemia
+__label__Disease__ AZOOR
+__label__Disease__ Puerperal Infection
+__label__Disease__ Hypospadias
+__label__Disease__ Retinitis Pigmentosa
+__label__Disease__ Filariasis
+__label__Disease__ Lentigo
+__label__Disease__ Orf
+__label__Disease__ Cystic Fibrosis
+__label__Disease__ Fibrosis
+__label__Disease__ Alphavirus Infections
+__label__Disease__ Malaria
+__label__Disease__ Phobic Disorders
+__label__Disease__ Cytomegalovirus Infections
+__label__Disease__ Pseudoxanthoma Elasticum
+__label__Cheese__ Matocq
+__label__Cheese__ Wellington
+__label__Cheese__ Saint-Marcellin
+__label__Cheese__ Port-Salut
+__label__Disease__ Nail Diseases
+__label__Disease__ Syphilis
+__label__Disease__ Apraxias
+__label__Cheese__ Cairnsmore
+__label__Cheese__ Exmoor Blue
+__label__Cheese__ Sraffordshire Organic
+__label__Disease__ Rett Syndrome
+__label__Cheese__ Ragusano
+__label__Disease__ Phlebitis
+__label__Disease__ Mastoiditis
+__label__Disease__ Proctitis
+__label__Cheese__ Afuega'l Pitu
+__label__Disease__ Horner Syndrome
+__label__Cheese__ Wensleydale
+__label__Disease__ Multiple Myeloma
+__label__Cheese__ Bruder Basil
+__label__Disease__ Enterocolitis, Pseudomembranous
+__label__Cheese__ Jindi Brie
+__label__Disease__ SteinLeventhal Syndrome
+__label__Cheese__ Queso Iberico
+__label__Disease__ Pleural Effusion
+__label__Cheese__ Canestrato
+__label__Disease__ Tethered Cord Syndrome
+__label__Cheese__ Il Boschetto al Tartufo
+__label__Disease__ Myoclonus
+__label__Cheese__ L'Aveyronnais
+__label__Cheese__ Vendomois
+__label__Disease__ Microphthalmos
+__label__Disease__ Hypokalemia
+__label__Disease__ Coloboma
+__label__Disease__ Tympanic Membrane Perforation
+__label__Cheese__ Mesost
+__label__Disease__ Fissure in Ano
+__label__Disease__ Spasms, Infantile (West Syndrome)
+__label__Cheese__ Llanglofan Farmhouse
+__label__Disease__ Spasm
+__label__Cheese__ Airag
+__label__Disease__ Ehrlichiosis
+__label__Disease__ Bladder Diseases
+__label__Disease__ Polycythemia Vera
+__label__Disease__ Foot Deformities
+__label__Cheese__ Mont D'or Lyonnais
+__label__Disease__ Severe Combined Immunodeficiency
+__label__Cheese__ Touree de L'Aubier
+__label__Disease__ Klebsiella Infections
+__label__Disease__ Phimosis
+__label__Disease__ Candidiasis, Vulvovaginal
+__label__Cheese__ Pannerone
+__label__Disease__ HallervordenSpatz Syndrome
+__label__Disease__ POEMS Syndrome
+__label__Disease__ Lymphoproliferative Disorders
+__label__Cheese__ Mondseer
+__label__Cheese__ Coquetdale
+__label__Disease__ Microcephaly
+__label__Cheese__ Explorateur
+__label__Cheese__ Milleens
+__label__Cheese__ Little Rydings
+__label__Disease__ Dengue
+__label__Disease__ West Nile Fever
+__label__Disease__ Diabetes, Gestational
+__label__Disease__ Pilonidal Sinus
+__label__Disease__ Geographic Tounge
+__label__Cheese__ Paneer
+__label__Cheese__ Briquette du Forez
+__label__Disease__ Fatty Acid Oxidation Disorders
+__label__Disease__ BrownSequard Syndrome
+__label__Disease__ Rh Isoimmunization
+__label__Disease__ Hernia, Diaphragmatic
+__label__Disease__ Glutaric Acidemia
+__label__Disease__ Bladder Exstrophy
+__label__Cheese__ Petit Pardou
+__label__Disease__ Neoplasm, Residual
+__label__Disease__ Osteochondritis
+__label__Disease__ Fibromatosis, Juvenile Hyaline
+__label__Cheese__ Bishop Kennedy
+__label__Cheese__ Gowrie
+__label__Cheese__ Venaco
+__label__Cheese__ Marble Cheddar
+__label__Cheese__ Coolea
+__label__Disease__ Borderline Personality Disorder
+__label__Cheese__ Garrotxa
+__label__Cheese__ Pyramide
+__label__Disease__ Diabetes Mellitus
+__label__Cheese__ Etorki
+__label__Cheese__ Barry's Bay Cheddar
+__label__Disease__ White Dot Syndrome
+__label__Disease__ BattenSpielmeyer-Vogt Disease
