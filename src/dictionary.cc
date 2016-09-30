@@ -17,6 +17,8 @@
 #include <unordered_map>
 #include <cctype>
 
+namespace fasttext {
+
 const std::string Dictionary::EOS = "</s>";
 const std::string Dictionary::BOW = "<";
 const std::string Dictionary::EOW = ">";
@@ -316,4 +318,6 @@ void Dictionary::load(std::istream& in) {
   }
   initTableDiscard();
   initNgrams();
+}
+
 }

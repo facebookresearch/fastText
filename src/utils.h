@@ -18,6 +18,8 @@
 #define MAX_SIGMOID 8
 #define LOG_TABLE_SIZE 512
 
+namespace fasttext {
+
 namespace utils {
 
   real log(real);
@@ -30,6 +32,8 @@ namespace utils {
 
   int64_t size(std::ifstream&);
   void seek(std::ifstream&, int64_t);
+}
+
 }
 
 #endif

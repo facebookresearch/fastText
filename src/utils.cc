@@ -12,6 +12,8 @@
 #include <cmath>
 #include <ios>
 
+namespace fasttext {
+
 namespace utils {
   real* t_sigmoid = nullptr;
   real* t_log = nullptr;
@@ -74,4 +76,6 @@ namespace utils {
     ifs.clear();
     ifs.seekg(std::streampos(pos));
   }
+}
+
 }

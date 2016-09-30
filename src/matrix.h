@@ -16,6 +16,8 @@
 
 #include "real.h"
 
+namespace fasttext {
+
 class Vector;
 
 class Matrix {
@@ -39,5 +41,7 @@ class Matrix {
     void save(std::ostream&);
     void load(std::istream&);
 };
+
+}
 
 #endif

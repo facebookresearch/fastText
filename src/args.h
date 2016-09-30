@@ -14,6 +14,8 @@
 #include <ostream>
 #include <string>
 
+namespace fasttext {
+
 enum class model_name : int {cbow=1, sg, sup};
 enum class loss_name : int {hs=1, ns, softmax};
 
@@ -47,5 +49,7 @@ class Args {
     void save(std::ostream&);
     void load(std::istream&);
 };
+
+}
 
 #endif

@@ -16,6 +16,8 @@
 #include "utils.h"
 #include "vector.h"
 
+namespace fasttext {
+
 Matrix::Matrix() {
   m_ = 0;
   n_ = 0;
@@ -95,4 +97,6 @@ void Matrix::load(std::istream& in) {
   delete[] data_;
   data_ = new real[m_ * n_];
   in.read((char*) data_, m_ * n_ * sizeof(real));
+}
+
 }

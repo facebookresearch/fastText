@@ -14,6 +14,8 @@
 
 #include <iostream>
 
+namespace fasttext {
+
 Args::Args() {
   lr = 0.05;
   dim = 100;
@@ -185,4 +187,6 @@ void Args::load(std::istream& in) {
   in.read((char*) &(maxn), sizeof(int));
   in.read((char*) &(lrUpdateRate), sizeof(int));
   in.read((char*) &(t), sizeof(double));
+}
+
 }

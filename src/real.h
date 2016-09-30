@@ -10,6 +10,10 @@
 #ifndef FASTTEXT_REAL_H
 #define FASTTEXT_REAL_H
 
+namespace fasttext {
+
 typedef float real;
+
+}
 
 #endif

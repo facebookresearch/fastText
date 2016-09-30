@@ -16,6 +16,8 @@
 #include "matrix.h"
 #include "utils.h"
 
+namespace fasttext {
+
 Vector::Vector(int64_t m) {
   m_ = m;
   data_ = new real[m];
@@ -93,4 +95,6 @@ std::ostream& operator<<(std::ostream& os, const Vector& v)
     os << v.data_[j] << ' ';
   }
   return os;
+}
+
 }

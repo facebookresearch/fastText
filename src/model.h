@@ -20,6 +20,8 @@
 #include "vector.h"
 #include "real.h"
 
+namespace fasttext {
+
 struct Node {
   int32_t parent;
   int32_t left;
@@ -78,5 +80,7 @@ class Model {
 
     std::minstd_rand rng;
 };
+
+}
 
 #endif

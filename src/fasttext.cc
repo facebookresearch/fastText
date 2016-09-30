@@ -19,6 +19,8 @@
 #include <vector>
 #include <algorithm>
 
+namespace fasttext {
+
 void FastText::getVector(Vector& vec, const std::string& word) {
   const std::vector<int32_t>& ngrams = dict_->getNgrams(word);
   vec.zero();
@@ -65,21 +67,25 @@ void FastText::loadModel(const std::string& filename) {
     std::cerr << "Model file cannot be opened for loading!" << std::endl;
     exit(EXIT_FAILURE);
   }
+  loadModel(ifs);
+  ifs.close();
+}
+
+void FastText::loadModel(std::istream& in) {
   args_ = std::make_shared<Args>();
   dict_ = std::make_shared<Dictionary>(args_);
   input_ = std::make_shared<Matrix>();
   output_ = std::make_shared<Matrix>();
-  args_->load(ifs);
-  dict_->load(ifs);
-  input_->load(ifs);
-  output_->load(ifs);
+  args_->load(in);
+  dict_->load(in);
+  input_->load(in);
+  output_->load(in);
   model_ = std::make_shared<Model>(input_, output_, args_, 0);
   if (args_->model == model_name::sup) {
     model_->setTargetCounts(dict_->getCounts(entry_type::label));
   } else {
     model_->setTargetCounts(dict_->getCounts(entry_type::word));
   }
-  ifs.close();
 }
 
 void FastText::printInfo(real progress, real loss) {
@@ -138,13 +144,13 @@ void FastText::skipgram(Model& model, real lr,
   }
 }
 
-void FastText::test(std::istream& inp, int32_t k) {
+void FastText::test(std::istream& in, int32_t k) {
   int32_t nexamples = 0, nlabels = 0;
   double precision = 0.0;
   std::vector<int32_t> line, labels;
 
-  while (inp.peek() != EOF) {
-    dict_->getLine(inp, line, labels, model_->rng);
+  while (in.peek() != EOF) {
+    dict_->getLine(in, line, labels, model_->rng);
     dict_->addNgrams(line, args_->wordNgrams);
     if (labels.size() > 0 && line.size() > 0) {
       std::vector<std::pair<real, int32_t>> predictions;
@@ -164,17 +170,24 @@ void FastText::test(std::istream& inp, int32_t k) {
   std::cout << "Number of examples: " << nexamples << std::endl;
 }
 
-void FastText::predict(std::istream& inp, int32_t k, bool print_prob) {
-  std::vector<int32_t> line, labels;
-  while (inp.peek() != EOF) {
-    dict_->getLine(inp, line, labels, model_->rng);
-    dict_->addNgrams(line, args_->wordNgrams);
-    if (line.empty()) {
+void FastText::predict(std::istream& in, int32_t k,
+                       std::vector<std::pair<real,int32_t>>& predictions) {
+  std::vector<int32_t> words, labels;
+  predictions.clear();
+  dict_->getLine(in, words, labels, model_->rng);
+  dict_->addNgrams(words, args_->wordNgrams);
+  if (words.empty()) return;
+  model_->predict(words, k, predictions);
+}
+
+void FastText::predict(std::istream& in, int32_t k, bool print_prob) {
+  std::vector<std::pair<real,int32_t>> predictions;
+  while (in.peek() != EOF) {
+    predict(in, k, predictions);
+    if (predictions.empty()) {
       std::cout << "n/a" << std::endl;
       continue;
     }
-    std::vector<std::pair<real, int32_t>> predictions;
-    model_->predict(line, k, predictions);
     for (auto it = predictions.cbegin(); it != predictions.cend(); it++) {
       if (it != predictions.cbegin()) {
         std::cout << ' ';
@@ -350,139 +363,4 @@ void FastText::train(std::shared_ptr<Args> args) {
   }
 }
 
-void printUsage() {
-  std::cout
-    << "usage: fasttext <command> <args>\n\n"
-    << "The commands supported by fasttext are:\n\n"
-    << "  supervised          train a supervised classifier\n"
-    << "  test                evaluate a supervised classifier\n"
-    << "  predict             predict most likely labels\n"
-    << "  predict-prob        predict most likely labels with probabilities\n"
-    << "  skipgram            train a skipgram model\n"
-    << "  cbow                train a cbow model\n"
-    << "  print-vectors       print vectors given a trained model\n"
-    << std::endl;
-}
-
-void printTestUsage() {
-  std::cout
-    << "usage: fasttext test <model> <test-data> [<k>]\n\n"
-    << "  <model>      model filename\n"
-    << "  <test-data>  test data filename (if -, read from stdin)\n"
-    << "  <k>          (optional; 1 by default) predict top k labels\n"
-    << std::endl;
-}
-
-void printPredictUsage() {
-  std::cout
-    << "usage: fasttext predict[-prob] <model> <test-data> [<k>]\n\n"
-    << "  <model>      model filename\n"
-    << "  <test-data>  test data filename (if -, read from stdin)\n"
-    << "  <k>          (optional; 1 by default) predict top k labels\n"
-    << std::endl;
-}
-
-void printPrintVectorsUsage() {
-  std::cout
-    << "usage: fasttext print-vectors <model>\n\n"
-    << "  <model>      model filename\n"
-    << std::endl;
-}
-
-void test(int argc, char** argv) {
-  int32_t k;
-  if (argc == 4) {
-    k = 1;
-  } else if (argc == 5) {
-    k = atoi(argv[4]);
-  } else {
-    printTestUsage();
-    exit(EXIT_FAILURE);
-  }
-  FastText fasttext;
-  fasttext.loadModel(std::string(argv[2]));
-  std::string infile(argv[3]);
-  if (infile=="-") {
-    fasttext.test(std::cin, k);
-  } else {
-    std::ifstream ifs(infile);
-    if (!ifs.is_open()) {
-      std::cerr << "Test file cannot be opened!" << std::endl;
-      exit(EXIT_FAILURE);
-    }
-    fasttext.test(ifs, k);
-    ifs.close();
-  }
-  exit(0);
-}
-
-void predict(int argc, char** argv) {
-  int32_t k;
-  if (argc == 4) {
-    k = 1;
-  } else if (argc == 5) {
-    k = atoi(argv[4]);
-  } else {
-    printPredictUsage();
-    exit(EXIT_FAILURE);
-  }
-  bool print_prob = std::string(argv[1]) == "predict-prob";
-  FastText fasttext;
-  fasttext.loadModel(std::string(argv[2]));
-
-  std::string infile(argv[3]);
-  if (infile=="-") {
-    fasttext.predict(std::cin, k, print_prob);
-  } else {
-    std::ifstream ifs(infile);
-    if (!ifs.is_open()) {
-      std::cerr << "Input file cannot be opened!" << std::endl;
-      exit(EXIT_FAILURE);
-    }
-    fasttext.predict(ifs, k, print_prob);
-    ifs.close();
-  }
-
-  exit(0);
-}
-
-void printVectors(int argc, char** argv) {
-  if (argc != 3) {
-    printPrintVectorsUsage();
-    exit(EXIT_FAILURE);
-  }
-  FastText fasttext;
-  fasttext.loadModel(std::string(argv[2]));
-  fasttext.printVectors();
-  exit(0);
-}
-
-void train(int argc, char** argv) {
-  std::shared_ptr<Args> a = std::make_shared<Args>();
-  a->parseArgs(argc, argv);
-  FastText fasttext;
-  fasttext.train(a);
-}
-
-int main(int argc, char** argv) {
-  utils::initTables();
-  if (argc < 2) {
-    printUsage();
-    exit(EXIT_FAILURE);
-  }
-  std::string command(argv[1]);
-  if (command == "skipgram" || command == "cbow" || command == "supervised") {
-    train(argc, argv);
-  } else if (command == "test") {
-    test(argc, argv);
-  } else if (command == "print-vectors") {
-    printVectors(argc, argv);
-  } else if (command == "predict" || command == "predict-prob" ) {
-    predict(argc, argv);
-  } else {
-    printUsage();
-    exit(EXIT_FAILURE);
-  }
-  utils::freeTables();
-  return 0;
 }

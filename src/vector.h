@@ -15,6 +15,8 @@
 
 #include "real.h"
 
+namespace fasttext {
+
 class Matrix;
 
 class Vector {
@@ -38,5 +40,7 @@ class Vector {
 };
 
 std::ostream& operator<<(std::ostream&, const Vector&);
+
+}
 
 #endif
