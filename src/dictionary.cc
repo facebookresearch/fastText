@@ -128,7 +128,7 @@ void Dictionary::computeNgrams(const std::string& word,
       while (j < word.size() && (word[j] & 0xC0) == 0x80) {
         ngram.push_back(word[j++]);
       }
-      if (n >= args_->minn) {
+      if (n >= args_->minn && !(n == 1 && (i == 0 || j == word.size()))) {
         int32_t h = hash(ngram) % args_->bucket;
         ngrams.push_back(nwords_ + h);
       }
