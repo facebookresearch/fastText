@@ -49,7 +49,7 @@ class FastText {
     void skipgram(Model&, real, const std::vector<int32_t>&);
     void test(std::istream&, int32_t);
     void predict(std::istream&, int32_t, bool);
-    void predict(std::istream&, int32_t, std::vector<std::pair<real,int32_t>>&);
+    void predict(std::istream&, int32_t, std::vector<std::pair<real,std::string>>&);
     void wordVectors();
     void textVectors();
     void printVectors();

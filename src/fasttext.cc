@@ -153,9 +153,9 @@ void FastText::test(std::istream& in, int32_t k) {
     dict_->getLine(in, line, labels, model_->rng);
     dict_->addNgrams(line, args_->wordNgrams);
     if (labels.size() > 0 && line.size() > 0) {
-      std::vector<std::pair<real, int32_t>> predictions;
-      model_->predict(line, k, predictions);
-      for (auto it = predictions.cbegin(); it != predictions.cend(); it++) {
+      std::vector<std::pair<real, int32_t>> modelPredictions;
+      model_->predict(line, k, modelPredictions);
+      for (auto it = modelPredictions.cbegin(); it != modelPredictions.cend(); it++) {
         if (std::find(labels.begin(), labels.end(), it->second) != labels.end()) {
           precision += 1.0;
         }
@@ -171,17 +171,21 @@ void FastText::test(std::istream& in, int32_t k) {
 }
 
 void FastText::predict(std::istream& in, int32_t k,
-                       std::vector<std::pair<real,int32_t>>& predictions) {
+                       std::vector<std::pair<real,std::string>>& predictions) {
   std::vector<int32_t> words, labels;
-  predictions.clear();
   dict_->getLine(in, words, labels, model_->rng);
   dict_->addNgrams(words, args_->wordNgrams);
   if (words.empty()) return;
-  model_->predict(words, k, predictions);
+  std::vector<std::pair<real,int32_t>> modelPredictions;
+  model_->predict(words, k, modelPredictions);
+  predictions.clear();
+  for (auto it = modelPredictions.cbegin(); it != modelPredictions.cend(); it++) {
+    predictions.push_back(std::make_pair(it->first, dict_->getLabel(it->second)));
+  }
 }
 
 void FastText::predict(std::istream& in, int32_t k, bool print_prob) {
-  std::vector<std::pair<real,int32_t>> predictions;
+  std::vector<std::pair<real,std::string>> predictions;
   while (in.peek() != EOF) {
     predict(in, k, predictions);
     if (predictions.empty()) {
@@ -192,7 +196,7 @@ void FastText::predict(std::istream& in, int32_t k, bool print_prob) {
       if (it != predictions.cbegin()) {
         std::cout << ' ';
       }
-      std::cout << dict_->getLabel(it->second);
+      std::cout << it->second;
       if (print_prob) {
         std::cout << ' ' << exp(it->first);
       }
