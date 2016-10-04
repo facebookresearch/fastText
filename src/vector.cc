@@ -27,6 +27,10 @@ Vector::~Vector() {
   delete[] data_;
 }
 
+int64_t Vector::size() const {
+  return m_;
+}
+
 void Vector::zero() {
   for (int64_t i = 0; i < m_; i++) {
     data_[i] = 0.0;

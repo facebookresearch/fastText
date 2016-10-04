@@ -35,7 +35,7 @@ Dictionary::Dictionary(std::shared_ptr<Args> args) {
   }
 }
 
-int32_t Dictionary::find(const std::string& w) {
+int32_t Dictionary::find(const std::string& w) const {
   int32_t h = hash(w) % MAX_VOCAB_SIZE;
   while (word2int_[h] != -1 && words_[word2int_[h]].word != w) {
     h = (h + 1) % MAX_VOCAB_SIZE;
@@ -58,60 +58,59 @@ void Dictionary::add(const std::string& w) {
   }
 }
 
-int32_t Dictionary::nwords() {
+int32_t Dictionary::nwords() const {
   return nwords_;
 }
 
-int32_t Dictionary::nlabels() {
+int32_t Dictionary::nlabels() const {
   return nlabels_;
 }
 
-int64_t Dictionary::ntokens() {
+int64_t Dictionary::ntokens() const {
   return ntokens_;
 }
 
-const std::vector<int32_t>& Dictionary::getNgrams(int32_t i) {
+const std::vector<int32_t>& Dictionary::getNgrams(int32_t i) const {
   assert(i >= 0);
   assert(i < nwords_);
   return words_[i].subwords;
 }
 
-const std::vector<int32_t> Dictionary::getNgrams(const std::string& word) {
-  std::vector<int32_t> ngrams;
+const std::vector<int32_t> Dictionary::getNgrams(const std::string& word) const {
   int32_t i = getId(word);
   if (i >= 0) {
-    ngrams = words_[i].subwords;
-  } else {
-    computeNgrams(BOW + word + EOW, ngrams);
+    return getNgrams(i);
   }
+  std::vector<int32_t> ngrams;
+  computeNgrams(BOW + word + EOW, ngrams);
   return ngrams;
 }
 
-bool Dictionary::discard(int32_t id, real rand) {
+bool Dictionary::discard(int32_t id, real rand) const {
   assert(id >= 0);
   assert(id < nwords_);
   if (args_->model == model_name::sup) return false;
   return rand > pdiscard_[id];
 }
 
-int32_t Dictionary::getId(const std::string& w) {
+int32_t Dictionary::getId(const std::string& w) const {
   int32_t h = find(w);
   return word2int_[h];
 }
 
-entry_type Dictionary::getType(int32_t id) {
+entry_type Dictionary::getType(int32_t id) const {
   assert(id >= 0);
   assert(id < size_);
   return words_[id].type;
 }
 
-std::string Dictionary::getWord(int32_t id) {
+std::string Dictionary::getWord(int32_t id) const {
   assert(id >= 0);
   assert(id < size_);
   return words_[id].word;
 }
 
-uint32_t Dictionary::hash(const std::string& str) {
+uint32_t Dictionary::hash(const std::string& str) const {
   uint32_t h = 2166136261;
   for (size_t i = 0; i < str.size(); i++) {
     h = h ^ uint32_t(str[i]);
@@ -121,7 +120,7 @@ uint32_t Dictionary::hash(const std::string& str) {
 }
 
 void Dictionary::computeNgrams(const std::string& word,
-                               std::vector<int32_t>& ngrams) {
+                               std::vector<int32_t>& ngrams) const {
   for (size_t i = 0; i < word.size(); i++) {
     std::string ngram;
     if ((word[i] & 0xC0) == 0x80) continue;
@@ -146,7 +145,7 @@ void Dictionary::initNgrams() {
   }
 }
 
-bool Dictionary::readWord(std::istream& in, std::string& word)
+bool Dictionary::readWord(std::istream& in, std::string& word) const
 {
   char c;
   std::streambuf& sb = *in.rdbuf();
@@ -227,7 +226,7 @@ void Dictionary::initTableDiscard() {
   }
 }
 
-std::vector<int64_t> Dictionary::getCounts(entry_type type) {
+std::vector<int64_t> Dictionary::getCounts(entry_type type) const {
   std::vector<int64_t> counts;
   for (auto& w : words_) {
     if (w.type == type) counts.push_back(w.count);
@@ -235,7 +234,7 @@ std::vector<int64_t> Dictionary::getCounts(entry_type type) {
   return counts;
 }
 
-void Dictionary::addNgrams(std::vector<int32_t>& line, int32_t n) {
+void Dictionary::addNgrams(std::vector<int32_t>& line, int32_t n) const {
   int32_t line_size = line.size();
   for (int32_t i = 0; i < line_size; i++) {
     uint64_t h = line[i];
@@ -249,7 +248,7 @@ void Dictionary::addNgrams(std::vector<int32_t>& line, int32_t n) {
 int32_t Dictionary::getLine(std::istream& in,
                             std::vector<int32_t>& words,
                             std::vector<int32_t>& labels,
-                            std::minstd_rand& rng) {
+                            std::minstd_rand& rng) const {
   std::uniform_real_distribution<> uniform(0, 1);
   std::string token;
   int32_t ntokens = 0;
@@ -276,13 +275,13 @@ int32_t Dictionary::getLine(std::istream& in,
   return ntokens;
 }
 
-std::string Dictionary::getLabel(int32_t lid) {
+std::string Dictionary::getLabel(int32_t lid) const {
   assert(lid >= 0);
   assert(lid < nlabels_);
   return words_[lid + nwords_].word;
 }
 
-void Dictionary::save(std::ostream& out) {
+void Dictionary::save(std::ostream& out) const {
   out.write((char*) &size_, sizeof(int32_t));
   out.write((char*) &nwords_, sizeof(int32_t));
   out.write((char*) &nlabels_, sizeof(int32_t));

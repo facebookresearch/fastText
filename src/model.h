@@ -49,6 +49,9 @@ class Model {
 
     std::vector<int32_t> negatives;
     size_t negpos;
+
+    int32_t getNegative(int32_t target);
+
     std::vector< std::vector<int32_t> > paths;
     std::vector< std::vector<bool> > codes;
     std::vector<Node> tree;
@@ -65,18 +68,24 @@ class Model {
     real softmax(int32_t, real);
 
     void predict(const std::vector<int32_t>&, int32_t,
+                 std::vector<std::pair<real, int32_t>>&,
+                 Vector&, Vector&) const;
+    void predict(const std::vector<int32_t>&, int32_t,
                  std::vector<std::pair<real, int32_t>>&);
-    void dfs(int32_t, int32_t, real, std::vector<std::pair<real, int32_t>>&);
-    void findKBest(int32_t, std::vector<std::pair<real, int32_t>>&);
+    void dfs(int32_t, int32_t, real,
+             std::vector<std::pair<real, int32_t>>&,
+             Vector&) const;
+    void findKBest(int32_t, std::vector<std::pair<real, int32_t>>&,
+                   Vector&, Vector&) const;
     void update(const std::vector<int32_t>&, int32_t, real);
-    void computeHidden(const std::vector<int32_t>&);
+    void computeHidden(const std::vector<int32_t>&, Vector&) const;
+    void computeOutputSoftmax(Vector&, Vector&) const;
     void computeOutputSoftmax();
 
     void setTargetCounts(const std::vector<int64_t>&);
     void initTableNegatives(const std::vector<int64_t>&);
-    int32_t getNegative(int32_t target);
     void buildTree(const std::vector<int64_t>&);
-    real getLoss();
+    real getLoss() const;
 
     std::minstd_rand rng;
 };

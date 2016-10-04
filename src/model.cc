@@ -70,19 +70,23 @@ real Model::hierarchicalSoftmax(int32_t target, real lr) {
   return loss;
 }
 
+void Model::computeOutputSoftmax(Vector& hidden, Vector& output) const {
+  output.mul(*wo_, hidden);
+  real max = output[0], z = 0.0;
+  for (int32_t i = 0; i < osz_; i++) {
+    max = std::max(output[i], max);
+  }
+  for (int32_t i = 0; i < osz_; i++) {
+    output[i] = exp(output[i] - max);
+    z += output[i];
+  }
+  for (int32_t i = 0; i < osz_; i++) {
+    output[i] /= z;
+  }
+}
+
 void Model::computeOutputSoftmax() {
-  output_.mul(*wo_, hidden_);
-  real max = output_[0], z = 0.0;
-  for (int32_t i = 0; i < osz_; i++) {
-    max = std::max(output_[i], max);
-  }
-  for (int32_t i = 0; i < osz_; i++) {
-    output_[i] = exp(output_[i] - max);
-    z += output_[i];
-  }
-  for (int32_t i = 0; i < osz_; i++) {
-    output_[i] /= z;
-  }
+  computeOutputSoftmax(hidden_, output_);
 }
 
 real Model::softmax(int32_t target, real lr) {
@@ -97,12 +101,13 @@ real Model::softmax(int32_t target, real lr) {
   return -utils::log(output_[target]);
 }
 
-void Model::computeHidden(const std::vector<int32_t>& input) {
-  hidden_.zero();
+void Model::computeHidden(const std::vector<int32_t>& input, Vector& hidden) const {
+  assert(hidden.size() == hsz_);
+  hidden.zero();
   for (auto it = input.cbegin(); it != input.cend(); ++it) {
-    hidden_.addRow(*wi_, *it);
+    hidden.addRow(*wi_, *it);
   }
-  hidden_.mul(1.0 / input.size());
+  hidden.mul(1.0 / input.size());
 }
 
 bool Model::comparePairs(const std::pair<real, int32_t> &l,
@@ -111,25 +116,32 @@ bool Model::comparePairs(const std::pair<real, int32_t> &l,
 }
 
 void Model::predict(const std::vector<int32_t>& input, int32_t k,
-                    std::vector<std::pair<real, int32_t>>& heap) {
+                    std::vector<std::pair<real, int32_t>>& heap,
+                    Vector& hidden, Vector& output) const {
   assert(k > 0);
   heap.reserve(k + 1);
-  computeHidden(input);
+  computeHidden(input, hidden);
   if (args_->loss == loss_name::hs) {
-    dfs(k, 2 * osz_ - 2, 0.0, heap);
+    dfs(k, 2 * osz_ - 2, 0.0, heap, hidden);
   } else {
-    findKBest(k, heap);
+    findKBest(k, heap, hidden, output);
   }
   std::sort_heap(heap.begin(), heap.end(), comparePairs);
 }
 
-void Model::findKBest(int32_t k, std::vector<std::pair<real, int32_t>>& heap) {
-  computeOutputSoftmax();
+void Model::predict(const std::vector<int32_t>& input, int32_t k,
+                    std::vector<std::pair<real, int32_t>>& heap) {
+  predict(input, k, heap, hidden_, output_);
+}
+
+void Model::findKBest(int32_t k, std::vector<std::pair<real, int32_t>>& heap,
+                      Vector& hidden, Vector& output) const {
+  computeOutputSoftmax(hidden, output);
   for (int32_t i = 0; i < osz_; i++) {
-    if (heap.size() == k && utils::log(output_[i]) < heap.front().first) {
+    if (heap.size() == k && utils::log(output[i]) < heap.front().first) {
       continue;
     }
-    heap.push_back(std::make_pair(utils::log(output_[i]), i));
+    heap.push_back(std::make_pair(utils::log(output[i]), i));
     std::push_heap(heap.begin(), heap.end(), comparePairs);
     if (heap.size() > k) {
       std::pop_heap(heap.begin(), heap.end(), comparePairs);
@@ -139,7 +151,8 @@ void Model::findKBest(int32_t k, std::vector<std::pair<real, int32_t>>& heap) {
 }
 
 void Model::dfs(int32_t k, int32_t node, real score,
-                std::vector<std::pair<real, int32_t>>& heap) {
+                std::vector<std::pair<real, int32_t>>& heap,
+                Vector& hidden) const {
   if (heap.size() == k && score < heap.front().first) {
     return;
   }
@@ -154,21 +167,16 @@ void Model::dfs(int32_t k, int32_t node, real score,
     return;
   }
 
-  real f = utils::sigmoid(wo_->dotRow(hidden_, node - osz_));
-  dfs(k, tree[node].left, score + utils::log(1.0 - f), heap);
-  dfs(k, tree[node].right, score + utils::log(f), heap);
+  real f = utils::sigmoid(wo_->dotRow(hidden, node - osz_));
+  dfs(k, tree[node].left, score + utils::log(1.0 - f), heap, hidden);
+  dfs(k, tree[node].right, score + utils::log(f), heap, hidden);
 }
 
 void Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
   assert(target >= 0);
   assert(target < osz_);
   if (input.size() == 0) return;
-  hidden_.zero();
-  for (auto it = input.cbegin(); it != input.cend(); ++it) {
-    hidden_.addRow(*wi_, *it);
-  }
-  hidden_.mul(1.0 / input.size());
-
+  computeHidden(input, hidden_);
   if (args_->loss == loss_name::ns) {
     loss_ += negativeSampling(target, lr);
   } else if (args_->loss == loss_name::hs) {
@@ -263,7 +271,7 @@ void Model::buildTree(const std::vector<int64_t>& counts) {
   }
 }
 
-real Model::getLoss() {
+real Model::getLoss() const {
   return loss_ / nexamples_;
 }
 
