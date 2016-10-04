@@ -54,7 +54,9 @@ class FastText {
     void textVectors();
     void printVectors();
     void trainThread(int32_t);
+    void trainThread(int32_t,const int64_t); // to handle append
     void train(std::shared_ptr<Args>);
+    void supervisedAppend(const std::string&, const std::string&, const real); // incremental supervised learning 
 
     void loadVectors(std::string);
 };

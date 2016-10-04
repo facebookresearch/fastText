@@ -319,4 +319,11 @@ void Dictionary::load(std::istream& in) {
   initNgrams();
 }
 
+void Dictionary::copyWords(std::vector<std::string>& ws) {
+    for (int32_t i = 0; i < size_; i++) {
+        ws.push_back(words_[i].word);
+    }
+}
+
+
 }
