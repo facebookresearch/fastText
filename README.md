@@ -118,15 +118,16 @@ $ ./fasttext print-vectors model.bin < text.txt
 This assumes that the `text.txt` file contains the paragraphs that you want to get vectors for.
 The program will output one vector representation per line in the file.
 
-EXPERIMENTAL:  If you want to continue learing on addtional.txt on closed supervised model, you can use:
+EXPERIMENTAL:  To learn on addtional.txt even after closed/supervised model.bin, try:
 
 ```
 $ ./fasttext supervised-append model additional.txt 
 ```
 
-Pleae take a look at "classification-split.sh" example, where single train file,
-is splitted into many and trained incrementally.  For safety, current design decision
-don't allowed to change any previous model parameters for additional supervised-append
+Pleae take a look at "classification-split.sh" example, where single train file
+is splitted into many and trained incrementally.  When supervised-append done,
+it overrides and appends new data for supplied model.  For safety, current design decision
+don't allow changing any previous model parameters for the supervised-append
 except learning rate, lr.  This may be changed in the future.
 
 
