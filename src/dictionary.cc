@@ -183,12 +183,14 @@ void Dictionary::readFromFile(std::istream& in) {
       threshold(minThreshold++);
     }
   }
-  std::cout << "\rRead " << ntokens_  / 1000000 << "M words" << std::endl;
   threshold(args_->minCount);
   initTableDiscard();
   initNgrams();
-  std::cout << "Number of words:  " << nwords_ << std::endl;
-  std::cout << "Number of labels: " << nlabels_ << std::endl;
+  if (args_->verbose > 0) {
+    std::cout << "\rRead " << ntokens_  / 1000000 << "M words" << std::endl;
+    std::cout << "Number of words:  " << nwords_ << std::endl;
+    std::cout << "Number of labels: " << nlabels_ << std::endl;
+  }
   if (size_ == 0) {
     std::cerr << "Empty vocabulary. Try a smaller -minCount value." << std::endl;
     exit(EXIT_FAILURE);

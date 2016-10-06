@@ -275,7 +275,7 @@ void FastText::trainThread(int32_t threadId) {
       }
     }
   }
-  if (threadId == 0) {
+  if (threadId == 0 && args_->verbose > 0) {
     printInfo(1.0, model.getLoss());
     std::cout << std::endl;
   }
