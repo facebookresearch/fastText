@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <istream>
 #include <ostream>
+#include <memory>
 
 #include "real.h"
 
@@ -23,15 +24,16 @@ class Vector;
 class Matrix {
 
   public:
-    real* data_;
+    std::unique_ptr<real[]> data_;
     int64_t m_;
     int64_t n_;
 
     Matrix();
     Matrix(int64_t, int64_t);
     Matrix(const Matrix&);
-    Matrix& operator=(const Matrix&);
-    ~Matrix();
+    Matrix& operator=(Matrix);
+    Matrix(Matrix&&) = default;
+    void swap(Matrix &);
 
     void zero();
     void uniform(real);
@@ -41,6 +43,13 @@ class Matrix {
     void save(std::ostream&);
     void load(std::istream&);
 };
+
+}
+
+namespace std {
+
+template<>
+void swap<fasttext::Matrix>(fasttext::Matrix &lhs, fasttext::Matrix &rhs);
 
 }
 

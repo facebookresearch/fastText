@@ -18,37 +18,35 @@
 
 namespace fasttext {
 
-Matrix::Matrix() {
-  m_ = 0;
-  n_ = 0;
-  data_ = nullptr;
+Matrix::Matrix()
+  : m_(0), n_(0), data_() {
 }
 
-Matrix::Matrix(int64_t m, int64_t n) {
-  m_ = m;
-  n_ = n;
-  data_ = new real[m * n];
+Matrix::Matrix(int64_t m, int64_t n)
+  : m_(m), n_(n), data_(new real[m * n]) {
 }
 
-Matrix::Matrix(const Matrix& other) {
-  m_ = other.m_;
-  n_ = other.n_;
-  data_ = new real[m_ * n_];
-  for (int64_t i = 0; i < (m_ * n_); i++) {
-    data_[i] = other.data_[i];
-  }
+Matrix::Matrix(const Matrix &other)
+  : Matrix(other.m_, other.n_) {
+  std::copy(
+    other.data_.get(),
+    other.data_.get() + m_ * n_,
+    data_.get()
+  );
 }
 
-Matrix& Matrix::operator=(const Matrix& other) {
-  Matrix temp(other);
-  m_ = temp.m_;
-  n_ = temp.n_;
-  std::swap(data_, temp.data_);
+Matrix & Matrix::operator=(Matrix other)
+{
+  swap(other);
   return *this;
 }
 
-Matrix::~Matrix() {
-  delete[] data_;
+void Matrix::swap(Matrix &other)
+{
+  using std::swap;
+  swap(m_, other.m_);
+  swap(n_, other.n_);
+  swap(data_, other.data_);
 }
 
 void Matrix::zero() {
@@ -88,15 +86,23 @@ real Matrix::dotRow(const Vector& vec, int64_t i) {
 void Matrix::save(std::ostream& out) {
   out.write((char*) &m_, sizeof(int64_t));
   out.write((char*) &n_, sizeof(int64_t));
-  out.write((char*) data_, m_ * n_ * sizeof(real));
+  out.write((char*) data_.get(), m_ * n_ * sizeof(real));
 }
 
 void Matrix::load(std::istream& in) {
   in.read((char*) &m_, sizeof(int64_t));
   in.read((char*) &n_, sizeof(int64_t));
-  delete[] data_;
-  data_ = new real[m_ * n_];
-  in.read((char*) data_, m_ * n_ * sizeof(real));
+  data_ = std::unique_ptr<real[]>(new real[m_ * n_]);
+  in.read((char*) data_.get(), m_ * n_ * sizeof(real));
+}
+
+}
+
+namespace std {
+
+template<>
+void swap<fasttext::Matrix>(fasttext::Matrix &lhs, fasttext::Matrix &rhs) {
+  lhs.swap(rhs);
 }
 
 }
