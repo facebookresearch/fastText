@@ -60,6 +60,7 @@ class FastText {
       std::vector<std::pair<real, std::string>>&
     ) const;
     bool getTextVectorNextLine(Vector&, std::istream&) const;
+    void getTextVector(Vector&, std::string) const;
     void trainThread(int32_t);
     void train(std::shared_ptr<Args>);
 

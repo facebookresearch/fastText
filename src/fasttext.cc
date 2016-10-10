@@ -229,6 +229,13 @@ bool FastText::getTextVectorNextLine(Vector &vec, std::istream &in) const {
   return true;
 }
 
+void FastText::getTextVector(Vector &vec, std::string text) const
+{
+  std::replace(text.begin(), text.end(), '\n', ' ');
+  std::istringstream in (text);
+  getTextVectorNextLine(vec, in);
+}
+
 void FastText::trainThread(int32_t threadId) {
   std::ifstream ifs(args_->input);
   utils::seek(ifs, threadId * utils::size(ifs) / args_->thread);
