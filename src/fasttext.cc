@@ -18,6 +18,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <sstream>
 
 namespace fasttext {
 
@@ -194,6 +195,16 @@ bool FastText::predictNextLine(
     }
   }
   return true;
+}
+
+void FastText::predict(
+  std::string text,
+  int32_t k,
+  std::vector<std::pair<real, std::string>>& predictions
+) const {
+  std::replace(text.begin(), text.end(), '\n', ' ');
+  std::istringstream in (text);
+  predictNextLine(in, k, predictions);
 }
 
 void FastText::wordVectors() {

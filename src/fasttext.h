@@ -53,6 +53,11 @@ class FastText {
       int32_t,
       std::vector<std::pair<real, std::string>>&
     ) const;
+    void predict(
+      std::string,
+      int32_t,
+      std::vector<std::pair<real, std::string>>&
+    ) const;
     void wordVectors();
     void textVectors();
     void printVectors();
