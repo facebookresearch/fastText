@@ -170,41 +170,30 @@ void FastText::test(std::istream& in, int32_t k) {
   std::cout << "Number of examples: " << nexamples << std::endl;
 }
 
-void FastText::predict(std::istream& in, int32_t k,
-                       std::vector<std::pair<real,std::string>>& predictions) const {
+bool FastText::predictNextLine(
+  std::istream &in,
+  int32_t k,
+  std::vector<std::pair<real, std::string>> &predictions
+) const {
+  if (in.peek(), in.eof()) {
+    return false;
+  }
+  predictions.clear();
   std::vector<int32_t> words, labels;
   dict_->getLine(in, words, labels, model_->rng);
   dict_->addNgrams(words, args_->wordNgrams);
-  if (words.empty()) return;
-  Vector hidden(args_->dim);
-  Vector output(dict_->nlabels());
-  std::vector<std::pair<real,int32_t>> modelPredictions;
-  model_->predict(words, k, modelPredictions, hidden, output);
-  predictions.clear();
-  for (auto it = modelPredictions.cbegin(); it != modelPredictions.cend(); it++) {
-    predictions.push_back(std::make_pair(it->first, dict_->getLabel(it->second)));
-  }
-}
+  if (!words.empty()) {
+    Vector hidden (args_->dim),
+           output (dict_->nlabels());
+    std::vector<std::pair<real, int32_t>> modelPredictions;
+    model_->predict(words, k, modelPredictions, hidden, output);
 
-void FastText::predict(std::istream& in, int32_t k, bool print_prob) {
-  std::vector<std::pair<real,std::string>> predictions;
-  while (in.peek() != EOF) {
-    predict(in, k, predictions);
-    if (predictions.empty()) {
-      std::cout << "n/a" << std::endl;
-      continue;
+    for (const auto& pair : modelPredictions) {
+      predictions.push_back(
+        std::make_pair(pair.first, dict_->getLabel(pair.second)));
     }
-    for (auto it = predictions.cbegin(); it != predictions.cend(); it++) {
-      if (it != predictions.cbegin()) {
-        std::cout << ' ';
-      }
-      std::cout << it->second;
-      if (print_prob) {
-        std::cout << ' ' << exp(it->first);
-      }
-    }
-    std::cout << std::endl;
   }
+  return true;
 }
 
 void FastText::wordVectors() {
