@@ -36,7 +36,7 @@ class FastText {
     clock_t start;
 
   public:
-    void getWordVector(Vector&, const std::string&);
+    void getWordVector(Vector&, const std::string&) const;
     void saveWordVectors();
     void saveModel();
     void loadModel(const std::string&);

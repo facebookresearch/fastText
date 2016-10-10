@@ -22,7 +22,7 @@
 
 namespace fasttext {
 
-void FastText::getWordVector(Vector& vec, const std::string& word) {
+void FastText::getWordVector(Vector& vec, const std::string& word) const {
   const std::vector<int32_t>& ngrams = dict_->getNgrams(word);
   vec.zero();
   for (auto it = ngrams.begin(); it != ngrams.end(); ++it) {
