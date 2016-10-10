@@ -104,6 +104,9 @@ real Model::softmax(int32_t target, real lr) {
 void Model::computeHidden(const std::vector<int32_t>& input, Vector& hidden) const {
   assert(hidden.size() == hsz_);
   hidden.zero();
+  if (input.empty()) {
+    return;
+  }
   for (auto it = input.cbegin(); it != input.cend(); ++it) {
     hidden.addRow(*wi_, *it);
   }

@@ -222,13 +222,7 @@ void FastText::textVectors() {
   while (std::cin.peek() != EOF) {
     dict_->getLine(std::cin, line, labels, model_->rng);
     dict_->addNgrams(line, args_->wordNgrams);
-    vec.zero();
-    for (auto it = line.cbegin(); it != line.cend(); ++it) {
-      vec.addRow(*input_, *it);
-    }
-    if (!line.empty()) {
-      vec.mul(1.0 / line.size());
-    }
+    model_->computeHidden(line, vec);
     std::cout << vec << std::endl;
   }
 }
