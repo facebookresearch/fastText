@@ -19,6 +19,9 @@
 #include "utils.h"
 
 namespace fasttext {
+Vector::Vector()
+  : m_(0), data_(nullptr) {
+}
 
 Vector::Vector(int64_t m)
   : m_(m), data_(new real[m]) {

@@ -36,6 +36,7 @@ class FastText {
     clock_t start;
 
   public:
+    model_type modelType() const;
     void getWordVector(Vector&, const std::string&) const;
     void saveWordVectors();
     void saveModel();
@@ -58,9 +59,7 @@ class FastText {
       int32_t,
       std::vector<std::pair<real, std::string>>&
     ) const;
-    void wordVectors();
-    void textVectors();
-    void printVectors();
+    bool getTextVectorNextLine(Vector&, std::istream&) const;
     void trainThread(int32_t);
     void train(std::shared_ptr<Args>);
 

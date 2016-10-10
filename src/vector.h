@@ -26,6 +26,7 @@ class Vector {
     int64_t m_;
     std::unique_ptr<real[]> data_;
 
+    Vector();
     explicit Vector(int64_t);
     Vector(const Vector &);
     Vector& operator=(Vector);

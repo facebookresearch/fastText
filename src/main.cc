@@ -133,8 +133,18 @@ void printVectors(int argc, char** argv) {
   }
   FastText fasttext;
   fasttext.loadModel(std::string(argv[2]));
-  fasttext.printVectors();
-  exit(0);
+  Vector vec;
+  if (fasttext.modelType() == model_type::sup) {
+    while (fasttext.getTextVectorNextLine(vec, std::cin)) {
+      std::cout << vec << std::endl;
+    }
+  } else {
+    std::string word;
+    while (std::cin >> word) {
+      fasttext.getWordVector(vec, word);
+      std::cout << word << " " << vec << std::endl;
+    }
+  }
 }
 
 void train(int argc, char** argv) {

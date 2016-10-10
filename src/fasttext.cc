@@ -21,10 +21,17 @@
 #include <sstream>
 
 namespace fasttext {
+model_type FastText::modelType() const {
+  return args_->model;
+}
 
 void FastText::getWordVector(Vector& vec, const std::string& word) const {
   const std::vector<int32_t>& ngrams = dict_->getNgrams(word);
+  if (vec.size() != args_->dim) {
+    vec = Vector(args_->dim);
+  }
   vec.zero();
+
   for (auto it = ngrams.begin(); it != ngrams.end(); ++it) {
     vec.addRow(*input_, *it);
   }
@@ -207,32 +214,19 @@ void FastText::predict(
   predictNextLine(in, k, predictions);
 }
 
-void FastText::wordVectors() {
-  std::string word;
-  Vector vec(args_->dim);
-  while (std::cin >> word) {
-    getWordVector(vec, word);
-    std::cout << word << " " << vec << std::endl;
+bool FastText::getTextVectorNextLine(Vector &vec, std::istream &in) const {
+  if (in.peek(), in.eof()) {
+    return false;
   }
-}
 
-void FastText::textVectors() {
+  if (vec.size() != args_->dim) {
+    vec = Vector(args_->dim);
+  }
   std::vector<int32_t> line, labels;
-  Vector vec(args_->dim);
-  while (std::cin.peek() != EOF) {
-    dict_->getLine(std::cin, line, labels, model_->rng);
-    dict_->addNgrams(line, args_->wordNgrams);
-    model_->computeHidden(line, vec);
-    std::cout << vec << std::endl;
-  }
-}
-
-void FastText::printVectors() {
-  if (args_->model == model_type::sup) {
-    textVectors();
-  } else {
-    wordVectors();
-  }
+  dict_->getLine(std::cin, line, labels, model_->rng);
+  dict_->addNgrams(line, args_->wordNgrams);
+  model_->computeHidden(line, vec);
+  return true;
 }
 
 void FastText::trainThread(int32_t threadId) {
@@ -240,7 +234,7 @@ void FastText::trainThread(int32_t threadId) {
   utils::seek(ifs, threadId * utils::size(ifs) / args_->thread);
 
   Model model(input_, output_, args_, threadId);
-  if (args_->model == model_type::sup) {
+  if (modelType() == model_type::sup) {
     model.setTargetCounts(dict_->getCounts(entry_type::label));
   } else {
     model.setTargetCounts(dict_->getCounts(entry_type::word));
@@ -253,12 +247,12 @@ void FastText::trainThread(int32_t threadId) {
     real progress = real(tokenCount) / (args_->epoch * ntokens);
     real lr = args_->lr * (1.0 - progress);
     localTokenCount += dict_->getLine(ifs, line, labels, model.rng);
-    if (args_->model == model_type::sup) {
+    if (modelType() == model_type::sup) {
       dict_->addNgrams(line, args_->wordNgrams);
       supervised(model, lr, line, labels);
-    } else if (args_->model == model_type::cbow) {
+    } else if (modelType() == model_type::cbow) {
       cbow(model, lr, line);
-    } else if (args_->model == model_type::sg) {
+    } else if (modelType() == model_type::sg) {
       skipgram(model, lr, line);
     }
     if (localTokenCount > args_->lrUpdateRate) {
@@ -339,7 +333,7 @@ void FastText::train(std::shared_ptr<Args> args) {
     input_->uniform(1.0 / args_->dim);
   }
 
-  if (args_->model == model_type::sup) {
+  if (modelType() == model_type::sup) {
     output_ = std::make_shared<Matrix>(dict_->nlabels(), args_->dim);
   } else {
     output_ = std::make_shared<Matrix>(dict_->nwords(), args_->dim);
@@ -358,7 +352,7 @@ void FastText::train(std::shared_ptr<Args> args) {
   model_ = std::make_shared<Model>(input_, output_, args_, 0);
 
   saveModel();
-  if (args_->model != model_type::sup) {
+  if (modelType() != model_type::sup) {
     saveWordVectors();
   }
 }
