@@ -37,7 +37,7 @@ class FastText {
 
   public:
     void getWordVector(Vector&, const std::string&);
-    void saveVectors();
+    void saveWordVectors();
     void saveModel();
     void loadModel(const std::string&);
     void loadModel(std::istream&);
