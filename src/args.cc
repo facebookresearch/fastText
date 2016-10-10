@@ -24,8 +24,8 @@ Args::Args() {
   minCount = 5;
   neg = 5;
   wordNgrams = 1;
-  loss = loss_name::ns;
-  model = model_name::sg;
+  loss = loss_type::ns;
+  model = model_type::sg;
   bucket = 2000000;
   minn = 3;
   maxn = 6;
@@ -40,14 +40,14 @@ Args::Args() {
 void Args::parseArgs(int argc, char** argv) {
   std::string command(argv[1]);
   if (command == "supervised") {
-    model = model_name::sup;
-    loss = loss_name::softmax;
+    model = model_type::sup;
+    loss = loss_type::softmax;
     minCount = 1;
     minn = 0;
     maxn = 0;
     lr = 0.1;
   } else if (command == "cbow") {
-    model = model_name::cbow;
+    model = model_type::cbow;
   }
   int ai = 2;
   while (ai < argc) {
@@ -84,11 +84,11 @@ void Args::parseArgs(int argc, char** argv) {
       wordNgrams = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-loss") == 0) {
       if (strcmp(argv[ai + 1], "hs") == 0) {
-        loss = loss_name::hs;
+        loss = loss_type::hs;
       } else if (strcmp(argv[ai + 1], "ns") == 0) {
-        loss = loss_name::ns;
+        loss = loss_type::ns;
       } else if (strcmp(argv[ai + 1], "softmax") == 0) {
-        loss = loss_name::softmax;
+        loss = loss_type::softmax;
       } else {
         std::cout << "Unknown loss: " << argv[ai + 1] << std::endl;
         printHelp();
@@ -129,8 +129,8 @@ void Args::parseArgs(int argc, char** argv) {
 
 void Args::printHelp() {
   std::string lname = "ns";
-  if (loss == loss_name::hs) lname = "hs";
-  if (loss == loss_name::softmax) lname = "softmax";
+  if (loss == loss_type::hs) lname = "hs";
+  if (loss == loss_type::softmax) lname = "softmax";
   std::cout
     << "\n"
     << "The following arguments are mandatory:\n"
@@ -164,8 +164,8 @@ void Args::save(std::ostream& out) {
   out.write((char*) &(minCount), sizeof(int));
   out.write((char*) &(neg), sizeof(int));
   out.write((char*) &(wordNgrams), sizeof(int));
-  out.write((char*) &(loss), sizeof(loss_name));
-  out.write((char*) &(model), sizeof(model_name));
+  out.write((char*) &(loss), sizeof(loss_type));
+  out.write((char*) &(model), sizeof(model_type));
   out.write((char*) &(bucket), sizeof(int));
   out.write((char*) &(minn), sizeof(int));
   out.write((char*) &(maxn), sizeof(int));
@@ -180,8 +180,8 @@ void Args::load(std::istream& in) {
   in.read((char*) &(minCount), sizeof(int));
   in.read((char*) &(neg), sizeof(int));
   in.read((char*) &(wordNgrams), sizeof(int));
-  in.read((char*) &(loss), sizeof(loss_name));
-  in.read((char*) &(model), sizeof(model_name));
+  in.read((char*) &(loss), sizeof(loss_type));
+  in.read((char*) &(model), sizeof(model_type));
   in.read((char*) &(bucket), sizeof(int));
   in.read((char*) &(minn), sizeof(int));
   in.read((char*) &(maxn), sizeof(int));
