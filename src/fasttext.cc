@@ -49,17 +49,18 @@ void FastText::saveVectors() {
 }
 
 void FastText::saveDocVectors() {
-  std::ofstream ofs(args.output + ".vec");
+  std::ofstream ofs(args_->output + ".vec");
   if (!ofs.is_open()) {
     std::cout << "Error opening file for saving document vectors." << std::endl;
     exit(EXIT_FAILURE);
   }
-  ofs << dict.nlabels() << " " << args.dim << std::endl;
+  ofs << dict_->nlabels() << " " << args_->dim << std::endl;
   Vector vec(args_->dim);
   int32_t nwords = dict_->nwords();
-  for (int32_t i = 0; i < dict.nlabels(); i++) {
+  for (int32_t i = 0; i < dict_->nlabels(); i++) {
     std::string label = dict_->getLabel(i);
-    getVector(vec, i + nwords + args.bucket);
+    vec.zero();
+    vec.addRow(*input_, i + nwords + args_->bucket);
     ofs << label << " " << vec << std::endl;
   }
 
@@ -106,9 +107,9 @@ void FastText::loadModel(std::istream& in) {
   }
 }
 
-void FastText::loadModel(std::string documentsFilename, std::string modelFilename) {
-  std::ifstream in(filename, std::ifstream::binary);
-  std::ifstream modelIn(filename, std::ifstream::binary);
+void FastText::loadModel(const std::string& documentsFilename, const std::string& modelFilename) {
+  std::ifstream in(documentsFilename, std::ifstream::binary);
+  std::ifstream modelIn(modelFilename, std::ifstream::binary);
 
   args_ = std::make_shared<Args>();
   dict_ = std::make_shared<Dictionary>(args_);
@@ -124,7 +125,6 @@ void FastText::loadModel(std::string documentsFilename, std::string modelFilenam
   } else {
     model_->setTargetCounts(dict_->getCounts(entry_type::word));
   }
-  
   in.close();
   modelIn.close();
 }
@@ -313,7 +313,6 @@ void FastText::printVectors() {
   } else {
     wordVectors();
   }
-  // TODO: docvectors();
 }
 
 void FastText::trainThread(int32_t threadId) {
@@ -362,30 +361,25 @@ void FastText::embeddingThread(int32_t threadId) {
   utils::seek(ifs, threadId * utils::size(ifs) / args_->thread);
    
   Model model(input_, output_, args_, threadId);
-  model.setTargetCounts(dict.getCounts(entry_type::word));
-  
+  model.setTargetCounts(dict_->getCounts(entry_type::word));
   const int64_t ntokens = dict_->ntokens();
   int64_t localLabelCount = 0;
   std::vector<int32_t> line, labels;
-  const int64_t nwords = dict.nwords();
-  const int64_t nlabels = dict.nlabels();
-  while (labelCount < args_->epoch * nlabels) {
-    real progress = real(labelCount) / (args_->epoch * nlabels);
+  const int64_t nwords = dict_->nwords();
+  const int64_t nlabels = dict_->nlabels();
+  while (tokenCount < args_->epoch * nlabels) {
+    real progress = real(tokenCount) / (args_->epoch * nlabels);
     real lr = args_->lr * (1.0 - progress);
-    dict_->getLine(ifs, line, labels, model.rng);
+    int32_t token = dict_->getLine(ifs, line, labels, model.rng);
     localLabelCount++;
-    
-    labels[0] += nwords + args.bucket;
-    if (labels.size() == 0 || line.size() == 0) continue;
-
-    if (args.model == model_name::pvdm) {
+    labels[0] += nwords + args_->bucket;  
+    if (args_->model == model_name::pvdm) {
       pvdm(model, lr, line, labels);
-    } else if (args.model == model_name::pvdbow) {
+    } else if (args_->model == model_name::pvdbow) {
       pvdbow(model, lr, line, labels);
     }
-  
     if (localLabelCount > args_->lrUpdateRate) {
-      labelCount += localLabelCount;
+      tokenCount += localLabelCount;
       localLabelCount = 0;
       if (threadId == 0 && args_->verbose > 1) {
         printInfo(progress, model.getLoss());
@@ -487,16 +481,17 @@ void FastText::train(std::shared_ptr<Args> args) {
 }
 
 void FastText::embedding(std::shared_ptr<Args> args) {
+  args_->thread = args->thread;
+  args_->input = args->input;
+  args_->output = args->output;
   args_->model = args->model;
   args_->epoch = args->epoch;
 
-  std::vector<std::thread> threads;
-  
   start = clock();
-  labelCount = 0;
+  tokenCount = 0;
   std::vector<std::thread> threads;
   for (int32_t i = 0; i < args_->thread; i++) {
-    threads.push_back(std::thread(std::thread([=]() { trainThread(i); }));
+    threads.push_back(std::thread([=]() { embeddingThread(i); }));
   }
   for (auto it = threads.begin(); it != threads.end(); ++it) {
     it->join();

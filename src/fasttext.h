@@ -33,7 +33,6 @@ class FastText {
     std::shared_ptr<Matrix> output_;
     std::shared_ptr<Model> model_;
     std::atomic<int64_t> tokenCount;
-    std::atomic<int64_t> labelCount;
     clock_t start;
 
   public:
@@ -50,8 +49,8 @@ class FastText {
                     const std::vector<int32_t>&);
     void cbow(Model&, real, const std::vector<int32_t>&);
     void skipgram(Model&, real, const std::vector<int32_t>&);
-    void pvdbow(Model&, real, const std::vector<int32_t>&, const std::vector<int32_t>&));
-    void pvdm(Model&, real, const std::vector<int32_t>&, const std::vector<int32_t>&));
+    void pvdbow(Model&, real, const std::vector<int32_t>&, const std::vector<int32_t>&);
+    void pvdm(Model&, real, const std::vector<int32_t>&, const std::vector<int32_t>&);
     void test(std::istream&, int32_t);
     void predict(std::istream&, int32_t, bool);
     void predict(std::istream&, int32_t, std::vector<std::pair<real,std::string>>&) const;

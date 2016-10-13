@@ -24,6 +24,8 @@ void printUsage() {
     << "  predict-prob        predict most likely labels with probabilities\n"
     << "  skipgram            train a skipgram model\n"
     << "  cbow                train a cbow model\n"
+    << "  pvdm                train a pvdm model\n"
+    << "  pvbow               train a pvdbow model\n"
     << "  print-vectors       print vectors given a trained model\n"
     << std::endl;
 }
@@ -133,7 +135,6 @@ void embedding(int argc, char** argv) {
   a->parseArgs(argc, argv);
   model_name modelName = a->model;
   int epoch = a->epoch;
-  
   FastText fasttext;
   fasttext.loadModel(a->input, a->modelInput);
   fasttext.embedding(a);
@@ -148,6 +149,8 @@ int main(int argc, char** argv) {
   std::string command(argv[1]);
   if (command == "skipgram" || command == "cbow" || command == "supervised") {
     train(argc, argv);
+  } else if (command == "pvdm" || command == "pvdbow") {
+    embedding(argc, argv);
   } else if (command == "test") {
     test(argc, argv);
   } else if (command == "print-vectors") {

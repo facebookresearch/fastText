@@ -344,8 +344,8 @@ void Dictionary::load(std::istream& in, std::istream& modelIn) {
   }
   
   std::string word;
-  while (!(word = readWord(in)).empty()) {
-    if (word.find(args.label) == 0) {
+  while (readWord(in, word)) {
+    if (word.find(args_->label) == 0) {
       add(word);
       nlabels_++;
     } 

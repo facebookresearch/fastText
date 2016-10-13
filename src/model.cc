@@ -195,7 +195,7 @@ void Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
   }
   
   if (args_->model == model_name::pvdm || args_->model == model_name::pvdbow) {
-     wi__->addRow(grad_, input.back(), 1.0);
+     wi_->addRow(grad_, input.back(), 1.0);
   } else {
     for (auto it = input.cbegin(); it != input.cend(); ++it) {
       wi_->addRow(grad_, *it, 1.0);
