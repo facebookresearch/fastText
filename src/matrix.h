@@ -40,6 +40,7 @@ class Matrix {
 
     void save(std::ostream&);
     void load(std::istream&);
+    void load(std::ifstream&, int64_t);
 };
 
 }

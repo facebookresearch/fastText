@@ -99,4 +99,16 @@ void Matrix::load(std::istream& in) {
   in.read((char*) data_, m_ * n_ * sizeof(real));
 }
 
+void Matrix::load(std::ifstream& in, int64_t extraM_) {
+  in.read((char*) &m_, sizeof(int64_t));
+  m_ += extraM_;
+  in.read((char*) &n_, sizeof(int64_t));
+  
+  delete[] data_;
+  data_ = new real[m_ * n_];
+  uniform(1.0 / n_);
+  
+  in.read((char*) data_, (m_-extraM_) * n_ * sizeof(real));
+}
+
 }

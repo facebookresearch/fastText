@@ -321,4 +321,39 @@ void Dictionary::load(std::istream& in) {
   initNgrams();
 }
 
+void Dictionary::load(std::ifstream& in, std::ifstream& modelIn) {
+  words_.clear();
+  for (int32_t i = 0; i < MAX_VOCAB_SIZE; i++) {
+    word2int_[i] = -1;
+  }
+  
+  modelIn.read((char*) &size_, sizeof(int32_t));
+  modelIn.read((char*) &nwords_, sizeof(int32_t));
+  modelIn.read((char*) &nlabels_, sizeof(int32_t));
+  modelIn.read((char*) &ntokens_, sizeof(int64_t));
+  for (int32_t i = 0; i < size_; i++) {
+    char c;
+    entry e;
+    while ((c = modelIn.get()) != 0) {
+      e.word.push_back(c);
+    }
+    modelIn.read((char*) &e.count, sizeof(int64_t));
+    modelIn.read((char*) &e.type, sizeof(entry_type));
+    words_.push_back(e);
+    word2int_[find(e.word)] = i;
+  }
+  
+  std::string word;
+  while (!(word = readWord(in)).empty()) {
+    if (word.find(args.label) == 0) {
+      add(word);
+      nlabels_++;
+    } 
+  }
+
+  initTableDiscard();
+  initNgrams();
+}
+
+
 }

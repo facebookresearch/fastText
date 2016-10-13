@@ -48,6 +48,24 @@ void FastText::saveVectors() {
   ofs.close();
 }
 
+void FastText::saveDocVectors() {
+  std::ofstream ofs(args.output + ".vec");
+  if (!ofs.is_open()) {
+    std::cout << "Error opening file for saving document vectors." << std::endl;
+    exit(EXIT_FAILURE);
+  }
+  ofs << dict.nlabels() << " " << args.dim << std::endl;
+  Vector vec(args_->dim);
+  int32_t nwords = dict_->nwords();
+  for (int32_t i = 0; i < dict.nlabels(); i++) {
+    std::string label = dict_->getLabel(i);
+    getVector(vec, i + nwords + args.bucket);
+    ofs << label << " " << vec << std::endl;
+  }
+
+  ofs.close();
+}
+
 void FastText::saveModel() {
   std::ofstream ofs(args_->output + ".bin", std::ofstream::binary);
   if (!ofs.is_open()) {
@@ -86,6 +104,29 @@ void FastText::loadModel(std::istream& in) {
   } else {
     model_->setTargetCounts(dict_->getCounts(entry_type::word));
   }
+}
+
+void FastText::loadModel(std::string documentsFilename, std::string modelFilename) {
+  std::ifstream in(filename, std::ifstream::binary);
+  std::ifstream modelIn(filename, std::ifstream::binary);
+
+  args_ = std::make_shared<Args>();
+  dict_ = std::make_shared<Dictionary>(args_);
+  input_ = std::make_shared<Matrix>();
+  output_ = std::make_shared<Matrix>();
+  args_->load(modelIn);
+  dict_->load(in, modelIn);
+  input_->load(modelIn, dict_-<nlabels());
+  output_->load(modelIn);
+  model_ = std::make_shared<Model>(input_, output_, args_, 0);
+  if (args_->model == model_name::sup) {
+    model_->setTargetCounts(dict_->getCounts(entry_type::label));
+  } else {
+    model_->setTargetCounts(dict_->getCounts(entry_type::word));
+  }
+  
+  in.close();
+  modelIn.close();
 }
 
 void FastText::printInfo(real progress, real loss) {
@@ -141,6 +182,39 @@ void FastText::skipgram(Model& model, real lr,
         model.update(ngrams, line[w + c], lr);
       }
     }
+  }
+}
+
+void FastText::pvdbow(Model& model, real lr,
+              const std::vector<int32_t>& line,
+              const std::vector<int32_t>& labels) {
+  std::uniform_int_distribution<> uniform(1, args_->ws);
+  for (int32_t w = 0; w < line.size(); w++) {
+    int32_t boundary = uniform(model.rng);
+    for (int32_t c = -boundary; c <= boundary; c++) {
+      if (c != 0 && w + c >= 0 && w + c < line.size()) {
+        model.update(labels, line[w+c], lr);
+      }
+    }
+  }
+}
+
+void FastText::pvdm(Model& model, real lr,
+          const std::vector<int32_t>& line,
+          const std::vector<int32_t>& labels) {
+  std::vector<int32_t> bow;
+  std::uniform_int_distribution<> uniform(1, args_->ws);
+  for (int32_t w = 0; w < line.size(); w++) {
+    int32_t boundary = uniform(model.rng);
+    bow.clear();
+    for (int32_t c = -boundary; c <= boundary; c++) {
+      if (c != 0 && w + c >= 0 && w + c < line.size()) {
+        const std::vector<int32_t>& ngrams = dict_->getNgrams(line[w + c]);
+        bow.insert(bow.end(), ngrams.cbegin(), ngrams.cend());
+      }
+    }
+    bow.insert(bow.end(), labels.cbegin(), labels.cend());
+    model.update(bow, line[w], lr);
   }
 }
 
@@ -239,6 +313,7 @@ void FastText::printVectors() {
   } else {
     wordVectors();
   }
+  // TODO: docvectors();
 }
 
 void FastText::trainThread(int32_t threadId) {
@@ -270,6 +345,48 @@ void FastText::trainThread(int32_t threadId) {
     if (localTokenCount > args_->lrUpdateRate) {
       tokenCount += localTokenCount;
       localTokenCount = 0;
+      if (threadId == 0 && args_->verbose > 1) {
+        printInfo(progress, model.getLoss());
+      }
+    }
+  }
+  if (threadId == 0 && args_->verbose > 0) {
+    printInfo(1.0, model.getLoss());
+    std::cout << std::endl;
+  }
+  ifs.close();
+}
+
+void FastText::embeddingThread(int32_t threadId) { 
+  std::ifstream ifs(args_->input);
+  utils::seek(ifs, threadId * utils::size(ifs) / args_->thread);
+   
+  Model model(input_, output_, args_, threadId);
+  model.setTargetCounts(dict.getCounts(entry_type::word));
+  
+  const int64_t ntokens = dict_->ntokens();
+  int64_t localLabelCount = 0;
+  std::vector<int32_t> line, labels;
+  const int64_t nwords = dict.nwords();
+  const int64_t nlabels = dict.nlabels();
+  while (labelCount < args_->epoch * nlabels) {
+    real progress = real(labelCount) / (args_->epoch * nlabels);
+    real lr = args_->lr * (1.0 - progress);
+    dict_->getLine(ifs, line, labels, model.rng);
+    localLabelCount++;
+    
+    labels[0] += nwords + args.bucket;
+    if (labels.size() == 0 || line.size() == 0) continue;
+
+    if (args.model == model_name::pvdm) {
+      pvdm(model, lr, line, labels);
+    } else if (args.model == model_name::pvdbow) {
+      pvdbow(model, lr, line, labels);
+    }
+  
+    if (localLabelCount > args_->lrUpdateRate) {
+      labelCount += localLabelCount;
+      localLabelCount = 0;
       if (threadId == 0 && args_->verbose > 1) {
         printInfo(progress, model.getLoss());
       }
@@ -366,6 +483,27 @@ void FastText::train(std::shared_ptr<Args> args) {
   saveModel();
   if (args_->model != model_name::sup) {
     saveVectors();
+  }
+}
+
+void FastText::embedding(std::shared_ptr<Args> args) {
+  args_->model = args->model;
+  args_->epoch = args->epoch;
+
+  std::vector<std::thread> threads;
+  
+  start = clock();
+  labelCount = 0;
+  std::vector<std::thread> threads;
+  for (int32_t i = 0; i < args_->thread; i++) {
+    threads.push_back(std::thread(std::thread([=]() { trainThread(i); }));
+  }
+  for (auto it = threads.begin(); it != threads.end(); ++it) {
+    it->join();
+  }
+  
+  if (args_->output.size() != 0) {
+    saveDocVectors();
   }
 }
 

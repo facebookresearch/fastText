@@ -48,6 +48,10 @@ void Args::parseArgs(int argc, char** argv) {
     lr = 0.1;
   } else if (command == "cbow") {
     model = model_name::cbow;
+  } else if (command == "pvdm") {
+    model = model_name::pvdm;
+  } else if (command == "pvdbow") {
+    model = model_name::pvdbow;
   }
   int ai = 2;
   while (ai < argc) {
@@ -62,6 +66,8 @@ void Args::parseArgs(int argc, char** argv) {
       exit(EXIT_FAILURE);
     } else if (strcmp(argv[ai], "-input") == 0) {
       input = std::string(argv[ai + 1]);
+    } else if (strcmp(argv[ai], "-model") == 0) {
+      modelInput = std::string(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-test") == 0) {
       test = std::string(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-output") == 0) {
@@ -122,6 +128,13 @@ void Args::parseArgs(int argc, char** argv) {
     printHelp();
     exit(EXIT_FAILURE);
   }
+
+  if ((model == model_name::pvdm || model == model_name::pvdbow) && modelInput.empty()) {
+    std::cout << "Empty model.bin path." << std::endl;
+    printHelp();
+    exit(EXIT_FAILURE);
+  }
+
   if (wordNgrams <= 1 && maxn == 0) {
     bucket = 0;
   }
@@ -134,6 +147,7 @@ void Args::printHelp() {
   std::cout
     << "\n"
     << "The following arguments are mandatory:\n"
+    << "  -model              (mandatory, only pvdm or pvdbow) model.bin file path for document embedding\n"
     << "  -input              training file path\n"
     << "  -output             output file path\n\n"
     << "The following arguments are optional:\n"

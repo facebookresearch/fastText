@@ -16,13 +16,14 @@
 
 namespace fasttext {
 
-enum class model_name : int {cbow=1, sg, sup};
+enum class model_name : int {cbow=1, sg, sup, pvdm, pvdbow};
 enum class loss_name : int {hs=1, ns, softmax};
 
 class Args {
   public:
     Args();
     std::string input;
+    std::string modelInput;
     std::string test;
     std::string output;
     double lr;

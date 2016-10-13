@@ -128,6 +128,17 @@ void train(int argc, char** argv) {
   fasttext.train(a);
 }
 
+void embedding(int argc, char** argv) {
+  std::shared_ptr<Args> a = std::make_shared<Args>();
+  a->parseArgs(argc, argv);
+  model_name modelName = a->model;
+  int epoch = a->epoch;
+  
+  FastText fasttext;
+  fasttext.loadModel(a->input, a->modelInput);
+  fasttext.embedding(a);
+}
+
 int main(int argc, char** argv) {
   utils::initTables();
   if (argc < 2) {
