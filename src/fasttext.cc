@@ -116,7 +116,7 @@ void FastText::loadModel(std::string documentsFilename, std::string modelFilenam
   output_ = std::make_shared<Matrix>();
   args_->load(modelIn);
   dict_->load(in, modelIn);
-  input_->load(modelIn, dict_-<nlabels());
+  input_->load(modelIn, dict_->nlabels());
   output_->load(modelIn);
   model_ = std::make_shared<Model>(input_, output_, args_, 0);
   if (args_->model == model_name::sup) {

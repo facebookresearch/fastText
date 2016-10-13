@@ -321,7 +321,7 @@ void Dictionary::load(std::istream& in) {
   initNgrams();
 }
 
-void Dictionary::load(std::ifstream& in, std::ifstream& modelIn) {
+void Dictionary::load(std::istream& in, std::istream& modelIn) {
   words_.clear();
   for (int32_t i = 0; i < MAX_VOCAB_SIZE; i++) {
     word2int_[i] = -1;
