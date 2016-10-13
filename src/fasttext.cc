@@ -19,6 +19,7 @@
 #include <vector>
 #include <algorithm>
 #include <sstream>
+#include <stdexcept>
 
 namespace fasttext {
 model_type FastText::modelType() const {
@@ -26,6 +27,11 @@ model_type FastText::modelType() const {
 }
 
 void FastText::getWordVector(Vector& vec, const std::string& word) const {
+  if (modelType() == model_type::sup) {
+    throw std::runtime_error(
+      "Getting word vector from supervised model not supported");
+  }
+
   const std::vector<int32_t>& ngrams = dict_->getNgrams(word);
   if (vec.size() != args_->dim) {
     vec = Vector(args_->dim);
@@ -183,6 +189,11 @@ bool FastText::predictNextLine(
   int32_t k,
   std::vector<std::pair<real, std::string>> &predictions
 ) const {
+  if (modelType() != model_type::sup) {
+    throw std::runtime_error(
+      "Getting prediction from unsupervised model not supported");
+  }
+
   if (in.peek(), in.eof()) {
     return false;
   }
@@ -215,6 +226,11 @@ void FastText::predict(
 }
 
 bool FastText::getTextVectorNextLine(Vector &vec, std::istream &in) const {
+  if (modelType() == model_type::sup) {
+    throw std::runtime_error(
+      "Getting text vector from unsupervised model not supported");
+  }
+
   if (in.peek(), in.eof()) {
     return false;
   }
