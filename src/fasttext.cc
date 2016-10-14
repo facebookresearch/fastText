@@ -367,10 +367,13 @@ void FastText::embeddingThread(int32_t threadId) {
   std::vector<int32_t> line, labels;
   const int64_t nwords = dict_->nwords();
   const int64_t nlabels = dict_->nlabels();
+
   while (tokenCount < args_->epoch * nlabels) {
     real progress = real(tokenCount) / (args_->epoch * nlabels);
     real lr = args_->lr * (1.0 - progress);
     int32_t token = dict_->getLine(ifs, line, labels, model.rng);
+    if (labels.size() == 0 || line.size() == 0) continue;
+
     localLabelCount++;
     labels[0] += nwords + args_->bucket;  
     if (args_->model == model_name::pvdm) {
