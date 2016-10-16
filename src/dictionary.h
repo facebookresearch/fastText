@@ -78,6 +78,7 @@ class Dictionary {
     int32_t getLine(std::istream&, std::vector<int32_t>&,
                     std::vector<int32_t>&, std::minstd_rand&) const;
     void threshold(int64_t);
+    void copyWords(std::vector<std::string>&);  //copy word vectors
 };
 
 }

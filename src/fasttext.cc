@@ -242,6 +242,11 @@ void FastText::printVectors() {
 }
 
 void FastText::trainThread(int32_t threadId) {
+    // backward compatibility
+    trainThread(threadId, dict_->ntokens());
+}
+
+void FastText::trainThread(int32_t threadId, const int64_t ntokens) {
   std::ifstream ifs(args_->input);
   utils::seek(ifs, threadId * utils::size(ifs) / args_->thread);
 
@@ -252,7 +257,7 @@ void FastText::trainThread(int32_t threadId) {
     model.setTargetCounts(dict_->getCounts(entry_type::word));
   }
 
-  const int64_t ntokens = dict_->ntokens();
+  //const int64_t ntokens = dict_->ntokens();
   int64_t localTokenCount = 0;
   std::vector<int32_t> line, labels;
   while (tokenCount < args_->epoch * ntokens) {
@@ -321,6 +326,103 @@ void FastText::loadVectors(std::string filename) {
     }
   }
 }
+
+void FastText::supervisedAppend(const std::string& binfile, const std::string& infile, const real lr) {
+
+
+  // loadModel
+  std::ifstream in(binfile + ".bin", std::ifstream::binary);
+  if (!in.is_open()) {
+    std::cerr << "Model file cannot be opened for loading!" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+
+  args_ = std::make_shared<Args>();
+  // reset previous arg's input, output filename and lr
+  args_->input = infile;
+  args_->output = binfile;
+  if (lr >= 0.0) { args_->lr = lr; }
+
+  dict_ = std::make_shared<Dictionary>(args_);
+
+
+  args_->load(in);
+  dict_->load(in);
+
+  std::vector<std::string> oldWords; // ..
+  std::shared_ptr<Matrix> oldInput;  // temp storage for previous input_  
+  std::shared_ptr<Matrix> oldOutput; // .. 
+  int32_t oldnwords, oldnlabels;     //
+  int64_t oldntokens;
+
+  oldInput = std::make_shared<Matrix>();
+  oldOutput = std::make_shared<Matrix>();
+
+  //load input output matrices to temp
+
+  oldInput->load(in);
+  oldOutput->load(in);
+
+  oldnwords = dict_->nwords();
+  oldnlabels = dict_->nlabels();
+  oldntokens = dict_->ntokens();
+  dict_->copyWords(oldWords);
+
+  in.close();
+
+  // now everything is ready.  read append file 
+  std::ifstream ifs(args_->input);
+  if (!ifs.is_open()) {
+    std::cerr << "Input file cannot be opened!" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+  dict_->readFromFile(ifs);
+
+  ifs.close();
+
+  // make fresh input matrix, initialize  
+  input_ = std::make_shared<Matrix>(dict_->nwords()+args_->bucket, args_->dim);
+  input_->uniform(1.0 / args_->dim);
+
+  // restore previous input matrix value if exist
+  for (size_t i = 0; i < oldnwords; i++) {
+    int32_t idx = dict_->getId(oldWords[i]);
+    if (idx < 0 || idx >= dict_->nwords()) continue;
+    for (size_t j = 0; j < args_->dim; j++) {
+      input_->data_[idx * args_->dim + j] = oldInput->data_[i * args_->dim + j];
+    }
+  }
+
+  // make fresh output matrix, initialize
+  output_ = std::make_shared<Matrix>(dict_->nlabels(), args_->dim);
+  output_->zero();
+
+  // restore previous output matrix value if exist
+  for (size_t i = 0; i < oldnlabels; i++) {
+    int32_t idx = dict_->getId(oldWords[i+oldnwords]);
+    if (idx < 0 || idx >= dict_->nwords()+dict_->nlabels()) continue;
+    for (size_t j = 0; j < args_->dim; j++) {
+      output_->data_[idx * args_->dim + j] = oldOutput->data_[i * args_->dim + j];
+    }
+  }
+
+  start = clock();
+  tokenCount = 0;
+  std::vector<std::thread> threads;
+  const int64_t ntokenDelta = dict_->ntokens() - oldntokens;
+  for (int32_t i = 0; i < args_->thread; i++) {
+    threads.push_back(std::thread([=]() { trainThread(i, ntokenDelta); }));
+  }
+  for (auto it = threads.begin(); it != threads.end(); ++it) {
+    it->join();
+  }
+
+  model_ = std::make_shared<Model>(input_, output_, args_, 0);
+  saveModel();
+  exit(0);  // minor bug:  without this, there is segfault when exiting program
+}
+
+
 
 void FastText::train(std::shared_ptr<Args> args) {
   args_ = args;

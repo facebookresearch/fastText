@@ -53,6 +53,18 @@ void printPrintVectorsUsage() {
     << std::endl;
 }
 
+void printSupervisedAppendUsage() {
+  std::cout
+    << "usage: fasttext supervised-append <model> <more-training-data> [<lr>]\n\n"
+    << "  <model>                 previous trained model filename\n"
+    << "                          [Warn!] it will be updated\n"
+    << "  <more-training-data>    more training data filename\n"
+    << "  <lr>                    new override value for learning rate\n"
+    << "NOTE:  <model>'s training parameters will be reused(thus fixed!)\n"
+    << std::endl;
+}
+
+
 void test(int argc, char** argv) {
   int32_t k;
   if (argc == 4) {
@@ -121,12 +133,29 @@ void printVectors(int argc, char** argv) {
   exit(0);
 }
 
+void supervisedAppend(int argc, char** argv) {
+  real lrOverride = -1.0;
+  if (argc == 4) {
+    lrOverride = -1.0;
+    // ok. do nothing
+  } else if (argc == 5) {
+    lrOverride = real(atof(argv[4]));
+  } else {
+    // exit for error
+    printSupervisedAppendUsage();
+    exit(EXIT_FAILURE);
+  }
+  FastText fasttext;
+  fasttext.supervisedAppend(std::string(argv[2]), std::string(argv[3]), lrOverride);
+}
+
 void train(int argc, char** argv) {
   std::shared_ptr<Args> a = std::make_shared<Args>();
   a->parseArgs(argc, argv);
   FastText fasttext;
   fasttext.train(a);
 }
+
 
 int main(int argc, char** argv) {
   utils::initTables();
@@ -137,6 +166,8 @@ int main(int argc, char** argv) {
   std::string command(argv[1]);
   if (command == "skipgram" || command == "cbow" || command == "supervised") {
     train(argc, argv);
+  } else if (command == "supervised-append") {
+    supervisedAppend(argc,argv);
   } else if (command == "test") {
     test(argc, argv);
   } else if (command == "print-vectors") {
