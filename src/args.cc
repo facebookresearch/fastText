@@ -22,6 +22,7 @@ Args::Args() {
   ws = 5;
   epoch = 5;
   minCount = 5;
+  minCountLabel = 0;
   neg = 5;
   wordNgrams = 1;
   loss = loss_name::ns;
@@ -78,6 +79,8 @@ void Args::parseArgs(int argc, char** argv) {
       epoch = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-minCount") == 0) {
       minCount = atoi(argv[ai + 1]);
+    } else if (strcmp(argv[ai], "-minCountLabel") == 0) {
+      minCountLabel = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-neg") == 0) {
       neg = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-wordNgrams") == 0) {
@@ -143,6 +146,7 @@ void Args::printHelp() {
     << "  -ws                 size of the context window [" << ws << "]\n"
     << "  -epoch              number of epochs [" << epoch << "]\n"
     << "  -minCount           minimal number of word occurences [" << minCount << "]\n"
+    << "  -minCountLabel      minimal number of label occurences [" << minCountLabel << "]\n"
     << "  -neg                number of negatives sampled [" << neg << "]\n"
     << "  -wordNgrams         max length of word ngram [" << wordNgrams << "]\n"
     << "  -loss               loss function {ns, hs, softmax} [ns]\n"

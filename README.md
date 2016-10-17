@@ -133,6 +133,7 @@ The following arguments are optional:
   -ws                 size of the context window [5]
   -epoch              number of epochs [5]
   -minCount           minimal number of word occurences [1]
+  -minCountLabel      minimal number of label occurences [0]
   -neg                number of negatives sampled [5]
   -wordNgrams         max length of word ngram [1]
   -loss               loss function {ns, hs, softmax} [ns]
@@ -179,6 +180,10 @@ Please cite [1](#enriching-word-vectors-with-subword-information) if using this 
 ```
 
 (\* These authors contributed equally.)
+
+## Resources
+
+You can find the preprocessed YFCC100M data used in [2] at https://research.facebook.com/research/fasttext/
 
 ## Join the fastText community
 

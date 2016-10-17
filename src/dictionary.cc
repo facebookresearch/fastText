@@ -180,10 +180,11 @@ void Dictionary::readFromFile(std::istream& in) {
       std::cout << "\rRead " << ntokens_  / 1000000 << "M words" << std::flush;
     }
     if (size_ > 0.75 * MAX_VOCAB_SIZE) {
-      threshold(minThreshold++);
+      minThreshold++;
+      threshold(minThreshold, minThreshold);
     }
   }
-  threshold(args_->minCount);
+  threshold(args_->minCount, args_->minCountLabel);
   initTableDiscard();
   initNgrams();
   if (args_->verbose > 0) {
@@ -197,13 +198,14 @@ void Dictionary::readFromFile(std::istream& in) {
   }
 }
 
-void Dictionary::threshold(int64_t t) {
+void Dictionary::threshold(int64_t t, int64_t tl) {
   sort(words_.begin(), words_.end(), [](const entry& e1, const entry& e2) {
       if (e1.type != e2.type) return e1.type < e2.type;
       return e1.count > e2.count;
     });
   words_.erase(remove_if(words_.begin(), words_.end(), [&](const entry& e) {
-        return e.type == entry_type::word && e.count < t;
+        return (e.type == entry_type::word && e.count < t) ||
+               (e.type == entry_type::label && e.count < tl);
       }), words_.end());
   words_.shrink_to_fit();
   size_ = 0;
