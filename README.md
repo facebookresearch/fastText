@@ -98,6 +98,11 @@ In order to obtain the k most likely labels for a piece of text, use:
 ```
 $ ./fasttext predict model.bin test.txt k
 ```
+or using `predict-prob` to get the prediction confidence:
+
+```
+$ ./fasttext predict-prob model.bin test.txt k
+```
 
 where `test.txt` contains a piece of text to classify per line.
 Doing so will print to the standard output the k most likely labels for each line.
