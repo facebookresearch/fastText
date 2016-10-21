@@ -20,6 +20,10 @@
 #include "vector.h"
 #include "real.h"
 
+#define SIGMOID_TABLE_SIZE 512
+#define MAX_SIGMOID 8
+#define LOG_TABLE_SIZE 512
+
 namespace fasttext {
 
 struct Node {
@@ -43,24 +47,29 @@ class Model {
     int32_t osz_;
     real loss_;
     int64_t nexamples_;
+    real* t_sigmoid;
+    real* t_log;
+    // used for negative sampling:
+    std::vector<int32_t> negatives;
+    size_t negpos;
+    // used for hierarchical softmax:
+    std::vector< std::vector<int32_t> > paths;
+    std::vector< std::vector<bool> > codes;
+    std::vector<Node> tree;
 
     static bool comparePairs(const std::pair<real, int32_t>&,
                              const std::pair<real, int32_t>&);
 
-    std::vector<int32_t> negatives;
-    size_t negpos;
-
     int32_t getNegative(int32_t target);
-
-    std::vector< std::vector<int32_t> > paths;
-    std::vector< std::vector<bool> > codes;
-    std::vector<Node> tree;
+    void initSigmoid();
+    void initLog();
 
     static const int32_t NEGATIVE_TABLE_SIZE = 10000000;
 
   public:
     Model(std::shared_ptr<Matrix>, std::shared_ptr<Matrix>,
           std::shared_ptr<Args>, int32_t);
+    ~Model();
 
     real binaryLogistic(int32_t, bool, real);
     real negativeSampling(int32_t, real);
@@ -86,6 +95,8 @@ class Model {
     void initTableNegatives(const std::vector<int64_t>&);
     void buildTree(const std::vector<int64_t>&);
     real getLoss() const;
+    real sigmoid(real) const;
+    real log(real) const;
 
     std::minstd_rand rng;
 };

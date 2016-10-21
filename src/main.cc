@@ -129,7 +129,6 @@ void train(int argc, char** argv) {
 }
 
 int main(int argc, char** argv) {
-  utils::initTables();
   if (argc < 2) {
     printUsage();
     exit(EXIT_FAILURE);
@@ -147,6 +146,5 @@ int main(int argc, char** argv) {
     printUsage();
     exit(EXIT_FAILURE);
   }
-  utils::freeTables();
   return 0;
 }

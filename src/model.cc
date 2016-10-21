@@ -32,17 +32,24 @@ Model::Model(std::shared_ptr<Matrix> wi,
   negpos = 0;
   loss_ = 0.0;
   nexamples_ = 1;
+  initSigmoid();
+  initLog();
+}
+
+Model::~Model() {
+  delete[] t_sigmoid;
+  delete[] t_log;
 }
 
 real Model::binaryLogistic(int32_t target, bool label, real lr) {
-  real score = utils::sigmoid(wo_->dotRow(hidden_, target));
+  real score = sigmoid(wo_->dotRow(hidden_, target));
   real alpha = lr * (real(label) - score);
   grad_.addRow(*wo_, target, alpha);
   wo_->addRow(hidden_, target, alpha);
   if (label) {
-    return -utils::log(score);
+    return -log(score);
   } else {
-    return -utils::log(1.0 - score);
+    return -log(1.0 - score);
   }
 }
 
@@ -98,7 +105,7 @@ real Model::softmax(int32_t target, real lr) {
     grad_.addRow(*wo_, i, alpha);
     wo_->addRow(hidden_, i, alpha);
   }
-  return -utils::log(output_[target]);
+  return -log(output_[target]);
 }
 
 void Model::computeHidden(const std::vector<int32_t>& input, Vector& hidden) const {
@@ -138,10 +145,10 @@ void Model::findKBest(int32_t k, std::vector<std::pair<real, int32_t>>& heap,
                       Vector& hidden, Vector& output) const {
   computeOutputSoftmax(hidden, output);
   for (int32_t i = 0; i < osz_; i++) {
-    if (heap.size() == k && utils::log(output[i]) < heap.front().first) {
+    if (heap.size() == k && log(output[i]) < heap.front().first) {
       continue;
     }
-    heap.push_back(std::make_pair(utils::log(output[i]), i));
+    heap.push_back(std::make_pair(log(output[i]), i));
     std::push_heap(heap.begin(), heap.end(), comparePairs);
     if (heap.size() > k) {
       std::pop_heap(heap.begin(), heap.end(), comparePairs);
@@ -167,9 +174,9 @@ void Model::dfs(int32_t k, int32_t node, real score,
     return;
   }
 
-  real f = utils::sigmoid(wo_->dotRow(hidden, node - osz_));
-  dfs(k, tree[node].left, score + utils::log(1.0 - f), heap, hidden);
-  dfs(k, tree[node].right, score + utils::log(f), heap, hidden);
+  real f = sigmoid(wo_->dotRow(hidden, node - osz_));
+  dfs(k, tree[node].left, score + log(1.0 - f), heap, hidden);
+  dfs(k, tree[node].right, score + log(f), heap, hidden);
 }
 
 void Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
@@ -273,6 +280,41 @@ void Model::buildTree(const std::vector<int64_t>& counts) {
 
 real Model::getLoss() const {
   return loss_ / nexamples_;
+}
+
+void Model::initSigmoid() {
+  t_sigmoid = new real[SIGMOID_TABLE_SIZE + 1];
+  for (int i = 0; i < SIGMOID_TABLE_SIZE + 1; i++) {
+    real x = real(i * 2 * MAX_SIGMOID) / SIGMOID_TABLE_SIZE - MAX_SIGMOID;
+    t_sigmoid[i] = 1.0 / (1.0 + std::exp(-x));
+  }
+}
+
+void Model::initLog() {
+  t_log = new real[LOG_TABLE_SIZE + 1];
+  for (int i = 0; i < LOG_TABLE_SIZE + 1; i++) {
+    real x = (real(i) + 1e-5) / LOG_TABLE_SIZE;
+    t_log[i] = std::log(x);
+  }
+}
+
+real Model::log(real x) const {
+  if (x > 1.0) {
+    return 0.0;
+  }
+  int i = int(x * LOG_TABLE_SIZE);
+  return t_log[i];
+}
+
+real Model::sigmoid(real x) const {
+  if (x < -MAX_SIGMOID) {
+    return 0.0;
+  } else if (x > MAX_SIGMOID) {
+    return 1.0;
+  } else {
+    int i = int((x + MAX_SIGMOID) * SIGMOID_TABLE_SIZE / MAX_SIGMOID / 2);
+    return t_sigmoid[i];
+  }
 }
 
 }
