@@ -484,11 +484,15 @@ void FastText::train(std::shared_ptr<Args> args) {
 }
 
 void FastText::embedding(std::shared_ptr<Args> args) {
-  args_->thread = args->thread;
   args_->input = args->input;
   args_->output = args->output;
   args_->model = args->model;
+
+  args_->lr = args->lr;
+  args_->lrUpdateRate = args->lrUpdateRate;
   args_->epoch = args->epoch;
+  args_->thread = args->thread;
+  args_->verbose = args->verbose;
 
   start = clock();
   tokenCount = 0;
