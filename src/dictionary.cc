@@ -344,12 +344,13 @@ void Dictionary::load(std::istream& in, std::istream& modelIn) {
   }
   
   std::string word;
+  int32_t beforeSize = size_;
   while (readWord(in, word)) {
     if (word.find(args_->label) == 0) {
       add(word);
-      nlabels_++;
     } 
   }
+  nlabels_ += size_ - beforeSize;
 
   initTableDiscard();
   initNgrams();
