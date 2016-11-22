@@ -63,8 +63,6 @@ void Args::parseArgs(int argc, char** argv) {
       exit(EXIT_FAILURE);
     } else if (strcmp(argv[ai], "-input") == 0) {
       input = std::string(argv[ai + 1]);
-    } else if (strcmp(argv[ai], "-test") == 0) {
-      test = std::string(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-output") == 0) {
       output = std::string(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-lr") == 0) {
@@ -149,7 +147,7 @@ void Args::printHelp() {
     << "  -minCountLabel      minimal number of label occurences [" << minCountLabel << "]\n"
     << "  -neg                number of negatives sampled [" << neg << "]\n"
     << "  -wordNgrams         max length of word ngram [" << wordNgrams << "]\n"
-    << "  -loss               loss function {ns, hs, softmax} [ns]\n"
+    << "  -loss               loss function {ns, hs, softmax} [" << lname << "]\n"
     << "  -bucket             number of buckets [" << bucket << "]\n"
     << "  -minn               min length of char ngram [" << minn << "]\n"
     << "  -maxn               max length of char ngram [" << maxn << "]\n"

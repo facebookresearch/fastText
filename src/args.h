@@ -23,7 +23,6 @@ class Args {
   public:
     Args();
     std::string input;
-    std::string test;
     std::string output;
     double lr;
     int lrUpdateRate;
