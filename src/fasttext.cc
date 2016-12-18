@@ -17,12 +17,26 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <sstream>
+#include <stdexcept>
 
 namespace fasttext {
+model_type FastText::modelType() const {
+  return args_->model;
+}
 
-void FastText::getVector(Vector& vec, const std::string& word) {
+void FastText::getWordVector(Vector& vec, const std::string& word) const {
+  if (modelType() == model_type::sup) {
+    throw std::runtime_error(
+      "Getting word vector from supervised model not supported");
+  }
+
   const std::vector<int32_t>& ngrams = dict_->getNgrams(word);
+  if (vec.size() != args_->dim) {
+    vec = Vector(args_->dim);
+  }
   vec.zero();
+
   for (auto it = ngrams.begin(); it != ngrams.end(); ++it) {
     vec.addRow(*input_, *it);
   }
@@ -31,7 +45,7 @@ void FastText::getVector(Vector& vec, const std::string& word) {
   }
 }
 
-void FastText::saveVectors() {
+void FastText::saveWordVectors() {
   std::ofstream ofs(args_->output + ".vec");
   if (!ofs.is_open()) {
     std::cout << "Error opening file for saving vectors." << std::endl;
@@ -41,7 +55,7 @@ void FastText::saveVectors() {
   Vector vec(args_->dim);
   for (int32_t i = 0; i < dict_->nwords(); i++) {
     std::string word = dict_->getWord(i);
-    getVector(vec, word);
+    getWordVector(vec, word);
     ofs << word << " " << vec << std::endl;
   }
   ofs.close();
@@ -80,7 +94,7 @@ void FastText::loadModel(std::istream& in) {
   input_->load(in);
   output_->load(in);
   model_ = std::make_shared<Model>(input_, output_, args_, 0);
-  if (args_->model == model_name::sup) {
+  if (args_->model == model_type::sup) {
     model_->setTargetCounts(dict_->getCounts(entry_type::label));
   } else {
     model_->setTargetCounts(dict_->getCounts(entry_type::word));
@@ -169,75 +183,72 @@ void FastText::test(std::istream& in, int32_t k) {
   std::cout << "Number of examples: " << nexamples << std::endl;
 }
 
-void FastText::predict(std::istream& in, int32_t k,
-                       std::vector<std::pair<real,std::string>>& predictions) const {
+bool FastText::predictNextLine(
+  std::istream &in,
+  int32_t k,
+  std::vector<std::pair<real, std::string>> &predictions
+) const {
+  if (modelType() != model_type::sup) {
+    throw std::runtime_error(
+      "Getting prediction from unsupervised model not supported");
+  }
+
+  if (in.peek(), in.eof()) {
+    return false;
+  }
+  predictions.clear();
   std::vector<int32_t> words, labels;
   dict_->getLine(in, words, labels, model_->rng);
   dict_->addNgrams(words, args_->wordNgrams);
-  if (words.empty()) return;
-  Vector hidden(args_->dim);
-  Vector output(dict_->nlabels());
-  std::vector<std::pair<real,int32_t>> modelPredictions;
-  model_->predict(words, k, modelPredictions, hidden, output);
-  predictions.clear();
-  for (auto it = modelPredictions.cbegin(); it != modelPredictions.cend(); it++) {
-    predictions.push_back(std::make_pair(it->first, dict_->getLabel(it->second)));
-  }
-}
+  if (!words.empty()) {
+    Vector hidden (args_->dim),
+           output (dict_->nlabels());
+    std::vector<std::pair<real, int32_t>> modelPredictions;
+    model_->predict(words, k, modelPredictions, hidden, output);
 
-void FastText::predict(std::istream& in, int32_t k, bool print_prob) {
-  std::vector<std::pair<real,std::string>> predictions;
-  while (in.peek() != EOF) {
-    predict(in, k, predictions);
-    if (predictions.empty()) {
-      std::cout << "n/a" << std::endl;
-      continue;
+    for (const auto& pair : modelPredictions) {
+      predictions.push_back(
+        std::make_pair(pair.first, dict_->getLabel(pair.second)));
     }
-    for (auto it = predictions.cbegin(); it != predictions.cend(); it++) {
-      if (it != predictions.cbegin()) {
-        std::cout << ' ';
-      }
-      std::cout << it->second;
-      if (print_prob) {
-        std::cout << ' ' << exp(it->first);
-      }
-    }
-    std::cout << std::endl;
   }
+  return true;
 }
 
-void FastText::wordVectors() {
-  std::string word;
-  Vector vec(args_->dim);
-  while (std::cin >> word) {
-    getVector(vec, word);
-    std::cout << word << " " << vec << std::endl;
-  }
+void FastText::predict(
+  std::string text,
+  int32_t k,
+  std::vector<std::pair<real, std::string>>& predictions
+) const {
+  std::replace(text.begin(), text.end(), '\n', ' ');
+  std::istringstream in (text);
+  predictNextLine(in, k, predictions);
 }
 
-void FastText::textVectors() {
+bool FastText::getTextVectorNextLine(Vector &vec, std::istream &in) const {
+  if (modelType() == model_type::sup) {
+    throw std::runtime_error(
+      "Getting text vector from unsupervised model not supported");
+  }
+
+  if (in.peek(), in.eof()) {
+    return false;
+  }
+
+  if (vec.size() != args_->dim) {
+    vec = Vector(args_->dim);
+  }
   std::vector<int32_t> line, labels;
-  Vector vec(args_->dim);
-  while (std::cin.peek() != EOF) {
-    dict_->getLine(std::cin, line, labels, model_->rng);
-    dict_->addNgrams(line, args_->wordNgrams);
-    vec.zero();
-    for (auto it = line.cbegin(); it != line.cend(); ++it) {
-      vec.addRow(*input_, *it);
-    }
-    if (!line.empty()) {
-      vec.mul(1.0 / line.size());
-    }
-    std::cout << vec << std::endl;
-  }
+  dict_->getLine(std::cin, line, labels, model_->rng);
+  dict_->addNgrams(line, args_->wordNgrams);
+  model_->computeHidden(line, vec);
+  return true;
 }
 
-void FastText::printVectors() {
-  if (args_->model == model_name::sup) {
-    textVectors();
-  } else {
-    wordVectors();
-  }
+void FastText::getTextVector(Vector &vec, std::string text) const
+{
+  std::replace(text.begin(), text.end(), '\n', ' ');
+  std::istringstream in (text);
+  getTextVectorNextLine(vec, in);
 }
 
 void FastText::trainThread(int32_t threadId) {
@@ -245,7 +256,7 @@ void FastText::trainThread(int32_t threadId) {
   utils::seek(ifs, threadId * utils::size(ifs) / args_->thread);
 
   Model model(input_, output_, args_, threadId);
-  if (args_->model == model_name::sup) {
+  if (modelType() == model_type::sup) {
     model.setTargetCounts(dict_->getCounts(entry_type::label));
   } else {
     model.setTargetCounts(dict_->getCounts(entry_type::word));
@@ -258,12 +269,12 @@ void FastText::trainThread(int32_t threadId) {
     real progress = real(tokenCount) / (args_->epoch * ntokens);
     real lr = args_->lr * (1.0 - progress);
     localTokenCount += dict_->getLine(ifs, line, labels, model.rng);
-    if (args_->model == model_name::sup) {
+    if (modelType() == model_type::sup) {
       dict_->addNgrams(line, args_->wordNgrams);
       supervised(model, lr, line, labels);
-    } else if (args_->model == model_name::cbow) {
+    } else if (modelType() == model_type::cbow) {
       cbow(model, lr, line);
-    } else if (args_->model == model_name::sg) {
+    } else if (modelType() == model_type::sg) {
       skipgram(model, lr, line);
     }
     if (localTokenCount > args_->lrUpdateRate) {
@@ -344,7 +355,7 @@ void FastText::train(std::shared_ptr<Args> args) {
     input_->uniform(1.0 / args_->dim);
   }
 
-  if (args_->model == model_name::sup) {
+  if (modelType() == model_type::sup) {
     output_ = std::make_shared<Matrix>(dict_->nlabels(), args_->dim);
   } else {
     output_ = std::make_shared<Matrix>(dict_->nwords(), args_->dim);
@@ -363,8 +374,8 @@ void FastText::train(std::shared_ptr<Args> args) {
   model_ = std::make_shared<Model>(input_, output_, args_, 0);
 
   saveModel();
-  if (args_->model != model_name::sup) {
-    saveVectors();
+  if (modelType() != model_type::sup) {
+    saveWordVectors();
   }
 }
 

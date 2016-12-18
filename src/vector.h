@@ -11,6 +11,7 @@
 #define FASTTEXT_VECTOR_H
 
 #include <cstdint>
+#include <memory>
 #include <ostream>
 
 #include "real.h"
@@ -23,10 +24,14 @@ class Vector {
 
   public:
     int64_t m_;
-    real* data_;
+    std::unique_ptr<real[]> data_;
 
+    Vector();
     explicit Vector(int64_t);
-    ~Vector();
+    Vector(const Vector &);
+    Vector& operator=(Vector);
+    Vector(Vector &&) = default;
+    void swap(Vector&);
 
     real& operator[](int64_t);
     const real& operator[](int64_t) const;
@@ -41,6 +46,13 @@ class Vector {
 };
 
 std::ostream& operator<<(std::ostream&, const Vector&);
+
+}
+
+namespace std {
+
+template<>
+void swap<fasttext::Vector>(fasttext::Vector &lhs, fasttext::Vector &rhs);
 
 }
 

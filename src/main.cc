@@ -91,23 +91,39 @@ void predict(int argc, char** argv) {
     exit(EXIT_FAILURE);
   }
   bool print_prob = std::string(argv[1]) == "predict-prob";
+
   FastText fasttext;
   fasttext.loadModel(std::string(argv[2]));
 
+  std::ifstream ifs;
   std::string infile(argv[3]);
-  if (infile == "-") {
-    fasttext.predict(std::cin, k, print_prob);
-  } else {
-    std::ifstream ifs(infile);
+  if (infile != "-") {
+    ifs.open(infile);
     if (!ifs.is_open()) {
       std::cerr << "Input file cannot be opened!" << std::endl;
       exit(EXIT_FAILURE);
     }
-    fasttext.predict(ifs, k, print_prob);
-    ifs.close();
   }
 
-  exit(0);
+  std::istream &in = infile != "-" ? ifs : std::cin;
+  std::vector<std::pair<real, std::string>> predictions;
+  while (fasttext.predictNextLine(in, k, predictions)) {
+    if (predictions.empty()) {
+      std::cout << "n/a" << std::endl;
+      continue;
+    }
+
+    for (auto it = predictions.cbegin(); it != predictions.cend(); it++) {
+      if (it != predictions.cbegin()) {
+        std::cout << ' ';
+      }
+      std::cout << it->second;
+      if (print_prob) {
+        std::cout << ' ' << exp(it->first);
+      }
+    }
+    std::cout << std::endl;
+  }
 }
 
 void printVectors(int argc, char** argv) {
@@ -117,8 +133,18 @@ void printVectors(int argc, char** argv) {
   }
   FastText fasttext;
   fasttext.loadModel(std::string(argv[2]));
-  fasttext.printVectors();
-  exit(0);
+  Vector vec;
+  if (fasttext.modelType() == model_type::sup) {
+    while (fasttext.getTextVectorNextLine(vec, std::cin)) {
+      std::cout << vec << std::endl;
+    }
+  } else {
+    std::string word;
+    while (std::cin >> word) {
+      fasttext.getWordVector(vec, word);
+      std::cout << word << " " << vec << std::endl;
+    }
+  }
 }
 
 void train(int argc, char** argv) {

@@ -36,8 +36,9 @@ class FastText {
     clock_t start;
 
   public:
-    void getVector(Vector&, const std::string&);
-    void saveVectors();
+    model_type modelType() const;
+    void getWordVector(Vector&, const std::string&) const;
+    void saveWordVectors();
     void saveModel();
     void loadModel(const std::string&);
     void loadModel(std::istream&);
@@ -48,11 +49,18 @@ class FastText {
     void cbow(Model&, real, const std::vector<int32_t>&);
     void skipgram(Model&, real, const std::vector<int32_t>&);
     void test(std::istream&, int32_t);
-    void predict(std::istream&, int32_t, bool);
-    void predict(std::istream&, int32_t, std::vector<std::pair<real,std::string>>&) const;
-    void wordVectors();
-    void textVectors();
-    void printVectors();
+    bool predictNextLine(
+      std::istream&,
+      int32_t,
+      std::vector<std::pair<real, std::string>>&
+    ) const;
+    void predict(
+      std::string,
+      int32_t,
+      std::vector<std::pair<real, std::string>>&
+    ) const;
+    bool getTextVectorNextLine(Vector&, std::istream&) const;
+    void getTextVector(Vector&, std::string) const;
     void trainThread(int32_t);
     void train(std::shared_ptr<Args>);
 

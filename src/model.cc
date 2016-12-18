@@ -111,6 +111,9 @@ real Model::softmax(int32_t target, real lr) {
 void Model::computeHidden(const std::vector<int32_t>& input, Vector& hidden) const {
   assert(hidden.size() == hsz_);
   hidden.zero();
+  if (input.empty()) {
+    return;
+  }
   for (auto it = input.cbegin(); it != input.cend(); ++it) {
     hidden.addRow(*wi_, *it);
   }
@@ -128,7 +131,7 @@ void Model::predict(const std::vector<int32_t>& input, int32_t k,
   assert(k > 0);
   heap.reserve(k + 1);
   computeHidden(input, hidden);
-  if (args_->loss == loss_name::hs) {
+  if (args_->loss == loss_type::hs) {
     dfs(k, 2 * osz_ - 2, 0.0, heap, hidden);
   } else {
     findKBest(k, heap, hidden, output);
@@ -184,16 +187,16 @@ void Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
   assert(target < osz_);
   if (input.size() == 0) return;
   computeHidden(input, hidden_);
-  if (args_->loss == loss_name::ns) {
+  if (args_->loss == loss_type::ns) {
     loss_ += negativeSampling(target, lr);
-  } else if (args_->loss == loss_name::hs) {
+  } else if (args_->loss == loss_type::hs) {
     loss_ += hierarchicalSoftmax(target, lr);
   } else {
     loss_ += softmax(target, lr);
   }
   nexamples_ += 1;
 
-  if (args_->model == model_name::sup) {
+  if (args_->model == model_type::sup) {
     grad_.mul(1.0 / input.size());
   }
   for (auto it = input.cbegin(); it != input.cend(); ++it) {
@@ -203,10 +206,10 @@ void Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
 
 void Model::setTargetCounts(const std::vector<int64_t>& counts) {
   assert(counts.size() == osz_);
-  if (args_->loss == loss_name::ns) {
+  if (args_->loss == loss_type::ns) {
     initTableNegatives(counts);
   }
-  if (args_->loss == loss_name::hs) {
+  if (args_->loss == loss_type::hs) {
     buildTree(counts);
   }
 }

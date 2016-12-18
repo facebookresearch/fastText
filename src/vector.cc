@@ -11,20 +11,35 @@
 
 #include <assert.h>
 
+#include <algorithm>
 #include <iomanip>
+#include <utility>
 
 #include "matrix.h"
 #include "utils.h"
 
 namespace fasttext {
-
-Vector::Vector(int64_t m) {
-  m_ = m;
-  data_ = new real[m];
+Vector::Vector()
+  : m_(0), data_(nullptr) {
 }
 
-Vector::~Vector() {
-  delete[] data_;
+Vector::Vector(int64_t m)
+  : m_(m), data_(new real[m]) {
+}
+
+Vector::Vector(const Vector &other)
+  : Vector(other.m_) {
+  std::copy(
+    other.data_.get(),
+    other.data_.get() + other.m_,
+    data_.get()
+  );
+}
+
+Vector & Vector::operator=(Vector other)
+{
+  swap(other);
+  return *this;
 }
 
 int64_t Vector::size() const {
@@ -84,6 +99,13 @@ int64_t Vector::argmax() {
   return argmax;
 }
 
+void Vector::swap(Vector &other)
+{
+  using std::swap;
+  swap(m_, other.m_);
+  swap(data_, other.data_);
+}
+
 real& Vector::operator[](int64_t i) {
   return data_[i];
 }
@@ -99,6 +121,15 @@ std::ostream& operator<<(std::ostream& os, const Vector& v)
     os << v.data_[j] << ' ';
   }
   return os;
+}
+
+}
+
+namespace std {
+
+template<>
+void swap<fasttext::Vector>(fasttext::Vector &lhs, fasttext::Vector &rhs) {
+  lhs.swap(rhs);
 }
 
 }

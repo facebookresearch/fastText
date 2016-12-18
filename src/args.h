@@ -16,8 +16,8 @@
 
 namespace fasttext {
 
-enum class model_name : int {cbow=1, sg, sup};
-enum class loss_name : int {hs=1, ns, softmax};
+enum class model_type : int {cbow=1, sg, sup};
+enum class loss_type : int {hs=1, ns, softmax};
 
 class Args {
   public:
@@ -34,8 +34,8 @@ class Args {
     int minCountLabel;
     int neg;
     int wordNgrams;
-    loss_name loss;
-    model_name model;
+    loss_type loss;
+    model_type model;
     int bucket;
     int minn;
     int maxn;
