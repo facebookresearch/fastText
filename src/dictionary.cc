@@ -15,7 +15,6 @@
 #include <algorithm>
 #include <iterator>
 #include <unordered_map>
-#include <cctype>
 
 namespace fasttext {
 

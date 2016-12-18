@@ -9,7 +9,6 @@
 
 #include "utils.h"
 
-#include <cmath>
 #include <ios>
 
 namespace fasttext {
