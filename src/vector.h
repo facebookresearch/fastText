@@ -11,9 +11,11 @@
 #define FASTTEXT_VECTOR_H
 
 #include <cstdint>
-#include <fstream>
+#include <ostream>
 
 #include "real.h"
+
+namespace fasttext {
 
 class Matrix;
 
@@ -29,6 +31,7 @@ class Vector {
     real& operator[](int64_t);
     const real& operator[](int64_t) const;
 
+    int64_t size() const;
     void zero();
     void mul(real);
     void addRow(const Matrix&, int64_t);
@@ -38,5 +41,7 @@ class Vector {
 };
 
 std::ostream& operator<<(std::ostream&, const Vector&);
+
+}
 
 #endif

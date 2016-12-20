@@ -13,7 +13,8 @@
 #include <string.h>
 
 #include <iostream>
-#include <fstream>
+
+namespace fasttext {
 
 Args::Args() {
   lr = 0.05;
@@ -21,6 +22,7 @@ Args::Args() {
   ws = 5;
   epoch = 5;
   minCount = 5;
+  minCountLabel = 0;
   neg = 5;
   wordNgrams = 1;
   loss = loss_name::ns;
@@ -32,6 +34,8 @@ Args::Args() {
   lrUpdateRate = 100;
   t = 1e-4;
   label = "__label__";
+  verbose = 2;
+  pretrainedVectors = "";
 }
 
 void Args::parseArgs(int argc, char** argv) {
@@ -40,6 +44,9 @@ void Args::parseArgs(int argc, char** argv) {
     model = model_name::sup;
     loss = loss_name::softmax;
     minCount = 1;
+    minn = 0;
+    maxn = 0;
+    lr = 0.1;
   } else if (command == "cbow") {
     model = model_name::cbow;
   }
@@ -72,6 +79,8 @@ void Args::parseArgs(int argc, char** argv) {
       epoch = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-minCount") == 0) {
       minCount = atoi(argv[ai + 1]);
+    } else if (strcmp(argv[ai], "-minCountLabel") == 0) {
+      minCountLabel = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-neg") == 0) {
       neg = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-wordNgrams") == 0) {
@@ -100,6 +109,10 @@ void Args::parseArgs(int argc, char** argv) {
       t = atof(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-label") == 0) {
       label = std::string(argv[ai + 1]);
+    } else if (strcmp(argv[ai], "-verbose") == 0) {
+      verbose = atoi(argv[ai + 1]);
+    } else if (strcmp(argv[ai], "-pretrainedVectors") == 0) {
+      pretrainedVectors = std::string(argv[ai + 1]);
     } else {
       std::cout << "Unknown argument: " << argv[ai] << std::endl;
       printHelp();
@@ -112,65 +125,72 @@ void Args::parseArgs(int argc, char** argv) {
     printHelp();
     exit(EXIT_FAILURE);
   }
+  if (wordNgrams <= 1 && maxn == 0) {
+    bucket = 0;
+  }
 }
 
 void Args::printHelp() {
+  std::string lname = "ns";
+  if (loss == loss_name::hs) lname = "hs";
+  if (loss == loss_name::softmax) lname = "softmax";
   std::cout
     << "\n"
     << "The following arguments are mandatory:\n"
-    << "  -input        training file path\n"
-    << "  -output       output file path\n\n"
+    << "  -input              training file path\n"
+    << "  -output             output file path\n\n"
     << "The following arguments are optional:\n"
-    << "  -lr           learning rate [" << lr << "]\n"
-    << "  -lrUpdateRate change the rate of updates for the learning rate [" << lrUpdateRate << "]\n"
-    << "  -dim          size of word vectors [" << dim << "]\n"
-    << "  -ws           size of the context window [" << ws << "]\n"
-    << "  -epoch        number of epochs [" << epoch << "]\n"
-    << "  -minCount     minimal number of word occurences [" << minCount << "]\n"
-    << "  -neg          number of negatives sampled [" << neg << "]\n"
-    << "  -wordNgrams   max length of word ngram [" << wordNgrams << "]\n"
-    << "  -loss         loss function {ns, hs, softmax} [ns]\n"
-    << "  -bucket       number of buckets [" << bucket << "]\n"
-    << "  -minn         min length of char ngram [" << minn << "]\n"
-    << "  -maxn         max length of char ngram [" << maxn << "]\n"
-    << "  -thread       number of threads [" << thread << "]\n"
-    << "  -t            sampling threshold [" << t << "]\n"
-    << "  -label        labels prefix [" << label << "]\n"
+    << "  -lr                 learning rate [" << lr << "]\n"
+    << "  -lrUpdateRate       change the rate of updates for the learning rate [" << lrUpdateRate << "]\n"
+    << "  -dim                size of word vectors [" << dim << "]\n"
+    << "  -ws                 size of the context window [" << ws << "]\n"
+    << "  -epoch              number of epochs [" << epoch << "]\n"
+    << "  -minCount           minimal number of word occurences [" << minCount << "]\n"
+    << "  -minCountLabel      minimal number of label occurences [" << minCountLabel << "]\n"
+    << "  -neg                number of negatives sampled [" << neg << "]\n"
+    << "  -wordNgrams         max length of word ngram [" << wordNgrams << "]\n"
+    << "  -loss               loss function {ns, hs, softmax} [ns]\n"
+    << "  -bucket             number of buckets [" << bucket << "]\n"
+    << "  -minn               min length of char ngram [" << minn << "]\n"
+    << "  -maxn               max length of char ngram [" << maxn << "]\n"
+    << "  -thread             number of threads [" << thread << "]\n"
+    << "  -t                  sampling threshold [" << t << "]\n"
+    << "  -label              labels prefix [" << label << "]\n"
+    << "  -verbose            verbosity level [" << verbose << "]\n"
+    << "  -pretrainedVectors  pretrained word vectors for supervised learning []"
     << std::endl;
 }
 
-void Args::save(std::ofstream& ofs) {
-  if (ofs.is_open()) {
-    ofs.write((char*) &(dim), sizeof(int));
-    ofs.write((char*) &(ws), sizeof(int));
-    ofs.write((char*) &(epoch), sizeof(int));
-    ofs.write((char*) &(minCount), sizeof(int));
-    ofs.write((char*) &(neg), sizeof(int));
-    ofs.write((char*) &(wordNgrams), sizeof(int));
-    ofs.write((char*) &(loss), sizeof(loss_name));
-    ofs.write((char*) &(model), sizeof(model_name));
-    ofs.write((char*) &(bucket), sizeof(int));
-    ofs.write((char*) &(minn), sizeof(int));
-    ofs.write((char*) &(maxn), sizeof(int));
-    ofs.write((char*) &(lrUpdateRate), sizeof(int));
-    ofs.write((char*) &(t), sizeof(double));
-  }
+void Args::save(std::ostream& out) {
+  out.write((char*) &(dim), sizeof(int));
+  out.write((char*) &(ws), sizeof(int));
+  out.write((char*) &(epoch), sizeof(int));
+  out.write((char*) &(minCount), sizeof(int));
+  out.write((char*) &(neg), sizeof(int));
+  out.write((char*) &(wordNgrams), sizeof(int));
+  out.write((char*) &(loss), sizeof(loss_name));
+  out.write((char*) &(model), sizeof(model_name));
+  out.write((char*) &(bucket), sizeof(int));
+  out.write((char*) &(minn), sizeof(int));
+  out.write((char*) &(maxn), sizeof(int));
+  out.write((char*) &(lrUpdateRate), sizeof(int));
+  out.write((char*) &(t), sizeof(double));
 }
 
-void Args::load(std::ifstream& ifs) {
-  if (ifs.is_open()) {
-    ifs.read((char*) &(dim), sizeof(int));
-    ifs.read((char*) &(ws), sizeof(int));
-    ifs.read((char*) &(epoch), sizeof(int));
-    ifs.read((char*) &(minCount), sizeof(int));
-    ifs.read((char*) &(neg), sizeof(int));
-    ifs.read((char*) &(wordNgrams), sizeof(int));
-    ifs.read((char*) &(loss), sizeof(loss_name));
-    ifs.read((char*) &(model), sizeof(model_name));
-    ifs.read((char*) &(bucket), sizeof(int));
-    ifs.read((char*) &(minn), sizeof(int));
-    ifs.read((char*) &(maxn), sizeof(int));
-    ifs.read((char*) &(lrUpdateRate), sizeof(int));
-    ifs.read((char*) &(t), sizeof(double));
-  }
+void Args::load(std::istream& in) {
+  in.read((char*) &(dim), sizeof(int));
+  in.read((char*) &(ws), sizeof(int));
+  in.read((char*) &(epoch), sizeof(int));
+  in.read((char*) &(minCount), sizeof(int));
+  in.read((char*) &(neg), sizeof(int));
+  in.read((char*) &(wordNgrams), sizeof(int));
+  in.read((char*) &(loss), sizeof(loss_name));
+  in.read((char*) &(model), sizeof(model_name));
+  in.read((char*) &(bucket), sizeof(int));
+  in.read((char*) &(minn), sizeof(int));
+  in.read((char*) &(maxn), sizeof(int));
+  in.read((char*) &(lrUpdateRate), sizeof(int));
+  in.read((char*) &(t), sizeof(double));
+}
+
 }

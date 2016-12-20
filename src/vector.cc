@@ -11,11 +11,12 @@
 
 #include <assert.h>
 
-#include <iostream>
 #include <iomanip>
 
 #include "matrix.h"
 #include "utils.h"
+
+namespace fasttext {
 
 Vector::Vector(int64_t m) {
   m_ = m;
@@ -24,6 +25,10 @@ Vector::Vector(int64_t m) {
 
 Vector::~Vector() {
   delete[] data_;
+}
+
+int64_t Vector::size() const {
+  return m_;
 }
 
 void Vector::zero() {
@@ -94,4 +99,6 @@ std::ostream& operator<<(std::ostream& os, const Vector& v)
     os << v.data_[j] << ' ';
   }
   return os;
+}
+
 }

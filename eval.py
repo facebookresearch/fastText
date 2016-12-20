@@ -21,10 +21,7 @@ import math
 import argparse
 
 def compat_splitting(line):
-    if sys.version > "3":
-        return line.split()
-    else: # if version is 2
-        return line.decode('utf8').split()
+    return line.decode('utf8').split()
 
 def similarity(v1, v2):
     n1 = np.linalg.norm(v1)
@@ -37,7 +34,7 @@ parser.add_argument('--data', '-d', dest='dataPath', action='store', required=Tr
 args = parser.parse_args()
 
 vectors = {}
-fin = open(args.modelPath, 'r')
+fin = open(args.modelPath, 'rb')
 for i, line in enumerate(fin):
     try:
         tab = compat_splitting(line)
@@ -56,7 +53,7 @@ gold = []
 drop = 0.0
 nwords = 0.0
 
-fin = open(args.dataPath, 'r')
+fin = open(args.dataPath, 'rb')
 for line in fin:
     tline = compat_splitting(line)
     word1 = tline[0].lower()

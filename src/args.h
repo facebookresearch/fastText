@@ -10,7 +10,11 @@
 #ifndef FASTTEXT_ARGS_H
 #define FASTTEXT_ARGS_H
 
+#include <istream>
+#include <ostream>
 #include <string>
+
+namespace fasttext {
 
 enum class model_name : int {cbow=1, sg, sup};
 enum class loss_name : int {hs=1, ns, softmax};
@@ -27,6 +31,7 @@ class Args {
     int ws;
     int epoch;
     int minCount;
+    int minCountLabel;
     int neg;
     int wordNgrams;
     loss_name loss;
@@ -37,11 +42,15 @@ class Args {
     int thread;
     double t;
     std::string label;
+    int verbose;
+    std::string pretrainedVectors;
 
     void parseArgs(int, char**);
     void printHelp();
-    void save(std::ofstream&);
-    void load(std::ifstream&);
+    void save(std::ostream&);
+    void load(std::istream&);
 };
+
+}
 
 #endif
