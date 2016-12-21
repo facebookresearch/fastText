@@ -43,6 +43,7 @@ class Args {
     double t;
     std::string label;
     int verbose;
+    bool multilabel;
     std::string pretrainedVectors;
 
     void parseArgs(int, char**);

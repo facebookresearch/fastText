@@ -36,6 +36,7 @@ Args::Args() {
   label = "__label__";
   verbose = 2;
   pretrainedVectors = "";
+  multilabel = false;
 }
 
 void Args::parseArgs(int argc, char** argv) {
@@ -47,6 +48,7 @@ void Args::parseArgs(int argc, char** argv) {
     minn = 0;
     maxn = 0;
     lr = 0.1;
+    multilabel = false;
   } else if (command == "cbow") {
     model = model_name::cbow;
   }
@@ -113,6 +115,8 @@ void Args::parseArgs(int argc, char** argv) {
       verbose = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-pretrainedVectors") == 0) {
       pretrainedVectors = std::string(argv[ai + 1]);
+    } else if (strcmp(argv[ai], "-multilabel") == 0) {
+      multilabel = true;
     } else {
       std::cout << "Unknown argument: " << argv[ai] << std::endl;
       printHelp();
@@ -157,7 +161,8 @@ void Args::printHelp() {
     << "  -t                  sampling threshold [" << t << "]\n"
     << "  -label              labels prefix [" << label << "]\n"
     << "  -verbose            verbosity level [" << verbose << "]\n"
-    << "  -pretrainedVectors  pretrained word vectors for supervised learning []"
+    << "  -pretrainedVectors  pretrained word vectors for supervised learning []\n"
+    << "  -multilabel         set the multilabel flag to true. Works only if using negative sampling as loss function"
     << std::endl;
 }
 
@@ -175,6 +180,7 @@ void Args::save(std::ostream& out) {
   out.write((char*) &(maxn), sizeof(int));
   out.write((char*) &(lrUpdateRate), sizeof(int));
   out.write((char*) &(t), sizeof(double));
+  out.write((char*) &(multilabel), sizeof(bool));
 }
 
 void Args::load(std::istream& in) {
@@ -191,6 +197,7 @@ void Args::load(std::istream& in) {
   in.read((char*) &(maxn), sizeof(int));
   in.read((char*) &(lrUpdateRate), sizeof(int));
   in.read((char*) &(t), sizeof(double));
+  in.read((char*) &(multilabel), sizeof(bool));
 }
 
 }

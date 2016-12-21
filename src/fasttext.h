@@ -44,7 +44,7 @@ class FastText {
     void printInfo(real, real);
 
     void supervised(Model&, real, const std::vector<int32_t>&,
-                    const std::vector<int32_t>&);
+                    const std::vector<int32_t>&, const bool multilabel = false);
     void cbow(Model&, real, const std::vector<int32_t>&);
     void skipgram(Model&, real, const std::vector<int32_t>&);
     void test(std::istream&, int32_t);

@@ -66,6 +66,19 @@ real Model::negativeSampling(int32_t target, real lr) {
   return loss;
 }
 
+real Model::negativeSampling(int32_t target, std::vector<int32_t> other_targets, real lr) {
+  real loss = 0.0;
+  grad_.zero();
+  for (int32_t n = 0; n <= args_->neg; n++) {
+    if (n == 0) {
+      loss += binaryLogistic(target, true, lr);
+    } else {
+      loss += binaryLogistic(getNegative(target, other_targets), false, lr);
+    }
+  }
+  return loss;
+}
+
 real Model::hierarchicalSoftmax(int32_t target, real lr) {
   real loss = 0.0;
   grad_.zero();
@@ -179,13 +192,18 @@ void Model::dfs(int32_t k, int32_t node, real score,
   dfs(k, tree[node].right, score + log(f), heap, hidden);
 }
 
-void Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
+void Model::update(const std::vector<int32_t>& input, int32_t target, real lr, const std::vector<int32_t>* other_targets_ptr) {
   assert(target >= 0);
   assert(target < osz_);
   if (input.size() == 0) return;
   computeHidden(input, hidden_);
   if (args_->loss == loss_name::ns) {
-    loss_ += negativeSampling(target, lr);
+    if (other_targets_ptr) {
+      loss_ += negativeSampling(target, *other_targets_ptr, lr);
+    }
+    else {
+      loss_ += negativeSampling(target, lr);
+    }
   } else if (args_->loss == loss_name::hs) {
     loss_ += hierarchicalSoftmax(target, lr);
   } else {
@@ -225,12 +243,29 @@ void Model::initTableNegatives(const std::vector<int64_t>& counts) {
   std::shuffle(negatives.begin(), negatives.end(), rng);
 }
 
+bool Model::isOtherTarget(int32_t negative, std::vector<int32_t> other_targets) {
+  for (size_t i = 0; i < other_targets.size(); i++) {
+    if (negative == other_targets[i])
+      return true;
+  }
+  return false;
+}
+
 int32_t Model::getNegative(int32_t target) {
   int32_t negative;
   do {
     negative = negatives[negpos];
     negpos = (negpos + 1) % negatives.size();
   } while (target == negative);
+  return negative;
+}
+
+int32_t Model::getNegative(int32_t target, std::vector<int32_t> other_targets) {
+  int32_t negative;
+  do {
+    negative = negatives[negpos];
+    negpos = (negpos + 1) % negatives.size();
+  } while (target == negative && isOtherTarget(negative, other_targets));
   return negative;
 }
 
@@ -251,7 +286,7 @@ void Model::buildTree(const std::vector<int64_t>& counts) {
   for (int32_t i = osz_; i < 2 * osz_ - 1; i++) {
     int32_t mini[2];
     for (int32_t j = 0; j < 2; j++) {
-      if (leaf >= 0 && tree[leaf].count < tree[node].count) {
+      if (leaf >= 0 && tree[leaf].count < tree[node].count) { 
         mini[j] = leaf--;
       } else {
         mini[j] = node++;

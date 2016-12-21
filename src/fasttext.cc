@@ -105,11 +105,19 @@ void FastText::printInfo(real progress, real loss) {
 
 void FastText::supervised(Model& model, real lr,
                           const std::vector<int32_t>& line,
-                          const std::vector<int32_t>& labels) {
+                          const std::vector<int32_t>& labels,
+                          const bool multilabel) {
   if (labels.size() == 0 || line.size() == 0) return;
-  std::uniform_int_distribution<> uniform(0, labels.size() - 1);
-  int32_t i = uniform(model.rng);
-  model.update(line, labels[i], lr);
+  if (!multilabel) {
+    std::uniform_int_distribution<> uniform(0, labels.size() - 1);
+    int32_t i = uniform(model.rng);
+    model.update(line, labels[i], lr);
+  }
+  else {
+    for (size_t i = 0; i < labels.size(); i++) {
+      model.update(line, labels[i], lr, &labels);
+    }
+  }
 }
 
 void FastText::cbow(Model& model, real lr,
@@ -260,7 +268,7 @@ void FastText::trainThread(int32_t threadId) {
     localTokenCount += dict_->getLine(ifs, line, labels, model.rng);
     if (args_->model == model_name::sup) {
       dict_->addNgrams(line, args_->wordNgrams);
-      supervised(model, lr, line, labels);
+      supervised(model, lr, line, labels, args_->multilabel);
     } else if (args_->model == model_name::cbow) {
       cbow(model, lr, line);
     } else if (args_->model == model_name::sg) {
