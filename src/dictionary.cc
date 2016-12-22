@@ -262,7 +262,6 @@ int32_t Dictionary::getLine(std::istream& in,
     in.seekg(std::streampos(0));
   }
   while (readWord(in, token)) {
-    if (token == EOS) break;
     int32_t wid = getId(token);
     if (wid < 0) continue;
     entry_type type = getType(wid);
@@ -274,6 +273,7 @@ int32_t Dictionary::getLine(std::istream& in,
       labels.push_back(wid - nwords_);
     }
     if (words.size() > MAX_LINE_SIZE && args_->model != model_name::sup) break;
+    if (token == EOS) break;
   }
   return ntokens;
 }
