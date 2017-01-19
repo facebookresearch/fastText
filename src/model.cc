@@ -175,8 +175,15 @@ void Model::dfs(int32_t k, int32_t node, real score,
   }
 
   real f = sigmoid(wo_->dotRow(hidden, node - osz_));
-  dfs(k, tree[node].left, score + log(1.0 - f), heap, hidden);
-  dfs(k, tree[node].right, score + log(f), heap, hidden);
+  real score_left = score + log(1.0 - f);
+  real score_right = score + log(f);
+  if (score_left > score_right) {
+	  dfs(k, tree[node].left, score_left, heap, hidden);
+	  dfs(k, tree[node].right, score_right, heap, hidden);
+  } else {
+	  dfs(k, tree[node].right, score_right, heap, hidden);
+	  dfs(k, tree[node].left, score_left, heap, hidden);
+  }
 }
 
 void Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
