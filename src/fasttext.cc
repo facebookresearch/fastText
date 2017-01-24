@@ -23,7 +23,7 @@ namespace fasttext {
 void FastText::getVector(Vector& vec, const std::string& word) {
   const std::vector<int32_t>& ngrams = dict_->getNgrams(word);
   vec.zero();
-  for (auto it = ngrams.begin(); it != ngrams.end(); ++it) {
+  for (auto it = ngrams.cbegin(); it != ngrams.cend(); ++it) {
     vec.addRow(*input_, *it);
   }
   if (ngrams.size() > 0) {
@@ -155,7 +155,7 @@ void FastText::test(std::istream& in, int32_t k) {
       std::vector<std::pair<real, int32_t>> modelPredictions;
       model_->predict(line, k, modelPredictions);
       for (auto it = modelPredictions.cbegin(); it != modelPredictions.cend(); it++) {
-        if (std::find(labels.begin(), labels.end(), it->second) != labels.end()) {
+        if (std::find(labels.cbegin(), labels.cend(), it->second) != labels.cend()) {
           precision += 1.0;
         }
       }
