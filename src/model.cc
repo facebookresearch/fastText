@@ -13,8 +13,6 @@
 
 #include <algorithm>
 
-#include "utils.h"
-
 namespace fasttext {
 
 Model::Model(std::shared_ptr<Matrix> wi,

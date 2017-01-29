@@ -14,7 +14,6 @@
 #include <iomanip>
 
 #include "matrix.h"
-#include "utils.h"
 
 namespace fasttext {
 
