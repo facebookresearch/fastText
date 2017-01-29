@@ -42,7 +42,8 @@ class FastText {
     void loadModel(const std::string&);
     void loadModel(std::istream&);
     void printInfo(real, real);
-
+    void printArgs();
+    
     void supervised(Model&, real, const std::vector<int32_t>&,
                     const std::vector<int32_t>&);
     void cbow(Model&, real, const std::vector<int32_t>&);

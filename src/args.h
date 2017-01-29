@@ -47,6 +47,7 @@ class Args {
 
     void parseArgs(int, char**);
     void printHelp();
+    void print(std::ostream&);
     void save(std::ostream&);
     void load(std::istream&);
 };
