@@ -19,6 +19,7 @@ namespace fasttext {
 Args::Args() {
   lr = 0.05;
   dim = 100;
+  granularities = 1;
   ws = 5;
   epoch = 5;
   minCount = 5;
@@ -73,6 +74,8 @@ void Args::parseArgs(int argc, char** argv) {
       lrUpdateRate = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-dim") == 0) {
       dim = atoi(argv[ai + 1]);
+    } else if (strcmp(argv[ai], "-granularities") == 0) {
+      granularities = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-ws") == 0) {
       ws = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-epoch") == 0) {
@@ -142,7 +145,8 @@ void Args::printHelp() {
     << "The following arguments are optional:\n"
     << "  -lr                 learning rate [" << lr << "]\n"
     << "  -lrUpdateRate       change the rate of updates for the learning rate [" << lrUpdateRate << "]\n"
-    << "  -dim                size of word vectors [" << dim << "]\n"
+    << "  -dim                size of text representation [" << dim << "]\n"
+    << "  -granularities      number of granularities of representations [" << granularities << "]\n"
     << "  -ws                 size of the context window [" << ws << "]\n"
     << "  -epoch              number of epochs [" << epoch << "]\n"
     << "  -minCount           minimal number of word occurences [" << minCount << "]\n"

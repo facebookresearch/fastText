@@ -27,7 +27,8 @@ class Args {
     std::string output;
     double lr;
     int lrUpdateRate;
-    int dim;
+    int dim;   // size of word vectors, size of one granularity vector.
+    int granularities; // number of granularities for the representations
     int ws;
     int epoch;
     int minCount;

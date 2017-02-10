@@ -38,6 +38,8 @@ class Vector {
     void addRow(const Matrix&, int64_t, real);
     void mul(const Matrix&, const Vector&);
     int64_t argmax();
+
+    void addVector(const Vector&, int64_t pos);
 };
 
 std::ostream& operator<<(std::ostream&, const Vector&);

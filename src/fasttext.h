@@ -29,8 +29,8 @@ class FastText {
   private:
     std::shared_ptr<Args> args_;
     std::shared_ptr<Dictionary> dict_;
-    std::shared_ptr<Matrix> input_;
-    std::shared_ptr<Matrix> output_;
+    std::shared_ptr<Matrix> input_;  // dict size + nb of buckets  x  size of category
+    std::shared_ptr<Matrix> output_; // if supervised: nb of labels  x  size of hidden
     std::shared_ptr<Model> model_;
     std::atomic<int64_t> tokenCount;
     clock_t start;
@@ -44,6 +44,8 @@ class FastText {
     void printInfo(real, real);
 
     void supervised(Model&, real, const std::vector<int32_t>&,
+                    const std::vector<int32_t>&);
+    void supervised(Model&, real, const List&,
                     const std::vector<int32_t>&);
     void cbow(Model&, real, const std::vector<int32_t>&);
     void skipgram(Model&, real, const std::vector<int32_t>&);

@@ -100,4 +100,10 @@ std::ostream& operator<<(std::ostream& os, const Vector& v)
   return os;
 }
 
+void Vector::addVector(const Vector& v, int64_t pos) {
+  for(int64_t i = 0; i<v.size(); i++) {
+    data_[pos+i] = v[i];
+  }
+}
+
 }

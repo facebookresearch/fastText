@@ -19,14 +19,15 @@ Model::Model(std::shared_ptr<Matrix> wi,
              std::shared_ptr<Matrix> wo,
              std::shared_ptr<Args> args,
              int32_t seed)
-  : hidden_(args->dim), output_(wo->m_), grad_(args->dim), rng(seed)
+  : hidden_(args->granularities * args->dim), output_(wo->m_), grad_(args->granularities * args->dim), rng(seed)
 {
   wi_ = wi;
   wo_ = wo;
   args_ = args;
   isz_ = wi->m_;
   osz_ = wo->m_;
-  hsz_ = args->dim;
+  gsz_ = args->dim;  // size of a granularity vector
+  hsz_ = args->granularities * gsz_;  // size of the hidden vector
   negpos = 0;
   loss_ = 0.0;
   nexamples_ = 1;
@@ -106,8 +107,17 @@ real Model::softmax(int32_t target, real lr) {
   return -log(output_[target]);
 }
 
+// void Model::computeHidden(const std::vector<int32_t>& input, Vector& hidden) const {
+//   assert(hidden.size() == hsz_);
+//   hidden.zero();
+//   for (auto it = input.cbegin(); it != input.cend(); ++it) {
+//     hidden.addRow(*wi_, *it);
+//   }
+//   hidden.mul(1.0 / input.size());
+// }
+
 void Model::computeHidden(const std::vector<int32_t>& input, Vector& hidden) const {
-  assert(hidden.size() == hsz_);
+  assert(hidden.size() == gsz_);
   hidden.zero();
   for (auto it = input.cbegin(); it != input.cend(); ++it) {
     hidden.addRow(*wi_, *it);
@@ -115,6 +125,22 @@ void Model::computeHidden(const std::vector<int32_t>& input, Vector& hidden) con
   hidden.mul(1.0 / input.size());
 }
 
+void Model::computeHidden(const List& input, Vector& hidden) const {
+  // hidden's size is the dimension specified in parameters.
+  assert(hidden.size() == hsz_);
+  hidden.zero();
+
+  // hidden is divided equally between each element of the input
+  int64_t i = 0;
+  for(std::vector<int32_t> v : input) {
+    //assert(v.size() == gsz_);
+    Vector h(gsz_); // could go faster if passed hidden's memory zone directly.
+    computeHidden(v, h);
+    hidden.addVector(h, i*gsz_);
+    i++;
+  }
+}
+  
 bool Model::comparePairs(const std::pair<real, int32_t> &l,
                          const std::pair<real, int32_t> &r) {
   return l.first > r.first;
@@ -177,7 +203,35 @@ void Model::dfs(int32_t k, int32_t node, real score,
   dfs(k, tree[node].right, score + log(f), heap, hidden);
 }
 
+// void Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
+//   assert(target >= 0);
+//   assert(target < osz_);
+//   if (input.size() == 0) return;
+//   computeHidden(input, hidden_);
+//   if (args_->loss == loss_name::ns) {
+//     loss_ += negativeSampling(target, lr);
+//   } else if (args_->loss == loss_name::hs) {
+//     loss_ += hierarchicalSoftmax(target, lr);
+//   } else {
+//     loss_ += softmax(target, lr);
+//   }
+//   nexamples_ += 1;
+
+//   if (args_->model == model_name::sup) {
+//     grad_.mul(1.0 / input.size());
+//   }
+//   for (auto it = input.cbegin(); it != input.cend(); ++it) {
+//     wi_->addRow(grad_, *it, 1.0);
+//   }
+// }
+
 void Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
+  List l = {input};
+  update(l, target, lr);
+}
+
+  // std::list< std::vector<int32_t> >
+void Model::update(const List& input, int32_t target, real lr) {
   assert(target >= 0);
   assert(target < osz_);
   if (input.size() == 0) return;
@@ -192,10 +246,18 @@ void Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
   nexamples_ += 1;
 
   if (args_->model == model_name::sup) {
-    grad_.mul(1.0 / input.size());
+    int32_t size = 0;
+    for(std::vector<int32_t> v : input) { size += v.size(); }
+    grad_.mul(1.0 / size);
   }
-  for (auto it = input.cbegin(); it != input.cend(); ++it) {
-    wi_->addRow(grad_, *it, 1.0);
+
+  // TOOD: problem here?
+  // wi_ has dimension:  dict_nwords()+args_->bucket  x  args_->dim
+  //                     nb of words + nb of buckets  x  size of word vectors
+  for(std::vector<int32_t> v : input) {
+    for (auto it = v.cbegin(); it != v.cend(); ++it) {
+      wi_->addRow(grad_, *it, 1.0);
+    }
   }
 }
 

@@ -11,6 +11,7 @@
 #define FASTTEXT_MODEL_H
 
 #include <vector>
+#include <list>
 #include <random>
 #include <utility>
 #include <memory>
@@ -34,6 +35,8 @@ struct Node {
   bool binary;
 };
 
+typedef std::list< std::vector<int32_t> > List;
+
 class Model {
   private:
     std::shared_ptr<Matrix> wi_;
@@ -42,7 +45,8 @@ class Model {
     Vector hidden_;
     Vector output_;
     Vector grad_;
-    int32_t hsz_;
+    int32_t gsz_;  // size of granularity vector, of a representation vector
+    int32_t hsz_;  // size of hidden
     int32_t isz_;
     int32_t osz_;
     real loss_;
@@ -67,6 +71,7 @@ class Model {
     static const int32_t NEGATIVE_TABLE_SIZE = 10000000;
 
   public:
+    // args: wi, wo, args, and threadID
     Model(std::shared_ptr<Matrix>, std::shared_ptr<Matrix>,
           std::shared_ptr<Args>, int32_t);
     ~Model();
@@ -87,7 +92,9 @@ class Model {
     void findKBest(int32_t, std::vector<std::pair<real, int32_t>>&,
                    Vector&, Vector&) const;
     void update(const std::vector<int32_t>&, int32_t, real);
+    void update(const List&, int32_t, real);
     void computeHidden(const std::vector<int32_t>&, Vector&) const;
+    void computeHidden(const List&, Vector&) const;
     void computeOutputSoftmax(Vector&, Vector&) const;
     void computeOutputSoftmax();
 
