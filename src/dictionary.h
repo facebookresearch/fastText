@@ -27,6 +27,7 @@ enum class entry_type : int8_t {word=0, label=1};
 
 struct entry {
   std::string word;
+  
   int64_t count;
   entry_type type;
   std::vector<int32_t> subwords;
@@ -76,6 +77,8 @@ class Dictionary {
     std::vector<int64_t> getCounts(entry_type) const;
     void addNgrams(std::vector<int32_t>&, int32_t) const;
     int32_t getLine(std::istream&, std::vector<int32_t>&,
+                    std::vector<int32_t>&, std::minstd_rand&) const;
+    int32_t getLine(std::istream&, List&,
                     std::vector<int32_t>&, std::minstd_rand&) const;
     void threshold(int64_t, int64_t);
 };

@@ -11,7 +11,6 @@
 #define FASTTEXT_MODEL_H
 
 #include <vector>
-#include <list>
 #include <random>
 #include <utility>
 #include <memory>
@@ -34,8 +33,6 @@ struct Node {
   int64_t count;
   bool binary;
 };
-
-typedef std::list< std::vector<int32_t> > List;
 
 class Model {
   private:

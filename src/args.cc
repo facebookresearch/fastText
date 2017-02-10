@@ -35,6 +35,7 @@ Args::Args() {
   lrUpdateRate = 100;
   t = 1e-4;
   label = "__label__";
+  separator = "###@@@###";
   verbose = 2;
   pretrainedVectors = "";
 }
@@ -112,6 +113,8 @@ void Args::parseArgs(int argc, char** argv) {
       t = atof(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-label") == 0) {
       label = std::string(argv[ai + 1]);
+    } else if (strcmp(argv[ai], "-separator") == 0) {
+      separator = std::string(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-verbose") == 0) {
       verbose = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-pretrainedVectors") == 0) {
@@ -160,6 +163,7 @@ void Args::printHelp() {
     << "  -thread             number of threads [" << thread << "]\n"
     << "  -t                  sampling threshold [" << t << "]\n"
     << "  -label              labels prefix [" << label << "]\n"
+    << "  -separator          separator string between label, word, sentence, etc. [" << separator << "]\n"
     << "  -verbose            verbosity level [" << verbose << "]\n"
     << "  -pretrainedVectors  pretrained word vectors for supervised learning []"
     << std::endl;
@@ -167,6 +171,7 @@ void Args::printHelp() {
 
 void Args::save(std::ostream& out) {
   out.write((char*) &(dim), sizeof(int));
+  out.write((char*) &(granularities), sizeof(int));
   out.write((char*) &(ws), sizeof(int));
   out.write((char*) &(epoch), sizeof(int));
   out.write((char*) &(minCount), sizeof(int));
@@ -183,6 +188,7 @@ void Args::save(std::ostream& out) {
 
 void Args::load(std::istream& in) {
   in.read((char*) &(dim), sizeof(int));
+  in.read((char*) &(granularities), sizeof(int));
   in.read((char*) &(ws), sizeof(int));
   in.read((char*) &(epoch), sizeof(int));
   in.read((char*) &(minCount), sizeof(int));

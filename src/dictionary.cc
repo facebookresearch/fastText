@@ -278,6 +278,49 @@ int32_t Dictionary::getLine(std::istream& in,
   return ntokens;
 }
 
+// int32_t Dictionary::getLine(std::istream& in,
+//                             std::vector<int32_t>& words,
+//                             std::vector<int32_t>& labels,
+//                             std::minstd_rand& rng) const {
+//   List l = {words};
+//   return getLine(in, l, labels, rng);
+// }
+  
+int32_t Dictionary::getLine(std::istream& in,
+                            List& words,
+                            std::vector<int32_t>& labels,
+                            std::minstd_rand& rng) const {
+  std::uniform_real_distribution<> uniform(0, 1);
+  std::string token;
+  int32_t ntokens = 0;
+  for(std::vector<int32_t> v : words) {
+    v.clear();
+  }
+  labels.clear();
+  if (in.eof()) {
+    in.clear();
+    in.seekg(std::streampos(0));
+  }
+
+  std::vector<int32_t> first = words.front();
+
+  while (readWord(in, token)) {
+    int32_t wid = getId(token);
+    if (wid < 0) continue;
+    entry_type type = getType(wid);
+    ntokens++;
+    if (type == entry_type::word && !discard(wid, uniform(rng))) {
+      first.push_back(wid);
+    }
+    if (type == entry_type::label) {
+      labels.push_back(wid - nwords_);
+    }
+    if (first.size() > MAX_LINE_SIZE && args_->model != model_name::sup) break;
+    if (token == EOS) break;
+  }
+  return ntokens;
+}
+
 std::string Dictionary::getLabel(int32_t lid) const {
   assert(lid >= 0);
   assert(lid < nlabels_);
