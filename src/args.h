@@ -14,11 +14,8 @@
 #include <ostream>
 #include <string>
 #include <vector>
-#include <list>
 
 namespace fasttext {
-
-typedef std::list< std::vector<int32_t> > List;
 
 enum class model_name : int {cbow=1, sg, sup};
 enum class loss_name : int {hs=1, ns, softmax};

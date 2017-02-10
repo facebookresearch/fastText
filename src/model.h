@@ -19,6 +19,7 @@
 #include "matrix.h"
 #include "vector.h"
 #include "real.h"
+#include "list.h"
 
 #define SIGMOID_TABLE_SIZE 512
 #define MAX_SIGMOID 8
