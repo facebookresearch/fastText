@@ -37,8 +37,8 @@ void FastText::saveVectors() {
     std::cout << "Error opening file for saving vectors." << std::endl;
     exit(EXIT_FAILURE);
   }
-  ofs << dict_->nwords() << " " << args_->dim << std::endl;
-  Vector vec(args_->dim);
+  ofs << dict_->nwords() << " " << args_->granularities * args_->dim << std::endl;
+  Vector vec(args_->granularities * args_->dim);
   for (int32_t i = 0; i < dict_->nwords(); i++) {
     std::string word = dict_->getWord(i);
     getVector(vec, word);
@@ -234,7 +234,7 @@ void FastText::wordVectors() {
 
 void FastText::textVectors() {
   std::vector<int32_t> line, labels;
-  Vector vec(args_->dim);
+  Vector vec(args_->granularities * args_->dim);
   while (std::cin.peek() != EOF) {
     dict_->getLine(std::cin, line, labels, model_->rng);
     dict_->addNgrams(line, args_->wordNgrams);
@@ -271,18 +271,34 @@ void FastText::trainThread(int32_t threadId) {
   const int64_t ntokens = dict_->ntokens();
   int64_t localTokenCount = 0;
   std::vector<int32_t> line, labels;
+  std::vector<int32_t> sentences, paragraphs;
+  // :TODO: use a list instead of 3 vectors.
+  // List content;
+  // std::vector<int32_t> words, sentences;
+  
   while (tokenCount < args_->epoch * ntokens) {
     real progress = real(tokenCount) / (args_->epoch * ntokens);
     real lr = args_->lr * (1.0 - progress);
-    localTokenCount += dict_->getLine(ifs, line, labels, model.rng);
+
+    //localTokenCount += dict_->getLine(ifs, line, labels, model.rng);
+    localTokenCount += dict_->getLine(ifs, line, sentences, paragraphs, labels, model.rng);
+    // :TODO: assert the line to make sure it has good size
+
     if (args_->model == model_name::sup) {
 
+      // :TODO: fix that below, I shouldn't need the call to the previous supervised method.
       if(args_->granularities == 1) {
 	dict_->addNgrams(line, args_->wordNgrams);
 	supervised(model, lr, line, labels);
       } else {
+	// :TODO: is that the better way to do it?
 	dict_->addNgrams(line, args_->wordNgrams);
-	List granularities = {line, line};
+	dict_->addNgrams(sentences, args_->wordNgrams);
+	List granularities = {line, sentences};
+	if(args_->granularities == 3) {
+	  dict_->addNgrams(paragraphs, args_->wordNgrams);
+	  granularities.push_back(paragraphs);
+	}
 	supervised(model, lr, granularities, labels);
       }
 
@@ -334,8 +350,8 @@ void FastText::loadVectors(std::string filename) {
   in.close();
 
   dict_->threshold(1, 0);
-  input_ = std::make_shared<Matrix>(dict_->nwords()+args_->bucket, args_->dim);
-  input_->uniform(1.0 / args_->dim);
+  input_ = std::make_shared<Matrix>(dict_->nwords()+args_->bucket, args_->granularities * args_->dim);
+  input_->uniform(1.0 / (args_->granularities * args_->dim));
 
   for (size_t i = 0; i < n; i++) {
     int32_t idx = dict_->getId(words[i]);
@@ -365,8 +381,8 @@ void FastText::train(std::shared_ptr<Args> args) {
   if (args_->pretrainedVectors.size() != 0) {
     loadVectors(args_->pretrainedVectors);
   } else {
-    input_ = std::make_shared<Matrix>(dict_->nwords()+args_->bucket, args_->dim);
-    input_->uniform(1.0 / args_->dim);
+    input_ = std::make_shared<Matrix>(dict_->nwords()+args_->bucket, args_->dim); //args_->granularities * args_->dim);
+    input_->uniform(1.0 / (args_->dim)); //args_->granularities * args_->dim));
   }
 
   if (args_->model == model_name::sup) {
@@ -376,6 +392,22 @@ void FastText::train(std::shared_ptr<Args> args) {
   }
   output_->zero();
 
+
+  // std::vector<int32_t> line, labels;
+  // Model model(input_, output_, args_, 0);
+  //   model.setTargetCounts(dict_->getCounts(entry_type::label));
+  // int64_t localTokenCount = 0;
+  // const int64_t ntokens = dict_->ntokens();
+  // while (tokenCount < args_->epoch * ntokens) {
+  //   localTokenCount += dict_->getLine(ifs, line, labels, model.rng);
+  //   dict_->addNgrams(line, args_->wordNgrams);
+  // }
+  
+  // std::cout<<line.size()<<std::endl; 
+  // std::cout<<labels.size()<<std::endl; 
+  // return;
+
+  
   start = clock();
   tokenCount = 0;
   std::vector<std::thread> threads;

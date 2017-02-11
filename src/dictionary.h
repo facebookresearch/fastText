@@ -19,6 +19,7 @@
 
 #include "args.h"
 #include "real.h"
+#include "list.h"
 
 namespace fasttext {
 
@@ -51,6 +52,10 @@ class Dictionary {
     int32_t nlabels_;
     int64_t ntokens_;
 
+    // The separator string between each type of data in input.
+    std::string dataSeparator_;
+    int maxSectionType_; // 1: word ; 2: sentence ; 3: document
+
   public:
     static const std::string EOS;
     static const std::string BOW;
@@ -70,6 +75,7 @@ class Dictionary {
     uint32_t hash(const std::string& str) const;
     void add(const std::string&);
     bool readWord(std::istream&, std::string&) const;
+    bool readSection(std::istream&, std::string&) const;
     void readFromFile(std::istream&);
     std::string getLabel(int32_t) const;
     void save(std::ostream&) const;
@@ -77,6 +83,8 @@ class Dictionary {
     std::vector<int64_t> getCounts(entry_type) const;
     void addNgrams(std::vector<int32_t>&, int32_t) const;
     int32_t getLine(std::istream&, std::vector<int32_t>&,
+                    std::vector<int32_t>&, std::minstd_rand&) const;
+    int32_t getLine(std::istream&, std::vector<int32_t>&, std::vector<int32_t>&, std::vector<int32_t>&,
                     std::vector<int32_t>&, std::minstd_rand&) const;
     int32_t getLine(std::istream&, List&,
                     std::vector<int32_t>&, std::minstd_rand&) const;

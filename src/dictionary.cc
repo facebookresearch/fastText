@@ -28,6 +28,10 @@ Dictionary::Dictionary(std::shared_ptr<Args> args) {
   nwords_ = 0;
   nlabels_ = 0;
   ntokens_ = 0;
+
+  dataSeparator_ = args_->separator;
+  maxSectionType_ = args_->granularities;
+  
   word2int_.resize(MAX_VOCAB_SIZE);
   for (int32_t i = 0; i < MAX_VOCAB_SIZE; i++) {
     word2int_[i] = -1;
@@ -149,11 +153,24 @@ bool Dictionary::readWord(std::istream& in, std::string& word) const
   char c;
   std::streambuf& sb = *in.rdbuf();
   word.clear();
+
+  // std::streambuf::sbumpc  :  Returns the character at the current position of the controlled
+  //    input sequence, and advances the position indicator to the next character.
+  //
+  // Read istream until end of file EOF char is reached.
+  // Inside while loop, if char is a special character, wrap up and return to the caller.
+  // If word is empty, then if current character is a new line, then add special EOS symbol, otherwise continue.
+  // If word is not empty, we want to return the word, just making sure before that we don't add the current character if
+  // it's a new line.
   while ((c = sb.sbumpc()) != EOF) {
+    // \n : line feed ; \r : carriage return
+    // \t : horizontal tab ; \v : vertical tab
+    // \f : formfeed
+    // \0 : null char
     if (c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == '\v' || c == '\f' || c == '\0') {
       if (word.empty()) {
         if (c == '\n') {
-          word += EOS;
+          word += EOS; // Special character from class Dictionary to make sure classifier knows we reached end of sentence.
           return true;
         }
         continue;
@@ -170,10 +187,65 @@ bool Dictionary::readWord(std::istream& in, std::string& word) const
   return !word.empty();
 }
 
+bool Dictionary::readSection(std::istream& in, std::string& word) const
+{
+  char c;
+  std::streambuf& sb = *in.rdbuf();
+  word.clear();
+
+  std::string tmp;
+  tmp.clear();
+  
+  // std::streambuf::sbumpc  :  Returns the character at the current position of the controlled
+  //    input sequence, and advances the position indicator to the next character.
+  //
+  // Read istream until end of file EOF char is reached.
+  // Inside while loop, if char is a special character, wrap up and return to the caller.
+  // If word is empty, then if current character is a new line, then add special EOS symbol, otherwise continue.
+  // If word is not empty, we want to return the word, just making sure before that we don't add the current character if
+  // it's a new line.
+  while ((c = sb.sbumpc()) != EOF) {
+    // \n : line feed ; \r : carriage return
+    // \t : horizontal tab ; \v : vertical tab
+    // \f : formfeed
+    // \0 : null char
+    if (c == '\n' || c == '\r' || c == '\t' || c == '\v' || c == '\f' || c == '\0') {
+      if (word.empty()) {
+        if (c == '\n') {
+          word += EOS; // Special character from class Dictionary to make sure classifier knows we reached end of sentence.
+          return true;
+        }
+        continue;
+      } else {
+        if (c == '\n')
+          sb.sungetc();
+        return true;
+      }
+    }
+
+    // :WARNING: that's not good, need to fix that... in case characters are there in the text.
+    if ((c == '#' || c == '@')) {// && (dataSeparator_.find(tmp))) {
+      tmp.push_back(c);
+      
+      if(tmp == dataSeparator_) {
+	return true;
+      }
+    }
+    else {
+      tmp.clear();
+      word.push_back(c);
+    }
+  }
+  
+  // trigger eofbit
+  in.get();
+  return !word.empty();
+}
+
 void Dictionary::readFromFile(std::istream& in) {
   std::string word;
   int64_t minThreshold = 1;
-  while (readWord(in, word)) {
+  while (readSection(in, word)) {    /// :WARNING: Should be careful with that!
     add(word);
     if (ntokens_ % 1000000 == 0 && args_->verbose > 1) {
       std::cout << "\rRead " << ntokens_  / 1000000 << "M words" << std::flush;
@@ -282,41 +354,56 @@ int32_t Dictionary::getLine(std::istream& in,
 //                             std::vector<int32_t>& words,
 //                             std::vector<int32_t>& labels,
 //                             std::minstd_rand& rng) const {
-//   List l = {words};
-//   return getLine(in, l, labels, rng);
+//   //  List l = {words};
+//   std::vector<int32_t> sentences, paragraphs;
+//   return getLine(in, words, sentences, paragraphs, labels, rng);
 // }
   
 int32_t Dictionary::getLine(std::istream& in,
-                            List& words,
+                            std::vector<int32_t>& words,
+			    //                            List& words,
+                            std::vector<int32_t>& sentences,
+                            std::vector<int32_t>& paragraphs,			    
                             std::vector<int32_t>& labels,
                             std::minstd_rand& rng) const {
   std::uniform_real_distribution<> uniform(0, 1);
   std::string token;
   int32_t ntokens = 0;
-  for(std::vector<int32_t> v : words) {
-    v.clear();
-  }
+  words.clear();
+  sentences.clear();
+  paragraphs.clear();
+  // for(std::vector<int32_t> v : words) {
+  //   v.clear();
+  // }
+  
   labels.clear();
   if (in.eof()) {
     in.clear();
     in.seekg(std::streampos(0));
   }
 
-  std::vector<int32_t> first = words.front();
+  //  std::vector<int32_t> first = words.front();
 
-  while (readWord(in, token)) {
+  int currentType = 0;
+  while (readSection(in, token)) {
     int32_t wid = getId(token);
     if (wid < 0) continue;
-    entry_type type = getType(wid);
     ntokens++;
-    if (type == entry_type::word && !discard(wid, uniform(rng))) {
-      first.push_back(wid);
-    }
-    if (type == entry_type::label) {
-      labels.push_back(wid - nwords_);
-    }
-    if (first.size() > MAX_LINE_SIZE && args_->model != model_name::sup) break;
+
+    if (words.size() > MAX_LINE_SIZE && args_->model != model_name::sup) break;
     if (token == EOS) break;
+
+    switch(currentType) {
+    case 0: labels.push_back(wid - nwords_); break;
+    case 1: if(!discard(wid, uniform(rng))) { words.push_back(wid); } break;
+    case 2: sentences.push_back(wid); break;
+    case 3: paragraphs.push_back(wid); break;
+    }
+    currentType++;
+    if(currentType > maxSectionType_) {
+      currentType = 0;
+    }
+    
   }
   return ntokens;
 }

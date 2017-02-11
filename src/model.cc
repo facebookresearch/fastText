@@ -119,9 +119,13 @@ real Model::softmax(int32_t target, real lr) {
 void Model::computeHidden(const std::vector<int32_t>& input, Vector& hidden) const {
   assert(hidden.size() == gsz_);
   hidden.zero();
+
+  // input can contain words, n-grams, sentences, etc.
   for (auto it = input.cbegin(); it != input.cend(); ++it) {
+    // Add to hidden the it^th row of the wi_ matrix
     hidden.addRow(*wi_, *it);
   }
+  // normalize
   hidden.mul(1.0 / input.size());
 }
 
@@ -236,6 +240,9 @@ void Model::update(const List& input, int32_t target, real lr) {
   assert(target < osz_);
   if (input.size() == 0) return;
   computeHidden(input, hidden_);
+
+  // Next, any of the following function sets grad_ to zero and calculates
+  // the current loss (score) setting grad_ again with current values.
   if (args_->loss == loss_name::ns) {
     loss_ += negativeSampling(target, lr);
   } else if (args_->loss == loss_name::hs) {
@@ -243,21 +250,28 @@ void Model::update(const List& input, int32_t target, real lr) {
   } else {
     loss_ += softmax(target, lr);
   }
+  
   nexamples_ += 1;
 
   if (args_->model == model_name::sup) {
-    int32_t size = 0;
-    for(std::vector<int32_t> v : input) { size += v.size(); }
-    grad_.mul(1.0 / size);
+    int cursor = 0;
+    for(std::vector<int32_t> v : input) {
+      // input.size() is the number of granularities.
+      // v contains all the words + ngrams, or sentences + ngrams, etc.
+      // gsz_ is the size a granularity vector, i.e. size of a representation vector.
+      grad_.mul(1.0 / (input.size() * v.size()), cursor*gsz_, gsz_);
+      cursor++;
+    }
   }
 
-  // TOOD: problem here?
-  // wi_ has dimension:  dict_nwords()+args_->bucket  x  args_->dim
-  //                     nb of words + nb of buckets  x  size of word vectors
+  int cursor = 0;
   for(std::vector<int32_t> v : input) {
+    // add to it^th row of matrix wi_ the grad_ vector
     for (auto it = v.cbegin(); it != v.cend(); ++it) {
-      wi_->addRow(grad_, *it, 1.0);
+      //      wi_->addRow(grad_, *it, 1.0);
+      wi_->addRow(grad_, *it, 1.0, cursor*gsz_);
     }
+    cursor++;
   }
 }
 
