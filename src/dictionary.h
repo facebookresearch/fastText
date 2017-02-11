@@ -16,6 +16,7 @@
 #include <ostream>
 #include <random>
 #include <memory>
+#include <map>
 
 #include "args.h"
 #include "real.h"
@@ -54,6 +55,7 @@ class Dictionary {
 
     // The separator string between each type of data in input.
     std::string dataSeparator_;
+    std::map<char, int> dataSeparatorChars_;
     int maxSectionType_; // 1: word ; 2: sentence ; 3: document
 
   public:

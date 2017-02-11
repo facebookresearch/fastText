@@ -30,6 +30,11 @@ Dictionary::Dictionary(std::shared_ptr<Args> args) {
   ntokens_ = 0;
 
   dataSeparator_ = args_->separator;
+  for(char& c : dataSeparator_) {
+    if(dataSeparatorChars_.find(c) == dataSeparatorChars_.end()) {
+      dataSeparatorChars_[c] = 1;
+    }
+  }
   maxSectionType_ = args_->granularities;
   
   word2int_.resize(MAX_VOCAB_SIZE);
@@ -205,10 +210,7 @@ bool Dictionary::readSection(std::istream& in, std::string& word) const
   // If word is not empty, we want to return the word, just making sure before that we don't add the current character if
   // it's a new line.
   while ((c = sb.sbumpc()) != EOF) {
-    // \n : line feed ; \r : carriage return
-    // \t : horizontal tab ; \v : vertical tab
-    // \f : formfeed
-    // \0 : null char
+    // \n : line feed ; \r : carriage return ; \t : horizontal tab ; \v : vertical tab ; \f : formfeed ; \0 : null char
     if (c == '\n' || c == '\r' || c == '\t' || c == '\v' || c == '\f' || c == '\0') {
       if (word.empty()) {
         if (c == '\n') {
@@ -224,7 +226,8 @@ bool Dictionary::readSection(std::istream& in, std::string& word) const
     }
 
     // :WARNING: that's not good, need to fix that... in case characters are there in the text.
-    if ((c == '#' || c == '@')) {// && (dataSeparator_.find(tmp))) {
+    if (dataSeparatorChars_.find(c) != dataSeparatorChars_.end()) { //
+      //if((c == '#' || c == '@')) {// && (dataSeparator_.find(tmp))) {
       tmp.push_back(c);
       
       if(tmp == dataSeparator_) {
@@ -393,6 +396,7 @@ int32_t Dictionary::getLine(std::istream& in,
     if (words.size() > MAX_LINE_SIZE && args_->model != model_name::sup) break;
     if (token == EOS) break;
 
+    std::cout<<token<<std::endl;
     switch(currentType) {
     case 0: labels.push_back(wid - nwords_); break;
     case 1: if(!discard(wid, uniform(rng))) { words.push_back(wid); } break;
@@ -402,6 +406,14 @@ int32_t Dictionary::getLine(std::istream& in,
     currentType++;
     if(currentType > maxSectionType_) {
       currentType = 0;
+      // input data normally has all 3 granularities.
+      // If we don't want to use the 3, then we need to move the pointer in the in istream
+      // to the end of the current line.
+      if(maxSectionType_ < 3) {
+	char c;
+	std::streambuf& sb = *in.rdbuf();
+	while((c = sb.sbumpc()) != EOF && c != '\n' && c != '\r') {}
+      }
     }
     
   }
