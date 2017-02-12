@@ -91,7 +91,7 @@ void FastText::printInfo(real progress, real loss) {
   real t = real(clock() - start) / CLOCKS_PER_SEC;
   real wst = real(tokenCount) / t;
   real lr = args_->lr * (1.0 - progress);
-  int eta = int(t / progress * (1 - progress) / args_->thread);
+  int eta = int(t / progress * (1 - progress));
   int etah = eta / 3600;
   int etam = (eta - etah * 3600) / 60;
   std::cout << std::fixed;
