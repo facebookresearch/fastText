@@ -9,6 +9,8 @@
 
 #include "args.h"
 
+#include <assert.h>
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -78,10 +80,7 @@ void Args::parseArgs(int argc, char** argv) {
       dim = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-granularities") == 0) {
       granularities = atoi(argv[ai + 1]);
-      if(granularities < 1) { std::cout<<"option -granularities cannot be less than 1, using minimal value 1."<<std::endl; }
-      granularities = std::max(1, granularities);
-      if(granularities > 3) { std::cout<<"option -granularities cannot be more than 3, using maximal value 3."<<std::endl; }
-      granularities = std::min(3, granularities);
+      assert(granularities > 0 && granularities < 4);
     } else if (strcmp(argv[ai], "-ws") == 0) {
       ws = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-epoch") == 0) {
