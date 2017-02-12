@@ -88,7 +88,7 @@ class Dictionary {
                     std::vector<int32_t>&, std::minstd_rand&) const;
     int32_t getLine(std::istream&, std::vector<int32_t>&, std::vector<int32_t>&, std::vector<int32_t>&,
                     std::vector<int32_t>&, std::minstd_rand&) const;
-    int32_t getLine(std::istream&, List&,
+    int32_t getLine(std::istream&, VPtrList&,
                     std::vector<int32_t>&, std::minstd_rand&) const;
     void threshold(int64_t, int64_t);
 };

@@ -107,15 +107,6 @@ real Model::softmax(int32_t target, real lr) {
   return -log(output_[target]);
 }
 
-// void Model::computeHidden(const std::vector<int32_t>& input, Vector& hidden) const {
-//   assert(hidden.size() == hsz_);
-//   hidden.zero();
-//   for (auto it = input.cbegin(); it != input.cend(); ++it) {
-//     hidden.addRow(*wi_, *it);
-//   }
-//   hidden.mul(1.0 / input.size());
-// }
-
 void Model::computeHidden(const std::vector<int32_t>& input, Vector& hidden) const {
   assert(hidden.size() == gsz_);
   hidden.zero();
@@ -137,7 +128,6 @@ void Model::computeHidden(const List& input, Vector& hidden) const {
   // hidden is divided equally between each element of the input
   int64_t i = 0;
   for(std::vector<int32_t> v : input) {
-    //assert(v.size() == gsz_);
     Vector h(gsz_); // could go faster if passed hidden's memory zone directly.
     computeHidden(v, h);
     hidden.addVector(h, i*gsz_);
@@ -207,34 +197,11 @@ void Model::dfs(int32_t k, int32_t node, real score,
   dfs(k, tree[node].right, score + log(f), heap, hidden);
 }
 
-// void Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
-//   assert(target >= 0);
-//   assert(target < osz_);
-//   if (input.size() == 0) return;
-//   computeHidden(input, hidden_);
-//   if (args_->loss == loss_name::ns) {
-//     loss_ += negativeSampling(target, lr);
-//   } else if (args_->loss == loss_name::hs) {
-//     loss_ += hierarchicalSoftmax(target, lr);
-//   } else {
-//     loss_ += softmax(target, lr);
-//   }
-//   nexamples_ += 1;
-
-//   if (args_->model == model_name::sup) {
-//     grad_.mul(1.0 / input.size());
-//   }
-//   for (auto it = input.cbegin(); it != input.cend(); ++it) {
-//     wi_->addRow(grad_, *it, 1.0);
-//   }
-// }
-
 void Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
   List l = {input};
   update(l, target, lr);
 }
 
-  // std::list< std::vector<int32_t> >
 void Model::update(const List& input, int32_t target, real lr) {
   assert(target >= 0);
   assert(target < osz_);

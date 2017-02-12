@@ -17,6 +17,8 @@ namespace fasttext {
   // Shortcut to a list of vector of ints
   typedef std::list< std::vector<int32_t> > List;
 
+  typedef std::list< std::vector<int32_t>* > VPtrList;
+
 }
 
 #endif

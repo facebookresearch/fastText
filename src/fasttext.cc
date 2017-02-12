@@ -273,7 +273,7 @@ void FastText::trainThread(int32_t threadId) {
   std::vector<int32_t> line, labels;
   std::vector<int32_t> sentences, paragraphs;
   // :TODO: use a list instead of 3 vectors.
-  // List content;
+  VPtrList content = {&line, &sentences, &paragraphs};
   // std::vector<int32_t> words, sentences;
   
   while (tokenCount < args_->epoch * ntokens) {
@@ -281,7 +281,7 @@ void FastText::trainThread(int32_t threadId) {
     real lr = args_->lr * (1.0 - progress);
 
     //localTokenCount += dict_->getLine(ifs, line, labels, model.rng);
-    localTokenCount += dict_->getLine(ifs, line, sentences, paragraphs, labels, model.rng);
+    localTokenCount += dict_->getLine(ifs, content, labels, model.rng);
     // :TODO: assert the line to make sure it has good size
 
     if (args_->model == model_name::sup) {
@@ -381,8 +381,8 @@ void FastText::train(std::shared_ptr<Args> args) {
   if (args_->pretrainedVectors.size() != 0) {
     loadVectors(args_->pretrainedVectors);
   } else {
-    input_ = std::make_shared<Matrix>(dict_->nwords()+args_->bucket, args_->dim); //args_->granularities * args_->dim);
-    input_->uniform(1.0 / (args_->dim)); //args_->granularities * args_->dim));
+    input_ = std::make_shared<Matrix>(dict_->nwords()+args_->bucket, args_->dim);
+    input_->uniform(1.0 / (args_->dim));
   }
 
   if (args_->model == model_name::sup) {
@@ -391,22 +391,6 @@ void FastText::train(std::shared_ptr<Args> args) {
     output_ = std::make_shared<Matrix>(dict_->nwords(), args_->granularities * args_->dim);
   }
   output_->zero();
-
-
-  // std::vector<int32_t> line, labels;
-  // Model model(input_, output_, args_, 0);
-  //   model.setTargetCounts(dict_->getCounts(entry_type::label));
-  // int64_t localTokenCount = 0;
-  // const int64_t ntokens = dict_->ntokens();
-  // while (tokenCount < args_->epoch * ntokens) {
-  //   localTokenCount += dict_->getLine(ifs, line, labels, model.rng);
-  //   dict_->addNgrams(line, args_->wordNgrams);
-  // }
-  
-  // std::cout<<line.size()<<std::endl; 
-  // std::cout<<labels.size()<<std::endl; 
-  // return;
-
   
   start = clock();
   tokenCount = 0;

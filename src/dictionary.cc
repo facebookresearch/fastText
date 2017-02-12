@@ -159,13 +159,15 @@ bool Dictionary::readWord(std::istream& in, std::string& word) const
   std::streambuf& sb = *in.rdbuf();
   word.clear();
 
-  // std::streambuf::sbumpc  :  Returns the character at the current position of the controlled
-  //    input sequence, and advances the position indicator to the next character.
+  // std::streambuf::sbumpc : Returns the character at the current position of
+  //    the controlled input sequence, and advances the position indicator to
+  //    the next character.
   //
-  // Read istream until end of file EOF char is reached.
-  // Inside while loop, if char is a special character, wrap up and return to the caller.
-  // If word is empty, then if current character is a new line, then add special EOS symbol, otherwise continue.
-  // If word is not empty, we want to return the word, just making sure before that we don't add the current character if
+  // Read istream until end of file EOF char is reached.  Inside while loop, if
+  // char is a special character, wrap up and return to the caller.  If word is
+  // empty, then if current character is a new line, then add special EOS
+  // symbol, otherwise continue.  If word is not empty, we want to return the
+  // word, just making sure before that we don't add the current character if
   // it's a new line.
   while ((c = sb.sbumpc()) != EOF) {
     // \n : line feed ; \r : carriage return
@@ -175,7 +177,8 @@ bool Dictionary::readWord(std::istream& in, std::string& word) const
     if (c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == '\v' || c == '\f' || c == '\0') {
       if (word.empty()) {
         if (c == '\n') {
-          word += EOS; // Special character from class Dictionary to make sure classifier knows we reached end of sentence.
+          word += EOS; // Special character from class Dictionary to make sure
+		       // classifier knows we reached end of sentence.
           return true;
         }
         continue;
@@ -201,20 +204,24 @@ bool Dictionary::readSection(std::istream& in, std::string& word) const
   std::string tmp;
   tmp.clear();
   
-  // std::streambuf::sbumpc  :  Returns the character at the current position of the controlled
-  //    input sequence, and advances the position indicator to the next character.
+  // std::streambuf::sbumpc : Returns the character at the current position of
+  //    the controlled input sequence, and advances the position indicator to
+  //    the next character.
   //
-  // Read istream until end of file EOF char is reached.
-  // Inside while loop, if char is a special character, wrap up and return to the caller.
-  // If word is empty, then if current character is a new line, then add special EOS symbol, otherwise continue.
-  // If word is not empty, we want to return the word, just making sure before that we don't add the current character if
+  // Read istream until end of file EOF char is reached.  Inside while loop, if
+  // char is a special character, wrap up and return to the caller.  If word is
+  // empty, then if current character is a new line, then add special EOS
+  // symbol, otherwise continue.  If word is not empty, we want to return the
+  // word, just making sure before that we don't add the current character if
   // it's a new line.
   while ((c = sb.sbumpc()) != EOF) {
-    // \n : line feed ; \r : carriage return ; \t : horizontal tab ; \v : vertical tab ; \f : formfeed ; \0 : null char
+    // \n : line feed ; \r : carriage return ; \t : horizontal tab ; \v :
+    // vertical tab ; \f : formfeed ; \0 : null char
     if (c == '\n' || c == '\r' || c == '\t' || c == '\v' || c == '\f' || c == '\0') {
       if (word.empty()) {
         if (c == '\n') {
-          word += EOS; // Special character from class Dictionary to make sure classifier knows we reached end of sentence.
+          word += EOS; // Special character from class Dictionary to make sure
+		       // classifier knows we reached end of sentence.
           return true;
         }
         continue;
@@ -225,9 +232,8 @@ bool Dictionary::readSection(std::istream& in, std::string& word) const
       }
     }
 
-    // :WARNING: that's not good, need to fix that... in case characters are there in the text.
-    if (dataSeparatorChars_.find(c) != dataSeparatorChars_.end()) { //
-      //if((c == '#' || c == '@')) {// && (dataSeparator_.find(tmp))) {
+    // Check if c is any of the characters in dataSeparator string.
+    if (dataSeparatorChars_.find(c) != dataSeparatorChars_.end()) {
       tmp.push_back(c);
       
       if(tmp == dataSeparator_) {
@@ -248,7 +254,7 @@ bool Dictionary::readSection(std::istream& in, std::string& word) const
 void Dictionary::readFromFile(std::istream& in) {
   std::string word;
   int64_t minThreshold = 1;
-  while (readSection(in, word)) {    /// :WARNING: Should be careful with that!
+  while (readSection(in, word)) {
     add(word);
     if (ntokens_ % 1000000 == 0 && args_->verbose > 1) {
       std::cout << "\rRead " << ntokens_  / 1000000 << "M words" << std::flush;
@@ -352,32 +358,28 @@ int32_t Dictionary::getLine(std::istream& in,
   }
   return ntokens;
 }
-
-// int32_t Dictionary::getLine(std::istream& in,
-//                             std::vector<int32_t>& words,
-//                             std::vector<int32_t>& labels,
-//                             std::minstd_rand& rng) const {
-//   //  List l = {words};
-//   std::vector<int32_t> sentences, paragraphs;
-//   return getLine(in, words, sentences, paragraphs, labels, rng);
-// }
   
 int32_t Dictionary::getLine(std::istream& in,
-                            std::vector<int32_t>& words,
-			    //                            List& words,
-                            std::vector<int32_t>& sentences,
-                            std::vector<int32_t>& paragraphs,			    
+			    VPtrList& granularities,
                             std::vector<int32_t>& labels,
                             std::minstd_rand& rng) const {
   std::uniform_real_distribution<> uniform(0, 1);
   std::string token;
   int32_t ntokens = 0;
-  words.clear();
-  sentences.clear();
-  paragraphs.clear();
-  // for(std::vector<int32_t> v : words) {
-  //   v.clear();
-  // }
+
+  // Clear all vectors in granularities
+  for(std::vector<int32_t>* v : granularities) {
+    v->clear();
+  }
+  std::vector<int32_t>* words;
+  std::vector<int32_t>* sentences;
+  std::vector<int32_t>* paragraphs;
+  VPtrList::const_iterator it = granularities.begin();
+  words = *it;
+  it++;
+  sentences = *it;
+  it++;
+  paragraphs = *it;
   
   labels.clear();
   if (in.eof()) {
@@ -385,30 +387,27 @@ int32_t Dictionary::getLine(std::istream& in,
     in.seekg(std::streampos(0));
   }
 
-  //  std::vector<int32_t> first = words.front();
-
   int currentType = 0;
   while (readSection(in, token)) {
     int32_t wid = getId(token);
     if (wid < 0) continue;
     ntokens++;
 
-    if (words.size() > MAX_LINE_SIZE && args_->model != model_name::sup) break;
+    if (words->size() > MAX_LINE_SIZE && args_->model != model_name::sup) break;
     if (token == EOS) break;
 
-    std::cout<<token<<std::endl;
     switch(currentType) {
     case 0: labels.push_back(wid - nwords_); break;
-    case 1: if(!discard(wid, uniform(rng))) { words.push_back(wid); } break;
-    case 2: sentences.push_back(wid); break;
-    case 3: paragraphs.push_back(wid); break;
+    case 1: if(!discard(wid, uniform(rng))) { words->push_back(wid); } break;
+    case 2: sentences->push_back(wid); break;
+    case 3: paragraphs->push_back(wid); break;
     }
     currentType++;
     if(currentType > maxSectionType_) {
       currentType = 0;
-      // input data normally has all 3 granularities.
-      // If we don't want to use the 3, then we need to move the pointer in the in istream
-      // to the end of the current line.
+      // input data normally has all 3 granularities.  If we don't want to use
+      // the 3, then we need to move the pointer in the in istream to the end of
+      // the current line.
       if(maxSectionType_ < 3) {
 	char c;
 	std::streambuf& sb = *in.rdbuf();
