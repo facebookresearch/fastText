@@ -12,6 +12,7 @@
 #include <assert.h>
 
 #include <algorithm>
+#include <iostream>
 
 namespace fasttext {
 
@@ -205,6 +206,8 @@ void Model::update(const List& input, int32_t target, real lr) {
   assert(target >= 0);
   assert(target < osz_);
   if (input.size() == 0) return;
+  if (input.front().size() == 0) return;
+  
   computeHidden(input, hidden_);
 
   // Next, any of the following function sets grad_ to zero and calculates

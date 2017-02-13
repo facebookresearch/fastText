@@ -274,6 +274,11 @@ void FastText::trainThread(int32_t threadId) {
 
     localTokenCount += dict_->getLine(ifs, content, labels, model.rng);
 
+    if(paragraphs.size() != line.size()) {
+      line.pop_back();
+      sentences.pop_back();
+    }
+    
     if (args_->model == model_name::sup) {
       List granularities;
       for(int i=0; i<args_->granularities; i++) {

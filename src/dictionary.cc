@@ -382,7 +382,7 @@ int32_t Dictionary::getLine(std::istream& in,
     int32_t wid = getId(token);
     if (wid < 0) continue;
     ntokens++;
-
+    
     if ((*granularities.begin())->size() > MAX_LINE_SIZE && args_->model != model_name::sup) break;
     if (token == EOS) break;
 
