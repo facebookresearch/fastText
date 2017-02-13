@@ -9,6 +9,7 @@
 
 #include "fasttext.h"
 
+#include <assert.h>
 #include <math.h>
 
 #include <iostream>
@@ -103,15 +104,6 @@ void FastText::printInfo(real progress, real loss) {
   std::cout << std::flush;
 }
 
-// void FastText::supervised(Model& model, real lr,
-//                           const std::vector<int32_t>& line,
-//                           const std::vector<int32_t>& labels) {
-//   if (labels.size() == 0 || line.size() == 0) return;
-//   std::uniform_int_distribution<> uniform(0, labels.size() - 1);
-//   int32_t i = uniform(model.rng);
-//   model.update(line, labels[i], lr);
-// }
-
 void FastText::supervised(Model& model, real lr,
                           const std::vector<int32_t>& line,
                           const std::vector<int32_t>& labels) {
@@ -120,13 +112,13 @@ void FastText::supervised(Model& model, real lr,
 }
 			  
 void FastText::supervised(Model& model, real lr,
-			    const List& lines,
-			    const std::vector<int32_t>& labels) {
-  if (labels.size() == 0 || lines.size() == 0) return;
+			  const List& granularities,
+			  const std::vector<int32_t>& labels) {
+  if (labels.size() == 0 || granularities.size() == 0) return;
   std::uniform_int_distribution<> uniform(0, labels.size() - 1);
   int32_t i = uniform(model.rng);
 
-  model.update(lines, labels[i], lr);
+  model.update(granularities, labels[i], lr);
 }
 
 void FastText::cbow(Model& model, real lr,
@@ -270,38 +262,25 @@ void FastText::trainThread(int32_t threadId) {
 
   const int64_t ntokens = dict_->ntokens();
   int64_t localTokenCount = 0;
-  std::vector<int32_t> line, labels;
-  std::vector<int32_t> sentences, paragraphs;
-  // :TODO: use a list instead of 3 vectors.
-  VPtrList content = {&line, &sentences, &paragraphs};
-  // std::vector<int32_t> words, sentences;
+  std::vector<int32_t> labels, line, sentences, paragraphs;
+  VPtrVector content;
+  content.push_back(&line);
+  content.push_back(&sentences);
+  content.push_back(&paragraphs);
   
   while (tokenCount < args_->epoch * ntokens) {
     real progress = real(tokenCount) / (args_->epoch * ntokens);
     real lr = args_->lr * (1.0 - progress);
 
-    //localTokenCount += dict_->getLine(ifs, line, labels, model.rng);
     localTokenCount += dict_->getLine(ifs, content, labels, model.rng);
-    // :TODO: assert the line to make sure it has good size
 
     if (args_->model == model_name::sup) {
-
-      // :TODO: fix that below, I shouldn't need the call to the previous supervised method.
-      if(args_->granularities == 1) {
-	dict_->addNgrams(line, args_->wordNgrams);
-	supervised(model, lr, line, labels);
-      } else {
-	// :TODO: is that the better way to do it?
-	dict_->addNgrams(line, args_->wordNgrams);
-	dict_->addNgrams(sentences, args_->wordNgrams);
-	List granularities = {line, sentences};
-	if(args_->granularities == 3) {
-	  dict_->addNgrams(paragraphs, args_->wordNgrams);
-	  granularities.push_back(paragraphs);
-	}
-	supervised(model, lr, granularities, labels);
+      List granularities;
+      for(int i=0; i<args_->granularities; i++) {
+      	dict_->addNgrams(*content[i], args_->wordNgrams);
+      	granularities.push_back(*content[i]);
       }
-
+      supervised(model, lr, granularities, labels);
     } else if (args_->model == model_name::cbow) {
       cbow(model, lr, line);
     } else if (args_->model == model_name::sg) {

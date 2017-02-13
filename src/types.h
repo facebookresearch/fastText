@@ -18,6 +18,7 @@ namespace fasttext {
   typedef std::list< std::vector<int32_t> > List;
 
   typedef std::list< std::vector<int32_t>* > VPtrList;
+  typedef std::vector< std::vector<int32_t>* > VPtrVector;
 
 }
 

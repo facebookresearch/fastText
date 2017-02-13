@@ -19,7 +19,7 @@
 #include "matrix.h"
 #include "vector.h"
 #include "real.h"
-#include "list.h"
+#include "types.h"
 
 #define SIGMOID_TABLE_SIZE 512
 #define MAX_SIGMOID 8
@@ -89,13 +89,10 @@ class Model {
              Vector&) const;
     void findKBest(int32_t, std::vector<std::pair<real, int32_t>>&,
                    Vector&, Vector&) const;
+    
     void update(const std::vector<int32_t>&, int32_t, real);
-
-    // The Model now builds the hidden vector properly. Hidden and gradient vectors have same size. See computeHidden with List param.
-    // The input and output matrices have the same number of columns as the hidden vector has elements.
-    // The hidden vector is built as a concatenation of the representations of the words, sentences, and paragraphs.
-    // Similarly, the gradient is applied to the input matrix piece by piece, corresponding to the different representations.
     void update(const List&, int32_t, real);
+    
     void computeHidden(const std::vector<int32_t>&, Vector&) const;
     void computeHidden(const List&, Vector&) const;
     void computeOutputSoftmax(Vector&, Vector&) const;

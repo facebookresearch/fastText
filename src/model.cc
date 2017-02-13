@@ -121,7 +121,6 @@ void Model::computeHidden(const std::vector<int32_t>& input, Vector& hidden) con
 }
 
 void Model::computeHidden(const List& input, Vector& hidden) const {
-  // hidden's size is the dimension specified in parameters.
   assert(hidden.size() == hsz_);
   hidden.zero();
 
@@ -235,7 +234,6 @@ void Model::update(const List& input, int32_t target, real lr) {
   for(std::vector<int32_t> v : input) {
     // add to it^th row of matrix wi_ the grad_ vector
     for (auto it = v.cbegin(); it != v.cend(); ++it) {
-      //      wi_->addRow(grad_, *it, 1.0);
       wi_->addRow(grad_, *it, 1.0, cursor*gsz_);
     }
     cursor++;

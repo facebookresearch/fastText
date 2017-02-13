@@ -20,7 +20,7 @@
 
 #include "args.h"
 #include "real.h"
-#include "list.h"
+#include "types.h"
 
 namespace fasttext {
 
@@ -88,7 +88,7 @@ class Dictionary {
                     std::vector<int32_t>&, std::minstd_rand&) const;
     int32_t getLine(std::istream&, std::vector<int32_t>&, std::vector<int32_t>&, std::vector<int32_t>&,
                     std::vector<int32_t>&, std::minstd_rand&) const;
-    int32_t getLine(std::istream&, VPtrList&,
+    int32_t getLine(std::istream&, VPtrVector&, //VPtrList&,
                     std::vector<int32_t>&, std::minstd_rand&) const;
     void threshold(int64_t, int64_t);
 };
