@@ -26,14 +26,16 @@
 namespace fasttext {
 
 class FastText {
-  private:
-    std::shared_ptr<Args> args_;
-    std::shared_ptr<Dictionary> dict_;
-    std::shared_ptr<Matrix> input_;  // dict size + nb of buckets  x  size of category
-    std::shared_ptr<Matrix> output_; // if supervised: nb of labels  x  size of hidden
-    std::shared_ptr<Model> model_;
-    std::atomic<int64_t> tokenCount;
-    clock_t start;
+ private:
+  static const unsigned short maxGranularities = std::numeric_limits<unsigned short>::max();;
+  
+  std::shared_ptr<Args> args_;
+  std::shared_ptr<Dictionary> dict_;
+  std::shared_ptr<Matrix> input_;  // dict size + nb of buckets  x  size of category
+  std::shared_ptr<Matrix> output_; // if supervised: nb of labels  x  size of hidden
+  std::shared_ptr<Model> model_;
+  std::atomic<int64_t> tokenCount;
+  clock_t start;
 
   public:
     void getVector(Vector&, const std::string&);

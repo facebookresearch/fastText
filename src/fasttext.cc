@@ -262,11 +262,12 @@ void FastText::trainThread(int32_t threadId) {
 
   const int64_t ntokens = dict_->ntokens();
   int64_t localTokenCount = 0;
-  std::vector<int32_t> labels, line, sentences, paragraphs;
+  std::vector<int32_t> labels, line;
+  std::vector<int32_t>* features = new std::vector<int32_t>[maxGranularities];
   VPtrVector content;
-  content.push_back(&line);
-  content.push_back(&sentences);
-  content.push_back(&paragraphs);
+  for(int i=0; i<args_->granularities; i++) {
+    content.push_back(&features[i]);
+  }
   
   while (tokenCount < args_->epoch * ntokens) {
     real progress = real(tokenCount) / (args_->epoch * ntokens);
