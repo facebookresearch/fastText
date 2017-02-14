@@ -200,7 +200,9 @@ bool Dictionary::readSection(std::istream& in, std::string& word) const
   char c;
   std::streambuf& sb = *in.rdbuf();
   word.clear();
+
   std::string tmp;
+  tmp.clear();
   
   // std::streambuf::sbumpc : Returns the character at the current position of
   //    the controlled input sequence, and advances the position indicator to
@@ -239,7 +241,7 @@ bool Dictionary::readSection(std::istream& in, std::string& word) const
       }
     }
     else {
-      //tmp.clear();
+      tmp.clear();
       word.push_back(c);
     }
   }
@@ -358,18 +360,28 @@ int32_t Dictionary::getLine(std::istream& in,
 }
   
 int32_t Dictionary::getLine(std::istream& in,
-			    VPtrVector& granularities,
+			    VPtrList& granularities,
                             std::vector<int32_t>& labels,
                             std::minstd_rand& rng) const {
   std::uniform_real_distribution<> uniform(0, 1);
   std::string token;
   int32_t ntokens = 0;
 
-  labels.clear();
+  // Clear all vectors in granularities
   for(std::vector<int32_t>* v : granularities) {
     v->clear();
   }
-
+  // std::vector<int32_t>* words;
+  // std::vector<int32_t>* sentences;
+  // std::vector<int32_t>* paragraphs;
+  
+  // words = *it;
+  // it++;
+  // sentences = *it;
+  // it++;
+  // paragraphs = *it;
+  
+  //  labels.clear();
   if (in.eof()) {
     in.clear();
     in.seekg(std::streampos(0));
@@ -380,25 +392,46 @@ int32_t Dictionary::getLine(std::istream& in,
     int32_t wid = getId(token);
     if (wid < 0) continue;
     ntokens++;
-    
+
+    VPtrList::iterator it = granularities.begin();
+    //it++;
+
+    //if (words->size() > MAX_LINE_SIZE && args_->model != model_name::sup) break;
+    if ((*it)->size() > MAX_LINE_SIZE && args_->model != model_name::sup) break;
+    if (token == EOS) break;
+
     if(currentType == 0) {
       labels.push_back(wid - nwords_);
     } else {
-      if(!discard(wid, uniform(rng))) { granularities[currentType - 1]->push_back(wid); }
+      it = granularities.begin();
+      int counter = currentType - 1;
+      while(it != granularities.end()) {
+	if(counter == 0) {
+	  (*it)->push_back(wid);
+	  break;
+	}
+	counter--;
+	it++;
+      }
     }
-
-    if ((*granularities.begin())->size() > MAX_LINE_SIZE && args_->model != model_name::sup) break;
-    if (token == EOS) break;
-
+    
+    // switch(currentType) {
+    // case 0: labels.push_back(wid - nwords_); break;
+    // case 1: if(!discard(wid, uniform(rng))) { words->push_back(wid); } break;
+    // case 2: sentences->push_back(wid); break;
+    // case 3: paragraphs->push_back(wid); break;
+    // }
     currentType++;
     if(currentType > maxSectionType_) {
       currentType = 0;
       // input data normally has all 3 granularities.  If we don't want to use
       // the 3, then we need to move the pointer in the in istream to the end of
       // the current line.
-      char c;
-      std::streambuf& sb = *in.rdbuf();
-      while((c = sb.sbumpc()) != EOF && c != '\n' && c != '\r') {}
+      //if(maxSectionType_ < 3) {
+	char c;
+	std::streambuf& sb = *in.rdbuf();
+	while((c = sb.sbumpc()) != EOF && c != '\n' && c != '\r') {}
+	//}
     }
     
   }

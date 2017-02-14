@@ -36,11 +36,16 @@ void Vector::zero() {
   }
 }
 
-void Vector::mul(real a) {
-  for (int64_t i = 0; i < m_; i++) {
+void Vector::mul(real a, int64_t from, int64_t length) {
+  assert(from >= 0);
+  if(length == -1) { length = m_ - from; }
+  assert(from + length <= m_);
+
+  for(int64_t i=from; i<from+length; i++) {
     data_[i] *= a;
   }
 }
+
 
 void Vector::addRow(const Matrix& A, int64_t i) {
   assert(i >= 0);
@@ -98,6 +103,12 @@ std::ostream& operator<<(std::ostream& os, const Vector& v)
     os << v.data_[j] << ' ';
   }
   return os;
+}
+
+void Vector::addVector(const Vector& v, int64_t pos) {
+  for(int64_t i = 0; i<v.size(); i++) {
+    data_[pos+i] = v[i];
+  }
 }
 
 }

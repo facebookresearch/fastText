@@ -16,9 +16,11 @@
 #include <ostream>
 #include <random>
 #include <memory>
+#include <map>
 
 #include "args.h"
 #include "real.h"
+#include "types.h"
 
 namespace fasttext {
 
@@ -27,6 +29,7 @@ enum class entry_type : int8_t {word=0, label=1};
 
 struct entry {
   std::string word;
+  
   int64_t count;
   entry_type type;
   std::vector<int32_t> subwords;
@@ -50,6 +53,11 @@ class Dictionary {
     int32_t nlabels_;
     int64_t ntokens_;
 
+    // The separator string between each type of data in input.
+    std::string dataSeparator_;
+    std::map<char, int> dataSeparatorChars_;
+    int maxSectionType_; // 1: word ; 2: sentence ; 3: document
+
   public:
     static const std::string EOS;
     static const std::string BOW;
@@ -69,6 +77,7 @@ class Dictionary {
     uint32_t hash(const std::string& str) const;
     void add(const std::string&);
     bool readWord(std::istream&, std::string&) const;
+    bool readSection(std::istream&, std::string&) const;
     void readFromFile(std::istream&);
     std::string getLabel(int32_t) const;
     void save(std::ostream&) const;
@@ -76,6 +85,10 @@ class Dictionary {
     std::vector<int64_t> getCounts(entry_type) const;
     void addNgrams(std::vector<int32_t>&, int32_t) const;
     int32_t getLine(std::istream&, std::vector<int32_t>&,
+                    std::vector<int32_t>&, std::minstd_rand&) const;
+    int32_t getLine(std::istream&, std::vector<int32_t>&, std::vector<int32_t>&, std::vector<int32_t>&,
+                    std::vector<int32_t>&, std::minstd_rand&) const;
+    int32_t getLine(std::istream&, VPtrVector&, //VPtrList&,
                     std::vector<int32_t>&, std::minstd_rand&) const;
     void threshold(int64_t, int64_t);
 };

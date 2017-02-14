@@ -37,7 +37,12 @@ class Matrix {
     void uniform(real);
     real dotRow(const Vector&, int64_t);
     void addRow(const Vector&, int64_t, real);
-
+    // This addRow enables to add part of the vector passed in parameter to the matrix.
+    // So the vector can be bigger than the matrix' row length. The amount of elements
+    // added to the row of the matrix are the length of the matrix' row.
+    // @param from: position from where to start getting the elements in the vector.
+    void addRow(const Vector&, int64_t, real, int64_t from);
+    
     void save(std::ostream&);
     void load(std::istream&);
 };

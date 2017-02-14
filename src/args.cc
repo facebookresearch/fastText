@@ -9,16 +9,20 @@
 
 #include "args.h"
 
+#include <assert.h>
+
 #include <stdlib.h>
 #include <string.h>
 
 #include <iostream>
+#include <algorithm>
 
 namespace fasttext {
 
 Args::Args() {
   lr = 0.05;
   dim = 100;
+  granularities = 1;
   ws = 5;
   epoch = 5;
   minCount = 5;
@@ -34,6 +38,7 @@ Args::Args() {
   lrUpdateRate = 100;
   t = 1e-4;
   label = "__label__";
+  separator = "###@@@###";
   verbose = 2;
   pretrainedVectors = "";
 }
@@ -73,6 +78,10 @@ void Args::parseArgs(int argc, char** argv) {
       lrUpdateRate = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-dim") == 0) {
       dim = atoi(argv[ai + 1]);
+    } else if (strcmp(argv[ai], "-granularities") == 0) {
+      granularities = atoi(argv[ai + 1]);
+      assert(granularities > 0);
+      assert(granularities < std::numeric_limits<unsigned short>::max());
     } else if (strcmp(argv[ai], "-ws") == 0) {
       ws = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-epoch") == 0) {
@@ -109,6 +118,8 @@ void Args::parseArgs(int argc, char** argv) {
       t = atof(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-label") == 0) {
       label = std::string(argv[ai + 1]);
+    } else if (strcmp(argv[ai], "-separator") == 0) {
+      separator = std::string(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-verbose") == 0) {
       verbose = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-pretrainedVectors") == 0) {
@@ -142,7 +153,8 @@ void Args::printHelp() {
     << "The following arguments are optional:\n"
     << "  -lr                 learning rate [" << lr << "]\n"
     << "  -lrUpdateRate       change the rate of updates for the learning rate [" << lrUpdateRate << "]\n"
-    << "  -dim                size of word vectors [" << dim << "]\n"
+    << "  -dim                size of text representation [" << dim << "]\n"
+    << "  -granularities      number of granularities of representations [" << granularities << "]\n"
     << "  -ws                 size of the context window [" << ws << "]\n"
     << "  -epoch              number of epochs [" << epoch << "]\n"
     << "  -minCount           minimal number of word occurences [" << minCount << "]\n"
@@ -156,6 +168,7 @@ void Args::printHelp() {
     << "  -thread             number of threads [" << thread << "]\n"
     << "  -t                  sampling threshold [" << t << "]\n"
     << "  -label              labels prefix [" << label << "]\n"
+    << "  -separator          separator string between label, word, sentence, etc. [" << separator << "]\n"
     << "  -verbose            verbosity level [" << verbose << "]\n"
     << "  -pretrainedVectors  pretrained word vectors for supervised learning []"
     << std::endl;
@@ -163,6 +176,7 @@ void Args::printHelp() {
 
 void Args::save(std::ostream& out) {
   out.write((char*) &(dim), sizeof(int));
+  out.write((char*) &(granularities), sizeof(int));
   out.write((char*) &(ws), sizeof(int));
   out.write((char*) &(epoch), sizeof(int));
   out.write((char*) &(minCount), sizeof(int));
@@ -179,6 +193,7 @@ void Args::save(std::ostream& out) {
 
 void Args::load(std::istream& in) {
   in.read((char*) &(dim), sizeof(int));
+  in.read((char*) &(granularities), sizeof(int));
   in.read((char*) &(ws), sizeof(int));
   in.read((char*) &(epoch), sizeof(int));
   in.read((char*) &(minCount), sizeof(int));
