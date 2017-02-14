@@ -27,7 +27,7 @@ namespace fasttext {
 
 class FastText {
  private:
-  static const unsigned short maxGranularities = std::numeric_limits<unsigned short>::max();;
+  static const unsigned short maxGranularities = std::numeric_limits<unsigned short>::max();
   
   std::shared_ptr<Args> args_;
   std::shared_ptr<Dictionary> dict_;

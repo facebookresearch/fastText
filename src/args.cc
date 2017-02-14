@@ -80,7 +80,7 @@ void Args::parseArgs(int argc, char** argv) {
       dim = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-granularities") == 0) {
       granularities = atoi(argv[ai + 1]);
-      assert(granularities > 0 && granularities < 4);
+      assert(granularities > 0);
       assert(granularities < std::numeric_limits<unsigned short>::max());
     } else if (strcmp(argv[ai], "-ws") == 0) {
       ws = atoi(argv[ai + 1]);
