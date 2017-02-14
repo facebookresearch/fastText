@@ -200,9 +200,7 @@ bool Dictionary::readSection(std::istream& in, std::string& word) const
   char c;
   std::streambuf& sb = *in.rdbuf();
   word.clear();
-
   std::string tmp;
-  tmp.clear();
   
   // std::streambuf::sbumpc : Returns the character at the current position of
   //    the controlled input sequence, and advances the position indicator to
@@ -241,7 +239,7 @@ bool Dictionary::readSection(std::istream& in, std::string& word) const
       }
     }
     else {
-      tmp.clear();
+      //tmp.clear();
       word.push_back(c);
     }
   }
@@ -383,15 +381,15 @@ int32_t Dictionary::getLine(std::istream& in,
     if (wid < 0) continue;
     ntokens++;
     
-    if ((*granularities.begin())->size() > MAX_LINE_SIZE && args_->model != model_name::sup) break;
-    if (token == EOS) break;
-
     if(currentType == 0) {
       labels.push_back(wid - nwords_);
     } else {
       if(!discard(wid, uniform(rng))) { granularities[currentType - 1]->push_back(wid); }
     }
-    
+
+    if ((*granularities.begin())->size() > MAX_LINE_SIZE && args_->model != model_name::sup) break;
+    if (token == EOS) break;
+
     currentType++;
     if(currentType > maxSectionType_) {
       currentType = 0;

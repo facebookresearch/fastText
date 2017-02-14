@@ -272,12 +272,7 @@ void FastText::trainThread(int32_t threadId) {
     real progress = real(tokenCount) / (args_->epoch * ntokens);
     real lr = args_->lr * (1.0 - progress);
 
-    localTokenCount += dict_->getLine(ifs, content, labels, model.rng);
-
-    if(paragraphs.size() != line.size()) {
-      line.pop_back();
-      sentences.pop_back();
-    }
+    localTokenCount += dict_->getLine(ifs, content, labels, model.rng);    
     
     if (args_->model == model_name::sup) {
       List granularities;
