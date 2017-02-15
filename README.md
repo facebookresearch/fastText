@@ -1,6 +1,8 @@
-# fastText
+# fastText -- granularity support extension
 
 fastText is a library for efficient learning of word representations and sentence classification.
+
+This extension enables to represent not only the subword and word, but also the word's context, namely its sentence and paragraph. Hence, the input file is, by default, different, as the space character cannot be used to separate data anymore. Two new options are introduced: granularities and separator string. And the dim option is specified in this new context.
 
 ## Requirements
 
@@ -43,7 +45,7 @@ $ ./fasttext skipgram -input data.txt -output model
 ```
 
 where `data.txt` is a training file containing `utf-8` encoded text.
-By default the word vectors will take into account character n-grams from 3 to 6 characters.
+By default the word vectors will take into account character n-grams from 3 to 6 characters. This is fasttext's default behavior and also that of this extension. By changing the option granularities to be greater than 1, the word's context can be taken into account. In practice, the input defines the information that being used, as the granularities option tells the system how many columns in the data file to use, the first being the labels.
 At the end of optimization the program will save two files: `model.bin` and `model.vec`.
 `model.vec` is a text file containing the word vectors, one per line.
 `model.bin` is a binary file containing the parameters of the model along with the dictionary and all hyper parameters.
@@ -79,29 +81,35 @@ This library can also be used to train supervised text classifiers, for instance
 In order to train a text classifier using the method described in [2](#bag-of-tricks-for-efficient-text-classification), use:
 
 ```
-$ ./fasttext supervised -input train.txt -output model
+$ ./fasttext supervised -input train.txt -output model -granularities N
 ```
 
-where `train.txt` is a text file containing a training sentence per line along with the labels.
+where `train.txt` is a text file containing the labels and a set of training sentences per line, i.e.:
+<label><separator><sentence1><separator>...<separator><sentenceN>
+By default, the granularities option is 1 and, even if the file contains many columns, only the first one is used. Also, the first column in the file is assumed to be for the labels.
 By default, we assume that labels are words that are prefixed by the string `__label__`.
 This will output two files: `model.bin` and `model.vec`.
 Once the model was trained, you can evaluate it by computing the precision and recall at k (P@k and R@k) on a test set using:
 
 ```
-$ ./fasttext test model.bin test.txt k
+$ ./fasttext test model.bin test.txt granularities k
 ```
 
+The argument `granularities` is optional, and is equal to `1` by default.
 The argument `k` is optional, and is equal to `1` by default.
+If only one is not given, the program will assume that the one that is is the granularities.
 
 In order to obtain the k most likely labels for a piece of text, use:
 
 ```
-$ ./fasttext predict model.bin test.txt k
+$ ./fasttext predict model.bin test.txt granularities k
 ```
 
 where `test.txt` contains a piece of text to classify per line.
 Doing so will print to the standard output the k most likely labels for each line.
+The argument `granularities` is optional, and equal to `1` by default.
 The argument `k` is optional, and equal to `1` by default.
+If one of the two is given in parameter, the system will assume it is the granularities option.
 See `classification-example.sh` for an example use case.
 In order to reproduce results from the paper [2](#bag-of-tricks-for-efficient-text-classification), run `classification-results.sh`, this will download all the datasets and reproduce the results from Table 1.
 
@@ -130,6 +138,7 @@ The following arguments are optional:
   -lr                 learning rate [0.1]
   -lrUpdateRate       change the rate of updates for the learning rate [100]
   -dim                size of word vectors [100]
+  -granularities      scales taken into account [1]
   -ws                 size of the context window [5]
   -epoch              number of epochs [5]
   -minCount           minimal number of word occurences [1]
