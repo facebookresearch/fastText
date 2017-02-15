@@ -114,7 +114,11 @@ void FastText::supervised(Model& model, real lr,
 void FastText::supervised(Model& model, real lr,
 			  const List& granularities,
 			  const std::vector<int32_t>& labels) {
-  if (labels.size() == 0 || granularities.size() == 0 || granularities.front().size() == 0) return;
+  bool anyEmptyVector = false;
+  for(std::vector<int32_t> v : granularities) {
+    anyEmptyVector = anyEmptyVector || v.size() == 0;
+  }
+  if (labels.size() == 0 || granularities.size() == 0 || anyEmptyVector) return;
   std::uniform_int_distribution<> uniform(0, labels.size() - 1);
   int32_t i = uniform(model.rng);
 
