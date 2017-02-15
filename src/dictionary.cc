@@ -391,7 +391,7 @@ int32_t Dictionary::getLine(std::istream& in,
     if (token == EOS) break;
 
     currentType++;
-    if(currentType > maxSectionType_) {
+    if(currentType > granularities.size()) {
       currentType = 0;
       // input data normally has all 3 granularities.  If we don't want to use
       // the 3, then we need to move the pointer in the in istream to the end of

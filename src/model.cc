@@ -140,7 +140,7 @@ bool Model::comparePairs(const std::pair<real, int32_t> &l,
   return l.first > r.first;
 }
 
-void Model::predict(const std::vector<int32_t>& input, int32_t k,
+void Model::predict(const List& input, int32_t k,
                     std::vector<std::pair<real, int32_t>>& heap,
                     Vector& hidden, Vector& output) const {
   assert(k > 0);
@@ -155,6 +155,12 @@ void Model::predict(const std::vector<int32_t>& input, int32_t k,
 }
 
 void Model::predict(const std::vector<int32_t>& input, int32_t k,
+                    std::vector<std::pair<real, int32_t>>& heap) {
+  List l = {input};
+  predict(l, k, heap);
+}
+  
+void Model::predict(const List& input, int32_t k,
                     std::vector<std::pair<real, int32_t>>& heap) {
   predict(input, k, heap, hidden_, output_);
 }
