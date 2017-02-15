@@ -114,7 +114,7 @@ void FastText::supervised(Model& model, real lr,
 void FastText::supervised(Model& model, real lr,
 			  const List& granularities,
 			  const std::vector<int32_t>& labels) {
-  if (labels.size() == 0 || granularities.size() == 0) return;
+  if (labels.size() == 0 || granularities.size() == 0 || granularities.front().size() == 0) return;
   std::uniform_int_distribution<> uniform(0, labels.size() - 1);
   int32_t i = uniform(model.rng);
 
@@ -262,7 +262,7 @@ void FastText::trainThread(int32_t threadId) {
 
   const int64_t ntokens = dict_->ntokens();
   int64_t localTokenCount = 0;
-  std::vector<int32_t> labels, line;
+  std::vector<int32_t> labels;
   std::vector<int32_t>* features = new std::vector<int32_t>[maxGranularities];
   VPtrVector content;
   for(int i=0; i<args_->granularities; i++) {
@@ -283,9 +283,9 @@ void FastText::trainThread(int32_t threadId) {
       }
       supervised(model, lr, granularities, labels);
     } else if (args_->model == model_name::cbow) {
-      cbow(model, lr, line);
+      cbow(model, lr, *content[0]);
     } else if (args_->model == model_name::sg) {
-      skipgram(model, lr, line);
+      skipgram(model, lr, *content[0]);
     }
     if (localTokenCount > args_->lrUpdateRate) {
       tokenCount += localTokenCount;
