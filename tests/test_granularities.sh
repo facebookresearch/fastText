@@ -11,7 +11,7 @@
 RESULTDIR=result
 DATADIR=.
 
-DATAFILE=data1
+DATAFILE=data0
 
 mkdir -p "${RESULTDIR}"
 mkdir -p "${DATADIR}"
