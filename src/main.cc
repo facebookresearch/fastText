@@ -54,56 +54,68 @@ void printPrintVectorsUsage() {
 }
 
 void test(int argc, char** argv) {
-  int32_t k;
+  int32_t k, granularities;
   if (argc == 4) {
+    granularities = 1;
     k = 1;
   } else if (argc == 5) {
-    k = atoi(argv[4]);
+    granularities = atoi(argv[4]);
+    k = 1;
+  } else if (argc == 6) {
+    granularities = atoi(argv[4]);
+    k = atoi(argv[5]);
   } else {
     printTestUsage();
     exit(EXIT_FAILURE);
   }
+
   FastText fasttext;
   fasttext.loadModel(std::string(argv[2]));
   std::string infile(argv[3]);
   if (infile == "-") {
-    fasttext.test(std::cin, k);
+    fasttext.test(std::cin, k, granularities);
   } else {
     std::ifstream ifs(infile);
     if (!ifs.is_open()) {
       std::cerr << "Test file cannot be opened!" << std::endl;
       exit(EXIT_FAILURE);
     }
-    fasttext.test(ifs, k);
+    fasttext.test(ifs, k, granularities);
     ifs.close();
   }
   exit(0);
 }
 
 void predict(int argc, char** argv) {
-  int32_t k;
+  int32_t k, granularities;
   if (argc == 4) {
+    granularities = 1;
     k = 1;
   } else if (argc == 5) {
-    k = atoi(argv[4]);
+    granularities = atoi(argv[4]);
+    k = 1;
+  } else if (argc == 6) {
+    granularities = atoi(argv[4]);    
+    k = atoi(argv[5]);
   } else {
     printPredictUsage();
     exit(EXIT_FAILURE);
   }
+
   bool print_prob = std::string(argv[1]) == "predict-prob";
   FastText fasttext;
   fasttext.loadModel(std::string(argv[2]));
 
   std::string infile(argv[3]);
   if (infile == "-") {
-    fasttext.predict(std::cin, k, print_prob);
+    fasttext.predict(std::cin, k, print_prob, granularities);
   } else {
     std::ifstream ifs(infile);
     if (!ifs.is_open()) {
       std::cerr << "Input file cannot be opened!" << std::endl;
       exit(EXIT_FAILURE);
     }
-    fasttext.predict(ifs, k, print_prob);
+    fasttext.predict(ifs, k, print_prob, granularities);
     ifs.close();
   }
 

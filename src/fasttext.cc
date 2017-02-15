@@ -114,7 +114,11 @@ void FastText::supervised(Model& model, real lr,
 void FastText::supervised(Model& model, real lr,
 			  const List& granularities,
 			  const std::vector<int32_t>& labels) {
-  if (labels.size() == 0 || granularities.size() == 0 || granularities.front().size() == 0) return;
+  bool anyEmptyVector = false;
+  for(std::vector<int32_t> v : granularities) {
+    anyEmptyVector = anyEmptyVector || v.size() == 0;
+  }
+  if (labels.size() == 0 || granularities.size() == 0 || anyEmptyVector) return;
   std::uniform_int_distribution<> uniform(0, labels.size() - 1);
   int32_t i = uniform(model.rng);
 
@@ -152,17 +156,27 @@ void FastText::skipgram(Model& model, real lr,
   }
 }
 
-void FastText::test(std::istream& in, int32_t k) {
+void FastText::test(std::istream& in, int32_t k, int32_t granularity) {
   int32_t nexamples = 0, nlabels = 0;
   double precision = 0.0;
-  std::vector<int32_t> line, labels;
+  std::vector<int32_t> labels;
 
+  std::vector<int32_t>* features = new std::vector<int32_t>[maxGranularities];
+  VPtrVector content;
+  for(int i=0; i<granularity; i++) {
+    content.push_back(&features[i]);
+  }  
+  
   while (in.peek() != EOF) {
-    dict_->getLine(in, line, labels, model_->rng);
-    dict_->addNgrams(line, args_->wordNgrams);
-    if (labels.size() > 0 && line.size() > 0) {
+    dict_->getLine(in, content, labels, model_->rng);
+    List granularities;
+    for(int i=0; i<granularity; i++) {
+      dict_->addNgrams(*content[i], args_->wordNgrams);
+      granularities.push_back(*content[i]);
+    }
+    if (labels.size() > 0 && granularities.size() > 0 && granularities.front().size() > 0) {
       std::vector<std::pair<real, int32_t>> modelPredictions;
-      model_->predict(line, k, modelPredictions);
+      model_->predict(granularities, k, modelPredictions);
       for (auto it = modelPredictions.cbegin(); it != modelPredictions.cend(); it++) {
         if (std::find(labels.begin(), labels.end(), it->second) != labels.end()) {
           precision += 1.0;
@@ -178,26 +192,35 @@ void FastText::test(std::istream& in, int32_t k) {
   std::cout << "Number of examples: " << nexamples << std::endl;
 }
 
-void FastText::predict(std::istream& in, int32_t k,
+void FastText::predict(std::istream& in, int32_t k, int32_t granularity,
                        std::vector<std::pair<real,std::string>>& predictions) const {
-  std::vector<int32_t> words, labels;
-  dict_->getLine(in, words, labels, model_->rng);
-  dict_->addNgrams(words, args_->wordNgrams);
-  if (words.empty()) return;
+  std::vector<int32_t> labels;  
+  std::vector<int32_t>* features = new std::vector<int32_t>[maxGranularities];
+  VPtrVector content;
+  for(int i=0; i<granularity; i++) {
+    content.push_back(&features[i]);
+  }
+  dict_->getLine(in, content, labels, model_->rng);
+  List granularities;
+  for(int i=0; i<granularity; i++) {
+    dict_->addNgrams(*content[i], args_->wordNgrams);
+    granularities.push_back(*content[i]);
+  }
+  if (granularities.empty() || granularities.front().empty()) return;
   Vector hidden(args_->granularities * args_->dim);
   Vector output(dict_->nlabels());
   std::vector<std::pair<real,int32_t>> modelPredictions;
-  model_->predict(words, k, modelPredictions, hidden, output);
+  model_->predict(granularities, k, modelPredictions, hidden, output);
   predictions.clear();
   for (auto it = modelPredictions.cbegin(); it != modelPredictions.cend(); it++) {
     predictions.push_back(std::make_pair(it->first, dict_->getLabel(it->second)));
   }
 }
 
-void FastText::predict(std::istream& in, int32_t k, bool print_prob) {
+void FastText::predict(std::istream& in, int32_t k, bool print_prob, int32_t granularity) {
   std::vector<std::pair<real,std::string>> predictions;
   while (in.peek() != EOF) {
-    predict(in, k, predictions);
+    predict(in, k, granularity, predictions);
     if (predictions.empty()) {
       std::cout << "n/a" << std::endl;
       continue;
