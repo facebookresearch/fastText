@@ -216,7 +216,6 @@ void Dictionary::readFromFile(std::istream& in) {
   bool newSection = false;
   while (readWord(in, word, newSection)) {
     add(word);
-    std::cout << "\rRead " << ntokens_ << " words" << std::flush;
     if (ntokens_ % 1000000 == 0 && args_->verbose > 1) {
       std::cout << "\rRead " << ntokens_  / 1000000 << "M words" << std::flush;
     }
@@ -244,7 +243,6 @@ void Dictionary::readFromFile(std::istream& in) {
   initTableDiscard();
   initNgrams();
   if (args_->verbose > 0) {
-    std::cout << "\rRead " << ntokens_ << " words" << std::endl;
     std::cout << "\rRead " << ntokens_  / 1000000 << "M words" << std::endl;
     std::cout << "Number of words:  " << nwords_ << std::endl;
     std::cout << "Number of labels: " << nlabels_ << std::endl;
