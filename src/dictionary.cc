@@ -154,62 +154,6 @@ void Dictionary::initNgrams() {
   }
 }
 
-// bool Dictionary::readWord(std::istream& in, std::string& word) const
-// {
-//   char c;
-//   std::streambuf& sb = *in.rdbuf();
-//   word.clear();
-//   std::string tmp;
-
-//   // std::streambuf::sbumpc : Returns the character at the current position of
-//   //    the controlled input sequence, and advances the position indicator to
-//   //    the next character.
-//   //
-//   // Read istream until end of file EOF char is reached.  Inside while loop, if
-//   // char is a special character, wrap up and return to the caller.  If word is
-//   // empty, then if current character is a new line, then add special EOS
-//   // symbol, otherwise continue.  If word is not empty, we want to return the
-//   // word, just making sure before that we don't add the current character if
-//   // it's a new line.
-//   while ((c = sb.sbumpc()) != EOF) {
-//     // \n : line feed ; \r : carriage return
-//     // \t : horizontal tab ; \v : vertical tab
-//     // \f : formfeed
-//     // \0 : null char
-//     if (c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == '\v' || c == '\f' || c == '\0') {
-//       if (word.empty()) {
-//         if (c == '\n') {
-//           word += EOS; // Special character from class Dictionary to make sure
-// 		       // classifier knows we reached end of sentence.
-//           return true;
-//         }
-//         continue;
-//       } else {
-//         if (c == '\n')
-//           sb.sungetc();
-//         return true;
-//       }
-//     }
-
-//     // Check if c is any of the characters in dataSeparator string.
-//     if (dataSeparatorChars_.find(c) != dataSeparatorChars_.end()) {
-//       tmp.push_back(c);
-      
-//       if(tmp == dataSeparator_) {
-// 	return true;
-//       }
-//     }
-//     else {
-//       tmp.clear();
-//       word.push_back(c);
-//     }
-//     //    word.push_back(c);
-//   }
-//   // trigger eofbit
-//   in.get();
-//   return !word.empty();
-// }
-
 bool Dictionary::readWord(std::istream& in, std::string& word, bool& newSection) const
 {
   char c;
@@ -270,7 +214,7 @@ void Dictionary::readFromFile(std::istream& in) {
   int64_t minThreshold = 1;
   int currentType = 0;
   bool newSection = false;
-  while (readWord(in, word, newSection)) {  //readSection(in, word)
+  while (readWord(in, word, newSection)) {
     add(word);
     if (ntokens_ % 1000000 == 0 && args_->verbose > 1) {
       std::cout << "\rRead " << ntokens_  / 1000000 << "M words" << std::flush;
@@ -284,7 +228,7 @@ void Dictionary::readFromFile(std::istream& in) {
       currentType++;
       newSection = false;
 
-      if(currentType > args_->granularities) { //granularity) {
+      if(currentType > args_->granularities) {
 	currentType = 0;
 
 	if(args_->granularities < maxSectionType_) {
@@ -420,7 +364,7 @@ int32_t Dictionary::getLine(std::istream& in,
       labels.push_back(wid - nwords_);
     } else {
       if(!discard(wid, uniform(rng))) {
-      granularities[currentType - 1]->push_back(wid);
+	granularities[currentType - 1]->push_back(wid);
       }
     }
 
