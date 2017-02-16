@@ -154,7 +154,7 @@ void Dictionary::initNgrams() {
   }
 }
 
-int Dictionary::readWord(std::istream& in, std::string& word, bool& newSection) const
+int Dictionary::readWord(std::istream& in, std::string& word) const
 {
   char c;
   std::streambuf& sb = *in.rdbuf();
@@ -194,7 +194,6 @@ int Dictionary::readWord(std::istream& in, std::string& word, bool& newSection) 
       tmp.push_back(c);
       
       if(tmp == dataSeparator_) {
-	newSection = true;
 	return 2;
       }
     }
@@ -213,8 +212,8 @@ void Dictionary::readFromFile(std::istream& in) {
   std::string word;
   int64_t minThreshold = 1;
   int currentType = 0;
-  bool newSection = false;
-  while (readWord(in, word, newSection)) {
+  int r;
+  while ((r = readWord(in, word)) > 0) {
     add(word);
     if (ntokens_ % 1000000 == 0 && args_->verbose > 1) {
       std::cout << "\rRead " << ntokens_  / 1000000 << "M words" << std::flush;
@@ -224,9 +223,8 @@ void Dictionary::readFromFile(std::istream& in) {
       threshold(minThreshold, minThreshold);
     }
 
-    if(newSection) {
+    if(r == 2) {
       currentType++;
-      newSection = false;
 
       if(currentType > args_->granularities) {
 	currentType = 0;
@@ -317,8 +315,7 @@ int32_t Dictionary::getLine(std::istream& in,
     in.clear();
     in.seekg(std::streampos(0));
   }
-  bool newSection = false;
-  while (readWord(in, token, newSection)) {
+  while (readWord(in, token)) {
     int32_t wid = getId(token);
     if (wid < 0) continue;
     entry_type type = getType(wid);
@@ -356,7 +353,7 @@ int32_t Dictionary::getLine(std::istream& in,
   int currentType = 0;
   bool newSection = false;
   int r;
-  while ((r = readWord(in, token, newSection)) > 0) {
+  while ((r = readWord(in, token)) > 0) {
     int32_t wid = getId(token);
     if (wid < 0) continue;
     ntokens++;
