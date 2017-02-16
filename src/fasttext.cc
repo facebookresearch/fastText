@@ -301,11 +301,10 @@ void FastText::trainThread(int32_t threadId) {
   for(int i=0; i<args_->granularities; i++) {
     content.push_back(&features[i]);
   }
-  
+
   while (tokenCount < args_->epoch * ntokens) {
     real progress = real(tokenCount) / (args_->epoch * ntokens);
     real lr = args_->lr * (1.0 - progress);
-
     localTokenCount += dict_->getLine(ifs, content, labels, model.rng);
     
     if (args_->model == model_name::sup) {
@@ -314,6 +313,7 @@ void FastText::trainThread(int32_t threadId) {
       	dict_->addNgrams(*content[i], args_->wordNgrams);
       	granularities.push_back(*content[i]);
       }
+
       supervised(model, lr, granularities, labels);
     } else if (args_->model == model_name::cbow) {
       cbow(model, lr, *content[0]);

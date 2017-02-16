@@ -154,7 +154,7 @@ void Dictionary::initNgrams() {
   }
 }
 
-bool Dictionary::readWord(std::istream& in, std::string& word, bool& newSection) const
+int Dictionary::readWord(std::istream& in, std::string& word, bool& newSection) const
 {
   char c;
   std::streambuf& sb = *in.rdbuf();
@@ -179,13 +179,13 @@ bool Dictionary::readWord(std::istream& in, std::string& word, bool& newSection)
         if (c == '\n') {
           word += EOS; // Special character from class Dictionary to make sure
 		       // classifier knows we reached end of sentence.
-          return true;
+          return 1;
         }
         continue;
       } else {
         if (c == '\n')
           sb.sungetc();
-        return true;
+        return 1;
       }
     }
 
@@ -195,7 +195,7 @@ bool Dictionary::readWord(std::istream& in, std::string& word, bool& newSection)
       
       if(tmp == dataSeparator_) {
 	newSection = true;
-	return true;
+	return 2;
       }
     }
     else {
@@ -206,7 +206,7 @@ bool Dictionary::readWord(std::istream& in, std::string& word, bool& newSection)
   
   // trigger eofbit
   in.get();
-  return !word.empty();
+  return !word.empty() ? 1 : 0;
 }
 
 void Dictionary::readFromFile(std::istream& in) {
@@ -216,6 +216,7 @@ void Dictionary::readFromFile(std::istream& in) {
   bool newSection = false;
   while (readWord(in, word, newSection)) {
     add(word);
+    std::cout << "\rRead " << ntokens_ << " words" << std::flush;
     if (ntokens_ % 1000000 == 0 && args_->verbose > 1) {
       std::cout << "\rRead " << ntokens_  / 1000000 << "M words" << std::flush;
     }
@@ -243,6 +244,7 @@ void Dictionary::readFromFile(std::istream& in) {
   initTableDiscard();
   initNgrams();
   if (args_->verbose > 0) {
+    std::cout << "\rRead " << ntokens_ << " words" << std::endl;
     std::cout << "\rRead " << ntokens_  / 1000000 << "M words" << std::endl;
     std::cout << "Number of words:  " << nwords_ << std::endl;
     std::cout << "Number of labels: " << nlabels_ << std::endl;
@@ -355,13 +357,17 @@ int32_t Dictionary::getLine(std::istream& in,
 
   int currentType = 0;
   bool newSection = false;
-  while (readWord(in, token, newSection)) {
+  int r;
+  while ((r = readWord(in, token, newSection)) > 0) {
     int32_t wid = getId(token);
     if (wid < 0) continue;
     ntokens++;
     
     if(currentType == 0) {
-      labels.push_back(wid - nwords_);
+      entry_type type = getType(wid);
+      if (type == entry_type::label) {
+	labels.push_back(wid - nwords_);
+      }
     } else {
       if(!discard(wid, uniform(rng))) {
 	granularities[currentType - 1]->push_back(wid);
@@ -371,8 +377,7 @@ int32_t Dictionary::getLine(std::istream& in,
     if ((*granularities.begin())->size() > MAX_LINE_SIZE && args_->model != model_name::sup) break;
     if (token == EOS) break;
 
-    if(newSection) {
-      newSection = false;
+    if(r == 2) {
       currentType++;
 
       if(currentType > granularities.size()) {
@@ -386,7 +391,7 @@ int32_t Dictionary::getLine(std::istream& in,
 	  while((c = sb.sbumpc()) != EOF && c != '\n' && c != '\r') {}
 	}
       }
-    }    
+    }
   }
   return ntokens;
 }
