@@ -21,6 +21,10 @@
 
 namespace fasttext {
 
+  FastText::FastText(int infileColumnDimension)
+    : granularityDimension(infileColumnDimension)
+  {}
+  
 void FastText::getVector(Vector& vec, const std::string& word) {
   const std::vector<int32_t>& ngrams = dict_->getNgrams(word);
   vec.zero();
@@ -73,7 +77,7 @@ void FastText::loadModel(const std::string& filename) {
 
 void FastText::loadModel(std::istream& in) {
   args_ = std::make_shared<Args>();
-  dict_ = std::make_shared<Dictionary>(args_);
+  dict_ = std::make_shared<Dictionary>(args_, granularityDimension);
   input_ = std::make_shared<Matrix>();
   output_ = std::make_shared<Matrix>();
   args_->load(in);
@@ -156,7 +160,7 @@ void FastText::skipgram(Model& model, real lr,
   }
 }
 
-void FastText::test(std::istream& in, int32_t k, int32_t granularity) {
+void FastText::test(std::istream& in, int32_t k, int granularity) {
   int32_t nexamples = 0, nlabels = 0;
   double precision = 0.0;
   std::vector<int32_t> labels;
@@ -169,12 +173,18 @@ void FastText::test(std::istream& in, int32_t k, int32_t granularity) {
   
   while (in.peek() != EOF) {
     dict_->getLine(in, content, labels, model_->rng);
+
     List granularities;
     for(int i=0; i<granularity; i++) {
       dict_->addNgrams(*content[i], args_->wordNgrams);
       granularities.push_back(*content[i]);
     }
-    if (labels.size() > 0 && granularities.size() > 0 && granularities.front().size() > 0) {
+
+    bool anyEmptyVector = false;
+    for(std::vector<int32_t> v : granularities) {
+      anyEmptyVector = anyEmptyVector || v.size() == 0;
+    }
+    if (labels.size() > 0 && granularities.size() > 0 && !anyEmptyVector) {
       std::vector<std::pair<real, int32_t>> modelPredictions;
       model_->predict(granularities, k, modelPredictions);
       for (auto it = modelPredictions.cbegin(); it != modelPredictions.cend(); it++) {
@@ -192,7 +202,7 @@ void FastText::test(std::istream& in, int32_t k, int32_t granularity) {
   std::cout << "Number of examples: " << nexamples << std::endl;
 }
 
-void FastText::predict(std::istream& in, int32_t k, int32_t granularity,
+void FastText::predict(std::istream& in, int32_t k, int granularity,
                        std::vector<std::pair<real,std::string>>& predictions) const {
   std::vector<int32_t> labels;  
   std::vector<int32_t>* features = new std::vector<int32_t>[maxGranularities];
@@ -217,7 +227,7 @@ void FastText::predict(std::istream& in, int32_t k, int32_t granularity,
   }
 }
 
-void FastText::predict(std::istream& in, int32_t k, bool print_prob, int32_t granularity) {
+void FastText::predict(std::istream& in, int32_t k, bool print_prob, int granularity) {
   std::vector<std::pair<real,std::string>> predictions;
   while (in.peek() != EOF) {
     predict(in, k, granularity, predictions);
@@ -367,7 +377,7 @@ void FastText::loadVectors(std::string filename) {
 
 void FastText::train(std::shared_ptr<Args> args) {
   args_ = args;
-  dict_ = std::make_shared<Dictionary>(args_);
+  dict_ = std::make_shared<Dictionary>(args_, granularityDimension);
   if (args_->input == "-") {
     // manage expectations
     std::cerr << "Cannot use stdin for training!" << std::endl;

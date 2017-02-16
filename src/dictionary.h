@@ -56,14 +56,14 @@ class Dictionary {
     // The separator string between each type of data in input.
     std::string dataSeparator_;
     std::map<char, int> dataSeparatorChars_;
-    int maxSectionType_; // 1: word ; 2: sentence ; 3: document
+    int maxSectionType_;
 
   public:
     static const std::string EOS;
     static const std::string BOW;
     static const std::string EOW;
 
-    explicit Dictionary(std::shared_ptr<Args>);
+    explicit Dictionary(std::shared_ptr<Args>, int);
     int32_t nwords() const;
     int32_t nlabels() const;
     int64_t ntokens() const;
@@ -76,8 +76,8 @@ class Dictionary {
     void computeNgrams(const std::string&, std::vector<int32_t>&) const;
     uint32_t hash(const std::string& str) const;
     void add(const std::string&);
-    bool readWord(std::istream&, std::string&) const;
-    bool readSection(std::istream&, std::string&) const;
+    bool readWord(std::istream&, std::string&, bool&) const;
+    //    bool readSection(std::istream&, std::string&, bool&) const;
     void readFromFile(std::istream&);
     std::string getLabel(int32_t) const;
     void save(std::ostream&) const;

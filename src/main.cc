@@ -53,6 +53,23 @@ void printPrintVectorsUsage() {
     << std::endl;
 }
 
+int getAmountOfColumns(std::string filename) {
+  std::ifstream infile(filename);
+  int amount = 0;
+  if(infile.good()) {
+    std::string sLine, sub = "###@@@###";
+    getline(infile, sLine);
+
+    size_t pos = sLine.find(sub, 0);
+    while(pos != std::string::npos) {
+      amount++;
+      pos = sLine.find(sub, pos+1);
+    }
+  }
+  infile.close();
+  return amount;
+}
+
 void test(int argc, char** argv) {
   int32_t k, granularities;
   if (argc == 4) {
@@ -69,9 +86,9 @@ void test(int argc, char** argv) {
     exit(EXIT_FAILURE);
   }
 
-  FastText fasttext;
-  fasttext.loadModel(std::string(argv[2]));
   std::string infile(argv[3]);
+  FastText fasttext(getAmountOfColumns(infile));
+  fasttext.loadModel(std::string(argv[2]));
   if (infile == "-") {
     fasttext.test(std::cin, k, granularities);
   } else {
@@ -103,10 +120,10 @@ void predict(int argc, char** argv) {
   }
 
   bool print_prob = std::string(argv[1]) == "predict-prob";
-  FastText fasttext;
+  std::string infile(argv[3]);
+  FastText fasttext(getAmountOfColumns(infile));
   fasttext.loadModel(std::string(argv[2]));
 
-  std::string infile(argv[3]);
   if (infile == "-") {
     fasttext.predict(std::cin, k, print_prob, granularities);
   } else {
@@ -127,7 +144,7 @@ void printVectors(int argc, char** argv) {
     printPrintVectorsUsage();
     exit(EXIT_FAILURE);
   }
-  FastText fasttext;
+  FastText fasttext(1);
   fasttext.loadModel(std::string(argv[2]));
   fasttext.printVectors();
   exit(0);
@@ -136,7 +153,7 @@ void printVectors(int argc, char** argv) {
 void train(int argc, char** argv) {
   std::shared_ptr<Args> a = std::make_shared<Args>();
   a->parseArgs(argc, argv);
-  FastText fasttext;
+  FastText fasttext(getAmountOfColumns(a->input));
   fasttext.train(a);
 }
 
