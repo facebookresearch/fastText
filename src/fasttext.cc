@@ -216,7 +216,12 @@ void FastText::predict(std::istream& in, int32_t k, int granularity,
     dict_->addNgrams(*content[i], args_->wordNgrams);
     granularities.push_back(*content[i]);
   }
-  if (granularities.empty() || granularities.front().empty()) return;
+  
+  bool anyEmptyVector = false;
+  for(std::vector<int32_t> v : granularities) {
+    anyEmptyVector = anyEmptyVector || v.size() == 0;
+  }
+  if (granularities.empty() || anyEmptyVector) return;
   Vector hidden(args_->granularities * args_->dim);
   Vector output(dict_->nlabels());
   std::vector<std::pair<real,int32_t>> modelPredictions;
