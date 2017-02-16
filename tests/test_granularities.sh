@@ -24,4 +24,4 @@ GRANULARITIES=3
 
 ../fasttext test "${RESULTDIR}/${DATAFILE}.bin" "${DATADIR}/${DATAFILE}.test" ${GRANULARITIES}
 
-../fasttext predict "${RESULTDIR}/${DATAFILE}.bin" "${DATADIR}/${DATAFILE}.test" > "${RESULTDIR}/${DATAFILE}.test.predict" ${GRANULARITIES}
+../fasttext predict "${RESULTDIR}/${DATAFILE}.bin" "${DATADIR}/${DATAFILE}.test" ${GRANULARITIES} > "${RESULTDIR}/${DATAFILE}.test.predict"

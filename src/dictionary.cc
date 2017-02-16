@@ -22,7 +22,9 @@ const std::string Dictionary::EOS = "</s>";
 const std::string Dictionary::BOW = "<";
 const std::string Dictionary::EOW = ">";
 
-Dictionary::Dictionary(std::shared_ptr<Args> args) {
+Dictionary::Dictionary(std::shared_ptr<Args> args, int maxSectionType)
+  : maxSectionType_(maxSectionType)
+{
   args_ = args;
   size_ = 0;
   nwords_ = 0;
@@ -35,7 +37,6 @@ Dictionary::Dictionary(std::shared_ptr<Args> args) {
       dataSeparatorChars_[c] = 1;
     }
   }
-  maxSectionType_ = args_->granularities;
   
   word2int_.resize(MAX_VOCAB_SIZE);
   for (int32_t i = 0; i < MAX_VOCAB_SIZE; i++) {
@@ -153,49 +154,7 @@ void Dictionary::initNgrams() {
   }
 }
 
-bool Dictionary::readWord(std::istream& in, std::string& word) const
-{
-  char c;
-  std::streambuf& sb = *in.rdbuf();
-  word.clear();
-
-  // std::streambuf::sbumpc : Returns the character at the current position of
-  //    the controlled input sequence, and advances the position indicator to
-  //    the next character.
-  //
-  // Read istream until end of file EOF char is reached.  Inside while loop, if
-  // char is a special character, wrap up and return to the caller.  If word is
-  // empty, then if current character is a new line, then add special EOS
-  // symbol, otherwise continue.  If word is not empty, we want to return the
-  // word, just making sure before that we don't add the current character if
-  // it's a new line.
-  while ((c = sb.sbumpc()) != EOF) {
-    // \n : line feed ; \r : carriage return
-    // \t : horizontal tab ; \v : vertical tab
-    // \f : formfeed
-    // \0 : null char
-    if (c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == '\v' || c == '\f' || c == '\0') {
-      if (word.empty()) {
-        if (c == '\n') {
-          word += EOS; // Special character from class Dictionary to make sure
-		       // classifier knows we reached end of sentence.
-          return true;
-        }
-        continue;
-      } else {
-        if (c == '\n')
-          sb.sungetc();
-        return true;
-      }
-    }
-    word.push_back(c);
-  }
-  // trigger eofbit
-  in.get();
-  return !word.empty();
-}
-
-bool Dictionary::readSection(std::istream& in, std::string& word) const
+int Dictionary::readWord(std::istream& in, std::string& word) const
 {
   char c;
   std::streambuf& sb = *in.rdbuf();
@@ -215,18 +174,18 @@ bool Dictionary::readSection(std::istream& in, std::string& word) const
   while ((c = sb.sbumpc()) != EOF) {
     // \n : line feed ; \r : carriage return ; \t : horizontal tab ; \v :
     // vertical tab ; \f : formfeed ; \0 : null char
-    if (c == '\n' || c == '\r' || c == '\t' || c == '\v' || c == '\f' || c == '\0') {
+    if (c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == '\v' || c == '\f' || c == '\0') {
       if (word.empty()) {
         if (c == '\n') {
           word += EOS; // Special character from class Dictionary to make sure
 		       // classifier knows we reached end of sentence.
-          return true;
+          return 1;
         }
         continue;
       } else {
         if (c == '\n')
           sb.sungetc();
-        return true;
+        return 1;
       }
     }
 
@@ -235,24 +194,26 @@ bool Dictionary::readSection(std::istream& in, std::string& word) const
       tmp.push_back(c);
       
       if(tmp == dataSeparator_) {
-	return true;
+	return 2;
       }
     }
     else {
-      //tmp.clear();
+      tmp.clear();
       word.push_back(c);
     }
   }
   
   // trigger eofbit
   in.get();
-  return !word.empty();
+  return !word.empty() ? 1 : 0;
 }
 
 void Dictionary::readFromFile(std::istream& in) {
   std::string word;
   int64_t minThreshold = 1;
-  while (readSection(in, word)) {
+  int currentType = 0;
+  int r;
+  while ((r = readWord(in, word)) > 0) {
     add(word);
     if (ntokens_ % 1000000 == 0 && args_->verbose > 1) {
       std::cout << "\rRead " << ntokens_  / 1000000 << "M words" << std::flush;
@@ -260,6 +221,20 @@ void Dictionary::readFromFile(std::istream& in) {
     if (size_ > 0.75 * MAX_VOCAB_SIZE) {
       minThreshold++;
       threshold(minThreshold, minThreshold);
+    }
+
+    if(r == 2) {
+      currentType++;
+
+      if(currentType > args_->granularities) {
+	currentType = 0;
+
+	if(args_->granularities < maxSectionType_) {
+	  char c;
+	  std::streambuf& sb = *in.rdbuf();
+	  while((c = sb.sbumpc()) != EOF && c != '\n' && c != '\r') {}
+	}
+      }
     }
   }
   threshold(args_->minCount, args_->minCountLabel);
@@ -376,31 +351,42 @@ int32_t Dictionary::getLine(std::istream& in,
   }
 
   int currentType = 0;
-  while (readSection(in, token)) {
+  bool newSection = false;
+  int r;
+  while ((r = readWord(in, token)) > 0) {
     int32_t wid = getId(token);
     if (wid < 0) continue;
     ntokens++;
     
     if(currentType == 0) {
-      labels.push_back(wid - nwords_);
+      entry_type type = getType(wid);
+      if (type == entry_type::label) {
+	labels.push_back(wid - nwords_);
+      }
     } else {
-      if(!discard(wid, uniform(rng))) { granularities[currentType - 1]->push_back(wid); }
+      if(!discard(wid, uniform(rng))) {
+	granularities[currentType - 1]->push_back(wid);
+      }
     }
 
     if ((*granularities.begin())->size() > MAX_LINE_SIZE && args_->model != model_name::sup) break;
     if (token == EOS) break;
 
-    currentType++;
-    if(currentType > granularities.size()) {
-      currentType = 0;
-      // input data normally has all 3 granularities.  If we don't want to use
-      // the 3, then we need to move the pointer in the in istream to the end of
-      // the current line.
-      char c;
-      std::streambuf& sb = *in.rdbuf();
-      while((c = sb.sbumpc()) != EOF && c != '\n' && c != '\r') {}
+    if(r == 2) {
+      currentType++;
+
+      if(currentType > granularities.size()) {
+	currentType = 0;
+	// input data normally has all 3 granularities.  If we don't want to use
+	// the 3, then we need to move the pointer in the in istream to the end of
+	// the current line.
+	if(args_->granularities < maxSectionType_) {
+	  char c;
+	  std::streambuf& sb = *in.rdbuf();
+	  while((c = sb.sbumpc()) != EOF && c != '\n' && c != '\r') {}
+	}
+      }
     }
-    
   }
   return ntokens;
 }
