@@ -171,8 +171,13 @@ void FastText::test(std::istream& in, int32_t k, int granularity) {
     content.push_back(&featureColumns[i]);
   }  
 
+  int64_t lineCounter = 0;
   while (in.peek() != EOF) {
     dict_->getLine(in, content, labels, model_->rng);
+    lineCounter++;
+    if(lineCounter % 10000 == 0 && args_->verbose > 1) {
+      std::cout << "\rRead " << lineCounter / 10000 << "K lines" << std::flush;
+    }
 
     List granularities;
     for(int i=0; i<granularity; i++) {
@@ -196,7 +201,11 @@ void FastText::test(std::istream& in, int32_t k, int granularity) {
       nlabels += labels.size();
     }
   }
-  std::cout << std::setprecision(3);
+  if (args_->verbose > 0) {
+    std::cout << "\rRead " << lineCounter / 10000 << "K lines" << std::endl;
+  }
+
+  std::cout << std::endl << std::setprecision(3);
   std::cout << "P@" << k << ": " << precision / (k * nexamples) << std::endl;
   std::cout << "R@" << k << ": " << precision / nlabels << std::endl;
   std::cout << "Number of examples: " << nexamples << std::endl;
@@ -236,6 +245,7 @@ void FastText::predict(std::istream& in, int32_t k, bool print_prob, int granula
   std::vector<std::pair<real,std::string>> predictions;
   while (in.peek() != EOF) {
     predict(in, k, granularity, predictions);
+    
     if (predictions.empty()) {
       std::cout << "n/a" << std::endl;
       continue;
