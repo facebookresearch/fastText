@@ -165,14 +165,20 @@ void FastText::test(std::istream& in, int32_t k, int granularity) {
   double precision = 0.0;
   std::vector<int32_t> labels;
 
-  std::vector<int32_t>* features = new std::vector<int32_t>[maxGranularities];
+  std::vector<int32_t>* featureColumns = new std::vector<int32_t>[granularity];
   VPtrVector content;
   for(int i=0; i<granularity; i++) {
-    content.push_back(&features[i]);
+    content.push_back(&featureColumns[i]);
   }  
-  
+
+  int64_t lineCounter = 0;
+  int64_t lineCounterStep = 1000;
   while (in.peek() != EOF) {
     dict_->getLine(in, content, labels, model_->rng);
+    lineCounter++;
+    if(lineCounter % lineCounterStep == 0 && args_->verbose > 1) {
+      std::cout << "\rProcessed " << lineCounter / lineCounterStep << "K lines" << std::flush;
+    }
 
     List granularities;
     for(int i=0; i<granularity; i++) {
@@ -196,7 +202,11 @@ void FastText::test(std::istream& in, int32_t k, int granularity) {
       nlabels += labels.size();
     }
   }
-  std::cout << std::setprecision(3);
+  if (args_->verbose > 0) {
+    std::cout << "\rProcessed " << lineCounter / lineCounterStep << "K lines" << std::endl;
+  }
+
+  std::cout << std::endl << std::setprecision(3);
   std::cout << "P@" << k << ": " << precision / (k * nexamples) << std::endl;
   std::cout << "R@" << k << ": " << precision / nlabels << std::endl;
   std::cout << "Number of examples: " << nexamples << std::endl;
@@ -205,10 +215,10 @@ void FastText::test(std::istream& in, int32_t k, int granularity) {
 void FastText::predict(std::istream& in, int32_t k, int granularity,
                        std::vector<std::pair<real,std::string>>& predictions) const {
   std::vector<int32_t> labels;  
-  std::vector<int32_t>* features = new std::vector<int32_t>[maxGranularities];
+  std::vector<int32_t>* featureColumns = new std::vector<int32_t>[maxGranularities];
   VPtrVector content;
   for(int i=0; i<granularity; i++) {
-    content.push_back(&features[i]);
+    content.push_back(&featureColumns[i]);
   }
   dict_->getLine(in, content, labels, model_->rng);
   List granularities;
@@ -236,6 +246,7 @@ void FastText::predict(std::istream& in, int32_t k, bool print_prob, int granula
   std::vector<std::pair<real,std::string>> predictions;
   while (in.peek() != EOF) {
     predict(in, k, granularity, predictions);
+    
     if (predictions.empty()) {
       std::cout << "n/a" << std::endl;
       continue;
@@ -289,7 +300,7 @@ void FastText::printVectors() {
 
 void FastText::trainThread(int32_t threadId) {
   std::ifstream ifs(args_->input);
-  utils::seek(ifs, threadId * utils::size(ifs) / args_->thread);
+  utils::seek(ifs, threadId * infileNbOfRows / args_->thread);
 
   Model model(input_, output_, args_, threadId);
   if (args_->model == model_name::sup) {
@@ -301,17 +312,17 @@ void FastText::trainThread(int32_t threadId) {
   const int64_t ntokens = dict_->ntokens();
   int64_t localTokenCount = 0;
   std::vector<int32_t> labels;
-  std::vector<int32_t>* features = new std::vector<int32_t>[maxGranularities];
+  std::vector<int32_t>* featureColumns = new std::vector<int32_t>[maxGranularities];
   VPtrVector content;
   for(int i=0; i<args_->granularities; i++) {
-    content.push_back(&features[i]);
+    content.push_back(&featureColumns[i]);
   }
 
   while (tokenCount < args_->epoch * ntokens) {
     real progress = real(tokenCount) / (args_->epoch * ntokens);
     real lr = args_->lr * (1.0 - progress);
     localTokenCount += dict_->getLine(ifs, content, labels, model.rng);
-    
+
     if (args_->model == model_name::sup) {
       List granularities;
       for(int i=0; i<args_->granularities; i++) {
@@ -389,6 +400,8 @@ void FastText::train(std::shared_ptr<Args> args) {
     exit(EXIT_FAILURE);
   }
   std::ifstream ifs(args_->input);
+  infileNbOfRows = utils::size(ifs);
+  
   if (!ifs.is_open()) {
     std::cerr << "Input file cannot be opened!" << std::endl;
     exit(EXIT_FAILURE);

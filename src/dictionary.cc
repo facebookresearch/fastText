@@ -97,6 +97,7 @@ const std::vector<int32_t> Dictionary::getNgrams(const std::string& word) const 
 
 bool Dictionary::discard(int32_t id, real rand) const {
   assert(id >= 0);
+  if(id >= nwords_) { std::cout<<id<<" , "<<nwords_<<std::endl; }
   assert(id < nwords_);
   if (args_->model == model_name::sup) return false;
   return rand > pdiscard_[id];
@@ -160,11 +161,9 @@ int Dictionary::readWord(std::istream& in, std::string& word) const
   std::streambuf& sb = *in.rdbuf();
   word.clear();
   std::string tmp;
-  
-  // std::streambuf::sbumpc : Returns the character at the current position of
-  //    the controlled input sequence, and advances the position indicator to
-  //    the next character.
-  //
+
+  // streambuf::sbumpc : Returns char at current pos of controlled
+  //    input sequence, and advances pos indicator to next char.
   // Read istream until end of file EOF char is reached.  Inside while loop, if
   // char is a special character, wrap up and return to the caller.  If word is
   // empty, then if current character is a new line, then add special EOS
@@ -172,29 +171,29 @@ int Dictionary::readWord(std::istream& in, std::string& word) const
   // word, just making sure before that we don't add the current character if
   // it's a new line.
   while ((c = sb.sbumpc()) != EOF) {
-    // \n : line feed ; \r : carriage return ; \t : horizontal tab ; \v :
-    // vertical tab ; \f : formfeed ; \0 : null char
+    // \n : line feed ; \r : carriage return ; \t : horizontal tab ;
+    // \v : vertical tab ; \f : formfeed ; \0 : null char
     if (c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == '\v' || c == '\f' || c == '\0') {
+      
       if (word.empty()) {
         if (c == '\n') {
           word += EOS; // Special character from class Dictionary to make sure
 		       // classifier knows we reached end of sentence.
-          return 1;
+          return WORD_READ;
         }
         continue;
       } else {
         if (c == '\n')
           sb.sungetc();
-        return 1;
+        return WORD_READ;
       }
     }
 
     // Check if c is any of the characters in dataSeparator string.
     if (dataSeparatorChars_.find(c) != dataSeparatorChars_.end()) {
       tmp.push_back(c);
-      
       if(tmp == dataSeparator_) {
-	return 2;
+	return DATA_SEPARATOR_DETECTED;
       }
     }
     else {
@@ -205,7 +204,13 @@ int Dictionary::readWord(std::istream& in, std::string& word) const
   
   // trigger eofbit
   in.get();
-  return !word.empty() ? 1 : 0;
+  return !word.empty() ? 1 : EOF_DETECTED;
+}
+
+void Dictionary::toEndOfLine(std::istream& in) const {
+  char c;
+  std::streambuf& sb = *in.rdbuf();
+  while((c = sb.sbumpc()) != EOF && c != '\n' && c != '\r') { }
 }
 
 void Dictionary::readFromFile(std::istream& in) {
@@ -213,26 +218,29 @@ void Dictionary::readFromFile(std::istream& in) {
   int64_t minThreshold = 1;
   int currentType = 0;
   int r;
-  while ((r = readWord(in, word)) > 0) {
-    add(word);
+  while ((r = readWord(in, word)) != EOF_DETECTED) {
+    
+    add(word); // increases ntokens_, adds word to dictionary after hashing it.
     if (ntokens_ % 1000000 == 0 && args_->verbose > 1) {
       std::cout << "\rRead " << ntokens_  / 1000000 << "M words" << std::flush;
     }
+    // size_ of dictionary
     if (size_ > 0.75 * MAX_VOCAB_SIZE) {
       minThreshold++;
+      // compacts dictionary and sorts it up
       threshold(minThreshold, minThreshold);
     }
 
-    if(r == 2) {
+    // Check if we changed column in input file. If we have less
+    // granularities than columns, we shouldn't read all columns.
+    if(r == DATA_SEPARATOR_DETECTED) {
       currentType++;
 
       if(currentType > args_->granularities) {
 	currentType = 0;
-
+	
 	if(args_->granularities < maxSectionType_) {
-	  char c;
-	  std::streambuf& sb = *in.rdbuf();
-	  while((c = sb.sbumpc()) != EOF && c != '\n' && c != '\r') {}
+	  toEndOfLine(in);
 	}
       }
     }
@@ -351,39 +359,41 @@ int32_t Dictionary::getLine(std::istream& in,
   }
 
   int currentType = 0;
-  bool newSection = false;
   int r;
-  while ((r = readWord(in, token)) > 0) {
+  while ((r = readWord(in, token)) != EOF_DETECTED) {
     int32_t wid = getId(token);
     if (wid < 0) continue;
     ntokens++;
-    
-    if(currentType == 0) {
-      entry_type type = getType(wid);
-      if (type == entry_type::label) {
-	labels.push_back(wid - nwords_);
-      }
+
+    entry_type type = getType(wid);
+    if(currentType == 0 || type == entry_type::label) {
+      labels.push_back(wid - nwords_);
     } else {
       if(!discard(wid, uniform(rng))) {
 	granularities[currentType - 1]->push_back(wid);
       }
     }
 
-    if ((*granularities.begin())->size() > MAX_LINE_SIZE && args_->model != model_name::sup) break;
+    bool anyMaxedVector = false;
+    for(std::vector<int32_t>* v : granularities) {
+      anyMaxedVector = anyMaxedVector || v->size() > MAX_LINE_SIZE;
+    }
+    if (anyMaxedVector && args_->model != model_name::sup) break;
     if (token == EOS) break;
 
-    if(r == 2) {
+    if(r == DATA_SEPARATOR_DETECTED) {
       currentType++;
 
+      // make sure that I also got a new line / data is properly formatted
       if(currentType > granularities.size()) {
 	currentType = 0;
+
 	// input data normally has all 3 granularities.  If we don't want to use
 	// the 3, then we need to move the pointer in the in istream to the end of
 	// the current line.
 	if(args_->granularities < maxSectionType_) {
-	  char c;
-	  std::streambuf& sb = *in.rdbuf();
-	  while((c = sb.sbumpc()) != EOF && c != '\n' && c != '\r') {}
+	  toEndOfLine(in);
+	  break;
 	}
       }
     }

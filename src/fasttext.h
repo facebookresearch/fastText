@@ -29,6 +29,7 @@ class FastText {
  private:
   static const unsigned short maxGranularities = std::numeric_limits<unsigned short>::max();
   int granularityDimension;
+  int64_t infileNbOfRows;
   
   std::shared_ptr<Args> args_;
   std::shared_ptr<Dictionary> dict_;
