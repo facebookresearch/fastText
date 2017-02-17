@@ -381,8 +381,6 @@ int32_t Dictionary::getLine(std::istream& in,
     if (anyMaxedVector && args_->model != model_name::sup) break;
     if (token == EOS) break;
 
-    // change 2 to a const to make it clear  GOT_DATA_SEPARATOR
-    // move that logic in one function to consolidate with readFromFile
     if(r == DATA_SEPARATOR_DETECTED) {
       currentType++;
 

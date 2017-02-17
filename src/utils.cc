@@ -21,6 +21,8 @@ namespace utils {
     std::string line;
     while (std::getline(ifs, line))
       ++number_of_lines;
+    ifs.clear();
+    ifs.seekg(std::ios::beg);
     return number_of_lines;
   }
 
