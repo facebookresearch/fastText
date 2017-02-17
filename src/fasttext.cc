@@ -165,12 +165,12 @@ void FastText::test(std::istream& in, int32_t k, int granularity) {
   double precision = 0.0;
   std::vector<int32_t> labels;
 
-  std::vector<int32_t>* features = new std::vector<int32_t>[maxGranularities];
+  std::vector<int32_t>* featureColumns = new std::vector<int32_t>[granularity];
   VPtrVector content;
   for(int i=0; i<granularity; i++) {
-    content.push_back(&features[i]);
+    content.push_back(&featureColumns[i]);
   }  
-  
+
   while (in.peek() != EOF) {
     dict_->getLine(in, content, labels, model_->rng);
 
@@ -205,10 +205,10 @@ void FastText::test(std::istream& in, int32_t k, int granularity) {
 void FastText::predict(std::istream& in, int32_t k, int granularity,
                        std::vector<std::pair<real,std::string>>& predictions) const {
   std::vector<int32_t> labels;  
-  std::vector<int32_t>* features = new std::vector<int32_t>[maxGranularities];
+  std::vector<int32_t>* featureColumns = new std::vector<int32_t>[maxGranularities];
   VPtrVector content;
   for(int i=0; i<granularity; i++) {
-    content.push_back(&features[i]);
+    content.push_back(&featureColumns[i]);
   }
   dict_->getLine(in, content, labels, model_->rng);
   List granularities;
@@ -289,7 +289,7 @@ void FastText::printVectors() {
 
 void FastText::trainThread(int32_t threadId) {
   std::ifstream ifs(args_->input);
-  utils::seek(ifs, threadId * utils::size(ifs) / args_->thread);
+  utils::seek(ifs, threadId * infileNbOfRows / args_->thread);
 
   Model model(input_, output_, args_, threadId);
   if (args_->model == model_name::sup) {
@@ -301,17 +301,17 @@ void FastText::trainThread(int32_t threadId) {
   const int64_t ntokens = dict_->ntokens();
   int64_t localTokenCount = 0;
   std::vector<int32_t> labels;
-  std::vector<int32_t>* features = new std::vector<int32_t>[maxGranularities];
+  std::vector<int32_t>* featureColumns = new std::vector<int32_t>[maxGranularities];
   VPtrVector content;
   for(int i=0; i<args_->granularities; i++) {
-    content.push_back(&features[i]);
+    content.push_back(&featureColumns[i]);
   }
 
   while (tokenCount < args_->epoch * ntokens) {
     real progress = real(tokenCount) / (args_->epoch * ntokens);
     real lr = args_->lr * (1.0 - progress);
     localTokenCount += dict_->getLine(ifs, content, labels, model.rng);
-    
+
     if (args_->model == model_name::sup) {
       List granularities;
       for(int i=0; i<args_->granularities; i++) {
@@ -389,6 +389,8 @@ void FastText::train(std::shared_ptr<Args> args) {
     exit(EXIT_FAILURE);
   }
   std::ifstream ifs(args_->input);
+  infileNbOfRows = utils::size(ifs);
+  
   if (!ifs.is_open()) {
     std::cerr << "Input file cannot be opened!" << std::endl;
     exit(EXIT_FAILURE);

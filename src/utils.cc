@@ -10,19 +10,27 @@
 #include "utils.h"
 
 #include <ios>
+#include <iostream>
 
 namespace fasttext {
 
 namespace utils {
 
   int64_t size(std::ifstream& ifs) {
-    ifs.seekg(std::streamoff(0), std::ios::end);
-    return ifs.tellg();
+    int64_t number_of_lines = 0;
+    std::string line;
+    while (std::getline(ifs, line))
+      ++number_of_lines;
+    return number_of_lines;
   }
 
   void seek(std::ifstream& ifs, int64_t pos) {
     ifs.clear();
-    ifs.seekg(std::streampos(pos));
+    ifs.seekg(std::ios::beg);
+    std::string s;
+    for(int i=1; i < pos; i++){
+      std::getline(ifs, s);
+    }
   }
 }
 
