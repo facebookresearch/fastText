@@ -172,11 +172,12 @@ void FastText::test(std::istream& in, int32_t k, int granularity) {
   }  
 
   int64_t lineCounter = 0;
+  int64_t lineCounterStep = 1000;
   while (in.peek() != EOF) {
     dict_->getLine(in, content, labels, model_->rng);
     lineCounter++;
-    if(lineCounter % 10000 == 0 && args_->verbose > 1) {
-      std::cout << "\rRead " << lineCounter / 10000 << "K lines" << std::flush;
+    if(lineCounter % lineCounterStep == 0 && args_->verbose > 1) {
+      std::cout << "\rProcessed " << lineCounter / lineCounterStep << "K lines" << std::flush;
     }
 
     List granularities;
@@ -202,7 +203,7 @@ void FastText::test(std::istream& in, int32_t k, int granularity) {
     }
   }
   if (args_->verbose > 0) {
-    std::cout << "\rRead " << lineCounter / 10000 << "K lines" << std::endl;
+    std::cout << "\rProcessed " << lineCounter / lineCounterStep << "K lines" << std::endl;
   }
 
   std::cout << std::endl << std::setprecision(3);
