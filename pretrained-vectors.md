@@ -16,7 +16,7 @@ The models can be downloaded from:
 * [*Bengali*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bn.zip)
 * [*Bosnian*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bs.zip)
 * [*Breton*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.br.zip)
-* [*Bulgar*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bg.zip)
+* [*Bulgarian*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bg.zip)
 * [*Burmese*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.my.zip)
 * [*Catalan*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ca.zip)
 * [*Cebuano*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ceb.zip)
