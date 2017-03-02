@@ -1,7 +1,16 @@
 # Pre-trained word vectors
 
-We are publishing pre-trained word vectors for 90 languages, trained on Wikipedia.
-These are vectors in dimension 300, trained with the default parameters of fastText.
+We are publishing pre-trained word vectors for 90 languages, trained on [*Wikipedia*](https://en.wikipedia.org) using fastText.
+These vectors in dimension 300 were obtained using the skip-gram model described in [1](#enriching-word-vectors-with-subword-information) with default parameters.
+
+## Format
+
+The word vectors come in both the binary and text default formats of fastText.
+In the text format, each line contain a word followed by its embedding. Each value is space separated.
+Words are ordered by their frequency in a descending order.
+
+## Models
+
 The models can be downloaded from:
 
 * [*Afrikaans*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.af.zip)
@@ -93,4 +102,19 @@ The models can be downloaded from:
 * [*Volapük*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.vo.zip)
 * [*Waray*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.war.zip)
 * [*Welsh*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.cy.zip)
-* [*Western*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.fy.zip)
+* [*Western Frisian*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.fy.zip)
+
+## References
+
+If you use these word embeddings, please cite the following paper:
+
+[1] P. Bojanowski\*, E. Grave\*, A. Joulin, T. Mikolov, [*Enriching Word Vectors with Subword Information*](https://arxiv.org/abs/1607.04606)
+
+```
+@article{bojanowski2016enriching,
+  title={Enriching Word Vectors with Subword Information},
+  author={Bojanowski, Piotr and Grave, Edouard and Joulin, Armand and Mikolov, Tomas},
+  journal={arXiv preprint arXiv:1607.04606},
+  year={2016}
+}
+```

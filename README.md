@@ -185,6 +185,8 @@ Please cite [1](#enriching-word-vectors-with-subword-information) if using this 
 
 You can find the preprocessed YFCC100M data used in [2] at https://research.facebook.com/research/fasttext/
 
+Pre-trained word vectors for 90 languages are available [*here*](https://github.com/facebookresearch/fastText/blob/master/pretrained-vectors.md).
+
 ## Join the fastText community
 
 * Facebook page: https://www.facebook.com/groups/1174547215919768
