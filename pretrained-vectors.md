@@ -87,6 +87,7 @@ The models can be downloaded from:
 * [*Slovak*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sk.zip)
 * [*Slovene*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sl.zip)
 * [*Spanish*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.es.zip)
+* [*Swahili*](https://drive.google.com/open?id=0B96FnYrZ4SRITHVBbmh6VXlLUms)
 * [*Swedish*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sv.zip)
 * [*Tagalog*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tl.zip)
 * [*Tajik*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tg.zip)
