@@ -60,7 +60,9 @@ class Model {
     static bool comparePairs(const std::pair<real, int32_t>&,
                              const std::pair<real, int32_t>&);
 
+    bool isOtherTarget(int32_t negative, std::vector<int32_t> other_targets);
     int32_t getNegative(int32_t target);
+    int32_t getNegative(int32_t target, std::vector<int32_t> other_targets);
     void initSigmoid();
     void initLog();
 
@@ -73,6 +75,7 @@ class Model {
 
     real binaryLogistic(int32_t, bool, real);
     real negativeSampling(int32_t, real);
+    real negativeSampling(int32_t, std::vector<int32_t>, real);
     real hierarchicalSoftmax(int32_t, real);
     real softmax(int32_t, real);
 
@@ -86,7 +89,7 @@ class Model {
              Vector&) const;
     void findKBest(int32_t, std::vector<std::pair<real, int32_t>>&,
                    Vector&, Vector&) const;
-    void update(const std::vector<int32_t>&, int32_t, real);
+    void update(const std::vector<int32_t>&, int32_t, real, const std::vector<int32_t>* other_targets = NULL);
     void computeHidden(const std::vector<int32_t>&, Vector&) const;
     void computeOutputSoftmax(Vector&, Vector&) const;
     void computeOutputSoftmax();
