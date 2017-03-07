@@ -114,6 +114,30 @@ $ ./fasttext print-vectors model.bin < text.txt
 This assumes that the `text.txt` file contains the paragraphs that you want to get vectors for.
 The program will output one vector representation per line in the file.
 
+### Document Embedding
+
+In order to embed document in vector space:
+
+```
+$ ./fasttext pvdm -model model.bin -input data.txt -output docvecs
+or
+$ ./fasttext pvdbow -model model.bin -input data.txt -output docvecs
+```
+
+where `model.bin` is a previously trained model using [fasttext word representation learning](https://github.com/facebookresearch/fastText#word-representation-learning). <br/> 
+As such, most options are inherited from [fasttext word representation learning](https://github.com/facebookresearch/fastText#word-representation-learning) without epoch, thread, [etc](#full-documentation) <br/> 
+`data.txt` is a file containing `utf-8` encoded labeled documents. (\_\_label\_\_\<label\>, \<text\>) <br/> 
+At the end of document embeding, the program will save a single file: `docvecs.vec`. <br/> 
+`docvecs.vec` is a text file containing the labeled document vectors, one per line.   
+
+**Following arguments are optional:**
+```
+  -lr             learning rate [0.05]
+  -lrUpdateRate   change the rate of updates for the learning rate [100]
+  -epoch          number of epochs [5]
+  -thread         number of threads [12]
+  -verbose        how often to print to stdout [10000]
+```
 ## Full documentation
 
 Invoke a command without arguments to list available arguments and their default values:
@@ -123,6 +147,7 @@ $ ./fasttext supervised
 Empty input or output path.
 
 The following arguments are mandatory:
+  -model              (mandatory, only pvdm or pvdbow) model.bin file path for document embedding
   -input              training file path
   -output             output file path
 

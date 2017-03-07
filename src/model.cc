@@ -43,7 +43,11 @@ real Model::binaryLogistic(int32_t target, bool label, real lr) {
   real score = sigmoid(wo_->dotRow(hidden_, target));
   real alpha = lr * (real(label) - score);
   grad_.addRow(*wo_, target, alpha);
-  wo_->addRow(hidden_, target, alpha);
+
+  if (args_->model != model_name::pvdm && args_->model != model_name::pvdbow) {
+    wo_->addRow(hidden_, target, alpha);
+  }
+
   if (label) {
     return -log(score);
   } else {
@@ -194,8 +198,13 @@ void Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
   if (args_->model == model_name::sup) {
     grad_.mul(1.0 / input.size());
   }
-  for (auto it = input.cbegin(); it != input.cend(); ++it) {
-    wi_->addRow(grad_, *it, 1.0);
+  
+  if (args_->model == model_name::pvdm || args_->model == model_name::pvdbow) {
+     wi_->addRow(grad_, input.back(), 1.0);
+  } else {
+    for (auto it = input.cbegin(); it != input.cend(); ++it) {
+      wi_->addRow(grad_, *it, 1.0);
+    }
   }
 }
 
