@@ -9,6 +9,7 @@
 
 #include "fasttext.h"
 
+#include <assert.h>
 #include <math.h>
 
 #include <iostream>
@@ -20,6 +21,10 @@
 
 namespace fasttext {
 
+  FastText::FastText(int infileColumnDimension)
+    : granularityDimension(infileColumnDimension)
+  {}
+  
 void FastText::getVector(Vector& vec, const std::string& word) {
   const std::vector<int32_t>& ngrams = dict_->getNgrams(word);
   vec.zero();
@@ -37,8 +42,8 @@ void FastText::saveVectors() {
     std::cout << "Error opening file for saving vectors." << std::endl;
     exit(EXIT_FAILURE);
   }
-  ofs << dict_->nwords() << " " << args_->dim << std::endl;
-  Vector vec(args_->dim);
+  ofs << dict_->nwords() << " " << args_->granularities * args_->dim << std::endl;
+  Vector vec(args_->granularities * args_->dim);
   for (int32_t i = 0; i < dict_->nwords(); i++) {
     std::string word = dict_->getWord(i);
     getVector(vec, word);
@@ -72,7 +77,7 @@ void FastText::loadModel(const std::string& filename) {
 
 void FastText::loadModel(std::istream& in) {
   args_ = std::make_shared<Args>();
-  dict_ = std::make_shared<Dictionary>(args_);
+  dict_ = std::make_shared<Dictionary>(args_, granularityDimension);
   input_ = std::make_shared<Matrix>();
   output_ = std::make_shared<Matrix>();
   args_->load(in);
@@ -95,21 +100,33 @@ void FastText::printInfo(real progress, real loss) {
   int etah = eta / 3600;
   int etam = (eta - etah * 3600) / 60;
   std::cout << std::fixed;
-  std::cout << "\rProgress: " << std::setprecision(1) << 100 * progress << "%";
+  std::cout << "Progress: " << std::setprecision(1) << 100 * progress << "%";
   std::cout << "  words/sec/thread: " << std::setprecision(0) << wst;
   std::cout << "  lr: " << std::setprecision(6) << lr;
   std::cout << "  loss: " << std::setprecision(6) << loss;
-  std::cout << "  eta: " << etah << "h" << etam << "m ";
+  std::cout << "  eta: " << etah << "h" << etam << "\n";
   std::cout << std::flush;
 }
 
 void FastText::supervised(Model& model, real lr,
                           const std::vector<int32_t>& line,
                           const std::vector<int32_t>& labels) {
-  if (labels.size() == 0 || line.size() == 0) return;
+  List l = {line};
+  supervised(model, lr, l, labels);
+}
+			  
+void FastText::supervised(Model& model, real lr,
+			  const List& granularities,
+			  const std::vector<int32_t>& labels) {
+  bool anyEmptyVector = false;
+  for(std::vector<int32_t> v : granularities) {
+    anyEmptyVector = anyEmptyVector || v.size() == 0;
+  }
+  if (labels.size() == 0 || granularities.size() == 0 || anyEmptyVector) return;
   std::uniform_int_distribution<> uniform(0, labels.size() - 1);
   int32_t i = uniform(model.rng);
-  model.update(line, labels[i], lr);
+
+  model.update(granularities, labels[i], lr);
 }
 
 void FastText::cbow(Model& model, real lr,
@@ -143,17 +160,39 @@ void FastText::skipgram(Model& model, real lr,
   }
 }
 
-void FastText::test(std::istream& in, int32_t k) {
+void FastText::test(std::istream& in, int32_t k, int granularity) {
   int32_t nexamples = 0, nlabels = 0;
   double precision = 0.0;
-  std::vector<int32_t> line, labels;
+  std::vector<int32_t> labels;
 
+  std::vector<int32_t>* featureColumns = new std::vector<int32_t>[granularity];
+  VPtrVector content;
+  for(int i=0; i<granularity; i++) {
+    content.push_back(&featureColumns[i]);
+  }  
+
+  int64_t lineCounter = 0;
+  int64_t lineCounterStep = 1000;
   while (in.peek() != EOF) {
-    dict_->getLine(in, line, labels, model_->rng);
-    dict_->addNgrams(line, args_->wordNgrams);
-    if (labels.size() > 0 && line.size() > 0) {
+    dict_->getLine(in, content, labels, model_->rng);
+    lineCounter++;
+    if(lineCounter % lineCounterStep == 0 && args_->verbose > 1) {
+      std::cout << "\rProcessed " << lineCounter / lineCounterStep << "K lines" << std::flush;
+    }
+
+    List granularities;
+    for(int i=0; i<granularity; i++) {
+      dict_->addNgrams(*content[i], args_->wordNgrams);
+      granularities.push_back(*content[i]);
+    }
+
+    bool anyEmptyVector = false;
+    for(std::vector<int32_t> v : granularities) {
+      anyEmptyVector = anyEmptyVector || v.size() == 0;
+    }
+    if (labels.size() > 0 && granularities.size() > 0 && !anyEmptyVector) {
       std::vector<std::pair<real, int32_t>> modelPredictions;
-      model_->predict(line, k, modelPredictions);
+      model_->predict(granularities, k, modelPredictions);
       for (auto it = modelPredictions.cbegin(); it != modelPredictions.cend(); it++) {
         if (std::find(labels.begin(), labels.end(), it->second) != labels.end()) {
           precision += 1.0;
@@ -163,32 +202,51 @@ void FastText::test(std::istream& in, int32_t k) {
       nlabels += labels.size();
     }
   }
-  std::cout << std::setprecision(3);
+  if (args_->verbose > 0) {
+    std::cout << "\rProcessed " << lineCounter / lineCounterStep << "K lines" << std::endl;
+  }
+
+  std::cout << std::endl << std::setprecision(3);
   std::cout << "P@" << k << ": " << precision / (k * nexamples) << std::endl;
   std::cout << "R@" << k << ": " << precision / nlabels << std::endl;
   std::cout << "Number of examples: " << nexamples << std::endl;
 }
 
-void FastText::predict(std::istream& in, int32_t k,
+void FastText::predict(std::istream& in, int32_t k, int granularity,
                        std::vector<std::pair<real,std::string>>& predictions) const {
-  std::vector<int32_t> words, labels;
-  dict_->getLine(in, words, labels, model_->rng);
-  dict_->addNgrams(words, args_->wordNgrams);
-  if (words.empty()) return;
-  Vector hidden(args_->dim);
+  std::vector<int32_t> labels;  
+  std::vector<int32_t>* featureColumns = new std::vector<int32_t>[maxGranularities];
+  VPtrVector content;
+  for(int i=0; i<granularity; i++) {
+    content.push_back(&featureColumns[i]);
+  }
+  dict_->getLine(in, content, labels, model_->rng);
+  List granularities;
+  for(int i=0; i<granularity; i++) {
+    dict_->addNgrams(*content[i], args_->wordNgrams);
+    granularities.push_back(*content[i]);
+  }
+  
+  bool anyEmptyVector = false;
+  for(std::vector<int32_t> v : granularities) {
+    anyEmptyVector = anyEmptyVector || v.size() == 0;
+  }
+  if (granularities.empty() || anyEmptyVector) return;
+  Vector hidden(args_->granularities * args_->dim);
   Vector output(dict_->nlabels());
   std::vector<std::pair<real,int32_t>> modelPredictions;
-  model_->predict(words, k, modelPredictions, hidden, output);
+  model_->predict(granularities, k, modelPredictions, hidden, output);
   predictions.clear();
   for (auto it = modelPredictions.cbegin(); it != modelPredictions.cend(); it++) {
     predictions.push_back(std::make_pair(it->first, dict_->getLabel(it->second)));
   }
 }
 
-void FastText::predict(std::istream& in, int32_t k, bool print_prob) {
+void FastText::predict(std::istream& in, int32_t k, bool print_prob, int granularity) {
   std::vector<std::pair<real,std::string>> predictions;
   while (in.peek() != EOF) {
-    predict(in, k, predictions);
+    predict(in, k, granularity, predictions);
+    
     if (predictions.empty()) {
       std::cout << "n/a" << std::endl;
       continue;
@@ -208,7 +266,7 @@ void FastText::predict(std::istream& in, int32_t k, bool print_prob) {
 
 void FastText::wordVectors() {
   std::string word;
-  Vector vec(args_->dim);
+  Vector vec(args_->granularities * args_->dim);
   while (std::cin >> word) {
     getVector(vec, word);
     std::cout << word << " " << vec << std::endl;
@@ -217,7 +275,7 @@ void FastText::wordVectors() {
 
 void FastText::textVectors() {
   std::vector<int32_t> line, labels;
-  Vector vec(args_->dim);
+  Vector vec(args_->granularities * args_->dim);
   while (std::cin.peek() != EOF) {
     dict_->getLine(std::cin, line, labels, model_->rng);
     dict_->addNgrams(line, args_->wordNgrams);
@@ -242,7 +300,7 @@ void FastText::printVectors() {
 
 void FastText::trainThread(int32_t threadId) {
   std::ifstream ifs(args_->input);
-  utils::seek(ifs, threadId * utils::size(ifs) / args_->thread);
+  utils::seek(ifs, threadId * infileNbOfRows / args_->thread);
 
   Model model(input_, output_, args_, threadId);
   if (args_->model == model_name::sup) {
@@ -253,18 +311,30 @@ void FastText::trainThread(int32_t threadId) {
 
   const int64_t ntokens = dict_->ntokens();
   int64_t localTokenCount = 0;
-  std::vector<int32_t> line, labels;
+  std::vector<int32_t> labels;
+  std::vector<int32_t>* featureColumns = new std::vector<int32_t>[maxGranularities];
+  VPtrVector content;
+  for(int i=0; i<args_->granularities; i++) {
+    content.push_back(&featureColumns[i]);
+  }
+
   while (tokenCount < args_->epoch * ntokens) {
     real progress = real(tokenCount) / (args_->epoch * ntokens);
     real lr = args_->lr * (1.0 - progress);
-    localTokenCount += dict_->getLine(ifs, line, labels, model.rng);
+    localTokenCount += dict_->getLine(ifs, content, labels, model.rng);
+
     if (args_->model == model_name::sup) {
-      dict_->addNgrams(line, args_->wordNgrams);
-      supervised(model, lr, line, labels);
+      List granularities;
+      for(int i=0; i<args_->granularities; i++) {
+      	dict_->addNgrams(*content[i], args_->wordNgrams);
+      	granularities.push_back(*content[i]);
+      }
+
+      supervised(model, lr, granularities, labels);
     } else if (args_->model == model_name::cbow) {
-      cbow(model, lr, line);
+      cbow(model, lr, *content[0]);
     } else if (args_->model == model_name::sg) {
-      skipgram(model, lr, line);
+      skipgram(model, lr, *content[0]);
     }
     if (localTokenCount > args_->lrUpdateRate) {
       tokenCount += localTokenCount;
@@ -291,8 +361,8 @@ void FastText::loadVectors(std::string filename) {
     exit(EXIT_FAILURE);
   }
   in >> n >> dim;
-  if (dim != args_->dim) {
-    std::cerr << "Dimension of pretrained vectors does not match -dim option"
+  if (dim != args_->granularities * args_->dim) {
+    std::cerr << "Dimension of pretrained vectors does not match -granularities * -dim options"
               << std::endl;
     exit(EXIT_FAILURE);
   }
@@ -309,8 +379,8 @@ void FastText::loadVectors(std::string filename) {
   in.close();
 
   dict_->threshold(1, 0);
-  input_ = std::make_shared<Matrix>(dict_->nwords()+args_->bucket, args_->dim);
-  input_->uniform(1.0 / args_->dim);
+  input_ = std::make_shared<Matrix>(dict_->nwords()+args_->bucket, args_->granularities * args_->dim);
+  input_->uniform(1.0 / (args_->granularities * args_->dim));
 
   for (size_t i = 0; i < n; i++) {
     int32_t idx = dict_->getId(words[i]);
@@ -323,13 +393,15 @@ void FastText::loadVectors(std::string filename) {
 
 void FastText::train(std::shared_ptr<Args> args) {
   args_ = args;
-  dict_ = std::make_shared<Dictionary>(args_);
+  dict_ = std::make_shared<Dictionary>(args_, granularityDimension);
   if (args_->input == "-") {
     // manage expectations
     std::cerr << "Cannot use stdin for training!" << std::endl;
     exit(EXIT_FAILURE);
   }
   std::ifstream ifs(args_->input);
+  infileNbOfRows = utils::size(ifs);
+  
   if (!ifs.is_open()) {
     std::cerr << "Input file cannot be opened!" << std::endl;
     exit(EXIT_FAILURE);
@@ -341,16 +413,16 @@ void FastText::train(std::shared_ptr<Args> args) {
     loadVectors(args_->pretrainedVectors);
   } else {
     input_ = std::make_shared<Matrix>(dict_->nwords()+args_->bucket, args_->dim);
-    input_->uniform(1.0 / args_->dim);
+    input_->uniform(1.0 / (args_->dim));
   }
 
   if (args_->model == model_name::sup) {
-    output_ = std::make_shared<Matrix>(dict_->nlabels(), args_->dim);
+    output_ = std::make_shared<Matrix>(dict_->nlabels(), args_->granularities * args_->dim);
   } else {
-    output_ = std::make_shared<Matrix>(dict_->nwords(), args_->dim);
+    output_ = std::make_shared<Matrix>(dict_->nwords(), args_->granularities * args_->dim);
   }
   output_->zero();
-
+  
   start = clock();
   tokenCount = 0;
   std::vector<std::thread> threads;

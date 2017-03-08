@@ -19,6 +19,7 @@
 #include "matrix.h"
 #include "vector.h"
 #include "real.h"
+#include "types.h"
 
 #define SIGMOID_TABLE_SIZE 512
 #define MAX_SIGMOID 8
@@ -42,7 +43,8 @@ class Model {
     Vector hidden_;
     Vector output_;
     Vector grad_;
-    int32_t hsz_;
+    int32_t gsz_;  // size of granularity vector, of a representation vector
+    int32_t hsz_;  // size of hidden
     int32_t isz_;
     int32_t osz_;
     real loss_;
@@ -67,6 +69,7 @@ class Model {
     static const int32_t NEGATIVE_TABLE_SIZE = 10000000;
 
   public:
+    // args: wi, wo, args, and threadID
     Model(std::shared_ptr<Matrix>, std::shared_ptr<Matrix>,
           std::shared_ptr<Args>, int32_t);
     ~Model();
@@ -76,18 +79,24 @@ class Model {
     real hierarchicalSoftmax(int32_t, real);
     real softmax(int32_t, real);
 
-    void predict(const std::vector<int32_t>&, int32_t,
+    void predict(const List&, int32_t,
                  std::vector<std::pair<real, int32_t>>&,
                  Vector&, Vector&) const;
     void predict(const std::vector<int32_t>&, int32_t,
+                 std::vector<std::pair<real, int32_t>>&);
+    void predict(const List&, int32_t,
                  std::vector<std::pair<real, int32_t>>&);
     void dfs(int32_t, int32_t, real,
              std::vector<std::pair<real, int32_t>>&,
              Vector&) const;
     void findKBest(int32_t, std::vector<std::pair<real, int32_t>>&,
                    Vector&, Vector&) const;
+    
     void update(const std::vector<int32_t>&, int32_t, real);
+    void update(const List&, int32_t, real);
+    
     void computeHidden(const std::vector<int32_t>&, Vector&) const;
+    void computeHidden(const List&, Vector&) const;
     void computeOutputSoftmax(Vector&, Vector&) const;
     void computeOutputSoftmax();
 

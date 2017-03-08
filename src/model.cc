@@ -12,6 +12,7 @@
 #include <assert.h>
 
 #include <algorithm>
+#include <iostream>
 
 namespace fasttext {
 
@@ -19,14 +20,15 @@ Model::Model(std::shared_ptr<Matrix> wi,
              std::shared_ptr<Matrix> wo,
              std::shared_ptr<Args> args,
              int32_t seed)
-  : hidden_(args->dim), output_(wo->m_), grad_(args->dim), rng(seed)
+  : hidden_(args->granularities * args->dim), output_(wo->m_), grad_(args->granularities * args->dim), rng(seed)
 {
   wi_ = wi;
   wo_ = wo;
   args_ = args;
   isz_ = wi->m_;
   osz_ = wo->m_;
-  hsz_ = args->dim;
+  gsz_ = args->dim;  // size of a granularity vector
+  hsz_ = args->granularities * gsz_;  // size of the hidden vector
   negpos = 0;
   loss_ = 0.0;
   nexamples_ = 1;
@@ -107,20 +109,38 @@ real Model::softmax(int32_t target, real lr) {
 }
 
 void Model::computeHidden(const std::vector<int32_t>& input, Vector& hidden) const {
-  assert(hidden.size() == hsz_);
+  assert(hidden.size() == gsz_);
   hidden.zero();
+
+  // input can contain words, n-grams, sentences, etc.
   for (auto it = input.cbegin(); it != input.cend(); ++it) {
+    // Add to hidden the it^th row of the wi_ matrix
     hidden.addRow(*wi_, *it);
   }
+  // normalize
   hidden.mul(1.0 / input.size());
 }
 
+void Model::computeHidden(const List& input, Vector& hidden) const {
+  assert(hidden.size() == hsz_);
+  hidden.zero();
+
+  // hidden is divided equally between each element of the input
+  int64_t i = 0;
+  for(std::vector<int32_t> v : input) {
+    Vector h(gsz_); // could go faster if passed hidden's memory zone directly.
+    computeHidden(v, h);
+    hidden.addVector(h, i*gsz_);
+    i++;
+  }
+}
+  
 bool Model::comparePairs(const std::pair<real, int32_t> &l,
                          const std::pair<real, int32_t> &r) {
   return l.first > r.first;
 }
 
-void Model::predict(const std::vector<int32_t>& input, int32_t k,
+void Model::predict(const List& input, int32_t k,
                     std::vector<std::pair<real, int32_t>>& heap,
                     Vector& hidden, Vector& output) const {
   assert(k > 0);
@@ -135,6 +155,12 @@ void Model::predict(const std::vector<int32_t>& input, int32_t k,
 }
 
 void Model::predict(const std::vector<int32_t>& input, int32_t k,
+                    std::vector<std::pair<real, int32_t>>& heap) {
+  List l = {input};
+  predict(l, k, heap);
+}
+  
+void Model::predict(const List& input, int32_t k,
                     std::vector<std::pair<real, int32_t>>& heap) {
   predict(input, k, heap, hidden_, output_);
 }
@@ -178,10 +204,20 @@ void Model::dfs(int32_t k, int32_t node, real score,
 }
 
 void Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
+  List l = {input};
+  update(l, target, lr);
+}
+
+void Model::update(const List& input, int32_t target, real lr) {
   assert(target >= 0);
   assert(target < osz_);
   if (input.size() == 0) return;
+  if (input.front().size() == 0) return;
+  
   computeHidden(input, hidden_);
+
+  // Next, any of the following function sets grad_ to zero and calculates
+  // the current loss (score) setting grad_ again with current values.
   if (args_->loss == loss_name::ns) {
     loss_ += negativeSampling(target, lr);
   } else if (args_->loss == loss_name::hs) {
@@ -189,13 +225,27 @@ void Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
   } else {
     loss_ += softmax(target, lr);
   }
+  
   nexamples_ += 1;
 
   if (args_->model == model_name::sup) {
-    grad_.mul(1.0 / input.size());
+    int cursor = 0;
+    for(std::vector<int32_t> v : input) {
+      // input.size() is the number of granularities.
+      // v contains all the words + ngrams, or sentences + ngrams, etc.
+      // gsz_ is the size a granularity vector, i.e. size of a representation vector.
+      grad_.mul(1.0 / (input.size() * v.size()), cursor*gsz_, gsz_);
+      cursor++;
+    }
   }
-  for (auto it = input.cbegin(); it != input.cend(); ++it) {
-    wi_->addRow(grad_, *it, 1.0);
+
+  int cursor = 0;
+  for(std::vector<int32_t> v : input) {
+    // add to it^th row of matrix wi_ the grad_ vector
+    for (auto it = v.cbegin(); it != v.cend(); ++it) {
+      wi_->addRow(grad_, *it, 1.0, cursor*gsz_);
+    }
+    cursor++;
   }
 }
 

@@ -13,6 +13,7 @@
 #include <istream>
 #include <ostream>
 #include <string>
+#include <vector>
 
 namespace fasttext {
 
@@ -27,7 +28,8 @@ class Args {
     std::string output;
     double lr;
     int lrUpdateRate;
-    int dim;
+    int dim;   // size of word vectors, size of one granularity vector.
+    int granularities; // number of granularities for the representations
     int ws;
     int epoch;
     int minCount;
@@ -41,7 +43,8 @@ class Args {
     int maxn;
     int thread;
     double t;
-    std::string label;
+    std::string label; // labels prefix
+    std::string separator; // separator string between label, word, sentence, etc.
     int verbose;
     std::string pretrainedVectors;
 

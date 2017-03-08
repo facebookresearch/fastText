@@ -74,6 +74,16 @@ void Matrix::addRow(const Vector& vec, int64_t i, real a) {
   }
 }
 
+void Matrix::addRow(const Vector& vec, int64_t i, real a, int64_t from) {
+  assert(i >= 0);
+  assert(i < m_);
+  assert(vec.m_ - from >= n_);
+
+  for(int64_t j=0; j<n_; j++) {
+    data_[i * n_ + j] += a * vec.data_[from + j];
+  }
+}
+
 real Matrix::dotRow(const Vector& vec, int64_t i) {
   assert(i >= 0);
   assert(i < m_);
