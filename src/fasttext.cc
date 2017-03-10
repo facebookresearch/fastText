@@ -143,6 +143,18 @@ void FastText::skipgram(Model& model, real lr,
   }
 }
 
+void FastText::sentence_context(Model& model, real lr,
+                        const std::vector<int32_t>& line) {
+  for (int32_t w = 0; w < line.size(); w++) {
+    const std::vector<int32_t>& ngrams = dict_->getNgrams(line[w]);
+    for (int32_t c = 0; c <= line.size(); c++) {
+      if (c != w) {
+        model.update(ngrams, line[c], lr);
+      }
+    }
+  }
+}
+
 void FastText::test(std::istream& in, int32_t k) {
   int32_t nexamples = 0, nlabels = 0;
   double precision = 0.0;
@@ -265,6 +277,8 @@ void FastText::trainThread(int32_t threadId) {
       cbow(model, lr, line);
     } else if (args_->model == model_name::sg) {
       skipgram(model, lr, line);
+    } else if (args_->model == model_name::sentence_context) {
+      sentence_context(model, lr, line);
     }
     if (localTokenCount > args_->lrUpdateRate) {
       tokenCount += localTokenCount;

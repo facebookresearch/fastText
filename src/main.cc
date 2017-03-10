@@ -23,6 +23,7 @@ void printUsage() {
     << "  predict             predict most likely labels\n"
     << "  predict-prob        predict most likely labels with probabilities\n"
     << "  skipgram            train a skipgram model\n"
+    << "  sentence_context    train a sentence_context model\n"
     << "  cbow                train a cbow model\n"
     << "  print-vectors       print vectors given a trained model\n"
     << std::endl;
@@ -134,7 +135,7 @@ int main(int argc, char** argv) {
     exit(EXIT_FAILURE);
   }
   std::string command(argv[1]);
-  if (command == "skipgram" || command == "cbow" || command == "supervised") {
+  if (command == "skipgram" || command == "sentence_context" || command == "cbow" || command == "supervised") {
     train(argc, argv);
   } else if (command == "test") {
     test(argc, argv);

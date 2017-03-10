@@ -49,6 +49,8 @@ void Args::parseArgs(int argc, char** argv) {
     lr = 0.1;
   } else if (command == "cbow") {
     model = model_name::cbow;
+  } else if (command == "sentence_context") {
+    model = model_name::sentence_context;
   }
   int ai = 2;
   while (ai < argc) {
