@@ -36,6 +36,7 @@ Args::Args() {
   label = "__label__";
   verbose = 2;
   pretrainedVectors = "";
+  saveOutput = 0;
 }
 
 void Args::parseArgs(int argc, char** argv) {
@@ -113,6 +114,8 @@ void Args::parseArgs(int argc, char** argv) {
       verbose = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-pretrainedVectors") == 0) {
       pretrainedVectors = std::string(argv[ai + 1]);
+    } else if (strcmp(argv[ai], "-saveOutput") == 0) {
+      saveOutput = atoi(argv[ai + 1]);
     } else {
       std::cout << "Unknown argument: " << argv[ai] << std::endl;
       printHelp();
@@ -158,6 +161,7 @@ void Args::printHelp() {
     << "  -label              labels prefix [" << label << "]\n"
     << "  -verbose            verbosity level [" << verbose << "]\n"
     << "  -pretrainedVectors  pretrained word vectors for supervised learning []"
+    << "  -saveOutput         whether output params should be saved [" << saveOutput << "]\n"
     << std::endl;
 }
 

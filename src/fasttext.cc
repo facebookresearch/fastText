@@ -47,6 +47,23 @@ void FastText::saveVectors() {
   ofs.close();
 }
 
+void FastText::saveOutput() {
+  std::ofstream ofs(args_->output + ".output");
+  if (!ofs.is_open()) {
+    std::cout << "Error opening file for saving vectors." << std::endl;
+    exit(EXIT_FAILURE);
+  }
+  ofs << dict_->nwords() << " " << args_->dim << std::endl;
+  Vector vec(args_->dim);
+  for (int32_t i = 0; i < dict_->nwords(); i++) {
+    std::string word = dict_->getWord(i);
+    vec.zero();
+    vec.addRow(*output_, i);
+    ofs << word << " " << vec << std::endl;
+  }
+  ofs.close();
+}
+
 void FastText::saveModel() {
   std::ofstream ofs(args_->output + ".bin", std::ofstream::binary);
   if (!ofs.is_open()) {
@@ -365,6 +382,9 @@ void FastText::train(std::shared_ptr<Args> args) {
   saveModel();
   if (args_->model != model_name::sup) {
     saveVectors();
+    if (args_->saveOutput > 0) {
+      saveOutput();
+    }
   }
 }
 
