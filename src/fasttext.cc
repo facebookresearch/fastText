@@ -147,7 +147,7 @@ void FastText::sentence_context(Model& model, real lr,
                         const std::vector<int32_t>& line) {
   for (int32_t w = 0; w < line.size(); w++) {
     const std::vector<int32_t>& ngrams = dict_->getNgrams(line[w]);
-    for (int32_t c = 0; c <= line.size(); c++) {
+    for (int32_t c = 0; c < line.size(); c++) {
       if (c != w) {
         model.update(ngrams, line[c], lr);
       }
