@@ -106,14 +106,14 @@ void FastText::loadModel(std::istream& in) {
 
 void FastText::printInfo(real progress, real loss) {
   real t = real(clock() - start) / CLOCKS_PER_SEC;
-  real wst = real(tokenCount) / t;
+  real ws = real(tokenCount) / t;
   real lr = args_->lr * (1.0 - progress);
-  int eta = int(t / progress * (1 - progress) / args_->thread);
+  int eta = int(t / progress * (1 - progress));
   int etah = eta / 3600;
   int etam = (eta - etah * 3600) / 60;
   std::cout << std::fixed;
   std::cout << "\rProgress: " << std::setprecision(1) << 100 * progress << "%";
-  std::cout << "  words/sec/thread: " << std::setprecision(0) << wst;
+  std::cout << "  words/sec: " << std::setprecision(0) << ws;
   std::cout << "  lr: " << std::setprecision(6) << lr;
   std::cout << "  loss: " << std::setprecision(6) << loss;
   std::cout << "  eta: " << etah << "h" << etam << "m ";
