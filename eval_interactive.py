@@ -44,7 +44,7 @@ for i, line in enumerate(fin):
 fin.close()
 
 def nearest(word):
-  return top_k(vectors[word], vectors)
+  return top_k(vectors[word], vectors)[1:]
 
 def analogy(a, b, c):
   query_vector = vectors[a] - vectors[b] + vectors[c]
