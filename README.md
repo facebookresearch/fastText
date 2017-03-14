@@ -84,7 +84,7 @@ $ ./fasttext supervised -input train.txt -output model
 
 where `train.txt` is a text file containing a training sentence per line along with the labels.
 By default, we assume that labels are words that are prefixed by the string `__label__`.
-This will output two files: `model.bin` and `model.vec`.
+This will output `model.bin` file.
 Once the model was trained, you can evaluate it by computing the precision and recall at k (P@k and R@k) on a test set using:
 
 ```
@@ -136,7 +136,7 @@ The following arguments are optional:
   -minCountLabel      minimal number of label occurences [0]
   -neg                number of negatives sampled [5]
   -wordNgrams         max length of word ngram [1]
-  -loss               loss function {ns, hs, softmax} [ns]
+  -loss               loss function {ns, hs, softmax} [softmax]
   -bucket             number of buckets [2000000]
   -minn               min length of char ngram [0]
   -maxn               max length of char ngram [0]
