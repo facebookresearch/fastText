@@ -249,7 +249,7 @@ void Dictionary::threshold(int64_t t, int64_t tl) {
   for (int32_t i = 0; i < MAX_VOCAB_SIZE; i++) {
     word2int_[i] = -1;
   }
-  for (auto it = words_.begin(); it != words_.end(); ++it) {
+  for (auto it = words_.cbegin(); it != words_.cend(); ++it) {
     int32_t h = find(it->word);
     word2int_[h] = size_++;
     if (it->type == entry_type::word) nwords_++;
