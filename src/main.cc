@@ -25,6 +25,7 @@ void printUsage() {
     << "  skipgram            train a skipgram model\n"
     << "  cbow                train a cbow model\n"
     << "  print-vectors       print vectors given a trained model\n"
+    << "  print-args          print args given a trained model\n"
     << std::endl;
 }
 
@@ -49,6 +50,13 @@ void printPredictUsage() {
 void printPrintVectorsUsage() {
   std::cout
     << "usage: fasttext print-vectors <model>\n\n"
+    << "  <model>      model filename\n"
+    << std::endl;
+}
+
+void printPrintArgsUsage() {
+  std::cout
+    << "usage: fasttext print-args <model>\n\n"
     << "  <model>      model filename\n"
     << std::endl;
 }
@@ -128,6 +136,17 @@ void train(int argc, char** argv) {
   fasttext.train(a);
 }
 
+void printArgs(int argc, char** argv) {
+  if (argc != 3) {
+    printPrintArgsUsage();
+    exit(EXIT_FAILURE);
+  }
+  FastText fasttext;
+  fasttext.loadModel(std::string(argv[2]));
+  fasttext.printArgs();
+  exit(0);
+}
+
 int main(int argc, char** argv) {
   if (argc < 2) {
     printUsage();
@@ -142,6 +161,8 @@ int main(int argc, char** argv) {
     printVectors(argc, argv);
   } else if (command == "predict" || command == "predict-prob" ) {
     predict(argc, argv);
+  } else if (command == "print-args") {
+    printArgs(argc, argv);
   } else {
     printUsage();
     exit(EXIT_FAILURE);

@@ -120,6 +120,10 @@ void FastText::printInfo(real progress, real loss) {
   std::cout << std::flush;
 }
 
+void FastText::printArgs() {
+  args_->print(std::cout);
+}
+
 void FastText::supervised(Model& model, real lr,
                           const std::vector<int32_t>& line,
                           const std::vector<int32_t>& labels) {

@@ -165,6 +165,22 @@ void Args::printHelp() {
     << std::endl;
 }
 
+void Args::print(std::ostream& out) {
+  out << "dim:          " << dim << std::endl;
+  out << "ws:           " << ws  << std::endl;
+  out << "epoch:        " << epoch  << std::endl;
+  out << "minCount:     " << minCount  << std::endl;
+  out << "neg:          " << neg  << std::endl;
+  out << "wordNgrams:   " << wordNgrams  << std::endl;
+  out << "model:        " << ((model==model_name::cbow)?"cbow":(model==model_name::sg?"sg":"sup")) << std::endl;
+  out << "loss:         " << ((loss==loss_name::hs)?"hs":(loss==loss_name::ns?"ns":"softmax")) << std::endl;
+  out << "bucket:       " << bucket  << std::endl;
+  out << "minn:         " << minn  << std::endl;
+  out << "maxn:         " << maxn  << std::endl;
+  out << "lrUpdateRate: " << lrUpdateRate  << std::endl;
+  out << "t:            " << t  << std::endl;
+}
+
 void Args::save(std::ostream& out) {
   out.write((char*) &(dim), sizeof(int));
   out.write((char*) &(ws), sizeof(int));
