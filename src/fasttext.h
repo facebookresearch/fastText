@@ -52,6 +52,7 @@ class FastText {
     void predict(std::istream&, int32_t, bool);
     void predict(std::istream&, int32_t, std::vector<std::pair<real,std::string>>&) const;
     void wordVectors();
+    void ngramVectors(std::string);
     void textVectors();
     void printVectors();
     void trainThread(int32_t);

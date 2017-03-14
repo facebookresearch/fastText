@@ -53,6 +53,14 @@ void printPrintVectorsUsage() {
     << std::endl;
 }
 
+void printPrintNgramsUsage() {
+  std::cout
+    << "usage: fasttext print-ngrams <model> <word>\n\n"
+    << "  <model>      model filename\n"
+    << "  <word>       word to print\n"
+    << std::endl;
+}
+
 void test(int argc, char** argv) {
   int32_t k;
   if (argc == 4) {
@@ -121,6 +129,17 @@ void printVectors(int argc, char** argv) {
   exit(0);
 }
 
+void printNgrams(int argc, char** argv) {
+  if (argc != 4) {
+    printPrintNgramsUsage();
+    exit(EXIT_FAILURE);
+  }
+  FastText fasttext;
+  fasttext.loadModel(std::string(argv[2]));
+  fasttext.ngramVectors(std::string(argv[3]));
+  exit(0);
+}
+
 void train(int argc, char** argv) {
   std::shared_ptr<Args> a = std::make_shared<Args>();
   a->parseArgs(argc, argv);
@@ -140,6 +159,8 @@ int main(int argc, char** argv) {
     test(argc, argv);
   } else if (command == "print-vectors") {
     printVectors(argc, argv);
+  } else if (command == "print-ngrams") {
+    printNgrams(argc, argv);
   } else if (command == "predict" || command == "predict-prob" ) {
     predict(argc, argv);
   } else {

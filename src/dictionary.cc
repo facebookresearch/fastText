@@ -85,6 +85,22 @@ const std::vector<int32_t> Dictionary::getNgrams(const std::string& word) const 
   return ngrams;
 }
 
+void Dictionary::getNgrams(const std::string& word,
+                           std::vector<int32_t>& ngrams,
+                           std::vector<std::string>& substrings) const {
+  int32_t i = getId(word);
+  ngrams.clear();
+  substrings.clear();
+  if (i >= 0) {
+    ngrams.push_back(i);
+    substrings.push_back(words_[i].word);
+  } else {
+    ngrams.push_back(-1);
+    substrings.push_back(word);
+  }
+  computeNgrams(BOW + word + EOW, ngrams, substrings);
+}
+
 bool Dictionary::discard(int32_t id, real rand) const {
   assert(id >= 0);
   assert(id < nwords_);
@@ -116,6 +132,26 @@ uint32_t Dictionary::hash(const std::string& str) const {
     h = h * 16777619;
   }
   return h;
+}
+
+void Dictionary::computeNgrams(const std::string& word,
+                               std::vector<int32_t>& ngrams,
+                               std::vector<std::string>& substrings) const {
+  for (size_t i = 0; i < word.size(); i++) {
+    std::string ngram;
+    if ((word[i] & 0xC0) == 0x80) continue;
+    for (size_t j = i, n = 1; j < word.size() && n <= args_->maxn; n++) {
+      ngram.push_back(word[j++]);
+      while (j < word.size() && (word[j] & 0xC0) == 0x80) {
+        ngram.push_back(word[j++]);
+      }
+      if (n >= args_->minn && !(n == 1 && (i == 0 || j == word.size()))) {
+        int32_t h = hash(ngram) % args_->bucket;
+        ngrams.push_back(nwords_ + h);
+        substrings.push_back(ngram);
+      }
+    }
+  }
 }
 
 void Dictionary::computeNgrams(const std::string& word,

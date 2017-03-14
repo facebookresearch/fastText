@@ -232,6 +232,20 @@ void FastText::wordVectors() {
   }
 }
 
+void FastText::ngramVectors(std::string word) {
+  std::vector<int32_t> ngrams;
+  std::vector<std::string> substrings;
+  Vector vec(args_->dim);
+  dict_->getNgrams(word, ngrams, substrings);
+  for (int32_t i = 0; i < ngrams.size(); i++) {
+    vec.zero();
+    if (ngrams[i] >= 0) {
+      vec.addRow(*input_, ngrams[i]);
+    }
+    std::cout << substrings[i] << " " << vec << std::endl;
+  }
+}
+
 void FastText::textVectors() {
   std::vector<int32_t> line, labels;
   Vector vec(args_->dim);
