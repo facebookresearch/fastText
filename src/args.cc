@@ -62,31 +62,31 @@ void Args::parseArgs(int argc, char** argv) {
       std::cout << "Here is the help! Usage:" << std::endl;
       printHelp();
       exit(EXIT_FAILURE);
-    } else if (strcmp(argv[ai], "-input") == 0) {
+    } else if (strcmp(argv[ai], "-input") == 0 && (ai + 1) < argc) {
       input = std::string(argv[ai + 1]);
-    } else if (strcmp(argv[ai], "-test") == 0) {
+    } else if (strcmp(argv[ai], "-test") == 0 && (ai + 1) < argc) {
       test = std::string(argv[ai + 1]);
-    } else if (strcmp(argv[ai], "-output") == 0) {
+    } else if (strcmp(argv[ai], "-output") == 0 && (ai + 1) < argc) {
       output = std::string(argv[ai + 1]);
-    } else if (strcmp(argv[ai], "-lr") == 0) {
+    } else if (strcmp(argv[ai], "-lr") == 0 && (ai + 1) < argc) {
       lr = atof(argv[ai + 1]);
-    } else if (strcmp(argv[ai], "-lrUpdateRate") == 0) {
+    } else if (strcmp(argv[ai], "-lrUpdateRate") == 0 && (ai + 1) < argc) {
       lrUpdateRate = atoi(argv[ai + 1]);
-    } else if (strcmp(argv[ai], "-dim") == 0) {
+    } else if (strcmp(argv[ai], "-dim") == 0 && (ai + 1) < argc) {
       dim = atoi(argv[ai + 1]);
-    } else if (strcmp(argv[ai], "-ws") == 0) {
+    } else if (strcmp(argv[ai], "-ws") == 0 && (ai + 1) < argc) {
       ws = atoi(argv[ai + 1]);
-    } else if (strcmp(argv[ai], "-epoch") == 0) {
+    } else if (strcmp(argv[ai], "-epoch") == 0 && (ai + 1) < argc) {
       epoch = atoi(argv[ai + 1]);
-    } else if (strcmp(argv[ai], "-minCount") == 0) {
+    } else if (strcmp(argv[ai], "-minCount") == 0 && (ai + 1) < argc) {
       minCount = atoi(argv[ai + 1]);
-    } else if (strcmp(argv[ai], "-minCountLabel") == 0) {
+    } else if (strcmp(argv[ai], "-minCountLabel") == 0 && (ai + 1) < argc) {
       minCountLabel = atoi(argv[ai + 1]);
-    } else if (strcmp(argv[ai], "-neg") == 0) {
+    } else if (strcmp(argv[ai], "-neg") == 0 && (ai + 1) < argc) {
       neg = atoi(argv[ai + 1]);
-    } else if (strcmp(argv[ai], "-wordNgrams") == 0) {
+    } else if (strcmp(argv[ai], "-wordNgrams") == 0 && (ai + 1) < argc) {
       wordNgrams = atoi(argv[ai + 1]);
-    } else if (strcmp(argv[ai], "-loss") == 0) {
+    } else if (strcmp(argv[ai], "-loss") == 0 && (ai + 1) < argc) {
       if (strcmp(argv[ai + 1], "hs") == 0) {
         loss = loss_name::hs;
       } else if (strcmp(argv[ai + 1], "ns") == 0) {
@@ -98,26 +98,26 @@ void Args::parseArgs(int argc, char** argv) {
         printHelp();
         exit(EXIT_FAILURE);
       }
-    } else if (strcmp(argv[ai], "-bucket") == 0) {
+    } else if (strcmp(argv[ai], "-bucket") == 0 && (ai + 1) < argc) {
       bucket = atoi(argv[ai + 1]);
-    } else if (strcmp(argv[ai], "-minn") == 0) {
+    } else if (strcmp(argv[ai], "-minn") == 0 && (ai + 1) < argc) {
       minn = atoi(argv[ai + 1]);
-    } else if (strcmp(argv[ai], "-maxn") == 0) {
+    } else if (strcmp(argv[ai], "-maxn") == 0 && (ai + 1) < argc) {
       maxn = atoi(argv[ai + 1]);
-    } else if (strcmp(argv[ai], "-thread") == 0) {
+    } else if (strcmp(argv[ai], "-thread") == 0 && (ai + 1) < argc) {
       thread = atoi(argv[ai + 1]);
-    } else if (strcmp(argv[ai], "-t") == 0) {
+    } else if (strcmp(argv[ai], "-t") == 0 && (ai + 1) < argc) {
       t = atof(argv[ai + 1]);
-    } else if (strcmp(argv[ai], "-label") == 0) {
+    } else if (strcmp(argv[ai], "-label") == 0 && (ai + 1) < argc) {
       label = std::string(argv[ai + 1]);
-    } else if (strcmp(argv[ai], "-verbose") == 0) {
+    } else if (strcmp(argv[ai], "-verbose") == 0 && (ai + 1) < argc) {
       verbose = atoi(argv[ai + 1]);
-    } else if (strcmp(argv[ai], "-pretrainedVectors") == 0) {
+    } else if (strcmp(argv[ai], "-pretrainedVectors") == 0 && (ai + 1) < argc) {
       pretrainedVectors = std::string(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-saveOutput") == 0) {
       saveOutput = atoi(argv[ai + 1]);
     } else {
-      std::cout << "Unknown argument: " << argv[ai] << std::endl;
+      std::cout << "Error argument: " << argv[ai] << std::endl;
       printHelp();
       exit(EXIT_FAILURE);
     }
