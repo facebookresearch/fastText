@@ -46,8 +46,11 @@ fin.close()
 def nearest(word):
   return top_k(vectors[word], vectors)[1:]
 
+def normalize(vector):
+  return vector / np.sum(vector)
+
 def analogy(a, b, c):
-  query_vector = vectors[a] - vectors[b] + vectors[c]
+  query_vector = normalize(vectors[a]) - normalize(vectors[b]) + normalize(vectors[c])
   res = top_k(query_vector, vectors)
   return list(filter(lambda x: x[0] not in [a, b, c], res))
 
