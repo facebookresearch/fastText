@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#include "pch.h"
 #include "matrix.h"
 
 #include <assert.h>

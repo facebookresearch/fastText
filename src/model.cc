@@ -7,6 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#include "pch.h"
 #include "model.h"
 
 #include <assert.h>
@@ -77,12 +78,12 @@ real Model::hierarchicalSoftmax(int32_t target, real lr) {
 
 void Model::computeOutputSoftmax(Vector& hidden, Vector& output) const {
   output.mul(*wo_, hidden);
-  real max = output[0], z = 0.0;
+  real max_val = output[0], z = 0.0;
   for (int32_t i = 0; i < osz_; i++) {
-    max = std::max(output[i], max);
+	  max_val = std::max(output[i], max_val);
   }
   for (int32_t i = 0; i < osz_; i++) {
-    output[i] = exp(output[i] - max);
+    output[i] = exp(output[i] - max_val);
     z += output[i];
   }
   for (int32_t i = 0; i < osz_; i++) {
