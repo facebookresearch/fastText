@@ -279,7 +279,8 @@ void Dictionary::addNgrams(std::vector<int32_t>& line, int32_t n) const {
     uint64_t h = line[i];
     for (int32_t j = i + 1; j < line_size && j < i + n; j++) {
       h = h * 116049371 + line[j];
-      line.push_back(nwords_ + (h % args_->bucket));
+      h = h % args_->bucket;
+      line.push_back(nwords_ + h);
     }
   }
 }
