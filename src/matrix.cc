@@ -88,12 +88,12 @@ void Matrix::save(std::ostream& out) {
 }
 
 void Matrix::load(std::istream& in) {
-  data_ = data_mem_;
   in.read((char*) &m_, sizeof(int64_t));
   in.read((char*) &n_, sizeof(int64_t));
-  delete[] data_;
-  data_ = new real[m_ * n_];
-  in.read((char*) data_, m_ * n_ * sizeof(real));
+  delete[] data_mem_;
+  data_mem_ = new real[m_ * n_];
+  in.read((char*) data_mem_, m_ * n_ * sizeof(real));
+  data_ = data_mem_;
 }
 
 void Matrix::load2mmap(std::istream& in, const std::string& filename) {

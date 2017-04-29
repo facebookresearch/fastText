@@ -104,6 +104,29 @@ void FastText::loadModel(std::istream& in) {
   }
 }
 
+void FastText::loadModelMmap(const std::string& filename) {
+  std::ifstream ifs(filename, std::ifstream::binary);
+  if (!ifs.is_open()) {
+    std::cerr << "Model file cannot be opened for loading!" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+  args_ = std::make_shared<Args>();
+  dict_ = std::make_shared<Dictionary>(args_);
+  input_ = std::make_shared<Matrix>();
+  output_ = std::make_shared<Matrix>();
+  args_->load(ifs);
+  dict_->load(ifs);
+  input_->load2mmap(ifs, filename);
+  output_->load2mmap(ifs, filename);
+  model_ = std::make_shared<Model>(input_, output_, args_, 0);
+  if (args_->model == model_name::sup) {
+    model_->setTargetCounts(dict_->getCounts(entry_type::label));
+  } else {
+    model_->setTargetCounts(dict_->getCounts(entry_type::word));
+  }
+  ifs.close();
+}
+
 void FastText::printInfo(real progress, real loss) {
   real t = real(clock() - start) / CLOCKS_PER_SEC;
   real wst = real(tokenCount) / t;

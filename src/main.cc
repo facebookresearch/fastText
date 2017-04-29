@@ -50,6 +50,7 @@ void printPrintVectorsUsage() {
   std::cout
     << "usage: fasttext print-vectors <model>\n\n"
     << "  <model>      model filename\n"
+    << "  <use-mmap>   (optional; 0 by default) if 1 map model file into memory\n"
     << std::endl;
 }
 
@@ -119,12 +120,21 @@ void predict(int argc, char** argv) {
 }
 
 void printVectors(int argc, char** argv) {
-  if (argc != 3) {
+  int32_t useMmap;
+  if (argc == 3) {
+    useMmap = 0;
+  } else if (argc == 4) {
+    useMmap = atoi(argv[3]);
+  } else {
     printPrintVectorsUsage();
     exit(EXIT_FAILURE);
   }
   FastText fasttext;
-  fasttext.loadModel(std::string(argv[2]));
+  if (useMmap != 0) {
+    fasttext.loadModelMmap(std::string(argv[2]));
+  } else {
+    fasttext.loadModel(std::string(argv[2]));
+  }
   fasttext.printVectors();
   exit(0);
 }

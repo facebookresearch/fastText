@@ -42,6 +42,7 @@ class FastText {
     void saveModel();
     void loadModel(const std::string&);
     void loadModel(std::istream&);
+    void loadModelMmap(const std::string&);
     void printInfo(real, real);
 
     void supervised(Model&, real, const std::vector<int32_t>&,
