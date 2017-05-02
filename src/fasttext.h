@@ -46,7 +46,6 @@ class FastText {
     clock_t start;
     void signModel(std::ostream&);
     bool checkModel(std::istream&);
-    void loadModel(std::istream&);
 
     bool quant_;
 
@@ -57,6 +56,7 @@ class FastText {
     void saveVectors();
     void saveOutput();
     void saveModel();
+    void loadModel(std::istream&);
     void loadModel(const std::string&);
     void printInfo(real, real);
 
