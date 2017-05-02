@@ -92,7 +92,6 @@ void FastText::saveModel() {
   std::string fn(args_->output);
   if (quant_) {
     fn += ".ftz";
-    dict_->quant_ = true;
   } else {
     fn += ".bin";
   }
@@ -142,7 +141,6 @@ void FastText::loadModel(std::istream& in) {
   qoutput_ = std::make_shared<QMatrix>();
   args_->load(in);
 
-  dict_->quant_ = quant_;
   dict_->load(in);
 
   if (quant_) {
@@ -213,7 +211,6 @@ void FastText::quantize(std::shared_ptr<Args> qargs) {
   if (qargs->cutoff > 0 && qargs->cutoff < input_->m_) {
     auto idx = selectEmbeddings(qargs->cutoff);
     dict_->prune(idx);
-    dict_->quant_ = true;
     std::shared_ptr<Matrix> ninput =
       std::make_shared<Matrix> (idx.size(), args_->dim);
     for (auto i = 0; i < idx.size(); i++) {

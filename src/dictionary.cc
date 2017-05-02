@@ -24,7 +24,7 @@ const std::string Dictionary::EOW = ">";
 
 Dictionary::Dictionary(std::shared_ptr<Args> args) : args_(args),
   word2int_(MAX_VOCAB_SIZE, -1), size_(0), nwords_(0), nlabels_(0),
-  ntokens_(0), quant_(false) {}
+  ntokens_(0) {}
 
 int32_t Dictionary::find(const std::string& w) const {
   int32_t h = hash(w) % MAX_VOCAB_SIZE;
@@ -273,9 +273,9 @@ void Dictionary::addNgrams(std::vector<int32_t>& line,
     for (int32_t j = i + 1; j < hashes.size() && j < i + n; j++) {
       h = h * 116049371 + hashes[j];
       int64_t id = h % args_->bucket;
-      if (quantidx_.size() != 0) {
-        if (quantidx_.find(id) != quantidx_.end()) {
-          id = quantidx_.at(id);
+      if (pruneidx_.size() > 0) {
+        if (pruneidx_.count(id)) {
+          id = pruneidx_.at(id);
         } else {continue;}
       }
       line.push_back(nwords_ + id);
@@ -339,14 +339,7 @@ int32_t Dictionary::getLine(std::istream& in,
   std::vector<int32_t> word_hashes;
   int32_t ntokens = getLine(in, words, word_hashes, labels, rng);
   if (args_->model == model_name::sup ) {
-    if (quant_) {
-      addNgrams(words, word_hashes, args_->wordNgrams);
-    }
-    else {
-      std::vector<int32_t> ngrams;
-      addNgrams(ngrams, words, args_->wordNgrams);
-      words.insert(words.end(), ngrams.begin(), ngrams.end());
-    }
+    addNgrams(words, word_hashes, args_->wordNgrams);
   }
   return ntokens;
 }
@@ -358,10 +351,12 @@ std::string Dictionary::getLabel(int32_t lid) const {
 }
 
 void Dictionary::save(std::ostream& out) const {
+  int64_t pruneidx_size = pruneidx_.size();
   out.write((char*) &size_, sizeof(int32_t));
   out.write((char*) &nwords_, sizeof(int32_t));
   out.write((char*) &nlabels_, sizeof(int32_t));
   out.write((char*) &ntokens_, sizeof(int64_t));
+  out.write((char*) &pruneidx_size, sizeof(int64_t));
   for (int32_t i = 0; i < size_; i++) {
     entry e = words_[i];
     out.write(e.word.data(), e.word.size() * sizeof(char));
@@ -369,23 +364,21 @@ void Dictionary::save(std::ostream& out) const {
     out.write((char*) &(e.count), sizeof(int64_t));
     out.write((char*) &(e.type), sizeof(entry_type));
   }
-  if (quant_) {
-    auto ss = quantidx_.size();
-    out.write((char*) &(ss), sizeof(ss));
-    for (auto it = quantidx_.begin(); it != quantidx_.end(); it++) {
-      out.write((char*)&(it->first), sizeof(int32_t));
-      out.write((char*)&(it->second), sizeof(int32_t));
-    }
+  for (const auto pair : pruneidx_) {
+    out.write((char*) &(pair.first), sizeof(int32_t));
+    out.write((char*) &(pair.second), sizeof(int32_t));
   }
 }
 
 void Dictionary::load(std::istream& in) {
   words_.clear();
   std::fill(word2int_.begin(), word2int_.end(), -1);
+  int64_t pruneidx_size;
   in.read((char*) &size_, sizeof(int32_t));
   in.read((char*) &nwords_, sizeof(int32_t));
   in.read((char*) &nlabels_, sizeof(int32_t));
   in.read((char*) &ntokens_, sizeof(int64_t));
+  in.read((char*) &pruneidx_size, sizeof(int64_t));
   for (int32_t i = 0; i < size_; i++) {
     char c;
     entry e;
@@ -397,15 +390,13 @@ void Dictionary::load(std::istream& in) {
     words_.push_back(e);
     word2int_[find(e.word)] = i;
   }
-  if (quant_) {
-    std::size_t size;
-    in.read((char*) &size, sizeof(std::size_t));
-    for (auto i = 0; i < size; i++) {
-      int32_t k, v;
-      in.read((char*)&k, sizeof(int32_t));
-      in.read((char*)&v, sizeof(int32_t));
-      quantidx_[k] = v;
-    }
+  pruneidx_.clear();
+  for (int32_t i = 0; i < pruneidx_size; i++) {
+    int32_t first;
+    int32_t second;
+    in.read((char*) &first, sizeof(int32_t));
+    in.read((char*) &second, sizeof(int32_t));
+    pruneidx_[first] = second;
   }
   initTableDiscard();
   initNgrams();
@@ -421,7 +412,11 @@ void Dictionary::prune(std::vector<int32_t>& idx) {
   idx = words;
 
   if (ngrams.size() != 0) {
-    convertNgrams(ngrams);
+    int32_t j = 0;
+    for (const auto ngram : ngrams) {
+      pruneidx_[ngram - nwords_] = j;
+      j++;
+    }
     idx.insert(idx.end(), ngrams.begin(), ngrams.end());
   }
 
@@ -438,58 +433,6 @@ void Dictionary::prune(std::vector<int32_t>& idx) {
   nwords_ = words.size();
   size_ = nwords_ +  nlabels_;
   words_.erase(words_.begin() + size_, words_.end());
-}
-
-void Dictionary::convertNgrams(std::vector<int32_t>& ngramidx) {
-
-  std::ifstream in(args_->input);
-  if (!in.is_open()) {
-    std::cerr << "Input file cannot be opened!" << std::endl;
-    exit(EXIT_FAILURE);
-  }
-
-  std::unordered_map<int32_t, std::unordered_map<int32_t, int32_t>> convertMap;
-  for (auto it = ngramidx.cbegin(); it != ngramidx.cend(); ++it) {
-   convertMap[*it] = std::unordered_map<int32_t, int32_t>();
-  }
-  std::vector<std::string> tokens;
-  std::vector<int32_t> word_hashes, words, labels, oldhashes, newhashes;
-  std::minstd_rand rng;
-  while (in.peek() != EOF) {
-    getLine(in, words, word_hashes, labels, rng);
-    if (words.empty()) {continue;}
-    oldhashes.clear(); newhashes.clear();
-    addNgrams(oldhashes, words, args_->wordNgrams);
-    addNgrams(newhashes, word_hashes, args_->wordNgrams);
-    assert(newhashes.size() == oldhashes.size());
-    for (int32_t i = 0; i < oldhashes.size(); i++) {
-      auto oh = oldhashes[i];
-      if (convertMap.find(oh) == convertMap.end()) {continue;}
-      convertMap[oh][newhashes[i]]++;
-    }
-  }
-  in.close();
-
-  quantidx_.clear();
-  std::vector<int32_t> remaining_indices;
-  int32_t size = 0;
-  for (auto it = ngramidx.begin(); it != ngramidx.end(); ++it) {
-    auto cm = convertMap[*it];
-    int32_t newhash; int32_t count = -1;
-    for (auto nit = cm.cbegin(); nit != cm.cend(); ++nit) {
-      if (count < nit->second) {
-        newhash = nit->first;
-        count = nit->second;
-      }
-    }
-    newhash -= nwords_;
-    if (quantidx_.find(newhash) == quantidx_.end()) {
-      quantidx_[newhash] = size;
-      size++;
-      remaining_indices.push_back(*it);
-    }
-  }
-  ngramidx = remaining_indices;
 }
 
 }

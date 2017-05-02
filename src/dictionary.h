@@ -46,17 +46,15 @@ class Dictionary {
     std::vector<int32_t> word2int_;
     std::vector<entry> words_;
 
-    std::unordered_map<int32_t, int32_t> quantidx_;
-
     std::vector<real> pdiscard_;
     int32_t size_;
     int32_t nwords_;
     int32_t nlabels_;
     int64_t ntokens_;
 
-  public:
-    bool quant_;
+    std::unordered_map<int32_t, int32_t> pruneidx_;
 
+  public:
     static const std::string EOS;
     static const std::string BOW;
     static const std::string EOW;
