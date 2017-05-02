@@ -41,7 +41,7 @@ void Dictionary::add(const std::string& w) {
     entry e;
     e.word = w;
     e.count = 1;
-    e.type = (w.find(args_->label) == 0) ? entry_type::label : entry_type::word;
+    e.type = getType(w);
     words_.push_back(e);
     word2int_[h] = size_++;
   } else {
@@ -109,6 +109,10 @@ entry_type Dictionary::getType(int32_t id) const {
   assert(id >= 0);
   assert(id < size_);
   return words_[id].type;
+}
+
+entry_type Dictionary::getType(const std::string& w) const {
+  return (w.find(args_->label) == 0) ? entry_type::label : entry_type::word;
 }
 
 std::string Dictionary::getWord(int32_t id) const {
@@ -304,7 +308,8 @@ int32_t Dictionary::getLine(std::istream& in,
     int32_t h = find(token);
     int32_t wid = word2int_[h];
     if (wid < 0) {
-      word_hashes.push_back(hash(token));
+      entry_type type = getType(token);
+      if (type == entry_type::word) word_hashes.push_back(hash(token));
       continue;
     }
     entry_type type = getType(wid);

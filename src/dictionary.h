@@ -69,6 +69,7 @@ class Dictionary {
     int64_t ntokens() const;
     int32_t getId(const std::string&) const;
     entry_type getType(int32_t) const;
+    entry_type getType(const std::string&) const;
     bool discard(int32_t, real) const;
     std::string getWord(int32_t) const;
     const std::vector<int32_t>& getNgrams(int32_t) const;
