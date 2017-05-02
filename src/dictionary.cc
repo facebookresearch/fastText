@@ -178,7 +178,8 @@ bool Dictionary::readWord(std::istream& in, std::string& word) const
   std::streambuf& sb = *in.rdbuf();
   word.clear();
   while ((c = sb.sbumpc()) != EOF) {
-    if (c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == '\v' || c == '\f' || c == '\0') {
+    if (c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == '\v' ||
+        c == '\f' || c == '\0') {
       if (word.empty()) {
         if (c == '\n') {
           word += EOS;
@@ -204,7 +205,7 @@ void Dictionary::readFromFile(std::istream& in) {
   while (readWord(in, word)) {
     add(word);
     if (ntokens_ % 1000000 == 0 && args_->verbose > 1) {
-      std::cout << "\rRead " << ntokens_  / 1000000 << "M words" << std::flush;
+      std::cerr << "\rRead " << ntokens_  / 1000000 << "M words" << std::flush;
     }
     if (size_ > 0.75 * MAX_VOCAB_SIZE) {
       minThreshold++;
@@ -215,12 +216,13 @@ void Dictionary::readFromFile(std::istream& in) {
   initTableDiscard();
   initNgrams();
   if (args_->verbose > 0) {
-    std::cout << "\rRead " << ntokens_  / 1000000 << "M words" << std::endl;
-    std::cout << "Number of words:  " << nwords_ << std::endl;
-    std::cout << "Number of labels: " << nlabels_ << std::endl;
+    std::cerr << "\rRead " << ntokens_  / 1000000 << "M words" << std::endl;
+    std::cerr << "Number of words:  " << nwords_ << std::endl;
+    std::cerr << "Number of labels: " << nlabels_ << std::endl;
   }
   if (size_ == 0) {
-    std::cerr << "Empty vocabulary. Try a smaller -minCount value." << std::endl;
+    std::cerr << "Empty vocabulary. Try a smaller -minCount value."
+              << std::endl;
     exit(EXIT_FAILURE);
   }
 }

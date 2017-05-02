@@ -60,12 +60,12 @@ void Args::parseArgs(int argc, char** argv) {
   int ai = 2;
   while (ai < argc) {
     if (argv[ai][0] != '-') {
-      std::cout << "Provided argument without a dash! Usage:" << std::endl;
+      std::cerr << "Provided argument without a dash! Usage:" << std::endl;
       printHelp();
       exit(EXIT_FAILURE);
     }
     if (strcmp(argv[ai], "-h") == 0) {
-      std::cout << "Here is the help! Usage:" << std::endl;
+      std::cerr << "Here is the help! Usage:" << std::endl;
       printHelp();
       exit(EXIT_FAILURE);
     } else if (strcmp(argv[ai], "-input") == 0) {
@@ -100,7 +100,7 @@ void Args::parseArgs(int argc, char** argv) {
       } else if (strcmp(argv[ai + 1], "softmax") == 0) {
         loss = loss_name::softmax;
       } else {
-        std::cout << "Unknown loss: " << argv[ai + 1] << std::endl;
+        std::cerr << "Unknown loss: " << argv[ai + 1] << std::endl;
         printHelp();
         exit(EXIT_FAILURE);
       }
@@ -133,14 +133,14 @@ void Args::parseArgs(int argc, char** argv) {
     } else if (strcmp(argv[ai], "-dsub") == 0) {
       dsub = atoi(argv[ai + 1]);
     } else {
-      std::cout << "Unknown argument: " << argv[ai] << std::endl;
+      std::cerr << "Unknown argument: " << argv[ai] << std::endl;
       printHelp();
       exit(EXIT_FAILURE);
     }
     ai += 2;
   }
   if (input.empty() || output.empty()) {
-    std::cout << "Empty input or output path." << std::endl;
+    std::cerr << "Empty input or output path." << std::endl;
     printHelp();
     exit(EXIT_FAILURE);
   }
@@ -153,7 +153,7 @@ void Args::printHelp() {
   std::string lname = "ns";
   if (loss == loss_name::hs) lname = "hs";
   if (loss == loss_name::softmax) lname = "softmax";
-  std::cout
+  std::cerr
     << "\nThe following arguments are mandatory:\n"
     << "  -input              training file path\n"
     << "  -output             output file path\n"

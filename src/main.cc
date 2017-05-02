@@ -15,8 +15,8 @@
 using namespace fasttext;
 
 void printUsage() {
-  std::cout
-    << "usage: fasttext <commands> <args>\n\n"
+  std::cerr
+    << "usage: fasttext <command> <args>\n\n"
     << "The commands supported by fasttext are:\n\n"
     << "  supervised          train a supervised classifier\n"
     << "  quantize            quantize a model to reduce the memory usage\n"
@@ -30,13 +30,13 @@ void printUsage() {
 }
 
 void printQuantizeUsage() {
-  std::cout
+  std::cerr
     << "usage: fasttext quantize <args>"
     << std::endl;
 }
 
 void printTestUsage() {
-  std::cout
+  std::cerr
     << "usage: fasttext test <model> <test-data> [<k> <quant>]\n\n"
     << "  <model>      model filename\n"
     << "  <test-data>  test data filename (if -, read from stdin)\n"
@@ -46,7 +46,7 @@ void printTestUsage() {
 }
 
 void printPredictUsage() {
-  std::cout
+  std::cerr
     << "usage: fasttext predict[-prob] <model> <test-data> [<k> <quant>]\n\n"
     << "  <model>      model filename\n"
     << "  <test-data>  test data filename (if -, read from stdin)\n"
@@ -56,14 +56,14 @@ void printPredictUsage() {
 }
 
 void printPrintVectorsUsage() {
-  std::cout
+  std::cerr
     << "usage: fasttext print-vectors <model>\n\n"
     << "  <model>      model filename\n"
     << std::endl;
 }
 
 void printPrintNgramsUsage() {
-  std::cout
+  std::cerr
     << "usage: fasttext print-ngrams <model> <word>\n\n"
     << "  <model>      model filename\n"
     << "  <word>       word to print\n"

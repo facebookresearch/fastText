@@ -37,7 +37,7 @@ void FastText::getVector(Vector& vec, const std::string& word) {
 void FastText::saveVectors() {
   std::ofstream ofs(args_->output + ".vec");
   if (!ofs.is_open()) {
-    std::cout << "Error opening file for saving vectors." << std::endl;
+    std::cerr << "Error opening file for saving vectors." << std::endl;
     exit(EXIT_FAILURE);
   }
   ofs << dict_->nwords() << " " << args_->dim << std::endl;
@@ -53,7 +53,7 @@ void FastText::saveVectors() {
 void FastText::saveOutput() {
   std::ofstream ofs(args_->output + ".output");
   if (!ofs.is_open()) {
-    std::cout << "Error opening file for saving vectors." << std::endl;
+    std::cerr << "Error opening file for saving vectors." << std::endl;
     exit(EXIT_FAILURE);
   }
   ofs << dict_->nwords() << " " << args_->dim << std::endl;
@@ -150,13 +150,13 @@ void FastText::printInfo(real progress, real loss) {
   int eta = int(t / progress * (1 - progress) / args_->thread);
   int etah = eta / 3600;
   int etam = (eta - etah * 3600) / 60;
-  std::cout << std::fixed;
-  std::cout << "\rProgress: " << std::setprecision(1) << 100 * progress << "%";
-  std::cout << "  words/sec/thread: " << std::setprecision(0) << wst;
-  std::cout << "  lr: " << std::setprecision(6) << lr;
-  std::cout << "  loss: " << std::setprecision(6) << loss;
-  std::cout << "  eta: " << etah << "h" << etam << "m ";
-  std::cout << std::flush;
+  std::cerr << std::fixed;
+  std::cerr << "\rProgress: " << std::setprecision(1) << 100 * progress << "%";
+  std::cerr << "  words/sec/thread: " << std::setprecision(0) << wst;
+  std::cerr << "  lr: " << std::setprecision(6) << lr;
+  std::cerr << "  loss: " << std::setprecision(6) << loss;
+  std::cerr << "  eta: " << etah << "h" << etam << "m ";
+  std::cerr << std::flush;
 }
 
 std::vector<int32_t> FastText::selectEmbeddings(int32_t cutoff) const {
@@ -175,7 +175,7 @@ std::vector<int32_t> FastText::selectEmbeddings(int32_t cutoff) const {
 
 void FastText::quantize(std::shared_ptr<Args> qargs) {
   if (qargs->output.empty()) {
-      std::cout<<"No model provided!"<<std::endl; exit(1);
+      std::cerr<<"No model provided!"<<std::endl; exit(1);
   }
   loadModel(qargs->output + ".bin");
 
@@ -285,10 +285,11 @@ void FastText::test(std::istream& in, int32_t k) {
       nlabels += labels.size();
     }
   }
+  std::cout << "N" << "\t" << nexamples << std::endl;
   std::cout << std::setprecision(3);
-  std::cout << "P@" << k << ": " << precision / (k * nexamples) << std::endl;
-  std::cout << "R@" << k << ": " << precision / nlabels << std::endl;
-  std::cout << "Number of examples: " << nexamples << std::endl;
+  std::cout << "P@" << k << "\t" << precision / (k * nexamples) << std::endl;
+  std::cout << "R@" << k << "\t" << precision / nlabels << std::endl;
+  std::cerr << "Number of examples: " << nexamples << std::endl;
 }
 
 void FastText::predict(std::istream& in, int32_t k,
@@ -311,16 +312,16 @@ void FastText::predict(std::istream& in, int32_t k, bool print_prob) {
   while (in.peek() != EOF) {
     predict(in, k, predictions);
     if (predictions.empty()) {
-      std::cout << "n/a" << std::endl;
+      std::cout << std::endl;
       continue;
     }
     for (auto it = predictions.cbegin(); it != predictions.cend(); it++) {
       if (it != predictions.cbegin()) {
-        std::cout << ' ';
+        std::cout << "\t";
       }
       std::cout << it->second;
       if (print_prob) {
-        std::cout << ' ' << exp(it->first);
+        std::cout << "\t" << exp(it->first);
       }
     }
     std::cout << std::endl;
@@ -332,7 +333,7 @@ void FastText::wordVectors() {
   Vector vec(args_->dim);
   while (std::cin >> word) {
     getVector(vec, word);
-    std::cout << word << " " << vec << std::endl;
+    std::cout << word << "\t" << vec << std::endl;
   }
 }
 
@@ -346,7 +347,7 @@ void FastText::ngramVectors(std::string word) {
     if (ngrams[i] >= 0) {
       vec.addRow(*input_, ngrams[i]);
     }
-    std::cout << substrings[i] << " " << vec << std::endl;
+    std::cout << substrings[i] << "\t" << vec << std::endl;
   }
 }
 
@@ -409,7 +410,7 @@ void FastText::trainThread(int32_t threadId) {
   }
   if (threadId == 0 && args_->verbose > 0) {
     printInfo(1.0, model.getLoss());
-    std::cout << std::endl;
+    std::cerr << std::endl;
   }
   ifs.close();
 }
