@@ -513,12 +513,16 @@ void FastText::train(std::shared_ptr<Args> args) {
 
   start = clock();
   tokenCount = 0;
-  std::vector<std::thread> threads;
-  for (int32_t i = 0; i < args_->thread; i++) {
-    threads.push_back(std::thread([=]() { trainThread(i); }));
-  }
-  for (auto it = threads.begin(); it != threads.end(); ++it) {
-    it->join();
+  if (args_->thread > 1) {
+    std::vector<std::thread> threads;
+    for (int32_t i = 0; i < args_->thread; i++) {
+      threads.push_back(std::thread([=]() { trainThread(i); }));
+    }
+    for (auto it = threads.begin(); it != threads.end(); ++it) {
+      it->join();
+    }
+  } else {
+    trainThread(0);
   }
   model_ = std::make_shared<Model>(input_, output_, args_, 0);
 
