@@ -67,6 +67,27 @@ void FastText::saveOutput() {
   ofs.close();
 }
 
+bool FastText::checkModel(std::istream& in) {
+  int32_t magic;
+  int32_t version;
+  in.read((char*)&(magic), sizeof(int32_t));
+  if (magic != FASTTEXT_FILEFORMAT_MAGIC_INT32) {
+    return false;
+  }
+  in.read((char*)&(version), sizeof(int32_t));
+  if (version != FASTTEXT_VERSION) {
+    return false;
+  }
+  return true;
+}
+
+void FastText::signModel(std::ostream& out) {
+  const int32_t magic = FASTTEXT_FILEFORMAT_MAGIC_INT32;
+  const int32_t version = FASTTEXT_VERSION;
+  out.write((char*)&(magic), sizeof(int32_t));
+  out.write((char*)&(version), sizeof(int32_t));
+}
+
 void FastText::saveModel() {
   std::string fn(args_->output);
   if (quant_) {
@@ -80,6 +101,7 @@ void FastText::saveModel() {
     std::cerr << "Model file cannot be opened for saving!" << std::endl;
     exit(EXIT_FAILURE);
   }
+  signModel(ofs);
   args_->save(ofs);
   dict_->save(ofs);
   if (quant_) {
@@ -101,6 +123,10 @@ void FastText::loadModel(const std::string& filename) {
   std::ifstream ifs(filename, std::ifstream::binary);
   if (!ifs.is_open()) {
     std::cerr << "Model file cannot be opened for loading!" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+  if (!checkModel(ifs)) {
+    std::cerr << "Model file has wrong file format!" << std::endl;
     exit(EXIT_FAILURE);
   }
   loadModel(ifs);

@@ -10,19 +10,22 @@
 #ifndef FASTTEXT_FASTTEXT_H
 #define FASTTEXT_FASTTEXT_H
 
+#define FASTTEXT_VERSION 11 /* Version 1a */
+#define FASTTEXT_FILEFORMAT_MAGIC_INT32 793712314
+
 #include <time.h>
 
 #include <atomic>
 #include <memory>
 
-#include "matrix.h"
-#include "vector.h"
-#include "qmatrix.h"
-#include "dictionary.h"
-#include "model.h"
-#include "utils.h"
-#include "real.h"
 #include "args.h"
+#include "dictionary.h"
+#include "matrix.h"
+#include "qmatrix.h"
+#include "model.h"
+#include "real.h"
+#include "utils.h"
+#include "vector.h"
 
 namespace fasttext {
 
@@ -41,6 +44,9 @@ class FastText {
 
     std::atomic<int64_t> tokenCount;
     clock_t start;
+    void signModel(std::ostream&);
+    bool checkModel(std::istream&);
+    void loadModel(std::istream&);
 
     bool quant_;
 
@@ -52,7 +58,6 @@ class FastText {
     void saveOutput();
     void saveModel();
     void loadModel(const std::string&);
-    void loadModel(std::istream&);
     void printInfo(real, real);
 
     void setQuantize(bool);
@@ -65,7 +70,10 @@ class FastText {
     void quantize(std::shared_ptr<Args>);
     void test(std::istream&, int32_t);
     void predict(std::istream&, int32_t, bool);
-    void predict(std::istream&, int32_t, std::vector<std::pair<real,std::string>>&) const;
+    void predict(
+        std::istream&,
+        int32_t,
+        std::vector<std::pair<real, std::string>>&) const;
     void wordVectors();
     void ngramVectors(std::string);
     void textVectors();
@@ -77,5 +85,4 @@ class FastText {
 };
 
 }
-
 #endif
