@@ -12,6 +12,7 @@
 #include <math.h>
 
 #include <iostream>
+#include <sstream>
 #include <iomanip>
 #include <thread>
 #include <string>
@@ -360,6 +361,26 @@ void FastText::wordVectors() {
   }
 }
 
+void FastText::sentenceVectors() {
+  Vector vec(args_->dim);
+  std::string sentence;
+  Vector svec(args_->dim);
+  std::string word;
+  while (std::getline(std::cin, sentence)) {
+    std::istringstream iss(sentence);
+    svec.zero();
+    int32_t count = 0;
+    while(iss >> word) {
+      getVector(vec, word);
+      vec.mul(1.0 / vec.norm());
+      svec.addVector(vec);
+      count++;
+    }
+    svec.mul(1.0 / count);
+    std::cout << sentence << " " << svec << std::endl;
+  }
+}
+
 void FastText::ngramVectors(std::string word) {
   std::vector<int32_t> ngrams;
   std::vector<std::string> substrings;
@@ -390,11 +411,15 @@ void FastText::textVectors() {
   }
 }
 
-void FastText::printVectors() {
+void FastText::printWordVectors() {
+  wordVectors();
+}
+
+void FastText::printSentenceVectors() {
   if (args_->model == model_name::sup) {
     textVectors();
   } else {
-    wordVectors();
+    sentenceVectors();
   }
 }
 

@@ -18,14 +18,15 @@ void printUsage() {
   std::cerr
     << "usage: fasttext <command> <args>\n\n"
     << "The commands supported by fasttext are:\n\n"
-    << "  supervised          train a supervised classifier\n"
-    << "  quantize            quantize a model to reduce the memory usage\n"
-    << "  test                evaluate a supervised classifier\n"
-    << "  predict             predict most likely labels\n"
-    << "  predict-prob        predict most likely labels with probabilities\n"
-    << "  skipgram            train a skipgram model\n"
-    << "  cbow                train a cbow model\n"
-    << "  print-vectors       print vectors given a trained model\n"
+    << "  supervised              train a supervised classifier\n"
+    << "  quantize                quantize a model to reduce the memory usage\n"
+    << "  test                    evaluate a supervised classifier\n"
+    << "  predict                 predict most likely labels\n"
+    << "  predict-prob            predict most likely labels with probabilities\n"
+    << "  skipgram                train a skipgram model\n"
+    << "  cbow                    train a cbow model\n"
+    << "  print-word-vectors      print word vectors given a trained model\n"
+    << "  print-sentence-vectors  print sentence vectors given a trained model\n"
     << std::endl;
 }
 
@@ -55,9 +56,16 @@ void printPredictUsage() {
     << std::endl;
 }
 
-void printPrintVectorsUsage() {
+void printPrintWordVectorsUsage() {
   std::cerr
-    << "usage: fasttext print-vectors <model>\n\n"
+    << "usage: fasttext print-word-vectors <model>\n\n"
+    << "  <model>      model filename\n"
+    << std::endl;
+}
+
+void printPrintSentenceVectorsUsage() {
+  std::cerr
+    << "usage: fasttext print-sentence-vectors <model>\n\n"
     << "  <model>      model filename\n"
     << std::endl;
 }
@@ -151,14 +159,25 @@ void predict(int argc, char** argv) {
   exit(0);
 }
 
-void printVectors(int argc, char** argv) {
+void printWordVectors(int argc, char** argv) {
   if (argc != 3) {
-    printPrintVectorsUsage();
+    printPrintWordVectorsUsage();
     exit(EXIT_FAILURE);
   }
   FastText fasttext;
   fasttext.loadModel(std::string(argv[2]));
-  fasttext.printVectors();
+  fasttext.printWordVectors();
+  exit(0);
+}
+
+void printSentenceVectors(int argc, char** argv) {
+  if (argc != 3) {
+    printPrintSentenceVectorsUsage();
+    exit(EXIT_FAILURE);
+  }
+  FastText fasttext;
+  fasttext.loadModel(std::string(argv[2]));
+  fasttext.printSentenceVectors();
   exit(0);
 }
 
@@ -192,8 +211,10 @@ int main(int argc, char** argv) {
     test(argc, argv);
   } else if (command == "quantize") {
     quantize(argc, argv);
-  } else if (command == "print-vectors") {
-    printVectors(argc, argv);
+  } else if (command == "print-word-vectors") {
+    printWordVectors(argc, argv);
+  } else if (command == "print-sentence-vectors") {
+    printSentenceVectors(argc, argv);
   } else if (command == "print-ngrams") {
     printNgrams(argc, argv);
   } else if (command == "predict" || command == "predict-prob" ) {

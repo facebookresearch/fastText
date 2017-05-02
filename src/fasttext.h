@@ -75,9 +75,11 @@ class FastText {
         int32_t,
         std::vector<std::pair<real, std::string>>&) const;
     void wordVectors();
+    void sentenceVectors();
     void ngramVectors(std::string);
     void textVectors();
-    void printVectors();
+    void printWordVectors();
+    void printSentenceVectors();
     void trainThread(int32_t);
     void train(std::shared_ptr<Args>);
 

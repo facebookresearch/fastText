@@ -55,14 +55,14 @@ The previously trained model can be used to compute word vectors for out-of-voca
 Provided you have a text file `queries.txt` containing words for which you want to compute vectors, use the following command:
 
 ```
-$ ./fasttext print-vectors model.bin < queries.txt
+$ ./fasttext print-word-vectors model.bin < queries.txt
 ```
 
 This will output word vectors to the standard output, one vector per line.
 This can also be used with pipes:
 
 ```
-$ cat queries.txt | ./fasttext print-vectors model.bin
+$ cat queries.txt | ./fasttext print-word-vectors model.bin
 ```
 
 See the provided scripts for an example. For instance, running:
@@ -108,7 +108,7 @@ In order to reproduce results from the paper [2](#bag-of-tricks-for-efficient-te
 If you want to compute vector representations of sentences or paragraphs, please use:
 
 ```
-$ ./fasttext print-vectors model.bin < text.txt
+$ ./fasttext print-sentence-vectors model.bin < text.txt
 ```
 
 This assumes that the `text.txt` file contains the paragraphs that you want to get vectors for.

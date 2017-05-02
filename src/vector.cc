@@ -37,9 +37,24 @@ void Vector::zero() {
   }
 }
 
+real Vector::norm() {
+  real sum = 0;
+  for (int64_t i = 0; i < m_; i++) {
+    sum += data_[i] * data_[i];
+  }
+  return std::sqrt(sum);
+}
+
 void Vector::mul(real a) {
   for (int64_t i = 0; i < m_; i++) {
     data_[i] *= a;
+  }
+}
+
+void Vector::addVector(const Vector& source) {
+  assert(m_ == source.m_);
+  for (int64_t i = 0; i < m_; i++) {
+    data_[i] += source.data_[i];
   }
 }
 
