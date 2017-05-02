@@ -34,16 +34,21 @@ class QMatrix {
     uint8_t* codes_;
     uint8_t* norm_codes_;
 
-  public:
     bool qnorm_;
+
     int64_t m_;
     int64_t n_;
+
     int32_t codesize_;
+
+  public:
 
     QMatrix();
     QMatrix(const Matrix&, int32_t, bool);
     ~QMatrix();
 
+    int64_t getM() const;
+    int64_t getN() const;
 
     void quantizeNorm(const Vector&);
     void quantize(const Matrix&);

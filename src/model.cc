@@ -44,7 +44,7 @@ void Model::setQuantizePointer(std::shared_ptr<QMatrix> qwi,
   qwi_ = qwi;
   qwo_ = qwo;
   if (qout) {
-    osz_ = qwo_->m_;
+    osz_ = qwo_->getM();
   }
 }
 

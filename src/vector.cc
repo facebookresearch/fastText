@@ -90,8 +90,8 @@ void Vector::mul(const Matrix& A, const Vector& vec) {
 }
 
 void Vector::mul(const QMatrix& A, const Vector& vec) {
-  assert(A.m_ == m_);
-  assert(A.n_ == vec.m_);
+  assert(A.getM() == m_);
+  assert(A.getN() == vec.m_);
   for (int64_t i = 0; i < m_; i++) {
     data_[i] = A.dotRow(vec, i);
   }

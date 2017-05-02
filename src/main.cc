@@ -38,21 +38,19 @@ void printQuantizeUsage() {
 
 void printTestUsage() {
   std::cerr
-    << "usage: fasttext test <model> <test-data> [<k> <quant>]\n\n"
+    << "usage: fasttext test <model> <test-data> [<k>]\n\n"
     << "  <model>      model filename\n"
     << "  <test-data>  test data filename (if -, read from stdin)\n"
     << "  <k>          (optional; 1 by default) predict top k labels\n"
-    << "  <quant>      (optional; 0 by default) used or not quantized model\n"
     << std::endl;
 }
 
 void printPredictUsage() {
   std::cerr
-    << "usage: fasttext predict[-prob] <model> <test-data> [<k> <quant>]\n\n"
+    << "usage: fasttext predict[-prob] <model> <test-data> [<k>]\n\n"
     << "  <model>      model filename\n"
     << "  <test-data>  test data filename (if -, read from stdin)\n"
     << "  <k>          (optional; 1 by default) predict top k labels\n"
-    << "  <quant>      (optional; 0 by default) use or not quantized model\n"
     << std::endl;
 }
 
@@ -92,7 +90,7 @@ void quantize(int argc, char** argv) {
 }
 
 void test(int argc, char** argv) {
-  if (argc < 4 || argc > 6) {
+  if (argc < 4 || argc > 5) {
     printTestUsage();
     exit(EXIT_FAILURE);
   }
@@ -100,13 +98,8 @@ void test(int argc, char** argv) {
   if (argc >= 5) {
     k = atoi(argv[4]);
   }
-  bool quant = false;
-  if (argc >= 6) {
-    quant = atoi(argv[5]);
-  }
 
   FastText fasttext;
-  fasttext.setQuantize(quant);
   fasttext.loadModel(std::string(argv[2]));
 
   std::string infile(argv[3]);
@@ -125,7 +118,7 @@ void test(int argc, char** argv) {
 }
 
 void predict(int argc, char** argv) {
-  if (argc < 4 || argc > 6) {
+  if (argc < 4 || argc > 5) {
     printPredictUsage();
     exit(EXIT_FAILURE);
   }
@@ -133,14 +126,9 @@ void predict(int argc, char** argv) {
   if (argc >= 5) {
     k = atoi(argv[4]);
   }
-  bool quant = false;
-  if (argc >= 6) {
-    quant = atoi(argv[5]);
-  }
 
   bool print_prob = std::string(argv[1]) == "predict-prob";
   FastText fasttext;
-  fasttext.setQuantize(quant);
   fasttext.loadModel(std::string(argv[2]));
 
   std::string infile(argv[3]);

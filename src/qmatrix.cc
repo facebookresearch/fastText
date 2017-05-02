@@ -77,6 +77,14 @@ real QMatrix::dotRow(const Vector& vec, int64_t i) const {
   return pq_->mulcode(vec, codes_, i, norm);
 }
 
+int64_t QMatrix::getM() const {
+  return m_;
+}
+
+int64_t QMatrix::getN() const {
+  return n_;
+}
+
 void QMatrix::save(std::ostream& out) {
     out.write((char*) &qnorm_, sizeof(qnorm_));
     out.write((char*) &m_, sizeof(m_));

@@ -104,18 +104,21 @@ void FastText::saveModel() {
   signModel(ofs);
   args_->save(ofs);
   dict_->save(ofs);
+
+  ofs.write((char*)&(quant_), sizeof(bool));
   if (quant_) {
-    ofs.write((char*) &(args_->qout), sizeof(bool));
     qinput_->save(ofs);
   } else {
     input_->save(ofs);
   }
+
+  ofs.write((char*)&(args_->qout), sizeof(bool));
   if (quant_ && args_->qout) {
     qoutput_->save(ofs);
-  }
-  else {
+  } else {
     output_->save(ofs);
   }
+
   ofs.close();
 }
 
@@ -144,13 +147,16 @@ void FastText::loadModel(std::istream& in) {
 
   dict_->load(in);
 
-  if (quant_) {
-    in.read((char*) &(args_->qout), sizeof(bool));
+  bool quant_input;
+  in.read((char*) &quant_input, sizeof(bool));
+  if (quant_input) {
+    quant_ = true;
     qinput_->load(in);
   } else {
     input_->load(in);
   }
 
+  in.read((char*) &args_->qout, sizeof(bool));
   if (quant_ && args_->qout) {
     qoutput_->load(in);
   } else {
@@ -244,10 +250,6 @@ void FastText::quantize(std::shared_ptr<Args> qargs) {
 
   quant_ = true;
   saveModel();
-}
-
-void FastText::setQuantize(bool quant) {
-  quant_ = quant;
 }
 
 void FastText::supervised(Model& model, real lr,
