@@ -144,7 +144,7 @@ The following arguments are optional:
   -t                  sampling threshold [0.0001]
   -label              labels prefix [__label__]
   -verbose            verbosity level [2]
-  -pretrainedVectors  pretrained word vectors for supervised learning []
+  -pretrainedVectors  pretrained word vectors (.vec) for supervised learning []
 ```
 
 Defaults may vary by mode. (Word-representation modes `skipgram` and `cbow` use a default `-minCount` of 5.)
