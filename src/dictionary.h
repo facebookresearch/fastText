@@ -16,6 +16,7 @@
 #include <ostream>
 #include <random>
 #include <memory>
+#include <unordered_map>
 
 #include "args.h"
 #include "real.h"
@@ -44,6 +45,9 @@ class Dictionary {
     std::shared_ptr<Args> args_;
     std::vector<int32_t> word2int_;
     std::vector<entry> words_;
+
+    std::unordered_map<int32_t, int32_t> quantidx_;
+
     std::vector<real> pdiscard_;
     int32_t size_;
     int32_t nwords_;
@@ -51,6 +55,8 @@ class Dictionary {
     int64_t ntokens_;
 
   public:
+    bool quant_;
+
     static const std::string EOS;
     static const std::string BOW;
     static const std::string EOW;
@@ -78,10 +84,16 @@ class Dictionary {
     void save(std::ostream&) const;
     void load(std::istream&);
     std::vector<int64_t> getCounts(entry_type) const;
-    void addNgrams(std::vector<int32_t>&, int32_t) const;
+    void addNgrams(std::vector<int32_t>&, const std::vector<int32_t>&,
+                   int32_t) const;
+    int32_t getLine(std::istream&, std::vector<std::string>&) const;
+    int32_t getLine(std::istream&, std::vector<int32_t>&, std::vector<int32_t>&,
+                    std::vector<int32_t>&, std::minstd_rand&) const;
     int32_t getLine(std::istream&, std::vector<int32_t>&,
                     std::vector<int32_t>&, std::minstd_rand&) const;
     void threshold(int64_t, int64_t);
+    void prune(std::vector<int32_t>&);
+    void convertNgrams(std::vector<int32_t>&);
 };
 
 }

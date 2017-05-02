@@ -14,6 +14,7 @@
 #include <iomanip>
 
 #include "matrix.h"
+#include "qmatrix.h"
 
 namespace fasttext {
 
@@ -47,7 +48,7 @@ void Vector::addRow(const Matrix& A, int64_t i) {
   assert(i < A.m_);
   assert(m_ == A.n_);
   for (int64_t j = 0; j < A.n_; j++) {
-    data_[j] += A.data_[i * A.n_ + j];
+    data_[j] += A.at(i, j);
   }
 }
 
@@ -56,18 +57,28 @@ void Vector::addRow(const Matrix& A, int64_t i, real a) {
   assert(i < A.m_);
   assert(m_ == A.n_);
   for (int64_t j = 0; j < A.n_; j++) {
-    data_[j] += a * A.data_[i * A.n_ + j];
+    data_[j] += a * A.at(i, j);
   }
+}
+
+void Vector::addRow(const QMatrix& A, int64_t i) {
+  assert(i >= 0);
+  A.addToVector(*this, i);
 }
 
 void Vector::mul(const Matrix& A, const Vector& vec) {
   assert(A.m_ == m_);
   assert(A.n_ == vec.m_);
   for (int64_t i = 0; i < m_; i++) {
-    data_[i] = 0.0;
-    for (int64_t j = 0; j < A.n_; j++) {
-      data_[i] += A.data_[i * A.n_ + j] * vec.data_[j];
-    }
+    data_[i] = A.dotRow(vec, i);
+  }
+}
+
+void Vector::mul(const QMatrix& A, const Vector& vec) {
+  assert(A.m_ == m_);
+  assert(A.n_ == vec.m_);
+  for (int64_t i = 0; i < m_; i++) {
+    data_[i] = A.dotRow(vec, i);
   }
 }
 

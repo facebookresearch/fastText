@@ -17,6 +17,7 @@
 
 #include "matrix.h"
 #include "vector.h"
+#include "qmatrix.h"
 #include "dictionary.h"
 #include "model.h"
 #include "utils.h"
@@ -29,13 +30,23 @@ class FastText {
   private:
     std::shared_ptr<Args> args_;
     std::shared_ptr<Dictionary> dict_;
+
     std::shared_ptr<Matrix> input_;
     std::shared_ptr<Matrix> output_;
+
+    std::shared_ptr<QMatrix> qinput_;
+    std::shared_ptr<QMatrix> qoutput_;
+
     std::shared_ptr<Model> model_;
+
     std::atomic<int64_t> tokenCount;
     clock_t start;
 
+    bool quant_;
+
   public:
+    FastText();
+
     void getVector(Vector&, const std::string&);
     void saveVectors();
     void saveOutput();
@@ -44,10 +55,14 @@ class FastText {
     void loadModel(std::istream&);
     void printInfo(real, real);
 
+    void setQuantize(bool);
+
     void supervised(Model&, real, const std::vector<int32_t>&,
                     const std::vector<int32_t>&);
     void cbow(Model&, real, const std::vector<int32_t>&);
     void skipgram(Model&, real, const std::vector<int32_t>&);
+    std::vector<int32_t> selectEmbeddings(int32_t) const;
+    void quantize(std::shared_ptr<Args>);
     void test(std::istream&, int32_t);
     void predict(std::istream&, int32_t, bool);
     void predict(std::istream&, int32_t, std::vector<std::pair<real,std::string>>&) const;

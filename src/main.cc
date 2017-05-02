@@ -16,9 +16,10 @@ using namespace fasttext;
 
 void printUsage() {
   std::cout
-    << "usage: fasttext <command> <args>\n\n"
+    << "usage: fasttext <commands> <args>\n\n"
     << "The commands supported by fasttext are:\n\n"
     << "  supervised          train a supervised classifier\n"
+    << "  quantize            quantize a model to reduce the memory usage\n"
     << "  test                evaluate a supervised classifier\n"
     << "  predict             predict most likely labels\n"
     << "  predict-prob        predict most likely labels with probabilities\n"
@@ -28,21 +29,29 @@ void printUsage() {
     << std::endl;
 }
 
+void printQuantizeUsage() {
+  std::cout
+    << "usage: fasttext quantize <args>"
+    << std::endl;
+}
+
 void printTestUsage() {
   std::cout
-    << "usage: fasttext test <model> <test-data> [<k>]\n\n"
+    << "usage: fasttext test <model> <test-data> [<k> <quant>]\n\n"
     << "  <model>      model filename\n"
     << "  <test-data>  test data filename (if -, read from stdin)\n"
     << "  <k>          (optional; 1 by default) predict top k labels\n"
+    << "  <quant>      (optional; 0 by default) used or not quantized model\n"
     << std::endl;
 }
 
 void printPredictUsage() {
   std::cout
-    << "usage: fasttext predict[-prob] <model> <test-data> [<k>]\n\n"
+    << "usage: fasttext predict[-prob] <model> <test-data> [<k> <quant>]\n\n"
     << "  <model>      model filename\n"
     << "  <test-data>  test data filename (if -, read from stdin)\n"
     << "  <k>          (optional; 1 by default) predict top k labels\n"
+    << "  <quant>      (optional; 0 by default) use or not quantized model\n"
     << std::endl;
 }
 
@@ -61,18 +70,37 @@ void printPrintNgramsUsage() {
     << std::endl;
 }
 
+void quantize(int argc, char** argv) {
+  std::shared_ptr<Args> a = std::make_shared<Args>();
+  if (argc < 3) {
+    printQuantizeUsage();
+    a->printHelp();
+    exit(EXIT_FAILURE);
+  }
+  a->parseArgs(argc, argv);
+  FastText fasttext;
+  fasttext.quantize(a);
+  exit(0);
+}
+
 void test(int argc, char** argv) {
-  int32_t k;
-  if (argc == 4) {
-    k = 1;
-  } else if (argc == 5) {
-    k = atoi(argv[4]);
-  } else {
+  if (argc < 4 || argc > 6) {
     printTestUsage();
     exit(EXIT_FAILURE);
   }
+  int32_t k = 1;
+  if (argc >= 5) {
+    k = atoi(argv[4]);
+  }
+  bool quant = false;
+  if (argc >= 6) {
+    quant = atoi(argv[5]);
+  }
+
   FastText fasttext;
+  fasttext.setQuantize(quant);
   fasttext.loadModel(std::string(argv[2]));
+
   std::string infile(argv[3]);
   if (infile == "-") {
     fasttext.test(std::cin, k);
@@ -89,17 +117,22 @@ void test(int argc, char** argv) {
 }
 
 void predict(int argc, char** argv) {
-  int32_t k;
-  if (argc == 4) {
-    k = 1;
-  } else if (argc == 5) {
-    k = atoi(argv[4]);
-  } else {
+  if (argc < 4 || argc > 6) {
     printPredictUsage();
     exit(EXIT_FAILURE);
   }
+  int32_t k = 1;
+  if (argc >= 5) {
+    k = atoi(argv[4]);
+  }
+  bool quant = false;
+  if (argc >= 6) {
+    quant = atoi(argv[5]);
+  }
+
   bool print_prob = std::string(argv[1]) == "predict-prob";
   FastText fasttext;
+  fasttext.setQuantize(quant);
   fasttext.loadModel(std::string(argv[2]));
 
   std::string infile(argv[3]);
@@ -157,6 +190,8 @@ int main(int argc, char** argv) {
     train(argc, argv);
   } else if (command == "test") {
     test(argc, argv);
+  } else if (command == "quantize") {
+    quantize(argc, argv);
   } else if (command == "print-vectors") {
     printVectors(argc, argv);
   } else if (command == "print-ngrams") {

@@ -37,6 +37,12 @@ Args::Args() {
   verbose = 2;
   pretrainedVectors = "";
   saveOutput = 0;
+
+  qout = false;
+  retrain = false;
+  qnorm = false;
+  cutoff = 0;
+  dsub = 2;
 }
 
 void Args::parseArgs(int argc, char** argv) {
@@ -116,6 +122,16 @@ void Args::parseArgs(int argc, char** argv) {
       pretrainedVectors = std::string(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-saveOutput") == 0) {
       saveOutput = atoi(argv[ai + 1]);
+    } else if (strcmp(argv[ai], "-qnorm") == 0) {
+      qnorm = true; ai--;
+    } else if (strcmp(argv[ai], "-retrain") == 0) {
+      retrain = true; ai--;
+    } else if (strcmp(argv[ai], "-qout") == 0) {
+      qout = true; ai--;
+    } else if (strcmp(argv[ai], "-cutoff") == 0) {
+    cutoff = atoi(argv[ai + 1]);
+    } else if (strcmp(argv[ai], "-dsub") == 0) {
+      dsub = atoi(argv[ai + 1]);
     } else {
       std::cout << "Unknown argument: " << argv[ai] << std::endl;
       printHelp();
@@ -138,11 +154,10 @@ void Args::printHelp() {
   if (loss == loss_name::hs) lname = "hs";
   if (loss == loss_name::softmax) lname = "softmax";
   std::cout
-    << "\n"
-    << "The following arguments are mandatory:\n"
+    << "\nThe following arguments are mandatory:\n"
     << "  -input              training file path\n"
-    << "  -output             output file path\n\n"
-    << "The following arguments are optional:\n"
+    << "  -output             output file path\n"
+    << "\nThe following arguments are optional:\n"
     << "  -lr                 learning rate [" << lr << "]\n"
     << "  -lrUpdateRate       change the rate of updates for the learning rate [" << lrUpdateRate << "]\n"
     << "  -dim                size of word vectors [" << dim << "]\n"
@@ -160,8 +175,14 @@ void Args::printHelp() {
     << "  -t                  sampling threshold [" << t << "]\n"
     << "  -label              labels prefix [" << label << "]\n"
     << "  -verbose            verbosity level [" << verbose << "]\n"
-    << "  -pretrainedVectors  pretrained word vectors for supervised learning []"
+    << "  -pretrainedVectors  pretrained word vectors for supervised learning ["<< pretrainedVectors <<"]\n"
     << "  -saveOutput         whether output params should be saved [" << saveOutput << "]\n"
+    << "\nThe following arguments for quantization are optional:\n"
+    << "  -cutoff             number of words and ngrams to retain [" << cutoff << "]\n"
+    << "  -retrain            finetune embeddings if a cutoff is applied [" << retrain << "]\n"
+    << "  -qnorm              quantizing the norm separately [" << qnorm << "]\n"
+    << "  -qout               quantizing the classifier [" << qout << "]\n"
+    << "  -dsub               size of each sub-vector [" << dsub << "]\n"
     << std::endl;
 }
 

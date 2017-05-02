@@ -18,7 +18,10 @@
 #include <vector>
 #include <algorithm>
 
+
 namespace fasttext {
+
+FastText::FastText() : quant_(false) {}
 
 void FastText::getVector(Vector& vec, const std::string& word) {
   const std::vector<int32_t>& ngrams = dict_->getNgrams(word);
@@ -65,15 +68,32 @@ void FastText::saveOutput() {
 }
 
 void FastText::saveModel() {
-  std::ofstream ofs(args_->output + ".bin", std::ofstream::binary);
+  std::string fn(args_->output);
+  if (quant_) {
+    fn += ".ftz";
+    dict_->quant_ = true;
+  } else {
+    fn += ".bin";
+  }
+  std::ofstream ofs(fn, std::ofstream::binary);
   if (!ofs.is_open()) {
     std::cerr << "Model file cannot be opened for saving!" << std::endl;
     exit(EXIT_FAILURE);
   }
   args_->save(ofs);
   dict_->save(ofs);
-  input_->save(ofs);
-  output_->save(ofs);
+  if (quant_) {
+    ofs.write((char*) &(args_->qout), sizeof(bool));
+    qinput_->save(ofs);
+  } else {
+    input_->save(ofs);
+  }
+  if (quant_ && args_->qout) {
+    qoutput_->save(ofs);
+  }
+  else {
+    output_->save(ofs);
+  }
   ofs.close();
 }
 
@@ -92,11 +112,30 @@ void FastText::loadModel(std::istream& in) {
   dict_ = std::make_shared<Dictionary>(args_);
   input_ = std::make_shared<Matrix>();
   output_ = std::make_shared<Matrix>();
+  qinput_ = std::make_shared<QMatrix>();
+  qoutput_ = std::make_shared<QMatrix>();
   args_->load(in);
+
+  dict_->quant_ = quant_;
   dict_->load(in);
-  input_->load(in);
-  output_->load(in);
+
+  if (quant_) {
+    in.read((char*) &(args_->qout), sizeof(bool));
+    qinput_->load(in);
+  } else {
+    input_->load(in);
+  }
+
+  if (quant_ && args_->qout) {
+    qoutput_->load(in);
+  } else {
+    output_->load(in);
+  }
+
   model_ = std::make_shared<Model>(input_, output_, args_, 0);
+  model_->quant_ = quant_;
+  model_->setQuantizePointer(qinput_, qoutput_, args_->qout);
+
   if (args_->model == model_name::sup) {
     model_->setTargetCounts(dict_->getCounts(entry_type::label));
   } else {
@@ -118,6 +157,73 @@ void FastText::printInfo(real progress, real loss) {
   std::cout << "  loss: " << std::setprecision(6) << loss;
   std::cout << "  eta: " << etah << "h" << etam << "m ";
   std::cout << std::flush;
+}
+
+std::vector<int32_t> FastText::selectEmbeddings(int32_t cutoff) const {
+  Vector norms(input_->m_);
+  input_->l2NormRow(norms);
+  std::vector<int32_t> idx(input_->m_, 0);
+  std::iota(idx.begin(), idx.end(), 0);
+  auto eosid = dict_->getId(Dictionary::EOS);
+  std::sort(idx.begin(), idx.end(),
+      [&norms, eosid] (size_t i1, size_t i2) {
+      return eosid ==i1 || (eosid != i2 && norms[i1] > norms[i2]);
+      });
+  idx.erase(idx.begin() + cutoff, idx.end());
+  return idx;
+}
+
+void FastText::quantize(std::shared_ptr<Args> qargs) {
+  if (qargs->output.empty()) {
+      std::cout<<"No model provided!"<<std::endl; exit(1);
+  }
+  loadModel(qargs->output + ".bin");
+
+  args_->input = qargs->input;
+  args_->qout = qargs->qout;
+  args_->output = qargs->output;
+
+
+  if (qargs->cutoff > 0 && qargs->cutoff < input_->m_) {
+    auto idx = selectEmbeddings(qargs->cutoff);
+    dict_->prune(idx);
+    dict_->quant_ = true;
+    std::shared_ptr<Matrix> ninput =
+      std::make_shared<Matrix> (idx.size(), args_->dim);
+    for (auto i = 0; i < idx.size(); i++) {
+      for (auto j = 0; j < args_->dim; j++) {
+        ninput->at(i,j) = input_->at(idx[i], j);
+      }
+    }
+    input_ = ninput;
+    if (qargs->retrain) {
+      args_->epoch = qargs->epoch;
+      args_->lr = qargs->lr;
+      args_->thread = qargs->thread;
+      args_->verbose = qargs->verbose;
+      tokenCount = 0;
+      std::vector<std::thread> threads;
+      for (int32_t i = 0; i < args_->thread; i++) {
+        threads.push_back(std::thread([=]() { trainThread(i); }));
+      }
+      for (auto it = threads.begin(); it != threads.end(); ++it) {
+        it->join();
+      }
+    }
+  }
+
+  qinput_ = std::make_shared<QMatrix>(*input_, qargs->dsub, qargs->qnorm);
+
+  if (args_->qout) {
+    qoutput_ = std::make_shared<QMatrix>(*output_, 2, qargs->qnorm);
+  }
+
+  quant_ = true;
+  saveModel();
+}
+
+void FastText::setQuantize(bool quant) {
+  quant_ = quant;
 }
 
 void FastText::supervised(Model& model, real lr,
@@ -167,7 +273,6 @@ void FastText::test(std::istream& in, int32_t k) {
 
   while (in.peek() != EOF) {
     dict_->getLine(in, line, labels, model_->rng);
-    dict_->addNgrams(line, args_->wordNgrams);
     if (labels.size() > 0 && line.size() > 0) {
       std::vector<std::pair<real, int32_t>> modelPredictions;
       model_->predict(line, k, modelPredictions);
@@ -190,7 +295,6 @@ void FastText::predict(std::istream& in, int32_t k,
                        std::vector<std::pair<real,std::string>>& predictions) const {
   std::vector<int32_t> words, labels;
   dict_->getLine(in, words, labels, model_->rng);
-  dict_->addNgrams(words, args_->wordNgrams);
   if (words.empty()) return;
   Vector hidden(args_->dim);
   Vector output(dict_->nlabels());
@@ -251,7 +355,6 @@ void FastText::textVectors() {
   Vector vec(args_->dim);
   while (std::cin.peek() != EOF) {
     dict_->getLine(std::cin, line, labels, model_->rng);
-    dict_->addNgrams(line, args_->wordNgrams);
     vec.zero();
     for (auto it = line.cbegin(); it != line.cend(); ++it) {
       vec.addRow(*input_, *it);
@@ -290,7 +393,6 @@ void FastText::trainThread(int32_t threadId) {
     real lr = args_->lr * (1.0 - progress);
     localTokenCount += dict_->getLine(ifs, line, labels, model.rng);
     if (args_->model == model_name::sup) {
-      dict_->addNgrams(line, args_->wordNgrams);
       supervised(model, lr, line, labels);
     } else if (args_->model == model_name::cbow) {
       cbow(model, lr, line);
