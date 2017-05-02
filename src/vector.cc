@@ -12,6 +12,7 @@
 #include <assert.h>
 
 #include <iomanip>
+#include <cmath>
 
 #include "matrix.h"
 #include "qmatrix.h"
@@ -37,7 +38,7 @@ void Vector::zero() {
   }
 }
 
-real Vector::norm() {
+real Vector::norm() const {
   real sum = 0;
   for (int64_t i = 0; i < m_; i++) {
     sum += data_[i] * data_[i];
@@ -55,6 +56,13 @@ void Vector::addVector(const Vector& source) {
   assert(m_ == source.m_);
   for (int64_t i = 0; i < m_; i++) {
     data_[i] += source.data_[i];
+  }
+}
+
+void Vector::addVector(const Vector& source, real s) {
+  assert(m_ == source.m_);
+  for (int64_t i = 0; i < m_; i++) {
+    data_[i] += s * source.data_[i];
   }
 }
 

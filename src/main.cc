@@ -27,6 +27,8 @@ void printUsage() {
     << "  cbow                    train a cbow model\n"
     << "  print-word-vectors      print word vectors given a trained model\n"
     << "  print-sentence-vectors  print sentence vectors given a trained model\n"
+    << "  nn                      query for nearest neighbors\n"
+    << "  analogies               query for analogies\n"
     << std::endl;
 }
 
@@ -87,6 +89,22 @@ void quantize(int argc, char** argv) {
   FastText fasttext;
   fasttext.quantize(a);
   exit(0);
+}
+
+void printNNUsage() {
+  std::cout
+    << "usage: fasttext nn <model> <k>\n\n"
+    << "  <model>      model filename\n"
+    << "  <k>          (optional; 10 by default) predict top k labels\n"
+    << std::endl;
+}
+
+void printAnalogiesUsage() {
+  std::cout
+    << "usage: fasttext analogies <model> <k>\n\n"
+    << "  <model>      model filename\n"
+    << "  <k>          (optional; 10 by default) predict top k labels\n"
+    << std::endl;
 }
 
 void test(int argc, char** argv) {
@@ -180,6 +198,38 @@ void printNgrams(int argc, char** argv) {
   exit(0);
 }
 
+void nn(int argc, char** argv) {
+  int32_t k;
+  if (argc == 3) {
+    k = 10;
+  } else if (argc == 4) {
+    k = atoi(argv[3]);
+  } else {
+    printNNUsage();
+    exit(EXIT_FAILURE);
+  }
+  FastText fasttext;
+  fasttext.loadModel(std::string(argv[2]));
+  fasttext.nn(k);
+  exit(0);
+}
+
+void analogies(int argc, char** argv) {
+  int32_t k;
+  if (argc == 3) {
+    k = 10;
+  } else if (argc == 4) {
+    k = atoi(argv[3]);
+  } else {
+    printAnalogiesUsage();
+    exit(EXIT_FAILURE);
+  }
+  FastText fasttext;
+  fasttext.loadModel(std::string(argv[2]));
+  fasttext.analogies(k);
+  exit(0);
+}
+
 void train(int argc, char** argv) {
   std::shared_ptr<Args> a = std::make_shared<Args>();
   a->parseArgs(argc, argv);
@@ -205,6 +255,10 @@ int main(int argc, char** argv) {
     printSentenceVectors(argc, argv);
   } else if (command == "print-ngrams") {
     printNgrams(argc, argv);
+  } else if (command == "nn") {
+    nn(argc, argv);
+  } else if (command == "analogies") {
+    analogies(argc, argv);
   } else if (command == "predict" || command == "predict-prob" ) {
     predict(argc, argv);
   } else {

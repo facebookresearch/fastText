@@ -35,8 +35,9 @@ class Vector {
     int64_t size() const;
     void zero();
     void mul(real);
-    real norm();
+    real norm() const;
     void addVector(const Vector& source);
+    void addVector(const Vector&, real);
     void addRow(const Matrix&, int64_t);
     void addRow(const QMatrix&, int64_t);
     void addRow(const Matrix&, int64_t, real);
