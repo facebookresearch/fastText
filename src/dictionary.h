@@ -53,8 +53,12 @@ class Dictionary {
     int64_t ntokens_;
 
     std::unordered_map<int32_t, int32_t> pruneidx_;
+    void addNgrams(
+        std::vector<int32_t>& line,
+        const std::vector<int32_t>& hashes,
+        int32_t n) const;
 
-  public:
+   public:
     static const std::string EOS;
     static const std::string BOW;
     static const std::string EOW;
@@ -82,9 +86,6 @@ class Dictionary {
     void save(std::ostream&) const;
     void load(std::istream&);
     std::vector<int64_t> getCounts(entry_type) const;
-    void addNgrams(std::vector<int32_t>&, const std::vector<int32_t>&,
-                   int32_t) const;
-    int32_t getLine(std::istream&, std::vector<std::string>&) const;
     int32_t getLine(std::istream&, std::vector<int32_t>&, std::vector<int32_t>&,
                     std::vector<int32_t>&, std::minstd_rand&) const;
     int32_t getLine(std::istream&, std::vector<int32_t>&,

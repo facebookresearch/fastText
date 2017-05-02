@@ -284,49 +284,40 @@ void Dictionary::addNgrams(std::vector<int32_t>& line,
 }
 
 int32_t Dictionary::getLine(std::istream& in,
-                            std::vector<std::string>& tokens) const {
-  if (in.eof()) {
-    in.clear();
-    in.seekg(std::streampos(0));
-  }
-  tokens.clear();
-  std::string token;
-  while (readWord(in, token)) {
-    tokens.push_back(token);
-    if (token == EOS) break;
-    if (tokens.size() > MAX_LINE_SIZE && args_->model != model_name::sup) break;
-  }
-  return tokens.size();
-}
-
-int32_t Dictionary::getLine(std::istream& in,
                             std::vector<int32_t>& words,
                             std::vector<int32_t>& word_hashes,
                             std::vector<int32_t>& labels,
                             std::minstd_rand& rng) const {
   std::uniform_real_distribution<> uniform(0, 1);
-  std::vector<std::string> tokens;
-  getLine(in, tokens);
+
+  if (in.eof()) {
+    in.clear();
+    in.seekg(std::streampos(0));
+  }
+
   words.clear();
   labels.clear();
   word_hashes.clear();
   int32_t ntokens = 0;
-  for(auto it = tokens.cbegin(); it != tokens.cend(); ++it) {
-    int32_t h = find(*it);
+  std::string token;
+  while (readWord(in, token)) {
+    int32_t h = find(token);
     int32_t wid = word2int_[h];
     if (wid < 0) {
-      word_hashes.push_back(hash(*it));
+      word_hashes.push_back(hash(token));
       continue;
     }
     entry_type type = getType(wid);
     ntokens++;
     if (type == entry_type::word && !discard(wid, uniform(rng))) {
       words.push_back(wid);
-      word_hashes.push_back(hash(*it));
+      word_hashes.push_back(hash(token));
     }
     if (type == entry_type::label) {
       labels.push_back(wid - nwords_);
     }
+    if (token == EOS) break;
+    if (ntokens > MAX_LINE_SIZE && args_->model != model_name::sup) break;
   }
   return ntokens;
 }
