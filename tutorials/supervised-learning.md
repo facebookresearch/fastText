@@ -41,7 +41,7 @@ cbow           train a cbow model
 print-vectors  print vectors given a trained model
 ```
 
-In this tutorial, we mainly use the `supervised`, `test` and `predict` subcommands, which corresponds to learning (and using) text classifier. For an introduction to the other functionalities of fastText, please see the [tutorial about learning word vectors].
+In this tutorial, we mainly use the `supervised`, `test` and `predict` subcommands, which corresponds to learning (and using) text classifier. For an introduction to the other functionalities of fastText, please see the [tutorial about learning word vectors](https://github.com/facebookresearch/fastText/blob/master/tutorials/unsupervised-learning.md).
 
 ## Getting and preparing the data
 
@@ -249,11 +249,11 @@ With a few steps, we were able to go from a precision at one of 12.4% to 59.9%. 
 
 ### Advanced readers: What is a Bigram?
 
-A '93unigram'94 refers to a single undividing unit, or token,  usually used as an input to a model. For example a unigram can a word or a letter depending on the model. In fastText, we work at the word level and thus unigrams are words.
+A 'unigram' refers to a single undividing unit, or token,  usually used as an input to a model. For example a unigram can a word or a letter depending on the model. In fastText, we work at the word level and thus unigrams are words.
 
-Similarly we denote by '93bigram'94 the concatenation of  2 consecutive tokens or words. Similarly we often talk about n-gram to refer to the concatenation any n consecutive tokens. 
+Similarly we denote by 'bigram' the concatenation of  2 consecutive tokens or words. Similarly we often talk about n-gram to refer to the concatenation any n consecutive tokens. 
 
-For example, in the sentence, '93Last donut of the night'94, the unigrams are  '93last'94, '93donut'94, '93of'94, '93the'94 and '93night'94. The bigrams are: '93Last donut'94, '93donut of'94, '93of the'94 and '93the night'94.
+For example, in the sentence, 'Last donut of the night', the unigrams are  'last', 'donut', 'of', 'the' and 'night'. The bigrams are: 'Last donut', 'donut of', 'of the' and 'the night'.
 
 Bigrams are particularly interesting because, for most sentences, you can reconstruct the order of the words just by looking at a bag of n-grams. 
 

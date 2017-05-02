@@ -2,7 +2,7 @@
 
 A popular idea in modern machine learning is to represent words by vectors. These vectors capture hidden information about a language, like word analogies or semantic. It is also used to improve performance of text classifiers.
 
-In this tutorial, we show how to build these word vectors with the fastText tool. To download and install fastText, follow the first steps of [the tutorial on text classification](https://github.com/facebookresearch/fastText/tutorials/supervised-learning.md).
+In this tutorial, we show how to build these word vectors with the fastText tool. To download and install fastText, follow the first steps of [the tutorial on text classification](https://github.com/facebookresearch/fastText/blob/master/tutorials/supervised-learning.md).
 
 # Getting the data
 
@@ -44,14 +44,14 @@ $ mkdir result
 $ ./fasttext skipgram -input data/fil9 -output result/fil9
 ```
 
-To decompose this command line: ./fastext calls the binary fastText executable (see how to install fastText here) with the '93skipgram'94 model  (it can also be '93cbow'94). We then specify the requires options '93-input'94 for the location of the data and '93-output'94 for the location where the word representations will be saved. 
+To decompose this command line: ./fastext calls the binary fastText executable (see how to install fastText here) with the 'skipgram' model  (it can also be 'cbow'). We then specify the requires options '-input' for the location of the data and '-output' for the location where the word representations will be saved. 
 
 While fastText is running,  the progress and estimated time to completion is shown on your screen.  Once the program finishes, there should be two files in the result directory:
 
 ```
 $ ls -l result
--rw-r'97r-- 1 bojanowski 1876110778 978480850 Dec 20 11:01 fil9.bin
--rw-r'97r-- 1 bojanowski 1876110778 190004182 Dec 20 11:01 fil9.vec
+-rw-r-r-- 1 bojanowski 1876110778 978480850 Dec 20 11:01 fil9.bin
+-rw-r-r-- 1 bojanowski 1876110778 190004182 Dec 20 11:01 fil9.vec
 ```
 
 The `fil9.bin` file is a binary file that stores the whole fastText model and can be subsequently loaded. The `fil9.vec` file is a text file that contains the word vectors, one per line for each word in the vocabulary:
@@ -68,13 +68,13 @@ The first line is a header containing the number of words and the dimensionality
 
 ## Advanced readers: skipgram versus cbow
 
-fastText provides two models for computing word representations: skipgram and cbow ('93**c**ontinuous-**b**ag-**o**f-**w**ords'94).
+fastText provides two models for computing word representations: skipgram and cbow ('**c**ontinuous-**b**ag-**o**f-**w**ords').
 
 The skipgram model learns to predict a target word thanks to a nearby word. On the other hand, the cbow model predicts the target word according to its context. The  context is represented as a bag of the  words contained in a fixed size window around the target word. 
 
-Let us illustrate this difference with an example:  given the sentence *'93Poets have been mysteriously silent on the subject of cheese'94* and the target word '93*silent*'94, a skipgram model tries to predict the target using a random close-by word, like '93*subject'94 *or* '93*mysteriously*'94**. *The cbow model takes all the words in a surrounding window, like {*been, *mysteriously*, on, the*}, and uses the sum of their vectors to predict the target. The figure below summarizes this difference with another example.
+Let us illustrate this difference with an example:  given the sentence *'Poets have been mysteriously silent on the subject of cheese'* and the target word '*silent*', a skipgram model tries to predict the target using a random close-by word, like '*subject' *or* '*mysteriously*'**. *The cbow model takes all the words in a surrounding window, like {*been, *mysteriously*, on, the*}, and uses the sum of their vectors to predict the target. The figure below summarizes this difference with another example.
 
-[Image: https://github.com/facebookresearch/fastText/tutorials/cbo_vs_skipgram.png]
+![cbow vs skipgram](https://github.com/facebookresearch/fastText/blob/master/tutorials/cbo_vs_skipgram.png)
 To train a cbow model with fastText, you run the following command:
 
 ```
