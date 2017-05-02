@@ -34,7 +34,7 @@ echo "Quantizing..."
 echo "Testing original model..."
 ./fasttext test "${RESULTDIR}/dbpedia.bin" "${DATADIR}/dbpedia.test"
 echo "Testing quantized model..."
-./fasttext test "${RESULTDIR}/dbpedia.ftz" "${DATADIR}/dbpedia.test" 1 1
+./fasttext test "${RESULTDIR}/dbpedia.ftz" "${DATADIR}/dbpedia.test"
 
-ls -lrh "${RESULTDIR}/dbpedia.bin" | awk  '{print "Size of the original model:\t",$5;}'
-ls -lrh "${RESULTDIR}/dbpedia.ftz" | awk  '{print "Size of the quantized model:\t",$5;}'
+wc -c < "${RESULTDIR}/dbpedia.bin" | awk '{print "Size of the original model:\t",$1;}'
+wc -c < "${RESULTDIR}/dbpedia.ftz" | awk '{print "Size of the quantized model:\t",$1;}'
