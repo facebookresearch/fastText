@@ -273,12 +273,13 @@ std::vector<int64_t> Dictionary::getCounts(entry_type type) const {
 void Dictionary::addNgrams(std::vector<int32_t>& line,
                            const std::vector<int32_t>& hashes,
                            int32_t n) const {
+  if (pruneidx_size_ == 0) return;
   for (int32_t i = 0; i < hashes.size(); i++) {
     uint64_t h = hashes[i];
     for (int32_t j = i + 1; j < hashes.size() && j < i + n; j++) {
       h = h * 116049371 + hashes[j];
       int64_t id = h % args_->bucket;
-      if (pruneidx_.size() > 0) {
+      if (pruneidx_size_ > 0) {
         if (pruneidx_.count(id)) {
           id = pruneidx_.at(id);
         } else {continue;}
@@ -348,12 +349,11 @@ std::string Dictionary::getLabel(int32_t lid) const {
 }
 
 void Dictionary::save(std::ostream& out) const {
-  int64_t pruneidx_size = pruneidx_.size();
   out.write((char*) &size_, sizeof(int32_t));
   out.write((char*) &nwords_, sizeof(int32_t));
   out.write((char*) &nlabels_, sizeof(int32_t));
   out.write((char*) &ntokens_, sizeof(int64_t));
-  out.write((char*) &pruneidx_size, sizeof(int64_t));
+  out.write((char*) &pruneidx_size_, sizeof(int64_t));
   for (int32_t i = 0; i < size_; i++) {
     entry e = words_[i];
     out.write(e.word.data(), e.word.size() * sizeof(char));
@@ -370,12 +370,11 @@ void Dictionary::save(std::ostream& out) const {
 void Dictionary::load(std::istream& in) {
   words_.clear();
   std::fill(word2int_.begin(), word2int_.end(), -1);
-  int64_t pruneidx_size;
   in.read((char*) &size_, sizeof(int32_t));
   in.read((char*) &nwords_, sizeof(int32_t));
   in.read((char*) &nlabels_, sizeof(int32_t));
   in.read((char*) &ntokens_, sizeof(int64_t));
-  in.read((char*) &pruneidx_size, sizeof(int64_t));
+  in.read((char*) &pruneidx_size_, sizeof(int64_t));
   for (int32_t i = 0; i < size_; i++) {
     char c;
     entry e;
@@ -388,7 +387,7 @@ void Dictionary::load(std::istream& in) {
     word2int_[find(e.word)] = i;
   }
   pruneidx_.clear();
-  for (int32_t i = 0; i < pruneidx_size; i++) {
+  for (int32_t i = 0; i < pruneidx_size_; i++) {
     int32_t first;
     int32_t second;
     in.read((char*) &first, sizeof(int32_t));
@@ -416,6 +415,7 @@ void Dictionary::prune(std::vector<int32_t>& idx) {
     }
     idx.insert(idx.end(), ngrams.begin(), ngrams.end());
   }
+  pruneidx_size_ = pruneidx_.size();
 
   std::fill(word2int_.begin(), word2int_.end(), -1);
 
