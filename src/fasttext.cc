@@ -344,11 +344,11 @@ void FastText::predict(std::istream& in, int32_t k, bool print_prob) {
     }
     for (auto it = predictions.cbegin(); it != predictions.cend(); it++) {
       if (it != predictions.cbegin()) {
-        std::cout << "\t";
+        std::cout << " ";
       }
       std::cout << it->second;
       if (print_prob) {
-        std::cout << "\t" << exp(it->first);
+        std::cout << " " << exp(it->first);
       }
     }
     std::cout << std::endl;
@@ -360,7 +360,7 @@ void FastText::wordVectors() {
   Vector vec(args_->dim);
   while (std::cin >> word) {
     getVector(vec, word);
-    std::cout << word << "\t" << vec << std::endl;
+    std::cout << word << " " << vec << std::endl;
   }
 }
 
@@ -394,7 +394,7 @@ void FastText::ngramVectors(std::string word) {
     if (ngrams[i] >= 0) {
       vec.addRow(*input_, ngrams[i]);
     }
-    std::cout << substrings[i] << "\t" << vec << std::endl;
+    std::cout << substrings[i] << " " << vec << std::endl;
   }
 }
 
