@@ -32,297 +32,103 @@ P. Bojanowski\*, E. Grave\*, A. Joulin, T. Mikolov, [*Enriching Word Vectors wit
 
 The models can be downloaded from:
 
-* Abkhazian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ab.vec)
-* Acehnese: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ace.vec)
-* Adyghe: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ady.vec)
-* Afar: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.aa.vec)
-* Afrikaans: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.af.vec)
-* Akan: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ak.vec)
-* Albanian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sq.vec)
-* Alemannic: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.als.vec)
-* Amharic: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.am.vec)
-* Anglo-Saxon: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ang.vec)
-* Arabic: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ar.vec)
-* Aragonese: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.an.vec)
-* Aramaic: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.arc.vec)
-* Armenian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.hy.vec)
-* Aromanian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.roa-rup.vec)
-* Assamese: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.as.vec)
-* Asturian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ast.vec)
-* Avar: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.av.vec)
-* Aymara: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ay.vec)
-* Azerbaijani: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.az.vec)
-* Bambara: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bm.vec)
-* Banjar: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bjn.vec)
-* Banyumasan: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.map-bms.vec)
-* Bashkir: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ba.vec)
-* Basque: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.eu.vec)
-* Bavarian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bar.vec)
-* Belarusian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.be.vec)
-* Bengali: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bn.vec)
-* Bihari: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bh.vec)
-* Bishnupriya Manipuri: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bpy.vec)
-* Bislama: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bi.vec)
-* Bosnian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bs.vec)
-* Breton: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.br.vec)
-* Buginese: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bug.vec)
-* Bulgarian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bg.vec)
-* Burmese: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.my.vec)
-* Buryat: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bxr.vec)
-* Cantonese: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.zh-yue.vec)
-* Catalan: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ca.vec)
-* Cebuano: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ceb.vec)
-* Central Bicolano: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bcl.vec)
-* Chamorro: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ch.vec)
-* Chavacano: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.cbk-zam.vec)
-* Chechen: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ce.vec)
-* Cherokee: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.chr.vec)
-* Cheyenne: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.chy.vec)
-* Chichewa: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ny.vec)
-* Chinese: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.zh.vec)
-* Choctaw: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.cho.vec)
-* Chuvash: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.cv.vec)
-* Classical Chinese: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.zh-classical.vec)
-* Cornish: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kw.vec)
-* Corsican: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.co.vec)
-* Cree: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.cr.vec)
-* Crimean Tatar: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.crh.vec)
-* Croatian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.hr.vec)
-* Czech: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.cs.vec)
-* Danish: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.da.vec)
-* Divehi: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.dv.vec)
-* Dutch: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nl.vec)
-* Dutch Low Saxon: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nds-nl.vec)
-* Dzongkha: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.dz.vec)
-* Eastern Punjabi: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pa.vec)
-* Egyptian Arabic: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.arz.vec)
-* Emilian-Romagnol: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.eml.vec)
-* English: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.en.vec)
-* Erzya: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.myv.vec)
-* Esperanto: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.eo.vec)
-* Estonian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.et.vec)
-* Ewe: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ee.vec)
-* Extremaduran: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ext.vec)
-* Faroese: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.fo.vec)
-* Fiji Hindi: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.hif.vec)
-* Fijian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.fj.vec)
-* Finnish: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.fi.vec)
-* Franco-Provençal: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.frp.vec)
-* French: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.fr.vec)
-* Friulian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.fur.vec)
-* Fula: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ff.vec)
-* Gagauz: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.gag.vec)
-* Galician: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.gl.vec)
-* Gan: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.gan.vec)
-* Georgian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ka.vec)
-* German: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.de.vec)
-* Gilaki: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.glk.vec)
-* Goan Konkani: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.gom.vec)
-* Gothic: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.got.vec)
-* Greek: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.el.vec)
-* Greenlandic: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kl.vec)
-* Guarani: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.gn.vec)
-* Gujarati: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.gu.vec)
-* Haitian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ht.vec)
-* Hakka: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.hak.vec)
-* Hausa: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ha.vec)
-* Hawaiian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.haw.vec)
-* Hebrew: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.he.vec)
-* Herero: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.hz.vec)
-* Hill Mari: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mrj.vec)
-* Hindi: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.hi.vec)
-* Hiri Motu: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ho.vec)
-* Hungarian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.hu.vec)
-* Icelandic: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.is.vec)
-* Ido: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.io.vec)
-* Igbo: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ig.vec)
-* Ilokano: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ilo.vec)
-* Indonesian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.id.vec)
-* Interlingua: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ia.vec)
-* Interlingue: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ie.vec)
-* Inuktitut: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.iu.vec)
-* Inupiak: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ik.vec)
-* Irish: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ga.vec)
-* Italian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.it.vec)
-* Jamaican Patois: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.jam.vec)
-* Japanese: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ja.vec)
-* Javanese: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.jv.vec)
-* Kabardian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kbd.vec)
-* Kabyle: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kab.vec)
-* Kalmyk: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.xal.vec)
-* Kannada: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kn.vec)
-* Kanuri: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kr.vec)
-* Kapampangan: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pam.vec)
-* Karachay-Balkar: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.krc.vec)
-* Karakalpak: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kaa.vec)
-* Kashmiri: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ks.vec)
-* Kashubian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.csb.vec)
-* Kazakh: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kk.vec)
-* Khmer: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.km.vec)
-* Kikuyu: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ki.vec)
-* Kinyarwanda: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.rw.vec)
-* Kirghiz: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ky.vec)
-* Kirundi: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.rn.vec)
-* Komi: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kv.vec)
-* Komi-Permyak: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.koi.vec)
-* Kongo: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kg.vec)
-* Korean: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ko.vec)
-* Kuanyama: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kj.vec)
-* Kurdish (Kurmanji): [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ku.vec)
-* Kurdish (Sorani): [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ckb.vec)
-* Ladino: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lad.vec)
-* Lak: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lbe.vec)
-* Lao: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lo.vec)
-* Latgalian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ltg.vec)
-* Latin: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.la.vec)
-* Latvian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lv.vec)
-* Lezgian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lez.vec)
-* Ligurian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lij.vec)
-* Limburgish: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.li.vec)
-* Lingala: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ln.vec)
-* Lithuanian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lt.vec)
-* Livvi-Karelian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.olo.vec)
-* Lojban: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.jbo.vec)
-* Lombard: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lmo.vec)
-* Low Saxon: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nds.vec)
-* Lower Sorbian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.dsb.vec)
-* Luganda: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lg.vec)
-* Luxembourgish: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lb.vec)
-* Macedonian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mk.vec)
-* Maithili: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mai.vec)
-* Malagasy: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mg.vec)
-* Malay: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ms.vec)
-* Malayalam: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ml.vec)
-* Maltese: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mt.vec)
-* Manx: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.gv.vec)
-* Maori: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mi.vec)
-* Marathi: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mr.vec)
-* Marshallese: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mh.vec)
-* Mazandarani: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mzn.vec)
-* Meadow Mari: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mhr.vec)
-* Min Dong: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.cdo.vec)
-* Min Nan: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.zh-min-nan.vec)
-* Minangkabau: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.min.vec)
-* Mingrelian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.xmf.vec)
-* Mirandese: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mwl.vec)
-* Moksha: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mdf.vec)
-* Moldovan: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mo.vec)
-* Mongolian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mn.vec)
-* Muscogee: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mus.vec)
-* Nahuatl: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nah.vec)
-* Nauruan: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.na.vec)
-* Navajo: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nv.vec)
-* Ndonga: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ng.vec)
-* Neapolitan: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nap.vec)
-* Nepali: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ne.vec)
-* Newar: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.new.vec)
-* Norfolk: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pih.vec)
-* Norman: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nrm.vec)
-* North Frisian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.frr.vec)
-* Northern Luri: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lrc.vec)
-* Northern Sami: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.se.vec)
-* Northern Sotho: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nso.vec)
-* Norwegian (Bokmål): [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.no.vec)
-* Norwegian (Nynorsk): [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nn.vec)
-* Novial: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nov.vec)
-* Nuosu: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ii.vec)
-* Occitan: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.oc.vec)
-* Old Church Slavonic: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.cu.vec)
-* Oriya: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.or.vec)
-* Oromo: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.om.vec)
-* Ossetian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.os.vec)
-* Palatinate German: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pfl.vec)
-* Pali: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pi.vec)
-* Pangasinan: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pag.vec)
-* Papiamentu: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pap.vec)
-* Pashto: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ps.vec)
-* Pennsylvania German: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pdc.vec)
-* Persian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.fa.vec)
-* Picard: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pcd.vec)
-* Piedmontese: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pms.vec)
-* Polish: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pl.vec)
-* Pontic: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pnt.vec)
-* Portuguese: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pt.vec)
-* Quechua: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.qu.vec)
-* Ripuarian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ksh.vec)
-* Romani: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.rmy.vec)
-* Romanian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ro.vec)
-* Romansh: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.rm.vec)
-* Russian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ru.vec)
-* Rusyn: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.rue.vec)
-* Sakha: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sah.vec)
-* Samoan: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sm.vec)
-* Samogitian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bat-smg.vec)
-* Sango: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sg.vec)
-* Sanskrit: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sa.vec)
-* Sardinian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sc.vec)
-* Saterland Frisian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.stq.vec)
-* Scots: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sco.vec)
-* Scottish Gaelic: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.gd.vec)
-* Serbian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sr.vec)
-* Serbo-Croatian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sh.vec)
-* Sesotho: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.st.vec)
-* Shona: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sn.vec)
-* Sicilian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.scn.vec)
-* Silesian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.szl.vec)
-* Simple English: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.simple.vec)
-* Sindhi: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sd.vec)
-* Sinhalese: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.si.vec)
-* Slovak: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sk.vec)
-* Slovenian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sl.vec)
-* Somali: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.so.vec)
-* Southern Azerbaijani: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.azb.vec)
-* Spanish: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.es.vec)
-* Sranan: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.srn.vec)
-* Sundanese: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.su.vec)
-* Swahili: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sw.vec)
-* Swati: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ss.vec)
-* Swedish: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sv.vec)
-* Tagalog: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tl.vec)
-* Tahitian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ty.vec)
-* Tajik: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tg.vec)
-* Tamil: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ta.vec)
-* Tarantino: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.roa-tara.vec)
-* Tatar: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tt.vec)
-* Telugu: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.te.vec)
-* Tetum: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tet.vec)
-* Thai: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.th.vec)
-* Tibetan: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bo.vec)
-* Tigrinya: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ti.vec)
-* Tok Pisin: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tpi.vec)
-* Tongan: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.to.vec)
-* Tsonga: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ts.vec)
-* Tswana: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tn.vec)
-* Tulu: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tcy.vec)
-* Tumbuka: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tum.vec)
-* Turkish: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tr.vec)
-* Turkmen: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tk.vec)
-* Tuvan: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tyv.vec)
-* Twi: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tw.vec)
-* Udmurt: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.udm.vec)
-* Ukrainian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.uk.vec)
-* Upper Sorbian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.hsb.vec)
-* Urdu: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ur.vec)
-* Uyghur: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ug.vec)
-* Uzbek: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.uz.vec)
-* Venda: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ve.vec)
-* Venetian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.vec.vec)
-* Vepsian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.vep.vec)
-* Vietnamese: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.vi.vec)
-* Volapük: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.vo.vec)
-* Võro: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.fiu-vro.vec)
-* Walloon: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.wa.vec)
-* Waray: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.war.vec)
-* Welsh: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.cy.vec)
-* West Flemish: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.vls.vec)
-* West Frisian: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.fy.vec)
-* Western Punjabi: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pnb.vec)
-* Wolof: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.wo.vec)
-* Wu: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.wuu.vec)
-* Xhosa: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.xh.vec)
-* Yiddish: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.yi.vec)
-* Yoruba: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.yo.vec)
-* Zazaki: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.diq.vec)
-* Zeelandic: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.zea.vec)
-* Zhuang: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.za.vec)
-* Zulu: [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.zu.vec)
+||||
+|-|-|-|
+| Abkhazian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ab.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ab.vec) | Acehnese: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ace.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ace.vec) | Adyghe: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ady.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ady.vec) |
+| Afar: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.aa.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.aa.vec) | Afrikaans: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.af.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.af.vec) | Akan: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ak.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ak.vec) |
+| Albanian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sq.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sq.vec) | Alemannic: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.als.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.als.vec) | Amharic: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.am.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.am.vec) |
+| Anglo_Saxon: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ang.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ang.vec) | Arabic: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ar.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ar.vec) | Aragonese: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.an.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.an.vec) |
+| Aramaic: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.arc.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.arc.vec) | Armenian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.hy.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.hy.vec) | Aromanian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.roa_rup.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.roa_rup.vec) |
+| Assamese: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.as.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.as.vec) | Asturian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ast.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ast.vec) | Avar: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.av.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.av.vec) |
+| Aymara: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ay.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ay.vec) | Azerbaijani: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.az.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.az.vec) | Bambara: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bm.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bm.vec) |
+| Banjar: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bjn.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bjn.vec) | Banyumasan: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.map_bms.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.map_bms.vec) | Bashkir: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ba.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ba.vec) |
+| Basque: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.eu.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.eu.vec) | Bavarian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bar.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bar.vec) | Belarusian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.be.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.be.vec) |
+| Bengali: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bn.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bn.vec) | Bihari: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bh.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bh.vec) | Bishnupriya Manipuri: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bpy.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bpy.vec) |
+| Bislama: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bi.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bi.vec) | Bosnian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bs.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bs.vec) | Breton: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.br.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.br.vec) |
+| Buginese: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bug.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bug.vec) | Bulgarian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bg.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bg.vec) | Burmese: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.my.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.my.vec) |
+| Buryat: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bxr.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bxr.vec) | Cantonese: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.zh_yue.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.zh_yue.vec) | Catalan: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ca.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ca.vec) |
+| Cebuano: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ceb.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ceb.vec) | Central Bicolano: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bcl.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bcl.vec) | Chamorro: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ch.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ch.vec) |
+| Chavacano: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.cbk_zam.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.cbk_zam.vec) | Chechen: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ce.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ce.vec) | Cherokee: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.chr.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.chr.vec) |
+| Cheyenne: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.chy.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.chy.vec) | Chichewa: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ny.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ny.vec) | Chinese: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.zh.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.zh.vec) |
+| Choctaw: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.cho.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.cho.vec) | Chuvash: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.cv.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.cv.vec) | Classical Chinese: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.zh_classical.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.zh_classical.vec) |
+| Cornish: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kw.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kw.vec) | Corsican: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.co.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.co.vec) | Cree: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.cr.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.cr.vec) |
+| Crimean Tatar: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.crh.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.crh.vec) | Croatian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.hr.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.hr.vec) | Czech: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.cs.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.cs.vec) |
+| Danish: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.da.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.da.vec) | Divehi: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.dv.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.dv.vec) | Dutch: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nl.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nl.vec) |
+| Dutch Low Saxon: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nds_nl.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nds_nl.vec) | Dzongkha: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.dz.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.dz.vec) | Eastern Punjabi: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pa.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pa.vec) |
+| Egyptian Arabic: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.arz.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.arz.vec) | Emilian_Romagnol: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.eml.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.eml.vec) | English: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.en.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.en.vec) |
+| Erzya: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.myv.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.myv.vec) | Esperanto: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.eo.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.eo.vec) | Estonian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.et.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.et.vec) |
+| Ewe: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ee.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ee.vec) | Extremaduran: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ext.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ext.vec) | Faroese: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.fo.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.fo.vec) |
+| Fiji Hindi: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.hif.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.hif.vec) | Fijian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.fj.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.fj.vec) | Finnish: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.fi.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.fi.vec) |
+| Franco_Provençal: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.frp.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.frp.vec) | French: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.fr.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.fr.vec) | Friulian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.fur.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.fur.vec) |
+| Fula: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ff.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ff.vec) | Gagauz: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.gag.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.gag.vec) | Galician: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.gl.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.gl.vec) |
+| Gan: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.gan.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.gan.vec) | Georgian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ka.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ka.vec) | German: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.de.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.de.vec) |
+| Gilaki: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.glk.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.glk.vec) | Goan Konkani: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.gom.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.gom.vec) | Gothic: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.got.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.got.vec) |
+| Greek: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.el.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.el.vec) | Greenlandic: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kl.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kl.vec) | Guarani: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.gn.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.gn.vec) |
+| Gujarati: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.gu.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.gu.vec) | Haitian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ht.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ht.vec) | Hakka: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.hak.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.hak.vec) |
+| Hausa: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ha.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ha.vec) | Hawaiian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.haw.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.haw.vec) | Hebrew: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.he.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.he.vec) |
+| Herero: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.hz.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.hz.vec) | Hill Mari: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mrj.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mrj.vec) | Hindi: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.hi.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.hi.vec) |
+| Hiri Motu: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ho.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ho.vec) | Hungarian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.hu.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.hu.vec) | Icelandic: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.is.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.is.vec) |
+| Ido: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.io.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.io.vec) | Igbo: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ig.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ig.vec) | Ilokano: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ilo.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ilo.vec) |
+| Indonesian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.id.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.id.vec) | Interlingua: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ia.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ia.vec) | Interlingue: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ie.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ie.vec) |
+| Inuktitut: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.iu.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.iu.vec) | Inupiak: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ik.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ik.vec) | Irish: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ga.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ga.vec) |
+| Italian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.it.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.it.vec) | Jamaican Patois: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.jam.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.jam.vec) | Japanese: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ja.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ja.vec) |
+| Javanese: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.jv.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.jv.vec) | Kabardian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kbd.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kbd.vec) | Kabyle: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kab.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kab.vec) |
+| Kalmyk: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.xal.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.xal.vec) | Kannada: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kn.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kn.vec) | Kanuri: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kr.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kr.vec) |
+| Kapampangan: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pam.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pam.vec) | Karachay_Balkar: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.krc.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.krc.vec) | Karakalpak: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kaa.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kaa.vec) |
+| Kashmiri: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ks.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ks.vec) | Kashubian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.csb.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.csb.vec) | Kazakh: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kk.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kk.vec) |
+| Khmer: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.km.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.km.vec) | Kikuyu: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ki.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ki.vec) | Kinyarwanda: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.rw.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.rw.vec) |
+| Kirghiz: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ky.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ky.vec) | Kirundi: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.rn.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.rn.vec) | Komi: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kv.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kv.vec) |
+| Komi_Permyak: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.koi.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.koi.vec) | Kongo: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kg.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kg.vec) | Korean: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ko.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ko.vec) |
+| Kuanyama: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kj.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.kj.vec) | Kurdish (Kurmanji): [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ku.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ku.vec) | Kurdish (Sorani): [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ckb.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ckb.vec) |
+| Ladino: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lad.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lad.vec) | Lak: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lbe.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lbe.vec) | Lao: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lo.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lo.vec) |
+| Latgalian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ltg.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ltg.vec) | Latin: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.la.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.la.vec) | Latvian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lv.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lv.vec) |
+| Lezgian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lez.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lez.vec) | Ligurian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lij.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lij.vec) | Limburgish: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.li.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.li.vec) |
+| Lingala: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ln.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ln.vec) | Lithuanian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lt.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lt.vec) | Livvi_Karelian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.olo.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.olo.vec) |
+| Lojban: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.jbo.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.jbo.vec) | Lombard: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lmo.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lmo.vec) | Low Saxon: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nds.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nds.vec) |
+| Lower Sorbian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.dsb.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.dsb.vec) | Luganda: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lg.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lg.vec) | Luxembourgish: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lb.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lb.vec) |
+| Macedonian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mk.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mk.vec) | Maithili: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mai.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mai.vec) | Malagasy: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mg.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mg.vec) |
+| Malay: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ms.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ms.vec) | Malayalam: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ml.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ml.vec) | Maltese: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mt.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mt.vec) |
+| Manx: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.gv.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.gv.vec) | Maori: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mi.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mi.vec) | Marathi: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mr.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mr.vec) |
+| Marshallese: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mh.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mh.vec) | Mazandarani: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mzn.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mzn.vec) | Meadow Mari: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mhr.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mhr.vec) |
+| Min Dong: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.cdo.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.cdo.vec) | Min Nan: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.zh_min_nan.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.zh_min_nan.vec) | Minangkabau: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.min.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.min.vec) |
+| Mingrelian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.xmf.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.xmf.vec) | Mirandese: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mwl.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mwl.vec) | Moksha: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mdf.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mdf.vec) |
+| Moldovan: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mo.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mo.vec) | Mongolian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mn.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mn.vec) | Muscogee: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mus.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.mus.vec) |
+| Nahuatl: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nah.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nah.vec) | Nauruan: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.na.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.na.vec) | Navajo: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nv.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nv.vec) |
+| Ndonga: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ng.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ng.vec) | Neapolitan: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nap.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nap.vec) | Nepali: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ne.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ne.vec) |
+| Newar: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.new.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.new.vec) | Norfolk: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pih.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pih.vec) | Norman: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nrm.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nrm.vec) |
+| North Frisian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.frr.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.frr.vec) | Northern Luri: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lrc.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.lrc.vec) | Northern Sami: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.se.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.se.vec) |
+| Northern Sotho: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nso.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nso.vec) | Norwegian (Bokmål): [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.no.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.no.vec) | Norwegian (Nynorsk): [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nn.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nn.vec) |
+| Novial: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nov.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.nov.vec) | Nuosu: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ii.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ii.vec) | Occitan: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.oc.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.oc.vec) |
+| Old Church Slavonic: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.cu.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.cu.vec) | Oriya: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.or.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.or.vec) | Oromo: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.om.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.om.vec) |
+| Ossetian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.os.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.os.vec) | Palatinate German: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pfl.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pfl.vec) | Pali: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pi.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pi.vec) |
+| Pangasinan: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pag.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pag.vec) | Papiamentu: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pap.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pap.vec) | Pashto: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ps.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ps.vec) |
+| Pennsylvania German: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pdc.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pdc.vec) | Persian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.fa.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.fa.vec) | Picard: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pcd.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pcd.vec) |
+| Piedmontese: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pms.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pms.vec) | Polish: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pl.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pl.vec) | Pontic: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pnt.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pnt.vec) |
+| Portuguese: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pt.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pt.vec) | Quechua: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.qu.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.qu.vec) | Ripuarian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ksh.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ksh.vec) |
+| Romani: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.rmy.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.rmy.vec) | Romanian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ro.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ro.vec) | Romansh: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.rm.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.rm.vec) |
+| Russian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ru.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ru.vec) | Rusyn: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.rue.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.rue.vec) | Sakha: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sah.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sah.vec) |
+| Samoan: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sm.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sm.vec) | Samogitian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bat_smg.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bat_smg.vec) | Sango: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sg.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sg.vec) |
+| Sanskrit: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sa.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sa.vec) | Sardinian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sc.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sc.vec) | Saterland Frisian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.stq.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.stq.vec) |
+| Scots: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sco.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sco.vec) | Scottish Gaelic: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.gd.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.gd.vec) | Serbian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sr.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sr.vec) |
+| Serbo_Croatian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sh.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sh.vec) | Sesotho: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.st.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.st.vec) | Shona: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sn.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sn.vec) |
+| Sicilian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.scn.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.scn.vec) | Silesian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.szl.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.szl.vec) | Simple English: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.simple.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.simple.vec) |
+| Sindhi: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sd.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sd.vec) | Sinhalese: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.si.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.si.vec) | Slovak: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sk.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sk.vec) |
+| Slovenian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sl.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sl.vec) | Somali: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.so.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.so.vec) | Southern Azerbaijani: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.azb.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.azb.vec) |
+| Spanish: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.es.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.es.vec) | Sranan: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.srn.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.srn.vec) | Sundanese: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.su.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.su.vec) |
+| Swahili: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sw.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sw.vec) | Swati: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ss.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ss.vec) | Swedish: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sv.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.sv.vec) |
+| Tagalog: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tl.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tl.vec) | Tahitian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ty.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ty.vec) | Tajik: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tg.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tg.vec) |
+| Tamil: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ta.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ta.vec) | Tarantino: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.roa_tara.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.roa_tara.vec) | Tatar: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tt.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tt.vec) |
+| Telugu: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.te.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.te.vec) | Tetum: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tet.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tet.vec) | Thai: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.th.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.th.vec) |
+| Tibetan: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bo.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.bo.vec) | Tigrinya: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ti.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ti.vec) | Tok Pisin: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tpi.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tpi.vec) |
+| Tongan: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.to.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.to.vec) | Tsonga: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ts.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ts.vec) | Tswana: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tn.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tn.vec) |
+| Tulu: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tcy.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tcy.vec) | Tumbuka: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tum.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tum.vec) | Turkish: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tr.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tr.vec) |
+| Turkmen: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tk.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tk.vec) | Tuvan: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tyv.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tyv.vec) | Twi: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tw.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.tw.vec) |
+| Udmurt: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.udm.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.udm.vec) | Ukrainian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.uk.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.uk.vec) | Upper Sorbian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.hsb.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.hsb.vec) |
+| Urdu: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ur.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ur.vec) | Uyghur: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ug.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ug.vec) | Uzbek: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.uz.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.uz.vec) |
+| Venda: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ve.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.ve.vec) | Venetian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.vec.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.vec.vec) | Vepsian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.vep.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.vep.vec) |
+| Vietnamese: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.vi.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.vi.vec) | Volapük: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.vo.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.vo.vec) | Võro: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.fiu_vro.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.fiu_vro.vec) |
+| Walloon: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.wa.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.wa.vec) | Waray: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.war.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.war.vec) | Welsh: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.cy.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.cy.vec) |
+| West Flemish: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.vls.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.vls.vec) | West Frisian: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.fy.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.fy.vec) | Western Punjabi: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pnb.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.pnb.vec) |
+| Wolof: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.wo.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.wo.vec) | Wu: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.wuu.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.wuu.vec) | Xhosa: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.xh.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.xh.vec) |
+| Yiddish: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.yi.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.yi.vec) | Yoruba: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.yo.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.yo.vec) | Zazaki: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.diq.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.diq.vec) |
+| Zeelandic: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.zea.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.zea.vec) | Zhuang: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.za.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.za.vec) | Zulu: [*bin+text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.zu.zip), [*text*](https://s3-us-west-1.amazonaws.com/fasttext-vectors/wiki.zu.vec) |
