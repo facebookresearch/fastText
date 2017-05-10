@@ -175,7 +175,7 @@ void Args::printHelp() {
     << "  -ws                 size of the context window [" << ws << "]\n"
     << "  -epoch              number of epochs [" << epoch << "]\n"
     << "  -neg                number of negatives sampled [" << neg << "]\n"
-    << "  -loss               loss function {ns, hs, softmax} [ns]\n"
+    << "  -loss               loss function {ns, hs, softmax} [" << lname << "]\n"
     << "  -thread             number of threads [" << thread << "]\n"
     << "  -pretrainedVectors  pretrained word vectors for supervised learning ["<< pretrainedVectors <<"]\n"
     << "  -saveOutput         whether output params should be saved [" << saveOutput << "]\n"
