@@ -112,7 +112,8 @@ void ProductQuantizer::MStep(const real* x0, real* centroids,
 
 void ProductQuantizer::kmeans(const real *x, real* c, int32_t n, int32_t d) {
   std::vector<int32_t> perm(n,0);
-  std::iota(perm.begin(), perm.end(), 0);
+  int gn = { 0 };
+  std::generate(perm.begin(), perm.end(), [&gn] {return ++gn; });
   std::shuffle(perm.begin(), perm.end(), rng);
   for (auto i = 0; i < ksub_; i++) {
     memcpy (&c[i * d], x + perm[i] * d, d * sizeof(real));
@@ -131,7 +132,8 @@ void ProductQuantizer::train(int32_t n, const real * x) {
     exit(1);
   }
   std::vector<int32_t> perm(n, 0);
-  std::iota(perm.begin(), perm.end(), 0);
+  int gn = { 0 };
+  std::generate(perm.begin(), perm.end(), [&gn] {return ++gn; });
   auto d = dsub_;
   auto np = std::min(n, max_points_);
   real* xslice = new real[np * dsub_];
