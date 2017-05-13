@@ -65,24 +65,66 @@ void Matrix::uniform(real a) {
   }
 }
 
+real Matrix::dotRow(const Vector& vec, int64_t i) const {
+  assert(i >= 0);
+  assert(i < m_);
+  assert(vec.size() == n_);
+  real d = 0.0;
+  for (int64_t j = 0; j < n_; j++) {
+    d += at(i, j) * vec.data_[j];
+  }
+  return d;
+}
+
 void Matrix::addRow(const Vector& vec, int64_t i, real a) {
   assert(i >= 0);
   assert(i < m_);
-  assert(vec.m_ == n_);
+  assert(vec.size() == n_);
   for (int64_t j = 0; j < n_; j++) {
     data_[i * n_ + j] += a * vec.data_[j];
   }
 }
 
-real Matrix::dotRow(const Vector& vec, int64_t i) {
-  assert(i >= 0);
-  assert(i < m_);
-  assert(vec.m_ == n_);
-  real d = 0.0;
-  for (int64_t j = 0; j < n_; j++) {
-    d += data_[i * n_ + j] * vec.data_[j];
+void Matrix::multiplyRow(const Vector& nums, int64_t ib, int64_t ie) {
+  if (ie == -1) {ie = m_;}
+  assert(ie <= nums.size());
+  for (auto i = ib; i < ie; i++) {
+    real n = nums[i-ib];
+    if (n != 0) {
+      for (auto j = 0; j < n_; j++) {
+        at(i, j) *= n;
+      }
+    }
   }
-  return d;
+}
+
+void Matrix::divideRow(const Vector& denoms, int64_t ib, int64_t ie) {
+  if (ie == -1) {ie = m_;}
+  assert(ie <= denoms.size());
+  for (auto i = ib; i < ie; i++) {
+    real n = denoms[i-ib];
+    if (n != 0) {
+      for (auto j = 0; j < n_; j++) {
+        at(i, j) /= n;
+      }
+    }
+  }
+}
+
+real Matrix::l2NormRow(int64_t i) const {
+  auto norm = 0.0;
+  for (auto j = 0; j < n_; j++) {
+    const real v = at(i,j);
+    norm += v * v;
+  }
+  return std::sqrt(norm);
+}
+
+void Matrix::l2NormRow(Vector& norms) const {
+  assert(norms.size() == m_);
+    for (auto i = 0; i < m_; i++) {
+      norms[i] = l2NormRow(i);
+    }
 }
 
 void Matrix::save(std::ostream& out) {

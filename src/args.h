@@ -44,6 +44,13 @@ class Args {
     std::string label;
     int verbose;
     std::string pretrainedVectors;
+    int saveOutput;
+
+    bool qout;
+    bool retrain;
+    bool qnorm;
+    size_t cutoff;
+    size_t dsub;
 
     void parseArgs(int, char**);
     void printHelp();
