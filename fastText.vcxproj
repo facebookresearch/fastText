@@ -111,6 +111,8 @@
     <ClCompile Include="src\main.cc" />
     <ClCompile Include="src\matrix.cc" />
     <ClCompile Include="src\model.cc" />
+    <ClCompile Include="src\productquantizer.cc" />
+    <ClCompile Include="src\qmatrix.cc" />
     <ClCompile Include="src\utils.cc" />
     <ClCompile Include="src\vector.cc" />
   </ItemGroup>
@@ -120,6 +122,8 @@
     <ClInclude Include="src\fasttext.h" />
     <ClInclude Include="src\matrix.h" />
     <ClInclude Include="src\model.h" />
+    <ClInclude Include="src\productquantizer.h" />
+    <ClInclude Include="src\qmatrix.h" />
     <ClInclude Include="src\real.h" />
     <ClInclude Include="src\utils.h" />
     <ClInclude Include="src\vector.h" />
