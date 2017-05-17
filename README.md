@@ -84,7 +84,7 @@ $ ./fasttext supervised -input train.txt -output model
 
 where `train.txt` is a text file containing a training sentence per line along with the labels.
 By default, we assume that labels are words that are prefixed by the string `__label__`.
-This will output two files: `model.bin` and `model.vec`.
+This will output one file: `model.bin`.
 Once the model was trained, you can evaluate it by computing the precision and recall at k (P@k and R@k) on a test set using:
 
 ```
