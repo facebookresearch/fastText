@@ -23,7 +23,7 @@ fi
 
 if [ ! -f "${DATADIR}/rw/rw.txt" ]
 then
-  wget -c http://www-nlp.stanford.edu/~lmthang/morphoNLM/rw.zip -P "${DATADIR}"
+  wget -c https://nlp.stanford.edu/~lmthang/morphoNLM/rw.zip -P "${DATADIR}"
   unzip "${DATADIR}/rw.zip" -d "${DATADIR}"
 fi
 
