@@ -54,9 +54,9 @@ class FastText {
     FastText();
 
     void getVector(Vector&, const std::string&);
-    void saveVectors();
-    void saveOutput();
-    void saveModel();
+    void saveVectors(std::string suffix = "");
+    void saveOutput(std::string suffix = "");
+    void saveModel(std::string suffix = "");
     void loadModel(std::istream&);
     void loadModel(const std::string&);
     void printInfo(real, real);
@@ -88,6 +88,14 @@ class FastText {
     void train(std::shared_ptr<Args>);
 
     void loadVectors(std::string);
+
+    void _saveVectors(std::string filename);
+
+    void _saveOutput(std::string filename);
+
+    void _saveModel(std::string fn);
+
+    void printSavingInfo(real progress, real loss, int current_epoch);
 };
 
 }

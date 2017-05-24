@@ -10,6 +10,7 @@
 #include "utils.h"
 
 #include <ios>
+#include <sstream>
 
 namespace fasttext {
 
@@ -24,6 +25,13 @@ namespace utils {
     ifs.clear();
     ifs.seekg(std::streampos(pos));
   }
+
+    std::string format_epoch_suffix(int epoch_no) {
+        std::ostringstream stringStream;
+        stringStream << "-epoch-" << epoch_no;
+        std::string copyOfStr = stringStream.str();
+        return copyOfStr;
+    }
 }
 
 }

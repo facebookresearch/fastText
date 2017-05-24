@@ -36,6 +36,7 @@ Args::Args() {
   label = "__label__";
   verbose = 2;
   pretrainedVectors = "";
+  loadFromModelBinFile = "";
   saveOutput = 0;
 
   qout = false;
@@ -120,6 +121,8 @@ void Args::parseArgs(int argc, char** argv) {
       verbose = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-pretrainedVectors") == 0) {
       pretrainedVectors = std::string(argv[ai + 1]);
+    } else if (strcmp(argv[ai], "-loadFromModelBinFile") == 0) {
+      loadFromModelBinFile = std::string(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-saveOutput") == 0) {
       saveOutput = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-qnorm") == 0) {

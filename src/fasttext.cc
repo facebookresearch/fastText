@@ -20,8 +20,11 @@
 #include <queue>
 #include <algorithm>
 
+#include <mutex>
 
 namespace fasttext {
+
+    std::mutex saving_mutex;
 
 FastText::FastText() : quant_(false) {}
 
@@ -36,8 +39,8 @@ void FastText::getVector(Vector& vec, const std::string& word) {
   }
 }
 
-void FastText::saveVectors() {
-  std::ofstream ofs(args_->output + ".vec");
+void FastText::_saveVectors(std::string filename) {
+  std::ofstream ofs(filename);
   if (!ofs.is_open()) {
     std::cerr << "Error opening file for saving vectors." << std::endl;
     exit(EXIT_FAILURE);
@@ -52,8 +55,13 @@ void FastText::saveVectors() {
   ofs.close();
 }
 
-void FastText::saveOutput() {
-  std::ofstream ofs(args_->output + ".output");
+    void FastText::saveVectors(std::string suffix) {
+      std::string filename(args_->output + suffix + ".vec");
+      _saveVectors(filename);
+    }
+
+void FastText::_saveOutput(std::string filename) {
+  std::ofstream ofs(filename);
   if (!ofs.is_open()) {
     std::cerr << "Error opening file for saving vectors." << std::endl;
     exit(EXIT_FAILURE);
@@ -68,6 +76,11 @@ void FastText::saveOutput() {
   }
   ofs.close();
 }
+
+    void FastText::saveOutput(std::string suffix) {
+      std::string filename(args_->output + suffix + ".output");
+      _saveOutput(filename);
+    }
 
 bool FastText::checkModel(std::istream& in) {
   int32_t magic;
@@ -90,13 +103,8 @@ void FastText::signModel(std::ostream& out) {
   out.write((char*)&(version), sizeof(int32_t));
 }
 
-void FastText::saveModel() {
-  std::string fn(args_->output);
-  if (quant_) {
-    fn += ".ftz";
-  } else {
-    fn += ".bin";
-  }
+void FastText::_saveModel(std::string fn) {
+
   std::ofstream ofs(fn, std::ofstream::binary);
   if (!ofs.is_open()) {
     std::cerr << "Model file cannot be opened for saving!" << std::endl;
@@ -122,6 +130,16 @@ void FastText::saveModel() {
 
   ofs.close();
 }
+
+    void FastText::saveModel(std::string suffix) {
+      std::string fn(args_->output + suffix);
+      if (quant_) {
+        fn += ".ftz";
+      } else {
+        fn += ".bin";
+      }
+      _saveModel(fn);
+    }
 
 void FastText::loadModel(const std::string& filename) {
   std::ifstream ifs(filename, std::ifstream::binary);
@@ -190,6 +208,22 @@ void FastText::printInfo(real progress, real loss) {
   std::cerr << "  eta: " << etah << "h" << etam << "m ";
   std::cerr << std::flush;
 }
+
+    void FastText::printSavingInfo(real progress, real loss, int current_epoch) {
+      real t = real(clock() - start) / CLOCKS_PER_SEC;
+      real wst = real(tokenCount) / t;
+      real lr = args_->lr * (1.0 - progress);
+      int eta = int(t / progress * (1 - progress) / args_->thread);
+      int etah = eta / 3600;
+      int etam = (eta - etah * 3600) / 60;
+      std::cerr << "Saving the model at epoch " << current_epoch << std::endl;
+      std::cerr << "\rProgress: " << std::setprecision(1) << 100 * progress << "%";
+      std::cerr << "  words/sec/thread: " << std::setprecision(0) << wst;
+      std::cerr << "  lr: " << std::setprecision(6) << lr;
+      std::cerr << "  loss: " << std::setprecision(6) << loss;
+      std::cerr << "  eta: " << etah << "h" << etam << "m ";
+      std::cerr << std::flush;
+    }
 
 std::vector<int32_t> FastText::selectEmbeddings(int32_t cutoff) const {
   Vector norms(input_->m_);
@@ -507,6 +541,7 @@ void FastText::analogies(int32_t k) {
   }
 }
 
+
 void FastText::trainThread(int32_t threadId) {
   std::ifstream ifs(args_->input);
   utils::seek(ifs, threadId * utils::size(ifs) / args_->thread);
@@ -520,6 +555,7 @@ void FastText::trainThread(int32_t threadId) {
 
   const int64_t ntokens = dict_->ntokens();
   int64_t localTokenCount = 0;
+  int current_epoch = 1;
   std::vector<int32_t> line, labels;
   while (tokenCount < args_->epoch * ntokens) {
     real progress = real(tokenCount) / (args_->epoch * ntokens);
@@ -535,6 +571,22 @@ void FastText::trainThread(int32_t threadId) {
     if (localTokenCount > args_->lrUpdateRate) {
       tokenCount += localTokenCount;
       localTokenCount = 0;
+      if (current_epoch * ntokens < tokenCount) {
+        current_epoch++;
+        // all threads try to acquire lock and wait forever
+        std::lock_guard<std::mutex> lock(saving_mutex);
+        // if they succeed, they go on if they are not the first thread.
+        if (threadId == 0) {
+          printSavingInfo(progress, model.getLoss(), current_epoch);
+          saveModel(utils::format_epoch_suffix(current_epoch));
+          if (args_->model != model_name::sup) {
+            saveVectors(utils::format_epoch_suffix(current_epoch));
+            if (args_->saveOutput > 0) {
+              saveOutput(utils::format_epoch_suffix(current_epoch));
+            }
+          }
+        }
+      }
       if (threadId == 0 && args_->verbose > 1) {
         printInfo(progress, model.getLoss());
       }
@@ -603,25 +655,48 @@ void FastText::train(std::shared_ptr<Args> args) {
   dict_->readFromFile(ifs);
   ifs.close();
 
-  if (args_->pretrainedVectors.size() != 0) {
-    loadVectors(args_->pretrainedVectors);
-  } else {
-    input_ = std::make_shared<Matrix>(dict_->nwords()+args_->bucket, args_->dim);
-    input_->uniform(1.0 / args_->dim);
-  }
+  if (args_->loadFromModelBinFile.size() != 0) {
+      std::cerr << "Loading from model bin file: " << args_->loadFromModelBinFile << std::endl;
+    loadModel(std::string(args_->loadFromModelBinFile));
+      std::cerr << "Loaded from model bin file: " << args_->loadFromModelBinFile << std::endl << std::flush;
+      args_->input = args->input;
+      args_->output = args->output;
+      args_->qout = args->qout;
+      args_->qnorm = args->qnorm;
+      args_->dsub = args->dsub;
+      args_->qnorm = args->qnorm;
 
-  if (args_->model == model_name::sup) {
-    output_ = std::make_shared<Matrix>(dict_->nlabels(), args_->dim);
-  } else {
-    output_ = std::make_shared<Matrix>(dict_->nwords(), args_->dim);
-  }
-  output_->zero();
+      args_->epoch = args->epoch;
+      args_->lr = args->lr;
+      args_->thread = args->thread;
+      args_->verbose = args->verbose;
 
+//      qinput_ = std::make_shared<QMatrix>(*input_, args->dsub, args->qnorm);
+//
+//      if (args_->qout) {
+//          qoutput_ = std::make_shared<QMatrix>(*output_, 2, args->qnorm);
+//      }
+  } else {
+    if (args_->pretrainedVectors.size() != 0) {
+      loadVectors(args_->pretrainedVectors);
+    } else {
+      input_ = std::make_shared<Matrix>(dict_->nwords() + args_->bucket, args_->dim);
+      input_->uniform(1.0 / args_->dim);
+    }
+
+    if (args_->model == model_name::sup) {
+      output_ = std::make_shared<Matrix>(dict_->nlabels(), args_->dim);
+    } else {
+      output_ = std::make_shared<Matrix>(dict_->nwords(), args_->dim);
+    }
+    output_->zero();
+  }
   start = clock();
   tokenCount = 0;
   if (args_->thread > 1) {
     std::vector<std::thread> threads;
     for (int32_t i = 0; i < args_->thread; i++) {
+        std::cerr << "Starting thread id: " << i << std::endl;
       threads.push_back(std::thread([=]() { trainThread(i); }));
     }
     for (auto it = threads.begin(); it != threads.end(); ++it) {
