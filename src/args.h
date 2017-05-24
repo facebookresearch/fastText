@@ -44,6 +44,7 @@ class Args {
     std::string label;
     int verbose;
     std::string pretrainedVectors;
+    std::string loadFromModelBinFile;
     int saveOutput;
 
     bool qout;

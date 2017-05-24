@@ -18,6 +18,7 @@ namespace utils {
 
   int64_t size(std::ifstream&);
   void seek(std::ifstream&, int64_t);
+    std::string format_epoch_suffix(int epoch_no);
 }
 
 }
