@@ -23,7 +23,7 @@ fi
 
 if [ ! -f "${DATADIR}/rw/rw.txt" ]
 then
-  wget -c http://stanford.edu/~lmthang/morphoNLM/rw.zip -P "${DATADIR}"
+  wget -c https://nlp.stanford.edu/~lmthang/morphoNLM/rw.zip -P "${DATADIR}"
   unzip "${DATADIR}/rw.zip" -d "${DATADIR}"
 fi
 
@@ -35,6 +35,6 @@ make
 
 cut -f 1,2 "${DATADIR}"/rw/rw.txt | awk '{print tolower($0)}' | tr '\t' '\n' > "${DATADIR}"/queries.txt
 
-cat "${DATADIR}"/queries.txt | ./fasttext print-vectors "${RESULTDIR}"/fil9.bin > "${RESULTDIR}"/vectors.txt
+cat "${DATADIR}"/queries.txt | ./fasttext print-word-vectors "${RESULTDIR}"/fil9.bin > "${RESULTDIR}"/vectors.txt
 
 python eval.py -m "${RESULTDIR}"/vectors.txt -d "${DATADIR}"/rw/rw.txt
