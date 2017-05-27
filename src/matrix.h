@@ -23,16 +23,14 @@ namespace fasttext {
 class Vector;
 
 class Matrix {
-  private:
-    Matrix(const Matrix&);
-    Matrix& operator=(const Matrix&);
 
+  private:
     real* data_mem_;
     void* data_mmap_;
 
     int file_;
     struct stat fileInfo;
-
+    
   public:
     real* data_;
     int64_t m_;
@@ -40,6 +38,8 @@ class Matrix {
 
     Matrix();
     Matrix(int64_t, int64_t);
+    Matrix(const Matrix&);
+    Matrix& operator=(const Matrix&);
     ~Matrix();
 
     inline const real& at(int64_t i, int64_t j) const {return data_[i * n_ + j];};

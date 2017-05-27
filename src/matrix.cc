@@ -38,6 +38,31 @@ Matrix::Matrix(int64_t m, int64_t n) {
   data_ = data_mem_;
 }
 
+Matrix::Matrix(const Matrix& other) {
+  // Unsafe for MMAP // TODO safe
+  if (data_mmap_ != nullptr) {
+    throw std::logic_error("It's forbidden when using mmap");
+  }  
+  m_ = other.m_;
+  n_ = other.n_;
+  data_ = new real[m_ * n_];
+  for (int64_t i = 0; i < (m_ * n_); i++) {
+    data_[i] = other.data_[i];
+  }
+}
+
+Matrix& Matrix::operator=(const Matrix& other) {
+  // Unsafe for MMAP // TODO safe
+  if (data_mmap_ != nullptr) {
+    throw std::logic_error("It's forbidden when using mmap");
+  }
+  Matrix temp(other);
+  m_ = temp.m_;
+  n_ = temp.n_;
+  std::swap(data_, temp.data_);
+  return *this;
+}
+
 Matrix::~Matrix() {
   delete[] data_mem_;
   if (data_mmap_) {
