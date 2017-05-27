@@ -10,6 +10,8 @@
 #ifndef FASTTEXT_MATRIX_H
 #define FASTTEXT_MATRIX_H
 
+#include <sys/stat.h>
+
 #include <cstdint>
 #include <istream>
 #include <ostream>
@@ -22,6 +24,13 @@ class Vector;
 
 class Matrix {
 
+  private:
+    real* data_mem_;
+    void* data_mmap_;
+
+    int file_;
+    struct stat fileInfo;
+    
   public:
     real* data_;
     int64_t m_;
@@ -50,6 +59,7 @@ class Matrix {
 
     void save(std::ostream&);
     void load(std::istream&);
+    void load2mmap(std::istream&, const std::string&); // file name
 };
 
 }

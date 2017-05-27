@@ -11,6 +11,10 @@
 
 #include <assert.h>
 
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <unistd.h>
+
 #include <random>
 
 #include "utils.h"
@@ -21,16 +25,24 @@ namespace fasttext {
 Matrix::Matrix() {
   m_ = 0;
   n_ = 0;
-  data_ = nullptr;
+  data_mem_ = nullptr;
+  data_mmap_ = nullptr;
+  data_ = data_mem_;
 }
 
 Matrix::Matrix(int64_t m, int64_t n) {
   m_ = m;
   n_ = n;
-  data_ = new real[m * n];
+  data_mem_ = new real[m * n];
+  data_mmap_ = nullptr;
+  data_ = data_mem_;
 }
 
 Matrix::Matrix(const Matrix& other) {
+  // Unsafe for MMAP // TODO safe
+  if (data_mmap_ != nullptr) {
+    throw std::logic_error("It's forbidden when using mmap");
+  }  
   m_ = other.m_;
   n_ = other.n_;
   data_ = new real[m_ * n_];
@@ -40,6 +52,10 @@ Matrix::Matrix(const Matrix& other) {
 }
 
 Matrix& Matrix::operator=(const Matrix& other) {
+  // Unsafe for MMAP // TODO safe
+  if (data_mmap_ != nullptr) {
+    throw std::logic_error("It's forbidden when using mmap");
+  }
   Matrix temp(other);
   m_ = temp.m_;
   n_ = temp.n_;
@@ -48,7 +64,12 @@ Matrix& Matrix::operator=(const Matrix& other) {
 }
 
 Matrix::~Matrix() {
-  delete[] data_;
+  delete[] data_mem_;
+  if (data_mmap_) {
+    // Don't forget to free the mmapped memory
+    munmap(data_mmap_, fileInfo.st_size);
+    close(file_);
+  }
 }
 
 void Matrix::zero() {
@@ -136,9 +157,23 @@ void Matrix::save(std::ostream& out) {
 void Matrix::load(std::istream& in) {
   in.read((char*) &m_, sizeof(int64_t));
   in.read((char*) &n_, sizeof(int64_t));
-  delete[] data_;
-  data_ = new real[m_ * n_];
-  in.read((char*) data_, m_ * n_ * sizeof(real));
+  delete[] data_mem_;
+  data_mem_ = new real[m_ * n_];
+  in.read((char*) data_mem_, m_ * n_ * sizeof(real));
+  data_ = data_mem_;
+}
+
+void Matrix::load2mmap(std::istream& in, const std::string& filename) {
+  // create mmap
+  file_ = open(filename.c_str(), O_RDONLY);
+  fstat(file_, &fileInfo);
+  data_mmap_ = mmap(NULL, fileInfo.st_size, PROT_READ, MAP_SHARED, file_, 0);
+
+  // assign data (allow offset)
+  in.read((char*) &m_, sizeof(int64_t));
+  in.read((char*) &n_, sizeof(int64_t));
+  data_ = (real*)((char*)data_mmap_ + (unsigned long long)in.tellg());
+  in.seekg(m_ * n_ * sizeof(real), std::ios::cur);
 }
 
 }

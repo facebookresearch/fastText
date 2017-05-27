@@ -67,6 +67,7 @@ void printPrintSentenceVectorsUsage() {
   std::cerr
     << "usage: fasttext print-sentence-vectors <model>\n\n"
     << "  <model>      model filename\n"
+    << "  <use-mmap>   (optional; 0 by default) if 1 map model file into memory\n"
     << std::endl;
 }
 
@@ -166,23 +167,41 @@ void predict(int argc, char** argv) {
 }
 
 void printWordVectors(int argc, char** argv) {
-  if (argc != 3) {
+  int32_t useMmap;
+  if (argc == 3) {
+    useMmap = 0;
+  } else if (argc == 4) {
+    useMmap = atoi(argv[3]);
+  } else {
     printPrintWordVectorsUsage();
     exit(EXIT_FAILURE);
   }
   FastText fasttext;
-  fasttext.loadModel(std::string(argv[2]));
+  if (useMmap != 0) {
+    fasttext.loadModelMmap(std::string(argv[2]));
+  } else {
+    fasttext.loadModel(std::string(argv[2]));
+  }
   fasttext.printWordVectors();
   exit(0);
 }
 
 void printSentenceVectors(int argc, char** argv) {
-  if (argc != 3) {
+  int32_t useMmap;
+  if (argc == 3) {
+    useMmap = 0;
+  } else if (argc == 4) {
+    useMmap = atoi(argv[3]);
+  } else {
     printPrintSentenceVectorsUsage();
     exit(EXIT_FAILURE);
   }
   FastText fasttext;
-  fasttext.loadModel(std::string(argv[2]));
+  if (useMmap != 0) {
+    fasttext.loadModelMmap(std::string(argv[2]));
+  } else {
+    fasttext.loadModel(std::string(argv[2]));
+  }
   fasttext.printSentenceVectors();
   exit(0);
 }
