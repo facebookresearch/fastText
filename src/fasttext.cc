@@ -255,11 +255,29 @@ void FastText::quantize(std::shared_ptr<Args> qargs) {
 
 void FastText::supervised(Model& model, real lr,
                           const std::vector<int32_t>& line,
-                          const std::vector<int32_t>& labels) {
+                          const std::vector<int32_t>& labels, bool weightBalanced) {
   if (labels.size() == 0 || line.size() == 0) return;
   std::uniform_int_distribution<> uniform(0, labels.size() - 1);
   int32_t i = uniform(model.rng);
-  model.update(line, labels[i], lr);
+  if (weightBalanced) {
+    std::vector<real> classWeights;
+    real sum = 0;
+    const std::vector<int64_t>& counts = dict_->getCounts(entry_type::label);
+    for (auto c : counts) {
+      classWeights.push_back(c);
+      sum += c;
+    }
+    real sum_ = 0;
+    for (auto& w : classWeights) {
+      w = sum / w;
+      sum_ += w;
+    }
+    for (auto& w : classWeights) w = w / sum_ * classWeights.size();
+    model.update(line, labels[i], lr, classWeights);
+  }
+  else {
+    model.update(line, labels[i], lr);
+  }
 }
 
 void FastText::cbow(Model& model, real lr,
@@ -526,7 +544,7 @@ void FastText::trainThread(int32_t threadId) {
     real lr = args_->lr * (1.0 - progress);
     localTokenCount += dict_->getLine(ifs, line, labels, model.rng);
     if (args_->model == model_name::sup) {
-      supervised(model, lr, line, labels);
+      supervised(model, lr, line, labels, args_->weightBalanced);
     } else if (args_->model == model_name::cbow) {
       cbow(model, lr, line);
     } else if (args_->model == model_name::sg) {

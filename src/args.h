@@ -52,6 +52,8 @@ class Args {
     size_t cutoff;
     size_t dsub;
 
+    bool weightBalanced;
+
     void parseArgs(int, char**);
     void printHelp();
     void save(std::ostream&);
