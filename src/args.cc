@@ -43,6 +43,7 @@ Args::Args() {
   qnorm = false;
   cutoff = 0;
   dsub = 2;
+  weightBalanced = false;
 }
 
 void Args::parseArgs(int argc, char** argv) {
@@ -132,6 +133,8 @@ void Args::parseArgs(int argc, char** argv) {
     cutoff = atoi(argv[ai + 1]);
     } else if (strcmp(argv[ai], "-dsub") == 0) {
       dsub = atoi(argv[ai + 1]);
+    } else if (strcmp(argv[ai], "-weightBalanced") == 0) {
+      weightBalanced = true;
     } else {
       std::cerr << "Unknown argument: " << argv[ai] << std::endl;
       printHelp();
