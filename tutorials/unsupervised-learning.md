@@ -126,7 +126,7 @@ A nice feature is that you can also query for words that did not appear in your 
 As an example let's try with a misspelled word:
 
 ```
-$ echo "enviroment" | ./fasttext print-vectors result/fil9.bin
+$ echo "enviroment" | ./fasttext print-word-vectors result/fil9.bin
 ```
 
 You still get a word vector for it! But how good it is? Let s find out in the next sections!
