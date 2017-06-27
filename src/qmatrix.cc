@@ -31,7 +31,7 @@ QMatrix::QMatrix(const Matrix& mat, int32_t dsub, bool qnorm)
 }
 
 QMatrix::~QMatrix() {
-  delete[] codes_;
+  if (codesize_) { delete[] codes_; }
   if (qnorm_) { delete[] norm_codes_; }
 }
 
