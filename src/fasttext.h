@@ -53,7 +53,7 @@ class FastText {
   public:
     FastText();
 
-    void getVector(Vector&, const std::string&);
+    void getVector(Vector&, const std::string&) const;
     void saveVectors();
     void saveOutput();
     void saveModel();
