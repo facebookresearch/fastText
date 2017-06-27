@@ -641,4 +641,8 @@ void FastText::train(std::shared_ptr<Args> args) {
   }
 }
 
+int FastText::getDimension() const {
+    return args_->dim;
+}
+
 }

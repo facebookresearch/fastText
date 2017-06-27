@@ -88,6 +88,7 @@ class FastText {
     void train(std::shared_ptr<Args>);
 
     void loadVectors(std::string);
+    int getDimension() const;
 };
 
 }
