@@ -10,6 +10,7 @@
 #include "productquantizer.h"
 
 #include <algorithm>
+#include <numeric>
 #include <iostream>
 
 namespace fasttext {

@@ -19,6 +19,7 @@
 #include <vector>
 #include <queue>
 #include <algorithm>
+#include <numeric>
 
 
 namespace fasttext {
