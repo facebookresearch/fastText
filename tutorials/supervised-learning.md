@@ -15,7 +15,7 @@ The first step of this tutorial is to install and build fastText. It only requir
 Let us start by [cloning](https://help.github.com/articles/cloning-a-repository/ ) the fastText repository:
 
 ```
->> git clone git@github.com/facebookresearch/fastText.git
+>> git clone git@github.com:facebookresearch/fastText.git
 ```
 
 Move to the fastText directory and build it:
