@@ -271,7 +271,7 @@ std::vector<int64_t> Dictionary::getCounts(entry_type type) const {
   return counts;
 }
 
-void Dictionary::addNgrams(std::vector<int32_t>& line,
+void Dictionary::addWordNgrams(std::vector<int32_t>& line,
                            const std::vector<int32_t>& hashes,
                            int32_t n) const {
   if (pruneidx_size_ == 0) return;
@@ -338,7 +338,7 @@ int32_t Dictionary::getLine(std::istream& in,
   std::vector<int32_t> word_hashes;
   int32_t ntokens = getLine(in, words, word_hashes, labels, rng);
   if (args_->model == model_name::sup ) {
-    addNgrams(words, word_hashes, args_->wordNgrams);
+    addWordNgrams(words, word_hashes, args_->wordNgrams);
   }
   return ntokens;
 }

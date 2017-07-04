@@ -54,7 +54,7 @@ class Dictionary {
 
     int64_t pruneidx_size_ = -1;
     std::unordered_map<int32_t, int32_t> pruneidx_;
-    void addNgrams(
+    void addWordNgrams(
         std::vector<int32_t>& line,
         const std::vector<int32_t>& hashes,
         int32_t n) const;
