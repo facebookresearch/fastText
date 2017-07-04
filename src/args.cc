@@ -150,15 +150,24 @@ void Args::parseArgs(int argc, char** argv) {
 }
 
 void Args::printHelp() {
-  std::string lname = "ns";
-  if (loss == loss_name::hs) lname = "hs";
-  if (loss == loss_name::softmax) lname = "softmax";
+  printBasicHelp();
+  printDictionaryHelp();
+  printTrainingHelp();
+  printQuantizationHelp();
+}
+
+
+void Args::printBasicHelp() {
   std::cerr
     << "\nThe following arguments are mandatory:\n"
     << "  -input              training file path\n"
     << "  -output             output file path\n"
     << "\nThe following arguments are optional:\n"
-    << "  -verbose            verbosity level [" << verbose << "]\n"
+    << "  -verbose            verbosity level [" << verbose << "]\n";
+}
+
+void Args::printDictionaryHelp() {
+  std::cerr
     << "\nThe following arguments for the dictionary are optional:\n"
     << "  -minCount           minimal number of word occurences [" << minCount << "]\n"
     << "  -minCountLabel      minimal number of label occurences [" << minCountLabel << "]\n"
@@ -167,7 +176,11 @@ void Args::printHelp() {
     << "  -minn               min length of char ngram [" << minn << "]\n"
     << "  -maxn               max length of char ngram [" << maxn << "]\n"
     << "  -t                  sampling threshold [" << t << "]\n"
-    << "  -label              labels prefix [" << label << "]\n"
+    << "  -label              labels prefix [" << label << "]\n";
+}
+
+void Args::printTrainingHelp() {
+  std::cerr
     << "\nThe following arguments for training are optional:\n"
     << "  -lr                 learning rate [" << lr << "]\n"
     << "  -lrUpdateRate       change the rate of updates for the learning rate [" << lrUpdateRate << "]\n"
@@ -178,14 +191,17 @@ void Args::printHelp() {
     << "  -loss               loss function {ns, hs, softmax} [ns]\n"
     << "  -thread             number of threads [" << thread << "]\n"
     << "  -pretrainedVectors  pretrained word vectors for supervised learning ["<< pretrainedVectors <<"]\n"
-    << "  -saveOutput         whether output params should be saved [" << saveOutput << "]\n"
+    << "  -saveOutput         whether output params should be saved [" << saveOutput << "]\n";
+}
+
+void Args::printQuantizationHelp() {
+  std::cerr
     << "\nThe following arguments for quantization are optional:\n"
     << "  -cutoff             number of words and ngrams to retain [" << cutoff << "]\n"
     << "  -retrain            finetune embeddings if a cutoff is applied [" << retrain << "]\n"
     << "  -qnorm              quantizing the norm separately [" << qnorm << "]\n"
     << "  -qout               quantizing the classifier [" << qout << "]\n"
-    << "  -dsub               size of each sub-vector [" << dsub << "]\n"
-    << std::endl;
+    << "  -dsub               size of each sub-vector [" << dsub << "]\n";
 }
 
 void Args::save(std::ostream& out) {

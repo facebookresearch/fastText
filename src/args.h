@@ -54,6 +54,10 @@ class Args {
 
     void parseArgs(int, char**);
     void printHelp();
+    void printBasicHelp();
+    void printDictionaryHelp();
+    void printTrainingHelp();
+    void printQuantizationHelp();
     void save(std::ostream&);
     void load(std::istream&);
 };
