@@ -323,13 +323,13 @@ void FastText::test(std::istream& in, int32_t k) {
 void FastText::predict(std::istream& in, int32_t k,
                        std::vector<std::pair<real,std::string>>& predictions) const {
   std::vector<int32_t> words, labels;
+  predictions.clear();
   dict_->getLine(in, words, labels, model_->rng);
   if (words.empty()) return;
   Vector hidden(args_->dim);
   Vector output(dict_->nlabels());
   std::vector<std::pair<real,int32_t>> modelPredictions;
   model_->predict(words, k, modelPredictions, hidden, output);
-  predictions.clear();
   for (auto it = modelPredictions.cbegin(); it != modelPredictions.cend(); it++) {
     predictions.push_back(std::make_pair(it->first, dict_->getLabel(it->second)));
   }
