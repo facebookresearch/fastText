@@ -26,7 +26,7 @@ namespace fasttext {
 FastText::FastText() : quant_(false) {}
 
 void FastText::getVector(Vector& vec, const std::string& word) const {
-  const std::vector<int32_t>& ngrams = dict_->getNgrams(word);
+  const std::vector<int32_t>& ngrams = dict_->getSubwords(word);
   vec.zero();
   for (auto it = ngrams.begin(); it != ngrams.end(); ++it) {
     vec.addRow(*input_, *it);
@@ -272,7 +272,7 @@ void FastText::cbow(Model& model, real lr,
     bow.clear();
     for (int32_t c = -boundary; c <= boundary; c++) {
       if (c != 0 && w + c >= 0 && w + c < line.size()) {
-        const std::vector<int32_t>& ngrams = dict_->getNgrams(line[w + c]);
+        const std::vector<int32_t>& ngrams = dict_->getSubwords(line[w + c]);
         bow.insert(bow.end(), ngrams.cbegin(), ngrams.cend());
       }
     }
@@ -285,7 +285,7 @@ void FastText::skipgram(Model& model, real lr,
   std::uniform_int_distribution<> uniform(1, args_->ws);
   for (int32_t w = 0; w < line.size(); w++) {
     int32_t boundary = uniform(model.rng);
-    const std::vector<int32_t>& ngrams = dict_->getNgrams(line[w]);
+    const std::vector<int32_t>& ngrams = dict_->getSubwords(line[w]);
     for (int32_t c = -boundary; c <= boundary; c++) {
       if (c != 0 && w + c >= 0 && w + c < line.size()) {
         model.update(ngrams, line[w + c], lr);
@@ -389,7 +389,7 @@ void FastText::ngramVectors(std::string word) {
   std::vector<int32_t> ngrams;
   std::vector<std::string> substrings;
   Vector vec(args_->dim);
-  dict_->getNgrams(word, ngrams, substrings);
+  dict_->getSubwords(word, ngrams, substrings);
   for (int32_t i = 0; i < ngrams.size(); i++) {
     vec.zero();
     if (ngrams[i] >= 0) {

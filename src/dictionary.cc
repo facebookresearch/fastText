@@ -62,23 +62,24 @@ int64_t Dictionary::ntokens() const {
   return ntokens_;
 }
 
-const std::vector<int32_t>& Dictionary::getNgrams(int32_t i) const {
+const std::vector<int32_t>& Dictionary::getSubwords(int32_t i) const {
   assert(i >= 0);
   assert(i < nwords_);
   return words_[i].subwords;
 }
 
-const std::vector<int32_t> Dictionary::getNgrams(const std::string& word) const {
+const std::vector<int32_t> Dictionary::getSubwords(
+    const std::string& word) const {
   int32_t i = getId(word);
   if (i >= 0) {
-    return getNgrams(i);
+    return getSubwords(i);
   }
   std::vector<int32_t> ngrams;
-  computeNgrams(BOW + word + EOW, ngrams);
+  computeSubwords(BOW + word + EOW, ngrams);
   return ngrams;
 }
 
-void Dictionary::getNgrams(const std::string& word,
+void Dictionary::getSubwords(const std::string& word,
                            std::vector<int32_t>& ngrams,
                            std::vector<std::string>& substrings) const {
   int32_t i = getId(word);
@@ -91,7 +92,7 @@ void Dictionary::getNgrams(const std::string& word,
     ngrams.push_back(-1);
     substrings.push_back(word);
   }
-  computeNgrams(BOW + word + EOW, ngrams, substrings);
+  computeSubwords(BOW + word + EOW, ngrams, substrings);
 }
 
 bool Dictionary::discard(int32_t id, real rand) const {
@@ -131,7 +132,7 @@ uint32_t Dictionary::hash(const std::string& str) const {
   return h;
 }
 
-void Dictionary::computeNgrams(const std::string& word,
+void Dictionary::computeSubwords(const std::string& word,
                                std::vector<int32_t>& ngrams,
                                std::vector<std::string>& substrings) const {
   for (size_t i = 0; i < word.size(); i++) {
@@ -151,7 +152,7 @@ void Dictionary::computeNgrams(const std::string& word,
   }
 }
 
-void Dictionary::computeNgrams(const std::string& word,
+void Dictionary::computeSubwords(const std::string& word,
                                std::vector<int32_t>& ngrams) const {
   for (size_t i = 0; i < word.size(); i++) {
     std::string ngram;
@@ -173,7 +174,7 @@ void Dictionary::initNgrams() {
   for (size_t i = 0; i < size_; i++) {
     std::string word = BOW + words_[i].word + EOW;
     words_[i].subwords.push_back(i);
-    computeNgrams(word, words_[i].subwords);
+    computeSubwords(word, words_[i].subwords);
   }
 }
 
