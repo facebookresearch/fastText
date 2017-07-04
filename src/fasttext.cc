@@ -232,6 +232,7 @@ void FastText::quantize(std::shared_ptr<Args> qargs) {
       args_->lr = qargs->lr;
       args_->thread = qargs->thread;
       args_->verbose = qargs->verbose;
+      start = clock();
       tokenCount = 0;
       std::vector<std::thread> threads;
       for (int32_t i = 0; i < args_->thread; i++) {
