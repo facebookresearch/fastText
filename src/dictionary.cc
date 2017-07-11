@@ -25,7 +25,7 @@ const std::string Dictionary::EOW = ">";
 
 Dictionary::Dictionary(std::shared_ptr<Args> args) : args_(args),
   word2int_(MAX_VOCAB_SIZE, -1), size_(0), nwords_(0), nlabels_(0),
-  ntokens_(0) {}
+  ntokens_(0), pruneidx_size_(-1) {}
 
 int32_t Dictionary::find(const std::string& w) const {
   int32_t h = hash(w) % MAX_VOCAB_SIZE;
