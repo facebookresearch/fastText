@@ -10,7 +10,6 @@
 #include "qmatrix.h"
 
 #include <assert.h>
-#include <cmath>
 #include <iostream>
 
 namespace fasttext {
@@ -20,8 +19,10 @@ QMatrix::QMatrix() : qnorm_(false),
 
 QMatrix::QMatrix(const Matrix& mat, int32_t dsub, bool qnorm)
       : qnorm_(qnorm), m_(mat.m_), n_(mat.n_),
-        codesize_(m_ * std::ceil(n_ / dsub)) {
-  codes_ = new uint8_t[codesize_];
+        codesize_(m_ * ((n_ + dsub - 1) / dsub)) {
+  if (codesize_ > 0) {
+    codes_ = new uint8_t[codesize_];
+  }
   pq_ = std::unique_ptr<ProductQuantizer>( new ProductQuantizer(n_, dsub));
   if (qnorm_) {
     norm_codes_ = new uint8_t[m_];
@@ -31,7 +32,9 @@ QMatrix::QMatrix(const Matrix& mat, int32_t dsub, bool qnorm)
 }
 
 QMatrix::~QMatrix() {
-  if (codesize_) { delete[] codes_; }
+  if (codesize_ > 0) {
+    delete[] codes_;
+  }
   if (qnorm_) { delete[] norm_codes_; }
 }
 
