@@ -376,11 +376,16 @@ void FastText::sentenceVectors() {
     int32_t count = 0;
     while(iss >> word) {
       getVector(vec, word);
-      vec.mul(1.0 / vec.norm());
-      svec.addVector(vec);
-      count++;
+      real norm = vec.norm();
+      if (norm > 0) {
+        vec.mul(1.0 / norm);
+        svec.addVector(vec);
+        count++;
+      }
     }
-    svec.mul(1.0 / count);
+    if (count > 0) {
+      svec.mul(1.0 / count);  
+    }
     std::cout << sentence << " " << svec << std::endl;
   }
 }
