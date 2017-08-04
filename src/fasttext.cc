@@ -376,11 +376,16 @@ void FastText::sentenceVectors() {
     int32_t count = 0;
     while(iss >> word) {
       getVector(vec, word);
-      vec.mul(1.0 / vec.norm());
-      svec.addVector(vec);
-      count++;
+      real norm = vec.norm();
+      if (norm > 0) {
+        vec.mul(1.0 / norm);
+        svec.addVector(vec);
+        count++;
+      }
     }
-    svec.mul(1.0 / count);
+    if (count > 0) {
+      svec.mul(1.0 / count);
+    }
     std::cout << sentence << " " << svec << std::endl;
   }
 }
@@ -430,14 +435,16 @@ void FastText::printSentenceVectors() {
 void FastText::precomputeWordVectors(Matrix& wordVectors) {
   Vector vec(args_->dim);
   wordVectors.zero();
-  std::cout << "Pre-computing word vectors...";
+  std::cerr << "Pre-computing word vectors...";
   for (int32_t i = 0; i < dict_->nwords(); i++) {
     std::string word = dict_->getWord(i);
     getVector(vec, word);
     real norm = vec.norm();
-    wordVectors.addRow(vec, i, 1.0 / norm);
+    if (norm > 0) {
+      wordVectors.addRow(vec, i, 1.0 / norm);
+    }
   }
-  std::cout << " done." << std::endl;
+  std::cerr << " done." << std::endl;
 }
 
 void FastText::findNN(const Matrix& wordVectors, const Vector& queryVec,
