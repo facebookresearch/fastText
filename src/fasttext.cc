@@ -20,8 +20,14 @@
 #include <queue>
 #include <algorithm>
 
-
 namespace fasttext {
+
+struct membuf : std::streambuf
+{
+    membuf(char* begin, char* end) {
+        this->setg(begin, begin, end);
+    }
+};
 
 FastText::FastText() : quant_(false) {}
 
@@ -135,6 +141,16 @@ void FastText::loadModel(const std::string& filename) {
   }
   loadModel(ifs);
   ifs.close();
+}
+
+void FastText::loadModel(const uint8_t* modelBytes, uint length) {
+  membuf sbuf((char*) modelBytes,(char*) (modelBytes + length));
+  std::istream ifs(&sbuf);
+  if (!checkModel(ifs)) {
+    std::cerr << "Model file has wrong file format!" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+  loadModel(ifs);
 }
 
 void FastText::loadModel(std::istream& in) {
