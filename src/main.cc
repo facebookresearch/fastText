@@ -188,13 +188,13 @@ void printSentenceVectors(int argc, char** argv) {
 }
 
 void printNgrams(int argc, char** argv) {
-  if (argc != 4) {
+  if (argc != 3) {
     printPrintNgramsUsage();
     exit(EXIT_FAILURE);
   }
   FastText fasttext;
   fasttext.loadModel(std::string(argv[2]));
-  fasttext.ngramVectors(std::string(argv[3]));
+  fasttext.ngramVectors();
   exit(0);
 }
 

@@ -390,6 +390,13 @@ void FastText::sentenceVectors() {
   }
 }
 
+void FastText::ngramVectors() {
+  std::string word;
+  while (std::cin >> word) {
+    ngramVectors(word);
+  }
+}
+
 void FastText::ngramVectors(std::string word) {
   std::vector<int32_t> ngrams;
   std::vector<std::string> substrings;
