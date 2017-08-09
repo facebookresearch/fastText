@@ -132,7 +132,7 @@ It is possible to extract the trained n-gram vectors from a previously trained m
 To retrieve the n-gram vectors for a single word, use the following command:
 
 ```
-$ echo "word" | ./fasttext print-word-vectors model.bin
+$ echo "word" | ./fasttext print-ngrams model.bin
 ```
 
 This will output all n-gram vectors of the word to the standard output, one vector per line.
