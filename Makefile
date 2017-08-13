@@ -8,7 +8,7 @@
 #
 
 CXX = c++
-CXXFLAGS = -pthread -std=c++0x
+CXXFLAGS = -pthread -std=c++0x -fPIC
 OBJS = args.o dictionary.o productquantizer.o matrix.o qmatrix.o vector.o model.o utils.o fasttext.o
 INCLUDES = -I.
 
@@ -45,8 +45,19 @@ utils.o: src/utils.cc src/utils.h
 fasttext.o: src/fasttext.cc src/*.h
 	$(CXX) $(CXXFLAGS) -c src/fasttext.cc
 
-fasttext: $(OBJS) src/fasttext.cc
+libfasttext.so: $(OBJS) src/libfasttext.cc src/*.h
+	$(CXX) $(CXXFLAGS) -shared $(OBJS) src/libfasttext.cc -o libfasttext.so
+
+fasttext: $(OBJS) libfasttext.so src/fasttext.cc
 	$(CXX) $(CXXFLAGS) $(OBJS) src/main.cc -o fasttext
 
 clean:
-	rm -rf *.o fasttext
+	rm -rf *.o *.so fasttext
+
+install:
+	cp ./libfasttext.so /usr/local/lib/
+	cp ./src/fasttext.h /usr/local/include/
+
+uninstall:
+	rm /usr/local/lib/libfasttext.so
+	rm /usr/local/include/fasttext.h
