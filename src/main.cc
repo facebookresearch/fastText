@@ -27,6 +27,7 @@ void printUsage() {
     << "  cbow                    train a cbow model\n"
     << "  print-word-vectors      print word vectors given a trained model\n"
     << "  print-sentence-vectors  print sentence vectors given a trained model\n"
+    << "  print-ngrams            print n-gram vectors given a trained model\n"
     << "  nn                      query for nearest neighbors\n"
     << "  analogies               query for analogies\n"
     << std::endl;
@@ -72,9 +73,8 @@ void printPrintSentenceVectorsUsage() {
 
 void printPrintNgramsUsage() {
   std::cerr
-    << "usage: fasttext print-ngrams <model> <word>\n\n"
+    << "usage: fasttext print-ngrams <model>\n\n"
     << "  <model>      model filename\n"
-    << "  <word>       word to print\n"
     << std::endl;
 }
 
