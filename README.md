@@ -163,6 +163,7 @@ The following arguments are mandatory:
   -thread             number of threads [12]
   -pretrainedVectors  pretrained word vectors for supervised learning []
   -saveOutput         whether output params should be saved [0]
+  -saveSoftmax        whether softmax layer params should be saved in plaintext [0]
 
   The following arguments for quantization are optional:
   -cutoff             number of words and ngrams to retain [0]
