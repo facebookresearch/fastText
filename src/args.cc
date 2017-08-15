@@ -195,7 +195,7 @@ void Args::printTrainingHelp() {
     << "  -thread             number of threads [" << thread << "]\n"
     << "  -pretrainedVectors  pretrained word vectors for supervised learning ["<< pretrainedVectors <<"]\n"
     << "  -saveOutput         whether output params should be saved [" << saveOutput << "]\n"
-    << "  -saveSoftmax        whether softmax layer params should we saved [" << saveOutput << "]\n";
+    << "  -saveSoftmax        whether softmax layer params should be saved [" << saveOutput << "]\n";
 }
 
 void Args::printQuantizationHelp() {
