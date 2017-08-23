@@ -91,7 +91,7 @@ So far, we run fastText with the default parameters, but depending on the data, 
 The most important parameters of the model are its dimension and the range of size for the subwords. The dimension (*dim*) controls the size of the vectors, the larger they are the more information they can capture but requires more data to be learned. But, if they are too large, they are harder and slower to train. By default, we use 100 dimensions, but any value in the 100-300 range is as popular. The subwords are all the substrings contained in a word between the minimum size (*nmin*) and the maximal size (*nmax*). By default, we take all the subword between 3 and 6 characters, but other range could be more appropriate to different languages:
 
 ```
-$ ./fasttext skipgram -input data/fil9 -output result/fil9 -nmin 2 -nmax 5 -dim 300
+$ ./fasttext skipgram -input data/fil9 -output result/fil9 -minn 2 -maxn 5 -dim 300
 ```
 
 Depending on the quantity of data you have, you may want to change the parameters of the training.  The *epoch* parameter controls how many time will loop over your data. By default, we loop over the dataset 5 times.  If you dataset is extremely massive, you may want to loop over it less often. Another important parameter is the learning rate -*lr*). The higher the learning rate is, the faster the model converge to a solution but at the risk of overfitting to the dataset. The default value is 0.05 which is a good compromise. If you want to play with it we suggest to stay in the range of [0.01, 1]:
