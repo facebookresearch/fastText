@@ -28,11 +28,15 @@ Dictionary::Dictionary(std::shared_ptr<Args> args) : args_(args),
   ntokens_(0) {}
 
 int32_t Dictionary::find(const std::string& w) const {
-  int32_t h = hash(w) % MAX_VOCAB_SIZE;
-  while (word2int_[h] != -1 && words_[word2int_[h]].word != w) {
-    h = (h + 1) % MAX_VOCAB_SIZE;
+  return find(w, hash(w));
+}
+
+int32_t Dictionary::find(const std::string& w, uint32_t h) const {
+  int32_t id = h % MAX_VOCAB_SIZE;
+  while (word2int_[id] != -1 && words_[word2int_[id]].word != w) {
+    id = (id + 1) % MAX_VOCAB_SIZE;
   }
-  return h;
+  return id;
 }
 
 void Dictionary::add(const std::string& w) {
@@ -100,6 +104,11 @@ bool Dictionary::discard(int32_t id, real rand) const {
   assert(id < nwords_);
   if (args_->model == model_name::sup) return false;
   return rand > pdiscard_[id];
+}
+
+int32_t Dictionary::getId(const std::string& w, uint32_t h) const {
+  int32_t id = find(w, h);
+  return word2int_[id];
 }
 
 int32_t Dictionary::getId(const std::string& w) const {
@@ -308,11 +317,11 @@ int32_t Dictionary::getLine(std::istream& in,
   int32_t ntokens = 0;
   std::string token;
   while (readWord(in, token)) {
-    int32_t h = find(token);
-    int32_t wid = word2int_[h];
+    uint32_t h = hash(token);
+    int32_t wid = getId(token, h);
     if (wid < 0) {
       entry_type type = getType(token);
-      if (type == entry_type::word) word_hashes.push_back(hash(token));
+      if (type == entry_type::word) word_hashes.push_back(h);
       continue;
     }
     entry_type type = getType(wid);
