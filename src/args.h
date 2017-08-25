@@ -13,6 +13,7 @@
 #include <istream>
 #include <ostream>
 #include <string>
+#include <vector>
 
 namespace fasttext {
 
@@ -52,7 +53,7 @@ class Args {
     size_t cutoff;
     size_t dsub;
 
-    void parseArgs(int, char**);
+    void parseArgs(const std::vector<std::string>& args);
     void printHelp();
     void printBasicHelp();
     void printDictionaryHelp();
