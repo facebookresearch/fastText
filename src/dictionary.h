@@ -39,6 +39,7 @@ class Dictionary {
     static const int32_t MAX_LINE_SIZE = 1024;
 
     int32_t find(const std::string&) const;
+    int32_t find(const std::string&, uint32_t h) const;
     void initTableDiscard();
     void initNgrams();
 
@@ -70,6 +71,7 @@ class Dictionary {
     int32_t nlabels() const;
     int64_t ntokens() const;
     int32_t getId(const std::string&) const;
+    int32_t getId(const std::string&, uint32_t h) const;
     entry_type getType(int32_t) const;
     entry_type getType(const std::string&) const;
     bool discard(int32_t, real) const;
