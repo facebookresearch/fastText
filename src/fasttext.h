@@ -84,6 +84,7 @@ class FastText {
                 const std::set<std::string>&);
     void nn(int32_t);
     void analogies(int32_t);
+    void matchVector(int32_t);
     void trainThread(int32_t);
     void train(std::shared_ptr<Args>);
 

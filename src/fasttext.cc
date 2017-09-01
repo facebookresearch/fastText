@@ -19,6 +19,7 @@
 #include <vector>
 #include <queue>
 #include <algorithm>
+#include <iterator>
 
 
 namespace fasttext {
@@ -512,6 +513,36 @@ void FastText::analogies(int32_t k) {
 
     findNN(wordVectors, query, k, banSet);
     std::cout << "Query triplet (A - B + C)? ";
+  }
+}
+
+void FastText::matchVector(int32_t k) {
+  std::string queryVectorString;
+  Vector queryVec(args_->dim);
+  Matrix wordVectors(dict_->nwords(), args_->dim);
+  precomputeWordVectors(wordVectors);
+  std::set<std::string> banSet;
+  std::cout << "Query vector?";
+  while (std::getline(std::cin, queryVectorString)) {
+    // Break the string apart into floats. We do this seperately so that we can check for validity.
+    std::vector<float> floats;
+    std::istringstream iss(queryVectorString);
+    std::copy(std::istream_iterator<float>(iss), std::istream_iterator<float>(), std::back_inserter(floats));
+
+    // Check to ensure provided vector has the correct dimensionalities
+    if (floats.size() != args_->dim) {
+      std::cerr << "The provided vector has only " << floats.size() << " dimensions, but the trained model requires vectors with " << args_->dim<< "dimensions." << std::endl;
+      exit(EXIT_FAILURE);
+    }
+
+    // Copy into fasttext vector object
+    for (uint64_t i = 0; i < args_->dim && i < floats.size(); i += 1) {
+        queryVec.data_[i] = floats[i];
+    }
+
+    // Perform nearest neighbor and print result
+    findNN(wordVectors, queryVec, k, banSet);
+    std::cout << "Query vector? ";
   }
 }
 
