@@ -53,7 +53,7 @@ class Dictionary {
     int32_t nlabels_;
     int64_t ntokens_;
 
-    int64_t pruneidx_size_ = -1;
+    int64_t pruneidx_size_;
     std::unordered_map<int32_t, int32_t> pruneidx_;
     void addWordNgrams(
         std::vector<int32_t>& line,
