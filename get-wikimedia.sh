@@ -30,7 +30,7 @@ read -r -p "Choose a language (e.g. en, bh, fr, etc.): " choice
 LANG="$choice"
 echo "Chosen language: ""$LANG"
 read -r -p "Continue to download (WARNING: This might be big and can take a long time!)(y/n)? " choice
-case "$choice" in 
+case "$choice" in
   y|Y ) echo "Starting download...";;
   n|N ) echo "Exiting";exit 1;;
   * ) echo "Invalid answer";exit 1;;
@@ -67,7 +67,7 @@ while (<>) {
     s/\[\[category:([^|\]]*)[^]]*\]\]/[[$1]]/ig;  # show categories without markup
     s/\[\[[a-z\-]*:[^\]]*\]\]//g;  # remove links to other languages
     s/\[\[[^\|\]]*\|/[[/g;  # remove wiki url, preserve visible text
-    s/{{[^}]*}}//g;         # remove {{icons}} and {tables}
+    s/{\{[^}]*}}//g;         # remove {{icons}} and {tables}
     s/{[^}]*}//g;
     s/\[//g;                # remove [ and ]
     s/\]//g;
@@ -77,4 +77,4 @@ while (<>) {
     print $_;
   }
 }
-' | normalize_text | awk '{if (NF>1) print;}' | tr -s " " | shuf > "${ROOT}"/wiki."${LANG}".txt 
+' | normalize_text | awk '{if (NF>1) print;}' | tr -s " " | shuf > "${ROOT}"/wiki."${LANG}".txt
