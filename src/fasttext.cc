@@ -29,7 +29,11 @@ void FastText::getVector(Vector& vec, const std::string& word) const {
   const std::vector<int32_t>& ngrams = dict_->getSubwords(word);
   vec.zero();
   for (auto it = ngrams.begin(); it != ngrams.end(); ++it) {
-    vec.addRow(*input_, *it);
+    if (quant_) {
+      vec.addRow(*qinput_, *it);
+    } else {
+      vec.addRow(*input_, *it);
+    }
   }
   if (ngrams.size() > 0) {
     vec.mul(1.0 / ngrams.size());
@@ -57,6 +61,11 @@ void FastText::saveOutput() {
   if (!ofs.is_open()) {
     std::cerr << "Error opening file for saving vectors." << std::endl;
     exit(EXIT_FAILURE);
+  }
+  if (quant_) {
+    std::cerr << "Option -saveOutput is not supported for quantized models."
+              << std::endl;
+    return;
   }
   ofs << dict_->nwords() << " " << args_->dim << std::endl;
   Vector vec(args_->dim);
@@ -398,7 +407,11 @@ void FastText::ngramVectors(std::string word) {
   for (int32_t i = 0; i < ngrams.size(); i++) {
     vec.zero();
     if (ngrams[i] >= 0) {
-      vec.addRow(*input_, ngrams[i]);
+      if (quant_) {
+        vec.addRow(*qinput_, ngrams[i]);
+      } else {
+        vec.addRow(*input_, ngrams[i]);
+      }
     }
     std::cout << substrings[i] << " " << vec << std::endl;
   }
@@ -411,7 +424,11 @@ void FastText::textVectors() {
     dict_->getLine(std::cin, line, labels, model_->rng);
     vec.zero();
     for (auto it = line.cbegin(); it != line.cend(); ++it) {
-      vec.addRow(*input_, *it);
+      if (quant_) {
+        vec.addRow(*qinput_, *it);
+      } else {
+        vec.addRow(*input_, *it);
+      }
     }
     if (!line.empty()) {
       vec.mul(1.0 / line.size());
