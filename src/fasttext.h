@@ -54,6 +54,7 @@ class FastText {
     FastText();
 
     void getVector(Vector&, const std::string&) const;
+    std::shared_ptr<const Dictionary> getDictionary() const;
     void saveVectors();
     void saveOutput();
     void saveModel();
