@@ -67,10 +67,13 @@ void FastText::saveOutput() {
               << std::endl;
     return;
   }
-  ofs << dict_->nwords() << " " << args_->dim << std::endl;
+  int32_t n = (args_->model == model_name::sup) ? dict_->nlabels()
+                                                : dict_->nwords();
+  ofs << n << " " << args_->dim << std::endl;
   Vector vec(args_->dim);
-  for (int32_t i = 0; i < dict_->nwords(); i++) {
-    std::string word = dict_->getWord(i);
+  for (int32_t i = 0; i < n; i++) {
+    std::string word = (args_->model == model_name::sup) ? dict_->getLabel(i)
+                                                         : dict_->getWord(i);
     vec.zero();
     vec.addRow(*output_, i);
     ofs << word << " " << vec << std::endl;
