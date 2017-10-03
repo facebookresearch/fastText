@@ -83,13 +83,12 @@ void FastText::saveOutput() {
 
 bool FastText::checkModel(std::istream& in) {
   int32_t magic;
-  int32_t version;
   in.read((char*)&(magic), sizeof(int32_t));
   if (magic != FASTTEXT_FILEFORMAT_MAGIC_INT32) {
     return false;
   }
   in.read((char*)&(version), sizeof(int32_t));
-  if (version != FASTTEXT_VERSION) {
+  if (version > FASTTEXT_VERSION) {
     return false;
   }
   return true;
@@ -157,7 +156,10 @@ void FastText::loadModel(std::istream& in) {
   qinput_ = std::make_shared<QMatrix>();
   qoutput_ = std::make_shared<QMatrix>();
   args_->load(in);
-
+  if (version == 11 && args_->model == model_name::sup) {
+    // backward compatibility: old supervised models do not use char ngrams.
+    args_->maxn = 0;
+  }
   dict_->load(in);
 
   bool quant_input;
@@ -246,6 +248,7 @@ void FastText::quantize(std::shared_ptr<Args> qargs) {
       args_->verbose = qargs->verbose;
       start = clock();
       tokenCount = 0;
+      start = clock();
       std::vector<std::thread> threads;
       for (int32_t i = 0; i < args_->thread; i++) {
         threads.push_back(std::thread([=]() { trainThread(i); }));
@@ -337,6 +340,7 @@ void FastText::predict(std::istream& in, int32_t k,
   std::vector<int32_t> words, labels;
   predictions.clear();
   dict_->getLine(in, words, labels, model_->rng);
+  predictions.clear();
   if (words.empty()) return;
   Vector hidden(args_->dim);
   Vector output(dict_->nlabels());
@@ -350,6 +354,7 @@ void FastText::predict(std::istream& in, int32_t k,
 void FastText::predict(std::istream& in, int32_t k, bool print_prob) {
   std::vector<std::pair<real,std::string>> predictions;
   while (in.peek() != EOF) {
+    predictions.clear();
     predict(in, k, predictions);
     if (predictions.empty()) {
       std::cout << std::endl;
@@ -556,12 +561,14 @@ void FastText::trainThread(int32_t threadId) {
   while (tokenCount < args_->epoch * ntokens) {
     real progress = real(tokenCount) / (args_->epoch * ntokens);
     real lr = args_->lr * (1.0 - progress);
-    localTokenCount += dict_->getLine(ifs, line, labels, model.rng);
     if (args_->model == model_name::sup) {
+      localTokenCount += dict_->getLine(ifs, line, labels, model.rng);
       supervised(model, lr, line, labels);
     } else if (args_->model == model_name::cbow) {
+      localTokenCount += dict_->getLine(ifs, line, model.rng);
       cbow(model, lr, line);
     } else if (args_->model == model_name::sg) {
+      localTokenCount += dict_->getLine(ifs, line, model.rng);
       skipgram(model, lr, line);
     }
     if (localTokenCount > args_->lrUpdateRate) {
