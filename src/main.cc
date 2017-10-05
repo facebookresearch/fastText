@@ -82,7 +82,7 @@ void quantize(const std::vector<std::string>& args) {
   std::shared_ptr<Args> a = std::make_shared<Args>();
   if (args.size() < 3) {
     printQuantizeUsage();
-    a->printHelp();
+    a->printHelp(1);
     exit(EXIT_FAILURE);
   }
   a->parseArgs(args);

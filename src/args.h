@@ -57,8 +57,8 @@ class Args {
     size_t dsub;
 
     void parseArgs(const std::vector<std::string>& args);
-    void printHelp();
-    void printBasicHelp();
+    void printHelp(int = 0);
+    void printBasicHelp(int);
     void printDictionaryHelp();
     void printTrainingHelp();
     void printQuantizationHelp();
