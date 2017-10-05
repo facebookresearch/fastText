@@ -220,10 +220,14 @@ std::vector<int32_t> FastText::selectEmbeddings(int32_t cutoff) const {
 }
 
 void FastText::quantize(std::shared_ptr<Args> qargs) {
-  if (qargs->output.empty()) {
+  if (qargs->input.empty()) {
       std::cerr<<"No model provided!"<<std::endl; exit(1);
   }
-  loadModel(qargs->output + ".bin");
+  if (qargs->output.empty()) {
+    qargs->output = qargs->input;
+  }
+
+  loadModel(qargs->input + ".bin");
 
   args_->input = qargs->input;
   args_->qout = qargs->qout;

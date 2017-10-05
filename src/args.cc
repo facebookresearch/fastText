@@ -170,13 +170,13 @@ void Args::printHelp(int option) {
 
 void Args::printBasicHelp(int option) {
   std::cerr
-    << "\nThe following arguments are mandatory:\n";
+    << "\nThe following arguments are mandatory:\n"
+    << "  -input              training file path\n";
   if (option == 0) {
     std::cerr
-      << "  -input              training file path\n";
+      << "  -output             output file path\n";
   }
   std::cerr
-    << "  -output             output file path\n"
     << "\nThe following arguments are optional:\n"
     << "  -verbose            verbosity level [" << verbose << "]\n";
 }
