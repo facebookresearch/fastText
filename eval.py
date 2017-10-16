@@ -40,6 +40,8 @@ for i, line in enumerate(fin):
         tab = compat_splitting(line)
         vec = np.array(tab[1:], dtype=float)
         word = tab[0]
+        if np.linalg.norm(vec) == 0:
+            continue
         if not word in vectors:
             vectors[word] = vec
     except ValueError:

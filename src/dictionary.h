@@ -39,8 +39,12 @@ class Dictionary {
     static const int32_t MAX_LINE_SIZE = 1024;
 
     int32_t find(const std::string&) const;
+    int32_t find(const std::string&, uint32_t h) const;
     void initTableDiscard();
     void initNgrams();
+    void reset(std::istream&) const;
+    void pushHash(std::vector<int32_t>&, int32_t) const;
+    void addSubwords(std::vector<int32_t>&, const std::string&, int32_t) const;
 
     std::shared_ptr<Args> args_;
     std::vector<int32_t> word2int_;
@@ -52,7 +56,7 @@ class Dictionary {
     int32_t nlabels_;
     int64_t ntokens_;
 
-    int64_t pruneidx_size_ = -1;
+    int64_t pruneidx_size_;
     std::unordered_map<int32_t, int32_t> pruneidx_;
     void addWordNgrams(
         std::vector<int32_t>& line,
@@ -70,6 +74,7 @@ class Dictionary {
     int32_t nlabels() const;
     int64_t ntokens() const;
     int32_t getId(const std::string&) const;
+    int32_t getId(const std::string&, uint32_t h) const;
     entry_type getType(int32_t) const;
     entry_type getType(const std::string&) const;
     bool discard(int32_t, real) const;
@@ -93,10 +98,10 @@ class Dictionary {
     void save(std::ostream&) const;
     void load(std::istream&);
     std::vector<int64_t> getCounts(entry_type) const;
-    int32_t getLine(std::istream&, std::vector<int32_t>&, std::vector<int32_t>&,
-                    std::vector<int32_t>&, std::minstd_rand&) const;
     int32_t getLine(std::istream&, std::vector<int32_t>&,
                     std::vector<int32_t>&, std::minstd_rand&) const;
+    int32_t getLine(std::istream&, std::vector<int32_t>&,
+                    std::minstd_rand&) const;
     void threshold(int64_t, int64_t);
     void prune(std::vector<int32_t>&);
 };
