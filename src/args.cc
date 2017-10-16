@@ -44,6 +44,18 @@ Args::Args() {
   dsub = 2;
 }
 
+std::string Args::lossToString(loss_name ln) {
+  switch (ln) {
+    case loss_name::hs:
+      return "hs";
+    case loss_name::ns:
+      return "ns";
+    case loss_name::softmax:
+      return "softmax";
+  }
+  return "Unknown loss!"; // should never happen
+}
+
 void Args::parseArgs(const std::vector<std::string>& args) {
   std::string command(args[1]);
   if (command == "supervised") {
@@ -187,7 +199,7 @@ void Args::printTrainingHelp() {
     << "  -ws                 size of the context window [" << ws << "]\n"
     << "  -epoch              number of epochs [" << epoch << "]\n"
     << "  -neg                number of negatives sampled [" << neg << "]\n"
-    << "  -loss               loss function {ns, hs, softmax} [ns]\n"
+    << "  -loss               loss function {ns, hs, softmax} [" << lossToString(loss) << "]\n"
     << "  -thread             number of threads [" << thread << "]\n"
     << "  -pretrainedVectors  pretrained word vectors for supervised learning ["<< pretrainedVectors <<"]\n"
     << "  -saveOutput         whether output params should be saved [" << saveOutput << "]\n";
