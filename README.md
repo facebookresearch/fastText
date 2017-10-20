@@ -132,6 +132,26 @@ $ ./fasttext test model.ftz test.txt
 The quantization procedure follows the steps described in [3](#fastext-zip). You can
 run the script `quantization-example.sh` for an example.
 
+### Obtaining n-gram vectors
+
+It is possible to extract the trained n-gram vectors from a previously trained model.
+To retrieve the n-gram vectors for a single word, use the following command:
+
+```
+$ echo "word" | ./fasttext print-ngrams model.bin
+```
+
+This will output all n-gram vectors of the word to the standard output, one vector per line.
+This can also be used with a input file where each line contains one word:
+
+```
+$ cat queries.txt | ./fasttext print-ngrams model.bin
+```
+
+To extract all n-grams from a model:
+```
+$ cat model.vec | cut -d' ' -f 1 | sed 1d | ./fasttext print-ngrams model.bin | sort | uniq
+```
 
 ## Full documentation
 
