@@ -29,6 +29,7 @@ void printUsage() {
     << "  print-sentence-vectors  print sentence vectors given a trained model\n"
     << "  nn                      query for nearest neighbors\n"
     << "  analogies               query for analogies\n"
+    << "  match-vector            query for the nearest words to a vector\n"
     << std::endl;
 }
 
@@ -102,6 +103,14 @@ void printNNUsage() {
 void printAnalogiesUsage() {
   std::cout
     << "usage: fasttext analogies <model> <k>\n\n"
+    << "  <model>      model filename\n"
+    << "  <k>          (optional; 10 by default) predict top k labels\n"
+    << std::endl;
+}
+
+void printMatchVectorUsage() {
+  std::cout
+    << "usage: fasttext match-word <model> <k>\n\n"
     << "  <model>      model filename\n"
     << "  <k>          (optional; 10 by default) predict top k labels\n"
     << std::endl;
@@ -230,6 +239,22 @@ void analogies(const std::vector<std::string> args) {
   exit(0);
 }
 
+void matchVector(const std::vector<std::string> args) {
+  int32_t k;
+  if (args.size() == 3) {
+    k = 10;
+  } else if (args.size() == 4) {
+    k = std::stoi(args[3]);
+  } else {
+    printMatchVectorUsage();
+    exit(EXIT_FAILURE);
+  }
+  FastText fasttext;
+  fasttext.loadModel(std::string(args[2]));
+  fasttext.matchVector(k);
+  exit(0);
+}
+
 void train(const std::vector<std::string> args) {
   std::shared_ptr<Args> a = std::make_shared<Args>();
   a->parseArgs(args);
@@ -260,6 +285,8 @@ int main(int argc, char** argv) {
     nn(args);
   } else if (command == "analogies") {
     analogies(args);
+  } else if (command == "match-vector") {
+    matchVector(args);
   } else if (command == "predict" || command == "predict-prob" ) {
     predict(args);
   } else {
