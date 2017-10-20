@@ -49,6 +49,7 @@ class Args {
     int verbose;
     std::string pretrainedVectors;
     int saveOutput;
+    int saveSoftmax;
 
     bool qout;
     bool retrain;

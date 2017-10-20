@@ -58,6 +58,7 @@ class FastText {
     std::shared_ptr<const Dictionary> getDictionary() const;
     void saveVectors();
     void saveOutput();
+    void saveSoftmaxWeights();
     void saveModel();
     void loadModel(std::istream&);
     void loadModel(const std::string&);
