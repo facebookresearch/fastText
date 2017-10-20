@@ -104,6 +104,7 @@ class Dictionary {
                     std::minstd_rand&) const;
     void threshold(int64_t, int64_t);
     void prune(std::vector<int32_t>&);
+    bool isPruned() { return pruneidx_size_ >= 0; }
 };
 
 }

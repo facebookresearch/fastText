@@ -171,6 +171,13 @@ void FastText::loadModel(std::istream& in) {
     input_->load(in);
   }
 
+  if (!quant_input && dict_->isPruned()) {
+    std::cerr << "Invalid model file.\n"
+              << "Please download the updated model from www.fasttext.cc.\n"
+              << "See issue #332 on Github for more information.\n";
+    exit(1);
+  }
+
   in.read((char*) &args_->qout, sizeof(bool));
   if (quant_ && args_->qout) {
     qoutput_->load(in);
@@ -221,7 +228,8 @@ std::vector<int32_t> FastText::selectEmbeddings(int32_t cutoff) const {
 
 void FastText::quantize(std::shared_ptr<Args> qargs) {
   if (qargs->output.empty()) {
-      std::cerr<<"No model provided!"<<std::endl; exit(1);
+    std::cerr<<"No model provided!"<<std::endl;
+    exit(1);
   }
   loadModel(qargs->output + ".bin");
 
