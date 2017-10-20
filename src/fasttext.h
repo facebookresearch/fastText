@@ -15,6 +15,8 @@
 
 #include <time.h>
 
+#ifdef __cplusplus
+
 #include <atomic>
 #include <memory>
 #include <set>
@@ -94,4 +96,40 @@ class FastText {
 };
 
 }
-#endif
+
+extern "C" {
+#endif /* __cplusplus */
+
+#ifndef FASTTEXT_API
+#   if defined(_WIN32) || defined(_WIN64)
+#       define FASTTEXT_API __declspec(dllimport)
+#   else
+#       define FASTTEXT_API extern
+#   endif /* defined(_WIN32) || defined(_WIN64) */
+#endif /* FASTTEXT_API */
+
+#define FASTTEXT_TRUE           (1)
+#define FASTTEXT_FALSE          (0)
+
+FASTTEXT_API int FastTextTest(const char* filename, const char* word, const int k, char* result);
+FASTTEXT_API int FastTextPredict(const char* filename, const char* word, const int k, char* result);
+FASTTEXT_API int FastTextPredictProb(const char* filename, const char* word, const int k, char* result);
+FASTTEXT_API int FastTextPrintWordVectors(const char* filename, const char* word, char* result);
+FASTTEXT_API int FastTextPrintSentenceVectors(const char* filename, const char* word, char* result);
+FASTTEXT_API int FastTextPrintNgrams(const char* filename, const char* word, char* result);
+FASTTEXT_API int FastTextNN(const char* filename, const int k, char* result);
+FASTTEXT_API int FastTextAnalogies(const char* filename, const int k, char* result);
+FASTTEXT_API int FastTextTrain(int argc, char** argv);
+
+FASTTEXT_API int FastTextSupervised(const char* inputfile, const char* outputfile, const int dim,
+                                    const double lr, const int wordNgrams, const int minCount, const int bucket);
+FASTTEXT_API int FastTextSkipgram(const char* inputfile, const char* outputfile, const int dim,
+                                  const double lr, const int wordNgrams, const int minCount, const int bucket);
+FASTTEXT_API int FastTextCbow(const char* inputfile, const char* outputfile, const int dim,
+                              const double lr, const int wordNgrams, const int minCount, const int bucket);
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
+#endif /* FASTTEXT_FASTTEXT_H */
