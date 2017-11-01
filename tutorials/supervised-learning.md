@@ -31,14 +31,17 @@ Running the binary without any argument will print the high level documentation,
 usage: fasttext <command> <args>
 
 The commands supported by fasttext are:
-
-supervised     train a supervised classifier
-test           evaluate a supervised classifier
-predict        predict most likely labels
-predict-prob   predict most likely labels with probabilities
-skipgram       train a skipgram model
-cbow           train a cbow model
-print-vectors  print vectors given a trained model
+  supervised              train a supervised classifier
+  quantize                quantize a model to reduce the memory usage
+  test                    evaluate a supervised classifier
+  predict                 predict most likely labels
+  predict-prob            predict most likely labels with probabilities
+  skipgram                train a skipgram model
+  cbow                    train a cbow model
+  print-word-vectors      print word vectors given a trained model
+  print-sentence-vectors  print sentence vectors given a trained model
+  nn                      query for nearest neighbors
+  analogies               query for analogies
 ```
 
 In this tutorial, we mainly use the `supervised`, `test` and `predict` subcommands, which corresponds to learning (and using) text classifier. For an introduction to the other functionalities of fastText, please see the [tutorial about learning word vectors](https://github.com/facebookresearch/fastText/blob/master/tutorials/unsupervised-learning.md).
