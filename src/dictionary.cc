@@ -92,9 +92,6 @@ void Dictionary::getSubwords(const std::string& word,
   if (i >= 0) {
     ngrams.push_back(i);
     substrings.push_back(words_[i].word);
-  } else {
-    ngrams.push_back(-1);
-    substrings.push_back(word);
   }
   computeSubwords(BOW + word + EOW, ngrams, substrings);
 }
@@ -382,8 +379,10 @@ void Dictionary::pushHash(std::vector<int32_t>& hashes, int32_t id) const {
 }
 
 std::string Dictionary::getLabel(int32_t lid) const {
-  assert(lid >= 0);
-  assert(lid < nlabels_);
+  if (lid < 0 || lid >= nlabels_) {
+    throw std::invalid_argument(
+        "Label id is out of range [0, " + std::to_string(nlabels_) + "]");
+  }
   return words_[lid + nwords_].word;
 }
 

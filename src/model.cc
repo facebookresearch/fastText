@@ -140,7 +140,12 @@ bool Model::comparePairs(const std::pair<real, int32_t> &l,
 void Model::predict(const std::vector<int32_t>& input, int32_t k,
                     std::vector<std::pair<real, int32_t>>& heap,
                     Vector& hidden, Vector& output) const {
-  assert(k > 0);
+  if (k <= 0) {
+    throw std::invalid_argument("k needs to be 1 or higher!");
+  }
+  if (args_->model != model_name::sup) {
+    throw std::invalid_argument("Model needs to be supervised for prediction!");
+  }
   heap.reserve(k + 1);
   computeHidden(input, hidden);
   if (args_->loss == loss_name::hs) {
