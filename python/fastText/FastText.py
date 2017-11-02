@@ -63,7 +63,7 @@ class _FastText():
                 "predict processes one line at a time (remove \'\\n\')"
             )
         text += "\n"
-        dim = self.f.get_dimension()
+        dim = self.get_dimension()
         b = fasttext.Vector(dim)
         self.f.getSentenceVector(b, text)
         return np.array(b)
