@@ -92,7 +92,7 @@ PYBIND11_MODULE(fasttext_pybind, m) {
             py::format_descriptor<fasttext::real>::format(),
             2,
             {m.m_, m.n_},
-            {sizeof(fasttext::real) * m.n_, sizeof(fasttext::real)});
+            {sizeof(fasttext::real) * m.n_, sizeof(fasttext::real) * (int64_t)1});
       });
 
   py::class_<fasttext::FastText>(m, "fasttext")

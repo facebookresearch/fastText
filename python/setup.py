@@ -41,7 +41,7 @@ fasttext_src_files = os.listdir(FASTTEXT_SRC)
 fasttext_src_cc = list(filter(lambda x: x.endswith('.cc'), fasttext_src_files))
 
 fasttext_src_cc = list(
-    map(lambda x: os.path.join(FASTTEXT_SRC, x), fasttext_src_cc)
+    map(lambda x: str(os.path.join(FASTTEXT_SRC, x)), fasttext_src_cc)
 )
 
 ext_modules = [
@@ -133,6 +133,6 @@ setup(
     license='BSD',
     install_requires=['pybind11>=2.2'],
     cmdclass={'build_ext': BuildExt},
-    packages=['fastText'],
+    packages=[str('fastText')],
     zip_safe=False
 )

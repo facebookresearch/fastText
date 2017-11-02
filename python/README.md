@@ -91,8 +91,8 @@ for w in words:
 Training a model is easy. For example
 
 ```
-from fastTextpy import train_supervised
-from fastTextpy import train_unsupervised
+from fastText import train_supervised
+from fastText import train_unsupervised
 
 model_unsup = train_unsupervised(
     input=<data>,
@@ -116,9 +116,20 @@ To get extended help on these functions use the python help functions.
 For example
 
 ```
-Help on function train_unsupervised in module fastTextpy.FastText:
+Help on function train_unsupervised in module fastText.FastText:
 
-train_unsupervised(input, output=u'model', model=model_name.skipgram, lr=0.05, dim=100, ws=5, epoch=5, minCount=5, minCountLabel=0, minn=3, maxn=6, neg=5, wordNgrams=1, loss=loss_name.ns, bucket=2000000, thread=12, lrUpdateRate=100, t=0.0001, label=u'__label__', verbose=2, pretrainedVectors=u'', saveOutput=0)
+train_unsupervised(input, model=u'skipgram', lr=0.05, dim=100, ws=5, epoch=5, minCount=5, minCountLabel=0, minn=3, maxn=6, neg=5, wordNgrams=1, loss=u'ns', bucket=2000000, thread=12, lrUpdateRate=100, t=0.0001, label=u'__label__', verbose=2, pretrainedVectors=u'', saveOutput=0)
+    Train an unsupervised model and return a model object.
+
+    input must be a filepath. The input text does not need to be tokenized
+    as per the tokenize function, but it must be preprocessed and encoded
+    as UTF-8. You might want to consult standard preprocessing scripts such
+    as tokenizer.perl mentioned here: http://www.statmt.org/wmt07/baseline.html
+
+    The input fiel must not contain any labels or use the specified label prefix
+    unless it is ok for those words to be ignored. For an example consult the
+    dataset pulled by the example script word-vector-example.sh, which is
+    part of the fastText repository.
 ```
 
 ## Processing data
@@ -127,14 +138,14 @@ You can tokenize using the fastText Dictionary method readWord.
 
 This will give you a list of tokens split on the same whitespace characters that fastText splits on.
 
-It will also add the EOS character as necessary, which is exposed via fastTextpy.EOS
+It will also add the EOS character as necessary, which is exposed via fastText.EOS
 
 Then resulting text is then stored entirely in memory.
 
 For example:
 
 ```
-from fastTextpy import tokenize
+from fastText import tokenize
 with open(<PATH>, 'r') as f:
     tokens = tokenize(f.read())
 ```
