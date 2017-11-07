@@ -28,8 +28,6 @@
 #include "utils.h"
 #include "vector.h"
 
-#pragma message("getVector is being deprecated and replaced by getWordVector.")
-
 namespace fasttext {
 
 class FastText {
@@ -60,6 +58,8 @@ class FastText {
 
   int32_t getWordId(const std::string&) const;
   int32_t getSubwordId(const std::string&) const;
+  FASTTEXT_DEPRECATED(
+    "getVector is being deprecated and replaced by getWordVector.")
   void getVector(Vector&, const std::string&) const;
   void getWordVector(Vector&, const std::string&) const;
   void getSubwordVector(Vector&, const std::string&) const;
