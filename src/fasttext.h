@@ -31,7 +31,7 @@
 namespace fasttext {
 
 class FastText {
- private:
+ protected:
   std::shared_ptr<Args> args_;
   std::shared_ptr<Dictionary> dict_;
 
