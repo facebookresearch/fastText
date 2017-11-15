@@ -269,6 +269,8 @@ def train_supervised(
     epoch=5,
     minCount=1,
     minCountLabel=0,
+    minn=0,
+    maxn=0,
     neg=5,
     wordNgrams=1,
     loss="softmax",
@@ -293,8 +295,6 @@ def train_supervised(
     example consult the example datasets which are part of the fastText
     repository such as the dataset pulled by classification-example.sh.
     """
-    minn = 0
-    maxn = 0
     model = "supervised"
     a = _build_args(locals())
     ft = _FastText()
