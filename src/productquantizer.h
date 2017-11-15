@@ -22,7 +22,7 @@
 namespace fasttext {
 
 class ProductQuantizer {
-  private:
+  protected:
     const int32_t nbits_ = 8;
     const int32_t ksub_ = 1 << nbits_;
     const int32_t max_points_per_cluster_ = 256;

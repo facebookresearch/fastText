@@ -36,7 +36,7 @@ struct Node {
 };
 
 class Model {
-  private:
+  protected:
     std::shared_ptr<Matrix> wi_;
     std::shared_ptr<Matrix> wo_;
     std::shared_ptr<QMatrix> qwi_;
