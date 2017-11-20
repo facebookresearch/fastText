@@ -27,7 +27,7 @@
 namespace fasttext {
 
 class QMatrix {
-  private:
+  protected:
     std::unique_ptr<ProductQuantizer> pq_;
     std::unique_ptr<ProductQuantizer> npq_;
 

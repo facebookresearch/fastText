@@ -34,7 +34,7 @@ struct entry {
 };
 
 class Dictionary {
-  private:
+  protected:
     static const int32_t MAX_VOCAB_SIZE = 30000000;
     static const int32_t MAX_LINE_SIZE = 1024;
 

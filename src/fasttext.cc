@@ -20,6 +20,7 @@
 #include <queue>
 #include <algorithm>
 #include <stdexcept>
+#include <numeric>
 
 
 namespace fasttext {
@@ -665,7 +666,11 @@ void FastText::train(std::shared_ptr<Args> args) {
   output_->zero();
   startThreads();
   model_ = std::make_shared<Model>(input_, output_, args_, 0);
-
+  if (args_->model == model_name::sup) {
+    model_->setTargetCounts(dict_->getCounts(entry_type::label));
+  } else {
+    model_->setTargetCounts(dict_->getCounts(entry_type::word));
+  }
 }
 
 void FastText::startThreads() {
