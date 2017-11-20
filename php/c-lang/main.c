@@ -6,7 +6,7 @@
 int main(int argc, char **argv)
 {
 #if 0
-    const char* filename = "/home/yujiro/php/twitter/result/dj2.bin";
+    const char* filename = "./result/dj2.bin";
     const char* word = "イベント";
     int k=10;
 
@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 #endif
 
 #if 0
-    const char* filename = "/home/yujiro/php/twitter/result/wvec.bin";
+    const char* filename = "./result/wvec.bin";
     const char* word = "ピント";
     int k=10;
 
@@ -48,7 +48,7 @@ int main(int argc, char **argv)
 #endif
 
 #if 1
-    const char* filename = "/home/yujiro/php/twitter/result/wvec.bin";
+    const char* filename = "./result/wvec.bin";
     const char* word = "イベント + ピンク - オフホワイト";
     int k=10;
 
