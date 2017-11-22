@@ -10,7 +10,7 @@ We also provide a [cheatsheet](https://fasttext.cc/docs/en/cheatsheet.html#conte
 
 ## Requirements
 
-**fastText** builds on modern Mac OS and Linux distributions.
+**fastText** builds on modern Mac OS and Linux distributions. An unofficial build for Windows is also available.
 Since it uses C++11 features, it requires a compiler with good C++11 support.
 These include :
 
@@ -34,6 +34,10 @@ $ make
 
 This will produce object files for all the classes as well as the main binary `fasttext`.
 If you do not plan on using the default system-wide compiler, update the two macros defined at the beginning of the Makefile (CC and INCLUDES).
+
+## Running on Windows
+
+An unofficial binary build for Windows can be found [here](http://cs.mcgill.ca/~mxia3/FastText-for-Windows/).
 
 ## Example use cases
 
