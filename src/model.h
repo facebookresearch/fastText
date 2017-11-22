@@ -99,6 +99,7 @@ class Model {
     real getLoss() const;
     real sigmoid(real) const;
     real log(real) const;
+    real std_log(real) const;
 
     std::minstd_rand rng;
     bool quant_;

@@ -410,7 +410,7 @@ void FastText::predict(std::istream& in, int32_t k, bool print_prob) {
       }
       std::cout << it->second;
       if (print_prob) {
-        std::cout << " " << exp(it->first);
+        std::cout << " " << std::exp(it->first);
       }
     }
     std::cout << std::endl;

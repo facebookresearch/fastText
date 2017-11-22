@@ -165,10 +165,10 @@ void Model::findKBest(int32_t k, std::vector<std::pair<real, int32_t>>& heap,
                       Vector& hidden, Vector& output) const {
   computeOutputSoftmax(hidden, output);
   for (int32_t i = 0; i < osz_; i++) {
-    if (heap.size() == k && log(output[i]) < heap.front().first) {
+    if (heap.size() == k && std_log(output[i]) < heap.front().first) {
       continue;
     }
-    heap.push_back(std::make_pair(log(output[i]), i));
+    heap.push_back(std::make_pair(std_log(output[i]), i));
     std::push_heap(heap.begin(), heap.end(), comparePairs);
     if (heap.size() > k) {
       std::pop_heap(heap.begin(), heap.end(), comparePairs);
@@ -196,13 +196,14 @@ void Model::dfs(int32_t k, int32_t node, real score,
 
   real f;
   if (quant_ && args_->qout) {
-    f= sigmoid(qwo_->dotRow(hidden, node - osz_));
+    f= qwo_->dotRow(hidden, node - osz_);
   } else {
-    f= sigmoid(wo_->dotRow(hidden, node - osz_));
+    f= wo_->dotRow(hidden, node - osz_);
   }
+  f = 1. / (1 + std::exp(f));
 
-  dfs(k, tree[node].left, score + log(1.0 - f), heap, hidden);
-  dfs(k, tree[node].right, score + log(f), heap, hidden);
+  dfs(k, tree[node].left, score + std_log(1.0 - f), heap, hidden);
+  dfs(k, tree[node].right, score + std_log(f), heap, hidden);
 }
 
 void Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
@@ -330,6 +331,10 @@ real Model::log(real x) const {
   }
   int i = int(x * LOG_TABLE_SIZE);
   return t_log[i];
+}
+
+real Model::std_log(real x) const {
+  return std::log(x+1e-5);
 }
 
 real Model::sigmoid(real x) const {
