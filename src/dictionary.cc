@@ -189,7 +189,7 @@ void Dictionary::initNgrams() {
 
 bool Dictionary::readWord(std::istream& in, std::string& word) const
 {
-  char c;
+  signed char c;
   std::streambuf& sb = *in.rdbuf();
   word.clear();
   while ((c = sb.sbumpc()) != EOF) {
