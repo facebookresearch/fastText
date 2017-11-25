@@ -200,7 +200,7 @@ void Model::dfs(int32_t k, int32_t node, real score,
   } else {
     f= wo_->dotRow(hidden, node - osz_);
   }
-  f = 1. / (1 + std::exp(f));
+  f = 1. / (1 + std::exp(-f));
 
   dfs(k, tree[node].left, score + std_log(1.0 - f), heap, hidden);
   dfs(k, tree[node].right, score + std_log(f), heap, hidden);
