@@ -29,7 +29,7 @@ $ perl wikifil.pl data/enwik9 > data/fil9
 We can check the file by running the following command:
 
 ```
-$ head -c 80 data/text9
+$ head -c 80 data/fil9
 anarchism originated as a term of abuse first used against early working class
 ```
 
