@@ -35,6 +35,7 @@ In order to build `fastText`, use the following:
 ```
 $ git clone https://github.com/facebookresearch/fastText.git
 $ cd fastText
+$ cd python
 $ make
 ```
 
