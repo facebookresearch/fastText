@@ -86,8 +86,8 @@ void FastText::getSubwordVector(Vector& vec, const std::string& subword)
 void FastText::saveVectors() {
   std::ofstream ofs(args_->output + ".vec");
   if (!ofs.is_open()) {
-    std::cerr << "Error opening file for saving vectors." << std::endl;
-    exit(EXIT_FAILURE);
+    throw std::invalid_argument(
+        args_->output + ".vec" + " cannot be opened for saving vectors!");
   }
   ofs << dict_->nwords() << " " << args_->dim << std::endl;
   Vector vec(args_->dim);
@@ -102,13 +102,12 @@ void FastText::saveVectors() {
 void FastText::saveOutput() {
   std::ofstream ofs(args_->output + ".output");
   if (!ofs.is_open()) {
-    std::cerr << "Error opening file for saving vectors." << std::endl;
-    exit(EXIT_FAILURE);
+    throw std::invalid_argument(
+        args_->output + ".output" + " cannot be opened for saving vectors!");
   }
   if (quant_) {
-    std::cerr << "Option -saveOutput is not supported for quantized models."
-              << std::endl;
-    return;
+    throw std::invalid_argument(
+        "Option -saveOutput is not supported for quantized models.");
   }
   int32_t n = (args_->model == model_name::sup) ? dict_->nlabels()
                                                 : dict_->nwords();
@@ -216,10 +215,10 @@ void FastText::loadModel(std::istream& in) {
   }
 
   if (!quant_input && dict_->isPruned()) {
-    std::cerr << "Invalid model file.\n"
-              << "Please download the updated model from www.fasttext.cc.\n"
-              << "See issue #332 on Github for more information.\n";
-    exit(1);
+    throw std::invalid_argument(
+        "Invalid model file.\n"
+        "Please download the updated model from www.fasttext.cc.\n"
+        "See issue #332 on Github for more information.\n");
   }
 
   in.read((char*) &args_->qout, sizeof(bool));
@@ -601,14 +600,13 @@ void FastText::loadVectors(std::string filename) {
   std::shared_ptr<Matrix> mat; // temp. matrix for pretrained vectors
   int64_t n, dim;
   if (!in.is_open()) {
-    std::cerr << "Pretrained vectors file cannot be opened!" << std::endl;
-    exit(EXIT_FAILURE);
+    throw std::invalid_argument(filename + " cannot be opened for loading!");
   }
   in >> n >> dim;
   if (dim != args_->dim) {
-    std::cerr << "Dimension of pretrained vectors does not match -dim option"
-              << std::endl;
-    exit(EXIT_FAILURE);
+    throw std::invalid_argument(
+        "Dimension of pretrained vectors (" + std::to_string(dim) +
+        ") does not match dimension (" + std::to_string(args_->dim) + ")!");
   }
   mat = std::make_shared<Matrix>(n, dim);
   for (size_t i = 0; i < n; i++) {
@@ -640,13 +638,12 @@ void FastText::train(std::shared_ptr<Args> args) {
   dict_ = std::make_shared<Dictionary>(args_);
   if (args_->input == "-") {
     // manage expectations
-    std::cerr << "Cannot use stdin for training!" << std::endl;
-    exit(EXIT_FAILURE);
+    throw std::invalid_argument("Cannot use stdin for training!");
   }
   std::ifstream ifs(args_->input);
   if (!ifs.is_open()) {
-    std::cerr << "Input file cannot be opened!" << std::endl;
-    exit(EXIT_FAILURE);
+    throw std::invalid_argument(
+        args_->input + " cannot be opened for training!");
   }
   dict_->readFromFile(ifs);
   ifs.close();

@@ -22,6 +22,12 @@ For the word-similarity evaluation script you will need:
 * python 2.6 or newer
 * numpy & scipy
 
+For the python bindings (see the subdirectory python) you will need:
+
+* python 2.7 or newer
+* numpy & scipy
+* [pybind11](https://github.com/pybind/pybind11)
+
 ## Building fastText
 
 In order to build `fastText`, use the following:
@@ -34,6 +40,18 @@ $ make
 
 This will produce object files for all the classes as well as the main binary `fasttext`.
 If you do not plan on using the default system-wide compiler, update the two macros defined at the beginning of the Makefile (CC and INCLUDES).
+
+## Building fastText for Python
+
+Alternatively you can also use the Python bindings.
+
+```
+$ git clone https://github.com/facebookresearch/fastText.git
+$ cd fastText
+$ python setup.py install
+```
+
+For further information and introduction see python/README.md
 
 ## Example use cases
 

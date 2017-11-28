@@ -18,8 +18,8 @@ import sys
 import setuptools
 import os
 
-__version__ = '0.0.1'
-FASTTEXT_SRC = "../src"
+__version__ = '0.0.2'
+FASTTEXT_SRC = "src"
 
 # Based on https://github.com/pybind/python_example
 
@@ -37,7 +37,7 @@ class get_pybind_include(object):
         return pybind11.get_include(self.user)
 
 
-fasttext_src_files = os.listdir(FASTTEXT_SRC)
+fasttext_src_files = map(str, os.listdir(FASTTEXT_SRC))
 fasttext_src_cc = list(filter(lambda x: x.endswith('.cc'), fasttext_src_files))
 
 fasttext_src_cc = list(
@@ -48,7 +48,7 @@ ext_modules = [
     Extension(
         str('fasttext_pybind'),
         [
-            str('fastText/pybind/fasttext_pybind.cc'),
+            str('python/fastText/pybind/fasttext_pybind.cc'),
         ] + fasttext_src_cc,
         include_dirs=[
             # Path to pybind11 headers
@@ -131,8 +131,9 @@ setup(
     ext_modules=ext_modules,
     url='https://github.com/facebookresearch/fastText',
     license='BSD',
-    install_requires=['pybind11>=2.2'],
+    install_requires=['pybind11>=2.2', "setuptools >= 0.7.0"],
     cmdclass={'build_ext': BuildExt},
     packages=[str('fastText')],
+    package_dir={str(''): str('python')},
     zip_safe=False
 )

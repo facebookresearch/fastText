@@ -236,9 +236,8 @@ void Dictionary::readFromFile(std::istream& in) {
     std::cerr << "Number of labels: " << nlabels_ << std::endl;
   }
   if (size_ == 0) {
-    std::cerr << "Empty vocabulary. Try a smaller -minCount value."
-              << std::endl;
-    exit(EXIT_FAILURE);
+    throw std::invalid_argument(
+        "Empty vocabulary. Try a smaller -minCount value.");
   }
 }
 
