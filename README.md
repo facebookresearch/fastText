@@ -14,7 +14,7 @@ We also provide a [cheatsheet](https://fasttext.cc/docs/en/cheatsheet.html#conte
 Since it uses C++11 features, it requires a compiler with good C++11 support.
 These include :
 
-* (gcc-4.6.3 or newer) or (clang-3.3 or newer)
+* (gcc-4.7 or newer) or (clang-3.3 or newer)
 
 Compilation is carried out using a Makefile, so you will need to have a working **make**.
 For the word-similarity evaluation script you will need:
