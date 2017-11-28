@@ -48,6 +48,7 @@ Alternatively you can also use the Python bindings.
 ```
 $ git clone https://github.com/facebookresearch/fastText.git
 $ cd fastText
+$ cd python
 $ python setup.py install
 ```
 
