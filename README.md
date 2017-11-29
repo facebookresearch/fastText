@@ -14,9 +14,11 @@ We also provide a [cheatsheet](https://fasttext.cc/docs/en/cheatsheet.html#conte
 Since it uses C++11 features, it requires a compiler with good C++11 support.
 These include :
 
-* (gcc-4.6.3 or newer) or (clang-3.3 or newer)
+* (gcc-4.8.5 or newer) or (clang-3.3 or newer)
 
 Compilation is carried out using a Makefile, so you will need to have a working **make**.
+If you want to use **cmake** you need at least version 3.5.2.
+
 For the word-similarity evaluation script you will need:
 
 * python 2.6 or newer
@@ -27,6 +29,8 @@ For the python bindings (see the subdirectory python) you will need:
 * python 2.7 or newer
 * numpy & scipy
 * [pybind11](https://github.com/pybind/pybind11)
+
+If these requirements make it impossible for you to use fastText, please open an issue and we will try to accommodate you.
 
 ## Building fastText
 
@@ -40,6 +44,19 @@ $ make
 
 This will produce object files for all the classes as well as the main binary `fasttext`.
 If you do not plan on using the default system-wide compiler, update the two macros defined at the beginning of the Makefile (CC and INCLUDES).
+
+## Building fastText using cmake
+
+You can also use cmake to build fastText
+
+```
+$ git clone https://github.com/facebookresearch/fastText.git
+$ cd fastText
+$ mkdir build && cd build && cmake ..
+$ make && make install
+```
+
+This will create the fasttext binary and also all relevant libraries (shared, static, PIC).
 
 ## Building fastText for Python
 

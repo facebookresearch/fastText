@@ -15,27 +15,43 @@ from __future__ import print_function
 from __future__ import unicode_literals
 import numpy as np
 from scipy import stats
-import sys
 import os
 import math
 import argparse
 
+
 def compat_splitting(line):
     return line.decode('utf8').split()
+
 
 def similarity(v1, v2):
     n1 = np.linalg.norm(v1)
     n2 = np.linalg.norm(v2)
     return np.dot(v1, v2) / n1 / n2
 
+
 parser = argparse.ArgumentParser(description='Process some integers.')
-parser.add_argument('--model', '-m', dest='modelPath', action='store', required=True, help='path to model')
-parser.add_argument('--data', '-d', dest='dataPath', action='store', required=True, help='path to data')
+parser.add_argument(
+    '--model',
+    '-m',
+    dest='modelPath',
+    action='store',
+    required=True,
+    help='path to model'
+)
+parser.add_argument(
+    '--data',
+    '-d',
+    dest='dataPath',
+    action='store',
+    required=True,
+    help='path to data'
+)
 args = parser.parse_args()
 
 vectors = {}
 fin = open(args.modelPath, 'rb')
-for i, line in enumerate(fin):
+for _, line in enumerate(fin):
     try:
         tab = compat_splitting(line)
         vec = np.array(tab[1:], dtype=float)
@@ -74,5 +90,7 @@ fin.close()
 
 corr = stats.spearmanr(mysim, gold)
 dataset = os.path.basename(args.dataPath)
-print("{0:20s}: {1:2.0f}  (OOV: {2:2.0f}%)"
-      .format(dataset, corr[0] * 100, math.ceil(drop / nwords * 100.0)))
+print(
+    "{0:20s}: {1:2.0f}  (OOV: {2:2.0f}%)"
+    .format(dataset, corr[0] * 100, math.ceil(drop / nwords * 100.0))
+)
