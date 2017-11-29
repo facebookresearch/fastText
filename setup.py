@@ -101,14 +101,17 @@ class BuildExt(build_ext):
         'unix': [],
     }
 
-    if sys.platform == 'darwin':
-        c_opts['unix'] += ['-stdlib=libc++', '-mmacosx-version-min=10.7']
-
     def build_extensions(self):
+        if sys.platform == 'darwin':
+            if has_flag(self.compiler, '-stdlib=libc++'):
+                self.c_opts['unix'] += ['-stdlib=libc++']
+            self.c_opts['unix'] += ['-mmacosx-version-min=10.7']
+
         ct = self.compiler.compiler_type
         opts = self.c_opts.get(ct, [])
         if ct == 'unix':
-            opts.append('-DVERSION_INFO="%s"' % self.distribution.get_version())
+            flag = '-DVERSION_INFO="{v}"'
+            opts.append(flag.format(v=self.distribution.get_version()))
             opts.append(cpp_flag(self.compiler))
             if has_flag(self.compiler, '-fvisibility=hidden'):
                 opts.append('-fvisibility=hidden')
