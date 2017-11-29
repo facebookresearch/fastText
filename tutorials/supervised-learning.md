@@ -148,7 +148,7 @@ The model obtained by running fastText with the default arguments is pretty bad 
 Looking at the data, we observe that some words contain uppercase letter or punctuation. One of the first step to improve the performance of our model is to apply some simple pre-processing. A crude normalization can be obtained using command line tools such as `sed` and `tr`:
 
 ```
->> cat cooking.stackexchange.txt | sed -e "s/([.!?,'/()])/ 1 /g" | tr "[:upper:]" "[:lower:]" > cooking.preprocessed.txt
+>> cat cooking.stackexchange.txt | sed -e "s/([.\!?,'/()])/ 1 /g" | tr "[:upper:]" "[:lower:]" > cooking.preprocessed.txt
 >> head -n 12404 cooking.preprocessed.txt > cooking.train
 >> tail -n 3000 cooking.preprocessed.txt > cooking.valid 
 ```
