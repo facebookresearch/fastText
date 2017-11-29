@@ -27,6 +27,7 @@ void printUsage() {
     << "  cbow                    train a cbow model\n"
     << "  print-word-vectors      print word vectors given a trained model\n"
     << "  print-sentence-vectors  print sentence vectors given a trained model\n"
+    << "  print-ngrams            print ngrams vectors given a trained model and word\n"
     << "  nn                      query for nearest neighbors\n"
     << "  analogies               query for analogies\n"
     << std::endl;
