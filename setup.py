@@ -58,7 +58,7 @@ ext_modules = [
             FASTTEXT_SRC,
         ],
         language='c++',
-        extra_compile_args=["-O3"],
+        extra_compile_args=["-O3 -funroll-loops -pthread -march=native"],
     ),
 ]
 
