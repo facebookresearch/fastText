@@ -7,8 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#ifndef FASTTEXT_UTILS_H
-#define FASTTEXT_UTILS_H
+#pragma once
 
 #include <fstream>
 
@@ -29,5 +28,3 @@ namespace utils {
 }
 
 }
-
-#endif

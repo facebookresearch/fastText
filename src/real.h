@@ -7,13 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#ifndef FASTTEXT_REAL_H
-#define FASTTEXT_REAL_H
+#pragma once
 
 namespace fasttext {
 
 typedef float real;
 
 }
-
-#endif

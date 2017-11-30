@@ -7,8 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#ifndef FASTTEXT_MATRIX_H
-#define FASTTEXT_MATRIX_H
+#pragma once
 
 #include <cstdint>
 #include <istream>
@@ -53,5 +52,3 @@ class Matrix {
 };
 
 }
-
-#endif

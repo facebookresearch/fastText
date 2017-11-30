@@ -25,6 +25,9 @@
 
 namespace fasttext {
 
+constexpr int32_t FASTTEXT_VERSION = 12; /* Version 1b */
+constexpr int32_t FASTTEXT_FILEFORMAT_MAGIC_INT32 = 793712314;
+
 FastText::FastText() : quant_(false) {}
 
 void FastText::addInputVector(Vector& vec, int32_t ind) const {

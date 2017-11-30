@@ -15,6 +15,10 @@
 
 namespace fasttext {
 
+constexpr int32_t SIGMOID_TABLE_SIZE = 512;
+constexpr int32_t MAX_SIGMOID = 8;
+constexpr int32_t LOG_TABLE_SIZE = 512;
+
 Model::Model(std::shared_ptr<Matrix> wi,
              std::shared_ptr<Matrix> wo,
              std::shared_ptr<Args> args,

@@ -7,8 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#ifndef FASTTEXT_QMATRIX_H
-#define FASTTEXT_QMATRIX_H
+#pragma once
 
 #include <cstdint>
 #include <istream>
@@ -61,5 +60,3 @@ class QMatrix {
 };
 
 }
-
-#endif

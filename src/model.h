@@ -7,8 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#ifndef FASTTEXT_MODEL_H
-#define FASTTEXT_MODEL_H
+#pragma once
 
 #include <vector>
 #include <random>
@@ -20,10 +19,6 @@
 #include "vector.h"
 #include "qmatrix.h"
 #include "real.h"
-
-#define SIGMOID_TABLE_SIZE 512
-#define MAX_SIGMOID 8
-#define LOG_TABLE_SIZE 512
 
 namespace fasttext {
 
@@ -107,5 +102,3 @@ class Model {
 };
 
 }
-
-#endif

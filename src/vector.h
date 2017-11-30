@@ -7,8 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#ifndef FASTTEXT_VECTOR_H
-#define FASTTEXT_VECTOR_H
+#pragma once
 
 #include <cstdint>
 #include <ostream>
@@ -49,5 +48,3 @@ class Vector {
 std::ostream& operator<<(std::ostream&, const Vector&);
 
 }
-
-#endif

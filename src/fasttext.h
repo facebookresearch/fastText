@@ -7,11 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#ifndef FASTTEXT_FASTTEXT_H
-#define FASTTEXT_FASTTEXT_H
-
-#define FASTTEXT_VERSION 12 /* Version 1b */
-#define FASTTEXT_FILEFORMAT_MAGIC_INT32 793712314
+#pragma once
 
 #include <time.h>
 
@@ -110,6 +106,4 @@ class FastText {
   int getDimension() const;
   bool isQuant() const;
 };
-
-} // namespace fasttext
-#endif
+}

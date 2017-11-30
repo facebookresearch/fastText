@@ -7,8 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#ifndef FASTTEXT_PRODUCT_QUANTIZER_H
-#define FASTTEXT_PRODUCT_QUANTIZER_H
+#pragma once
 
 #include <cstring>
 #include <istream>
@@ -63,5 +62,3 @@ class ProductQuantizer {
 };
 
 }
-
-#endif
