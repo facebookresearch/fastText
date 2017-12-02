@@ -241,7 +241,6 @@ def _build_args(args):
     a = fasttext.args()
     for (k, v) in args.items():
         setattr(a, k, v)
-    a.test = ""  # Unused
     a.output = ""  # User should use save_model
     a.pretrainedVectors = ""  # Unsupported
     a.saveOutput = 0  # Never use this

@@ -88,10 +88,10 @@ In practice, we observe that skipgram models works better with subword informati
 
 So far, we run fastText with the default parameters, but depending on the data, these parameters may not be optimal. Let us give an introduction to some of the key parameters for word vectors.
 
-The most important parameters of the model are its dimension and the range of size for the subwords. The dimension (*dim*) controls the size of the vectors, the larger they are the more information they can capture but requires more data to be learned. But, if they are too large, they are harder and slower to train. By default, we use 100 dimensions, but any value in the 100-300 range is as popular. The subwords are all the substrings contained in a word between the minimum size (*nmin*) and the maximal size (*nmax*). By default, we take all the subword between 3 and 6 characters, but other range could be more appropriate to different languages:
+The most important parameters of the model are its dimension and the range of size for the subwords. The dimension (*dim*) controls the size of the vectors, the larger they are the more information they can capture but requires more data to be learned. But, if they are too large, they are harder and slower to train. By default, we use 100 dimensions, but any value in the 100-300 range is as popular. The subwords are all the substrings contained in a word between the minimum size (*minn*) and the maximal size (*maxn*). By default, we take all the subword between 3 and 6 characters, but other range could be more appropriate to different languages:
 
 ```
-$ ./fasttext skipgram -input data/fil9 -output result/fil9 -nmin 2 -nmax 5 -dim 300
+$ ./fasttext skipgram -input data/fil9 -output result/fil9 -minn 2 -maxn 5 -dim 300
 ```
 
 Depending on the quantity of data you have, you may want to change the parameters of the training.  The *epoch* parameter controls how many time will loop over your data. By default, we loop over the dataset 5 times.  If you dataset is extremely massive, you may want to loop over it less often. Another important parameter is the learning rate -*lr*). The higher the learning rate is, the faster the model converge to a solution but at the risk of overfitting to the dataset. The default value is 0.05 which is a good compromise. If you want to play with it we suggest to stay in the range of [0.01, 1]:
@@ -110,12 +110,12 @@ $ ./fasttext skipgram -input data/fil9 -output result/fil9 -thread 4
 
 # Printing word vectors
 
-Searching and printing word vectors directly from  the `fil9.vec`  file  is cumbersome. Fortunately, there is a `print-vectors` functionality in fastText.  
+Searching and printing word vectors directly from  the `fil9.vec`  file  is cumbersome. Fortunately, there is a `print-word-vectors` functionality in fastText.  
 
 For examples, we can print the word vectors of words *asparagus,* *pidgey* and *yellow* with the following command:
 
 ```
-$ echo "asparagus pidgey yellow" | ./fasttext print-vectors result/fil9.bin
+$ echo "asparagus pidgey yellow" | ./fasttext print-word-vectors result/fil9.bin
 asparagus 0.46826 -0.20187 -0.29122 -0.17918 0.31289 -0.31679 0.17828 -0.04418 ...
 pidgey -0.16065 -0.45867 0.10565 0.036952 -0.11482 0.030053 0.12115 0.39725 ...
 yellow -0.39965 -0.41068 0.067086 -0.034611 0.15246 -0.12208 -0.040719 -0.30155 ...
@@ -126,7 +126,7 @@ A nice feature is that you can also query for words that did not appear in your 
 As an example let's try with a misspelled word:
 
 ```
-$ echo "enviroment" | ./fasttext print-vectors result/fil9.bin
+$ echo "enviroment" | ./fasttext print-word-vectors result/fil9.bin
 ```
 
 You still get a word vector for it! But how good it is? Let s find out in the next sections!

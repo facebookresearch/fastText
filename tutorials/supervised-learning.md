@@ -12,16 +12,18 @@ As an example, we build a classifier which automatically classifies stackexchang
 
 The first step of this tutorial is to install and build fastText. It only requires a c++ compiler with good support of c++11.
 
-Let us start by [cloning](https://help.github.com/articles/cloning-a-repository/ ) the fastText repository:
+Let us start by downloading the [most recent release](https://github.com/facebookresearch/fastText/releases):
 
 ```
->> git clone git@github.com/facebookresearch/fastText.git
+$ wget https://github.com/facebookresearch/fastText/archive/v0.1.0.zip
+$ unzip v0.1.0.zip
 ```
 
 Move to the fastText directory and build it:
 
 ```
->> cd fastText && make
+$ cd fastText-v0.1.0
+$ make
 ```
 
 Running the binary without any argument will print the high level documentation, showing the different usecases supported by fastText:
@@ -148,7 +150,7 @@ The model obtained by running fastText with the default arguments is pretty bad 
 Looking at the data, we observe that some words contain uppercase letter or punctuation. One of the first step to improve the performance of our model is to apply some simple pre-processing. A crude normalization can be obtained using command line tools such as `sed` and `tr`:
 
 ```
->> cat cooking.stackexchange.txt | sed -e "s/([.!?,'/()])/ 1 /g" | tr "[:upper:]" "[:lower:]" > cooking.preprocessed.txt
+>> cat cooking.stackexchange.txt | sed -e "s/\([.\!?,'/()]\)/ \1 /g" | tr "[:upper:]" "[:lower:]" > cooking.preprocessed.txt
 >> head -n 12404 cooking.preprocessed.txt > cooking.train
 >> tail -n 3000 cooking.preprocessed.txt > cooking.valid 
 ```

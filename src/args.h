@@ -22,11 +22,11 @@ enum class loss_name : int { hs = 1, ns, softmax };
 class Args {
   protected:
     std::string lossToString(loss_name);
+    std::string boolToString(bool);
 
   public:
     Args();
     std::string input;
-    std::string test;
     std::string output;
     double lr;
     int lrUpdateRate;
@@ -47,7 +47,7 @@ class Args {
     std::string label;
     int verbose;
     std::string pretrainedVectors;
-    int saveOutput;
+    bool saveOutput;
 
   bool qout;
   bool retrain;

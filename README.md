@@ -1,10 +1,48 @@
-# fastText
+## Table of contents
+
+* [Introduction](#introduction)
+* [Resources](#resources)
+   * [Models](#models)
+   * [Supplementary data](#supplementary-data)
+   * [FAQ](#faq)
+   * [Cheatsheet](#cheatsheet)
+* [Requirements](#requirements)
+* [Building fastText](#building-fasttext)
+   * [Getting the source code](#getting-the-source-code)
+   * [Building fastText using make (preferred)](#building-fasttext-using-make-preferred)
+   * [Building fastText using cmake](#building-fasttext-using-cmake)
+   * [Building fastText for Python](#building-fasttext-for-python)
+* [Example use cases](#example-use-cases)
+   * [Word representation learning](#word-representation-learning)
+   * [Obtaining word vectors for out-of-vocabulary words](#obtaining-word-vectors-for-out-of-vocabulary-words)
+   * [Text classification](#text-classification)
+* [Full documentation](#full-documentation)
+* [References](#references)
+   * [Enriching Word Vectors with Subword Information](#enriching-word-vectors-with-subword-information)
+   * [Bag of Tricks for Efficient Text Classification](#bag-of-tricks-for-efficient-text-classification)
+   * [FastText.zip: Compressing text classification models](#fasttextzip-compressing-text-classification-models)
+* [Join the fastText community](#join-the-fasttext-community)
+* [License](#license)
+
+## Introduction
 
 [fastText](https://fasttext.cc/) is a library for efficient learning of word representations and sentence classification.
 
-## FAQ / Cheatsheet
+## Resources
+
+### Models
+- Recent state-of-the-art [English word vectors](https://fasttext.cc/docs/en/english-vectors.html).
+- Word vectors for [294 languages trained on Wikipedia](https://github.com/facebookresearch/fastText/blob/master/pretrained-vectors.md).
+- Models for [language identification](https://fasttext.cc/docs/en/language-identification.html#content) and [various supervised tasks](https://fasttext.cc/docs/en/supervised-models.html#content).
+
+### Supplementary data
+- The preprocessed [YFCC100M data](https://fasttext.cc/docs/en/dataset.html#content) used in [2].
+
+### FAQ
 
 You can find [answers to frequently asked questions](https://fasttext.cc/docs/en/faqs.html#content) on our [website](https://fasttext.cc/).
+
+### Cheatsheet
 
 We also provide a [cheatsheet](https://fasttext.cc/docs/en/cheatsheet.html#content) full of useful one-liners.
 
@@ -21,33 +59,42 @@ If you want to use **cmake** you need at least version 3.5.2.
 
 For the word-similarity evaluation script you will need:
 
-* python 2.6 or newer
-* numpy & scipy
+* Python 2.6 or newer
+* NumPy & SciPy
 
 For the python bindings (see the subdirectory python) you will need:
 
-* python 2.7 or newer
-* numpy & scipy
+* Python 2.7 or newer
+* NumPy & SciPy
 * [pybind11](https://github.com/pybind/pybind11)
 
 If these requirements make it impossible for you to use fastText, please open an issue and we will try to accommodate you.
 
 ## Building fastText
 
-In order to build `fastText`, use the following:
+We discuss building the latest stable version of fastText.
+
+### Getting the source code
+
+You can find our [latest stable release](https://github.com/facebookresearch/fastText/releases/latest) in the usual place.
+
+There is also the master branch that contains all of our most recent work, but comes along with all the usual caveats of an unstable branch. You might want to use this if you are a developer or power-user.
+
+### Building fastText using make (preferred)
 
 ```
-$ git clone https://github.com/facebookresearch/fastText.git
-$ cd fastText
+$ wget https://github.com/facebookresearch/fastText/archive/v0.1.0.zip
+$ unzip v0.1.0.zip
+$ cd fastText-v0.1.0
 $ make
 ```
-
+ 
 This will produce object files for all the classes as well as the main binary `fasttext`.
 If you do not plan on using the default system-wide compiler, update the two macros defined at the beginning of the Makefile (CC and INCLUDES).
 
-## Building fastText using cmake
+### Building fastText using cmake
 
-You can also use cmake to build fastText
+For now this is not part of a release, so you will need to clone the master branch.
 
 ```
 $ git clone https://github.com/facebookresearch/fastText.git
@@ -58,9 +105,9 @@ $ make && make install
 
 This will create the fasttext binary and also all relevant libraries (shared, static, PIC).
 
-## Building fastText for Python
+### Building fastText for Python
 
-Alternatively you can also use the Python bindings.
+For now this is not part of a release, so you will need to clone the master branch.
 
 ```
 $ git clone https://github.com/facebookresearch/fastText.git
@@ -83,7 +130,7 @@ In order to learn word vectors, as described in [1](#enriching-word-vectors-with
 $ ./fasttext skipgram -input data.txt -output model
 ```
 
-where `data.txt` is a training file containing `utf-8` encoded text.
+where `data.txt` is a training file containing `UTF-8` encoded text.
 By default the word vectors will take into account character n-grams from 3 to 6 characters.
 At the end of optimization the program will save two files: `model.bin` and `model.vec`.
 `model.vec` is a text file containing the word vectors, one per line.
@@ -140,6 +187,12 @@ In order to obtain the k most likely labels for a piece of text, use:
 $ ./fasttext predict model.bin test.txt k
 ```
 
+or use `predict-prob` to also get the probability for each label
+
+```
+$ ./fasttext predict-prob model.bin test.txt k
+```
+
 where `test.txt` contains a piece of text to classify per line.
 Doing so will print to the standard output the k most likely labels for each line.
 The argument `k` is optional, and equal to `1` by default.
@@ -180,32 +233,32 @@ The following arguments are mandatory:
   -input              training file path
   -output             output file path
 
-  The following arguments are optional:
+The following arguments are optional:
   -verbose            verbosity level [2]
 
-  The following arguments for the dictionary are optional:
-  -minCount           minimal number of word occurences [5]
+The following arguments for the dictionary are optional:
+  -minCount           minimal number of word occurences [1]
   -minCountLabel      minimal number of label occurences [0]
   -wordNgrams         max length of word ngram [1]
   -bucket             number of buckets [2000000]
-  -minn               min length of char ngram [3]
-  -maxn               max length of char ngram [6]
+  -minn               min length of char ngram [0]
+  -maxn               max length of char ngram [0]
   -t                  sampling threshold [0.0001]
   -label              labels prefix [__label__]
 
-  The following arguments for training are optional:
-  -lr                 learning rate [0.05]
+The following arguments for training are optional:
+  -lr                 learning rate [0.1]
   -lrUpdateRate       change the rate of updates for the learning rate [100]
   -dim                size of word vectors [100]
   -ws                 size of the context window [5]
   -epoch              number of epochs [5]
   -neg                number of negatives sampled [5]
-  -loss               loss function {ns, hs, softmax} [ns]
+  -loss               loss function {ns, hs, softmax} [softmax]
   -thread             number of threads [12]
   -pretrainedVectors  pretrained word vectors for supervised learning []
   -saveOutput         whether output params should be saved [0]
 
-  The following arguments for quantization are optional:
+The following arguments for quantization are optional:
   -cutoff             number of words and ngrams to retain [0]
   -retrain            finetune embeddings if a cutoff is applied [0]
   -qnorm              quantizing the norm separately [0]
@@ -260,11 +313,6 @@ Please cite [1](#enriching-word-vectors-with-subword-information) if using this 
 
 (\* These authors contributed equally.)
 
-## Resources
-
-You can find the preprocessed YFCC100M data used in [2] at https://research.facebook.com/research/fasttext/
-
-Pre-trained word vectors for 294 languages are available [*here*](https://github.com/facebookresearch/fastText/blob/master/pretrained-vectors.md).
 
 ## Join the fastText community
 
