@@ -186,6 +186,11 @@ In order to obtain the k most likely labels for a piece of text, use:
 ```
 $ ./fasttext predict model.bin test.txt k
 ```
+or using `predict-prob` to get the prediction confidence:
+
+```
+$ ./fasttext predict-prob model.bin test.txt k
+```
 
 or use `predict-prob` to also get the probability for each label
 
