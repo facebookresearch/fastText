@@ -1,0 +1,138 @@
+# Python CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+#
+# Copyright (c) 2016-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the BSD-style license found in the
+# LICENSE file in the root directory of this source tree. An additional grant
+# of patent rights can be found in the PATENTS file in the same directory.
+#
+
+# Maybe one day this will work
+#   "mac":
+#     macos:
+#       xcode: "9.0"
+#     working_directory: ~/repo
+#     steps:
+#       - checkout
+#       - run:
+#           command: |
+#             . .circleci/cmake_test.sh
+
+version: 2
+jobs:
+  "py361":
+    docker:
+      - image: circleci/python:3.6.1
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            sudo pip install pybind11
+            sudo python setup.py install
+            . .circleci/cmake_test.sh
+
+  "py353":
+    docker:
+      - image: circleci/python:3.5.3
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            sudo pip install pybind11
+            sudo python setup.py install
+            . .circleci/cmake_test.sh
+
+  "py346":
+    docker:
+      - image: circleci/python:3.4.6
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            sudo pip install pybind11
+            sudo python setup.py install
+            . .circleci/cmake_test.sh
+
+  "py336":
+    docker:
+      - image: circleci/python:3.3.6
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            sudo pip install pybind11
+            sudo python setup.py install
+            . .circleci/cmake_test.sh
+
+  "py2713":
+    docker:
+      - image: circleci/python:2.7.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            sudo pip install pybind11
+            sudo python setup.py install
+            . .circleci/cmake_test.sh
+
+  "gcc5":
+    docker:
+      - image: gcc:5
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/gcc_test.sh
+
+  "gcc6":
+    docker:
+      - image: gcc:6
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/gcc_test.sh
+
+  "gcc7":
+    docker:
+      - image: gcc:7
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/gcc_test.sh
+
+  "gcclatest":
+    docker:
+      - image: gcc:latest
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/gcc_test.sh
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - "py361"
+      - "py353"
+      - "py346"
+      - "py336"
+      - "py2713"
+      - "gcc5"
+      - "gcc6"
+      - "gcc7"
+      - "gcclatest"

@@ -85,7 +85,7 @@ There is also the master branch that contains all of our most recent work, but c
 ```
 $ wget https://github.com/facebookresearch/fastText/archive/v0.1.0.zip
 $ unzip v0.1.0.zip
-$ cd fastText-v0.1.0
+$ cd fastText-0.1.0
 $ make
 ```
  

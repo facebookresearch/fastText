@@ -22,7 +22,7 @@ $ unzip v0.1.0.zip
 Move to the fastText directory and build it:
 
 ```
-$ cd fastText-v0.1.0
+$ cd fastText-0.1.0
 $ make
 ```
 

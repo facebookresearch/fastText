@@ -18,10 +18,11 @@ import sys
 import setuptools
 import os
 
-__version__ = '0.0.2'
+__version__ = '0.0.3'
 FASTTEXT_SRC = "src"
 
 # Based on https://github.com/pybind/python_example
+
 
 class get_pybind_include(object):
     """Helper class to determine the pybind11 include path
@@ -101,10 +102,11 @@ class BuildExt(build_ext):
         'unix': [],
     }
 
-    if sys.platform == 'darwin':
-        c_opts['unix'] += ['-stdlib=libc++', '-mmacosx-version-min=10.7']
-
     def build_extensions(self):
+        if sys.platform == 'darwin':
+            if has_flag(self.compiler, '-stdlib=libc++'):
+                self.c_opts['unix'] += ['-stdlib=libc++']
+            self.c_opts['unix'] += ['-mmacosx-version-min=10.7']
         ct = self.compiler.compiler_type
         opts = self.c_opts.get(ct, [])
         if ct == 'unix':
