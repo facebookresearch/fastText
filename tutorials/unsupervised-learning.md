@@ -35,6 +35,12 @@ anarchism originated as a term of abuse first used against early working class
 
 The text is nicely pre-processed and can be used to learn our word vectors. 
 
+For languages that do not use spaces to separate words in writing, such as Chinese, Japanese, Bhutanese, Khmer, Lao or Thai, you need an extra pre-processing step to separate words. We use the following tools to perform this word segmentation step:
+
+* Chinese: we use the Stanford Word Segmenter (with the CBT standard);
+* Japanese: we use Kuromoji;
+* Bhutanese, Khmer, Lao, Thai and Tibetan: we use the Word Instance Break Iterator from Java ICU. 
+
 # Training word vectors
 
 Learning  word vectors on this data can now be achieved with a single command:
