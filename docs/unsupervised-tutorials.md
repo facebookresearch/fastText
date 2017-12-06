@@ -6,7 +6,7 @@ A popular idea in modern machine learning is to represent words by vectors. Thes
 
 In this tutorial, we show how to build these word vectors with the fastText tool. To download and install fastText, follow the first steps of [the tutorial on text classification](https://github.com/facebookresearch/fastText/blob/master/tutorials/supervised-learning.md).
 
-## Getting the data
+# Getting the data
 
 In order to compute word vectors, you need a large text corpus. Depending on the corpus, the word vectors will capture different information. In this tutorial, we focus on Wikipedia's articles but other sources could be considered, like  news or Webcrawl (more examples [here](http://statmt.org/)). To download a raw dump of Wikipedia, run the following command: 
 
@@ -31,13 +31,13 @@ $ perl wikifil.pl data/enwik9 > data/fil9
 We can check the file by running the following command:
 
 ```bash
-$ head -c 80 data/text9
+$ head -c 80 data/fil9
 anarchism originated as a term of abuse first used against early working class
 ```
 
 The text is nicely pre-processed and can be used to learn our word vectors. 
 
-## Training word vectors
+# Training word vectors
 
 Learning  word vectors on this data can now be achieved with a single command:
 
@@ -76,7 +76,7 @@ The skipgram model learns to predict a target word thanks to a nearby word. On t
 
 Let us illustrate this difference with an example:  given the sentence *'Poets have been mysteriously silent on the subject of cheese'* and the target word '*silent*', a skipgram model tries to predict the target using a random close-by word, like '*subject' *or* '*mysteriously*'**. *The cbow model takes all the words in a surrounding window, like {*been, *mysteriously*, on, the*}, and uses the sum of their vectors to predict the target. The figure below summarizes this difference with another example.
 
-![cbow vs skipgram](https://raw.githubusercontent.com/facebookresearch/fastText/master/tutorials/cbo_vs_skipgram.png)
+![cbow vs skipgram](https://github.com/facebookresearch/fastText/blob/master/tutorials/cbo_vs_skipgram.png)
 To train a cbow model with fastText, you run the following command:
 
 ```bash
@@ -90,10 +90,10 @@ In practice, we observe that skipgram models works better with subword informati
 
 So far, we run fastText with the default parameters, but depending on the data, these parameters may not be optimal. Let us give an introduction to some of the key parameters for word vectors.
 
-The most important parameters of the model are its dimension and the range of size for the subwords. The dimension (*dim*) controls the size of the vectors, the larger they are the more information they can capture but requires more data to be learned. But, if they are too large, they are harder and slower to train. By default, we use 100 dimensions, but any value in the 100-300 range is as popular. The subwords are all the substrings contained in a word between the minimum size (*nmin*) and the maximal size (*nmax*). By default, we take all the subword between 3 and 6 characters, but other range could be more appropriate to different languages:
+The most important parameters of the model are its dimension and the range of size for the subwords. The dimension (*dim*) controls the size of the vectors, the larger they are the more information they can capture but requires more data to be learned. But, if they are too large, they are harder and slower to train. By default, we use 100 dimensions, but any value in the 100-300 range is as popular. The subwords are all the substrings contained in a word between the minimum size (*minn*) and the maximal size (*maxn*). By default, we take all the subword between 3 and 6 characters, but other range could be more appropriate to different languages:
 
 ```bash
-$ ./fasttext skipgram -input data/fil9 -output result/fil9 -nmin 2 -nmax 5 -dim 300
+$ ./fasttext skipgram -input data/fil9 -output result/fil9 -minn 2 -maxn 5 -dim 300
 ```
 
 Depending on the quantity of data you have, you may want to change the parameters of the training.  The *epoch* parameter controls how many time will loop over your data. By default, we loop over the dataset 5 times.  If you dataset is extremely massive, you may want to loop over it less often. Another important parameter is the learning rate -*lr*). The higher the learning rate is, the faster the model converge to a solution but at the risk of overfitting to the dataset. The default value is 0.05 which is a good compromise. If you want to play with it we suggest to stay in the range of [0.01, 1]:
@@ -110,14 +110,14 @@ $ ./fasttext skipgram -input data/fil9 -output result/fil9 -thread 4
 
 
 
-## Printing word vectors
+# Printing word vectors
 
-Searching and printing word vectors directly from  the `fil9.vec`  file  is cumbersome. Fortunately, there is a `print-vectors` functionality in fastText.  
+Searching and printing word vectors directly from  the `fil9.vec`  file  is cumbersome. Fortunately, there is a `print-word-vectors` functionality in fastText.  
 
 For examples, we can print the word vectors of words *asparagus,* *pidgey* and *yellow* with the following command:
 
 ```bash
-$ echo "asparagus pidgey yellow" | ./fasttext print-vectors result/fil9.bin
+$ echo "asparagus pidgey yellow" | ./fasttext print-word-vectors result/fil9.bin
 asparagus 0.46826 -0.20187 -0.29122 -0.17918 0.31289 -0.31679 0.17828 -0.04418 ...
 pidgey -0.16065 -0.45867 0.10565 0.036952 -0.11482 0.030053 0.12115 0.39725 ...
 yellow -0.39965 -0.41068 0.067086 -0.034611 0.15246 -0.12208 -0.040719 -0.30155 ...
@@ -128,13 +128,13 @@ A nice feature is that you can also query for words that did not appear in your 
 As an example let's try with a misspelled word:
 
 ```bash
-$ echo "enviroment" | ./fasttext print-vectors result/fil9.bin
+$ echo "enviroment" | ./fasttext print-word-vectors result/fil9.bin
 ```
 
 You still get a word vector for it! But how good it is? Let s find out in the next sections!
 
 
-## Nearest neighbor queries
+# Nearest neighbor queries
 
 A simple way to check the quality of a word vector is to look at its nearest neighbors. This give an intuition of the type of semantic information the vectors are able to capture.
 
@@ -200,7 +200,7 @@ Thanks to the information contained within the word, the vector of our misspelle
 
 In order to find nearest neighbors, we need to compute a similarity score between words. Our words are represented by continuous word vectors and we can thus apply simple similarities to them. In particular we use the cosine of the angles between two vectors. This similarity is computed for all words in the vocabulary, and the 10 most similar words are shown.  Of course, if the word appears in the vocabulary, it will appear on top, with a similarity of 1.
 
-## Word analogies
+# Word analogies
 
 In a similar spirit, one can play around with word analogies. For example, we can see if our model can guess what is to France, what Berlin is to Germany. 
 
@@ -241,7 +241,7 @@ famicom 0.745298
 Our model considers that the *nintendo* analogy of a *psx* is the *gamecube*, which seems  reasonable. Of course the quality of the analogies depend on the dataset used to train the model and one can only hope to cover fields only in the dataset.
 
 
-## Importance of character n-grams
+# Importance of character n-grams
 
 Using subword-level information is particularly interesting to build vectors for unknown words. For example, the word *gearshift* does not exist on Wikipedia but we can still query its closest existing words:
 
@@ -304,6 +304,6 @@ hospitality 0.701426
 
 The nearest neighbors capture different variation around the word *accommodation*. We also get semantically related words such as *amenities* or *lodging*. 
 
-## Conclusion
+# Conclusion
 
 In this tutorial, we show how to obtain  word vectors from Wikipedia. This can be done for any language and you can find pre-trained models with the default setting for 294 of them [here](https://github.com/facebookresearch/fastText/blob/master/pretrained-vectors.md)

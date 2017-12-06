@@ -15,16 +15,18 @@ As an example, we build a classifier which automatically classifies stackexchang
 
 The first step of this tutorial is to install and build fastText. It only requires a c++ compiler with good support of c++11.
 
-Let us start by [cloning](https://help.github.com/articles/cloning-a-repository/ ) the fastText repository:
+Let us start by downloading the [most recent release](https://github.com/facebookresearch/fastText/releases):
 
 ```bash
->> git clone git@github.com/facebookresearch/fastText.git
+$ wget https://github.com/facebookresearch/fastText/archive/v0.1.0.zip
+$ unzip v0.1.0.zip
 ```
 
 Move to the fastText directory and build it:
 
 ```bash
->> cd fastText && make
+$ cd fastText-0.1.0
+$ make
 ```
 
 Running the binary without any argument will print the high level documentation, showing the different usecases supported by fastText:
@@ -35,13 +37,18 @@ usage: fasttext <command> <args>
 
 The commands supported by fasttext are:
 
-supervised     train a supervised classifier
-test           evaluate a supervised classifier
-predict        predict most likely labels
-predict-prob   predict most likely labels with probabilities
-skipgram       train a skipgram model
-cbow           train a cbow model
-print-vectors  print vectors given a trained model
+  supervised              train a supervised classifier
+  quantize                quantize a model to reduce the memory usage
+  test                    evaluate a supervised classifier
+  predict                 predict most likely labels
+  predict-prob            predict most likely labels with probabilities
+  skipgram                train a skipgram model
+  cbow                    train a cbow model
+  print-word-vectors      print word vectors given a trained model
+  print-sentence-vectors  print sentence vectors given a trained model
+  nn                      query for nearest neighbors
+  analogies               query for analogies
+
 ```
 
 In this tutorial, we mainly use the `supervised`, `test` and `predict` subcommands, which corresponds to learning (and using) text classifier. For an introduction to the other functionalities of fastText, please see the [tutorial about learning word vectors](https://github.com/facebookresearch/fastText/blob/master/tutorials/unsupervised-learning.md).
@@ -146,7 +153,7 @@ The model obtained by running fastText with the default arguments is pretty bad 
 Looking at the data, we observe that some words contain uppercase letter or punctuation. One of the first step to improve the performance of our model is to apply some simple pre-processing. A crude normalization can be obtained using command line tools such as `sed` and `tr`:
 
 ```bash
->> cat cooking.stackexchange.txt | sed -e "s/([.!?,'/()])/ 1 /g" | tr "[:upper:]" "[:lower:]" > cooking.preprocessed.txt
+>> cat cooking.stackexchange.txt | sed -e "s/\([.\!?,'/()]\)/ \1 /g" | tr "[:upper:]" "[:lower:]" > cooking.preprocessed.txt
 >> head -n 12404 cooking.preprocessed.txt > cooking.train
 >> tail -n 3000 cooking.preprocessed.txt > cooking.valid 
 ```
@@ -280,5 +287,3 @@ Training should now take less than a second.
 ## Conclusion
 
 In this tutorial, we gave a brief overview of how to use fastText to train powerful text classifiers. We had a light overview of some of the most important options to tune.
-
-
