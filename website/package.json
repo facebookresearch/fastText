@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "start": "docusaurus-start",
+    "build": "docusaurus-build",
+    "publish-gh-pages": "docusaurus-publish",
+    "examples": "docusaurus-examples"
+  },
+  "devDependencies": {
+    "docusaurus": "^1.0.0-alpha.35",
+    "babel-preset-react": "^6.24.1"
+  }
+}

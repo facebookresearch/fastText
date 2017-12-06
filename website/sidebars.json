@@ -1,0 +1,16 @@
+{
+  "docs": {
+    "Introduction": ["support", "cheatsheet", "options"],
+    "Tutorials": ["supervised-tutorial", "unsupervised-tutorial"],
+    "Help": ["faqs", "api", "references"]
+  },
+  "download": {
+    "Download": [
+      "english-vectors",
+      "pretrained-vectors",
+      "supervised-models",
+      "language-identification",
+      "dataset"
+    ]
+  }
+}
