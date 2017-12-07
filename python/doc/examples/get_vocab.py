@@ -24,11 +24,15 @@ if __name__ == "__main__":
         )
     )
     parser.add_argument(
-        "model", help="Model to use",
+        "model",
+        help="Model to use",
     )
     parser.add_argument(
-        "-l", "--labels", help="Print labels instead of words",
-        action='store_true', default=False,
+        "-l",
+        "--labels",
+        help="Print labels instead of words",
+        action='store_true',
+        default=False,
     )
     args = parser.parse_args()
 

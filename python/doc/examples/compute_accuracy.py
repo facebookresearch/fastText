@@ -23,14 +23,20 @@ def closest_ind(query, vectors, cossims):
 
 
 def print_score(
-    question, correct, num_qs, total_accuracy, semantic_accuracy, syntactic_accuracy
+    question, correct, num_qs, total_accuracy, semantic_accuracy,
+    syntactic_accuracy
 ):
     print(
         (
             "{0:>30}: ACCURACY TOP1: {3:.2f} %  ({1} / {2})\t  Total accuracy: {4:.2f} %   Semantic accuracy: {5:.2f} %   Syntactic accuracy: {6:.2f} %"
         ).format(
-            question, correct, num_qs, correct / float(num_qs) * 100, total_accuracy * 100,
-            semantic_accuracy * 100, syntactic_accuracy * 100,
+            question,
+            correct,
+            num_qs,
+            correct / float(num_qs) * 100,
+            total_accuracy * 100,
+            semantic_accuracy * 100,
+            syntactic_accuracy * 100,
         )
     )
 
@@ -100,8 +106,10 @@ if __name__ == "__main__":
                         correct,
                         num_qs,
                         total_correct / float(total_qs),
-                        total_se_correct / float(total_se_qs) if total_se_qs > 0 else 0,
-                        total_sy_correct / float(total_sy_qs) if total_sy_qs > 0 else 0,
+                        total_se_correct / float(total_se_qs)
+                        if total_se_qs > 0 else 0,
+                        total_sy_correct / float(total_sy_qs)
+                        if total_sy_qs > 0 else 0,
                     )
                 correct = 0
                 num_qs = 0
@@ -148,6 +156,6 @@ if __name__ == "__main__":
         total_sy_correct / float(total_sy_qs) if total_sy_qs > 0 else 0,
     )
     print(
-            "Questions seen / total: {0} {1}   {2:.2f} %".format(total_qs, num_lines,
-        total_qs / num_lines * 100)
+        "Questions seen / total: {0} {1}   {2:.2f} %".
+        format(total_qs, num_lines, total_qs / num_lines * 100)
     )
