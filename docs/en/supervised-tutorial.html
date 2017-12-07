@@ -1,0 +1,205 @@
+<html><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"/><title>Text classification · fastText</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="Text classification · fastText"/><meta property="og:type" content="website"/><meta property="og:url" content="fasttext.cc/index.html"/><meta property="og:description" content="Text classification is a core problem to many applications, like spam detection, sentiment analysis or smart replies. In this tutorial, we describe how to build a text classifier with the fastText tool. "/><meta property="og:image" content="/img/ogimage.png"/><link rel="shortcut icon" href="/img/fasttext-icon-bg-web.png"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><link rel="alternate" type="application/atom+xml" href="fasttext.cc/blog/atom.xml" title="fastText Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="fasttext.cc/blog/feed.xml" title="fastText Blog RSS Feed"/><link rel="stylesheet" href="/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><img class="logo" src="/img/fasttext-icon-white-web.png"/></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li><a href="/docs/en/support.html" target="_self">Docs</a></li><li><a href="/docs/en/english-vectors.html" target="_self">Download</a></li><li><a href="/blog" target="_self">Blog</a></li><li><a href="https://github.com/facebookresearch/fastText/" target="_blank">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Tutorials</span></h2></div><div class="navGroups"><div class="navGroup navGroupActive"><h3>Introduction</h3><ul><li class="navListItem"><a class="navItem" href="/docs/en/support.html">Get started</a></li><li class="navListItem"><a class="navItem" href="/docs/en/cheatsheet.html">Cheatsheet</a></li><li class="navListItem"><a class="navItem" href="/docs/en/options.html">List of options</a></li></ul></div><div class="navGroup navGroupActive"><h3>Tutorials</h3><ul><li class="navListItem navListItemActive"><a class="navItem navItemActive" href="/docs/en/supervised-tutorial.html">Text classification</a></li><li class="navListItem"><a class="navItem" href="/docs/en/unsupervised-tutorial.html">Word representations</a></li></ul></div><div class="navGroup navGroupActive"><h3>Help</h3><ul><li class="navListItem"><a class="navItem" href="/docs/en/faqs.html">FAQ</a></li><li class="navListItem"><a class="navItem" href="/docs/en/api.html">API</a></li><li class="navListItem"><a class="navItem" href="/docs/en/references.html">References</a></li></ul></div></div></section></div><script>
+          var toggler = document.getElementById('navToggler');
+          var nav = document.getElementById('docsNav');
+          toggler.onclick = function() {
+            nav.classList.toggle('docsSliderActive');
+          };
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1>Text classification</h1></header><article><div><span><p>Text classification is a core problem to many applications, like spam detection, sentiment analysis or smart replies. In this tutorial, we describe how to build a text classifier with the fastText tool.</p>
+<h2><a class="anchor" aria-hidden="true" name="what-is-text-classification"></a><a href="#what-is-text-classification" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>What is text classification?</h2>
+<p>The goal of text classification is to assign documents (such as emails,  posts, text messages, product reviews, etc...) to one or multiple categories. Such categories can be review scores, spam v.s. non-spam, or the language in which the document was typed. Nowadays, the dominant approach to build such classifiers is  machine learning, that is  learning classification rules from examples. In order to build such classifiers, we need labeled data, which consists of documents and their corresponding categories (or tags, or labels).</p>
+<p>As an example, we build a classifier which automatically classifies stackexchange questions about cooking into one of  several possible tags, such as <code>pot</code>, <code>bowl</code> or <code>baking</code>.</p>
+<h2><a class="anchor" aria-hidden="true" name="installing-fasttext"></a><a href="#installing-fasttext" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Installing fastText</h2>
+<p>The first step of this tutorial is to install and build fastText. It only requires a c++ compiler with good support of c++11.</p>
+<p>Let us start by downloading the <a href="https://github.com/facebookresearch/fastText/releases">most recent release</a>:</p>
+<pre><code class="hljs css bash">$ wget https://github.com/facebookresearch/fastText/archive/v0.1.0.zip
+$ unzip v0.1.0.zip
+</code></pre>
+<p>Move to the fastText directory and build it:</p>
+<pre><code class="hljs css bash">$ <span class="hljs-built_in">cd</span> fastText-0.1.0
+$ make
+</code></pre>
+<p>Running the binary without any argument will print the high level documentation, showing the different usecases supported by fastText:</p>
+<pre><code class="hljs css bash">&gt;&gt; ./fasttext
+usage: fasttext &lt;<span class="hljs-built_in">command</span>&gt; &lt;args&gt;
+
+The commands supported by fasttext are:
+
+  supervised              train a supervised classifier
+  quantize                quantize a model to reduce the memory usage
+  <span class="hljs-built_in">test</span>                    evaluate a supervised classifier
+  predict                 predict most likely labels
+  predict-prob            predict most likely labels with probabilities
+  skipgram                train a skipgram model
+  cbow                    train a cbow model
+  <span class="hljs-built_in">print</span>-word-vectors      <span class="hljs-built_in">print</span> word vectors given a trained model
+  <span class="hljs-built_in">print</span>-sentence-vectors  <span class="hljs-built_in">print</span> sentence vectors given a trained model
+  nn                      query <span class="hljs-keyword">for</span> nearest neighbors
+  analogies               query <span class="hljs-keyword">for</span> analogies
+
+</code></pre>
+<p>In this tutorial, we mainly use the <code>supervised</code>, <code>test</code> and <code>predict</code> subcommands, which corresponds to learning (and using) text classifier. For an introduction to the other functionalities of fastText, please see the <a href="https://github.com/facebookresearch/fastText/blob/master/tutorials/unsupervised-learning.md">tutorial about learning word vectors</a>.</p>
+<h2><a class="anchor" aria-hidden="true" name="getting-and-preparing-the-data"></a><a href="#getting-and-preparing-the-data" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Getting and preparing the data</h2>
+<p>As mentioned in the introduction, we need labeled data to train our supervised classifier. In this tutorial, we are interested in building a classifier to automatically recognize the topic of a stackexchange question about cooking. Let's download examples of questions from <a href="http://cooking.stackexchange.com/">the cooking section of Stackexchange</a>, and their associated tags:</p>
+<pre><code class="hljs css bash">&gt;&gt; wget https://s3-us-west-1.amazonaws.com/fasttext-vectors/cooking.stackexchange.tar.gz &amp;&amp; tar xvzf cooking.stackexchange.tar.gz
+&gt;&gt; head cooking.stackexchange.txt
+</code></pre>
+<p>Each line of the text file contains a list of labels, followed by the corresponding document. All the labels start by the <code>__label__</code> prefix, which is how fastText recognize what is a label or what is a word.  The model is then trained to predict the labels given the word in the document.</p>
+<p>Before training our first classifier, we need to split the data into train and validation. We will use the validation set to evaluate how good the learned classifier is on new data.</p>
+<pre><code class="hljs css bash">&gt;&gt; wc cooking.stackexchange.txt 
+   15404  169582 1401900 cooking.stackexchange.txt
+</code></pre>
+<p>Our full dataset contains 15404 examples. Let's split it into a training set of 12404 examples and a validation set of 3000 examples:</p>
+<pre><code class="hljs css bash">&gt;&gt; head -n 12404 cooking.stackexchange.txt &gt; cooking.train
+&gt;&gt; tail -n 3000 cooking.stackexchange.txt &gt; cooking.valid
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" name="our-first-classifier"></a><a href="#our-first-classifier" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Our first classifier</h2>
+<p>We are now ready to train our first classifier:</p>
+<pre><code class="hljs css bash">&gt;&gt; ./fasttext supervised -input cooking.train -output model_cooking
+Read 0M words
+Number of words:  14598
+Number of labels: 734
+Progress: 100.0%  words/sec/thread: 75109  lr: 0.000000  loss: 5.708354  eta: 0h0m 
+</code></pre>
+<p>The <code>-input</code> command line option indicates the file containing the training examples, while the <code>-output</code> option indicates where to save the model. At the end of training, a file <code>model_cooking.bin</code>, containing the trained classifier, is created in the current directory.</p>
+<p>It is possible to directly test our classifier interactively, by running the command:</p>
+<pre><code class="hljs css bash">&gt;&gt; ./fasttext predict model_cooking.bin -
+</code></pre>
+<p>and then typing a sentence.  Let's first try the sentence:</p>
+<p><em>Which baking dish is best to bake a banana bread ?</em></p>
+<p>The predicted tag is <code>baking</code>  which fits well to this question. Let us now try a second example:</p>
+<p><em>Why not put knives in the dishwasher?</em></p>
+<p>The label predicted by the model is <code>food-safety</code>, which is not relevant. Somehow, the model seems to fail on simple examples. To get a better sense of its quality, let's test it on the validation data by running:</p>
+<pre><code class="hljs css bash">&gt;&gt; ./fasttext <span class="hljs-built_in">test</span> model_cooking.bin cooking.valid                 
+N  3000
+P@1  0.124
+R@1  0.0541
+Number of examples: 3000
+</code></pre>
+<p>The output of fastText are the precision at one (<code>P@1</code>) and the recall at one (<code>R@1</code>). We can also compute the precision at five and recall at five with:</p>
+<pre><code class="hljs css bash">&gt;&gt; ./fasttext <span class="hljs-built_in">test</span> model_cooking.bin cooking.valid 5               
+N  3000
+P@5  0.0668
+R@5  0.146
+Number of examples: 3000
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" name="advanced-reader-precision-and-recall"></a><a href="#advanced-reader-precision-and-recall" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Advanced reader: precision and recall</h3>
+<p>The precision is the number of correct labels among the labels predicted by fastText. The recall is the number of labels that successfully were predicted, among all the real labels. Let's take an example to make this more clear:</p>
+<p><em>Why not put knives in the dishwasher?</em></p>
+<p>On Stack Exchange, this sentence is labeled with three tags: <code>equipment</code>, <code>cleaning</code> and <code>knives</code>. The top five labels predicted by the model can be obtained with:</p>
+<pre><code class="hljs css bash">&gt;&gt; ./fasttext predict model_cooking.bin - 5
+</code></pre>
+<p>are <code>food-safety</code>, <code>baking</code>, <code>equipment</code>, <code>substitutions</code> and <code>bread</code>.</p>
+<p>Thus, one out of five labels predicted by the model is correct, giving a precision of 0.20. Out of the three real labels, only one is predicted by the model, giving a recall of 0.33.</p>
+<p>For more details, see <a href="https://en.wikipedia.org/wiki/Precision_and_recall">the related Wikipedia page</a>.</p>
+<h2><a class="anchor" aria-hidden="true" name="making-the-model-better"></a><a href="#making-the-model-better" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Making the model better</h2>
+<p>The model obtained by running fastText with the default arguments is pretty bad at classifying new questions. Let's try to improve the performance, by changing the default parameters.</p>
+<h3><a class="anchor" aria-hidden="true" name="preprocessing-the-data"></a><a href="#preprocessing-the-data" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>preprocessing the data</h3>
+<p>Looking at the data, we observe that some words contain uppercase letter or punctuation. One of the first step to improve the performance of our model is to apply some simple pre-processing. A crude normalization can be obtained using command line tools such as <code>sed</code> and <code>tr</code>:</p>
+<pre><code class="hljs css bash">&gt;&gt; cat cooking.stackexchange.txt | sed -e <span class="hljs-string">"s/\([.\!?,'/()]\)/ \1 /g"</span> | tr <span class="hljs-string">"[:upper:]"</span> <span class="hljs-string">"[:lower:]"</span> &gt; cooking.preprocessed.txt
+&gt;&gt; head -n 12404 cooking.preprocessed.txt &gt; cooking.train
+&gt;&gt; tail -n 3000 cooking.preprocessed.txt &gt; cooking.valid 
+</code></pre>
+<p>Let's train a new model on the pre-processed data:</p>
+<pre><code class="hljs css bash">&gt;&gt; ./fasttext supervised -input cooking.train -output model_cooking
+Read 0M words
+Number of words:  9012
+Number of labels: 734
+Progress: 100.0%  words/sec/thread: 82041  lr: 0.000000  loss: 5.671649  eta: 0h0m h-14m 
+
+&gt;&gt; ./fasttext <span class="hljs-built_in">test</span> model_cooking.bin cooking.valid 
+N  3000
+P@1  0.164
+R@1  0.0717
+Number of examples: 3000
+</code></pre>
+<p>We observe that thanks to the pre-processing, the vocabulary is smaller (from 14k words to 9k). The precision is also starting to go up by 4%!</p>
+<h3><a class="anchor" aria-hidden="true" name="more-epochs-and-larger-learning-rate"></a><a href="#more-epochs-and-larger-learning-rate" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>more epochs and larger learning rate</h3>
+<p>By default, fastText sees each training example only five times during training, which is pretty small, given that our training set only have 12k training examples. The number of times each examples is seen (also known as the number of epochs), can be increased using the <code>-epoch</code> option:</p>
+<pre><code class="hljs css bash">&gt;&gt; ./fasttext supervised -input cooking.train -output model_cooking -epoch 25 
+Read 0M words
+Number of words:  9012
+Number of labels: 734
+Progress: 100.0%  words/sec/thread: 77633  lr: 0.000000  loss: 7.147976  eta: 0h0m
+</code></pre>
+<p>Let's test the new model:</p>
+<pre><code class="hljs css bash">&gt;&gt; ./fasttext <span class="hljs-built_in">test</span> model_cooking.bin cooking.valid                                        
+N  3000
+P@1  0.501
+R@1  0.218
+Number of examples: 3000
+</code></pre>
+<p>This is much better! Another way to change the learning speed of our model is to increase (or decrease) the learning rate of the algorithm. This corresponds to how much the model changes after processing each example. A learning rate of 0 would means that the model does not change at all, and thus, does not learn anything. Good values of the learning rate are in the range <code>0.1 - 1.0</code>.</p>
+<pre><code class="hljs css bash">&gt;&gt; ./fasttext supervised -input cooking.train -output model_cooking -lr 1.0  
+Read 0M words
+Number of words:  9012
+Number of labels: 734
+Progress: 100.0%  words/sec/thread: 81469  lr: 0.000000  loss: 6.405640  eta: 0h0m
+
+&gt;&gt; ./fasttext <span class="hljs-built_in">test</span> model_cooking.bin cooking.valid                         
+N  3000
+P@1  0.563
+R@1  0.245
+Number of examples: 3000
+</code></pre>
+<p>Even better! Let's try both together:</p>
+<pre><code class="hljs css bash">&gt;&gt; ./fasttext supervised -input cooking.train -output model_cooking -lr 1.0 -epoch 25
+Read 0M words
+Number of words:  9012
+Number of labels: 734
+Progress: 100.0%  words/sec/thread: 76394  lr: 0.000000  loss: 4.350277  eta: 0h0m
+
+&gt;&gt; ./fasttext <span class="hljs-built_in">test</span> model_cooking.bin cooking.valid                                   
+N  3000
+P@1  0.585
+R@1  0.255
+Number of examples: 3000
+</code></pre>
+<p>Let us now add a few more features to improve even further our performance!</p>
+<h3><a class="anchor" aria-hidden="true" name="word-n-grams"></a><a href="#word-n-grams" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>word n-grams</h3>
+<p>Finally, we can improve the performance of a model by using word bigrams, instead of just unigrams. This is especially important for classification problems where word order is important, such as sentiment analysis.</p>
+<pre><code class="hljs css bash">&gt;&gt; ./fasttext supervised -input cooking.train -output model_cooking -lr 1.0 -epoch 25 -wordNgrams 2
+Read 0M words
+Number of words:  9012
+Number of labels: 734
+Progress: 100.0%  words/sec/thread: 75366  lr: 0.000000  loss: 3.226064  eta: 0h0m 
+
+&gt;&gt; ./fasttext <span class="hljs-built_in">test</span> model_cooking.bin cooking.valid                                                 
+N  3000
+P@1  0.599
+R@1  0.261
+Number of examples: 3000
+</code></pre>
+<p>With a few steps, we were able to go from a precision at one of 12.4% to 59.9%. Important steps included:</p>
+<ul>
+<li>preprocessing the data ;</li>
+<li>changing the number of epochs (using the option <code>-epoch</code>, standard range <code>[5 - 50]</code>) ;</li>
+<li>changing the learning rate (using the option <code>-lr</code>, standard range <code>[0.1 - 1.0]</code>) ;</li>
+<li>using word n-grams (using the option <code>-wordNgrams</code>, standard range <code>[1 - 5]</code>).</li>
+</ul>
+<h3><a class="anchor" aria-hidden="true" name="advanced-readers-what-is-a-bigram"></a><a href="#advanced-readers-what-is-a-bigram" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Advanced readers: What is a Bigram?</h3>
+<p>A 'unigram' refers to a single undividing unit, or token,  usually used as an input to a model. For example a unigram can a word or a letter depending on the model. In fastText, we work at the word level and thus unigrams are words.</p>
+<p>Similarly we denote by 'bigram' the concatenation of  2 consecutive tokens or words. Similarly we often talk about n-gram to refer to the concatenation any n consecutive tokens.</p>
+<p>For example, in the sentence, 'Last donut of the night', the unigrams are  'last', 'donut', 'of', 'the' and 'night'. The bigrams are: 'Last donut', 'donut of', 'of the' and 'the night'.</p>
+<p>Bigrams are particularly interesting because, for most sentences, you can reconstruct the order of the words just by looking at a bag of n-grams.</p>
+<p>Let us illustrate this by a simple exercise, given the following bigrams, try to reconstruct the original sentence: 'all out',  'I am', 'of bubblegum', 'out of' and 'am all'.
+It is common to refer to a word as a unigram.</p>
+<h2><a class="anchor" aria-hidden="true" name="scaling-things-up"></a><a href="#scaling-things-up" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Scaling things up</h2>
+<p>Since we are training our model on a few thousands of examples, the training only takes a few seconds. But training models on larger datasets, with more labels can start to be too slow. A potential solution to make the training faster is to use the hierarchical softmax, instead of the regular softmax [Add a quick explanation of the hierarchical softmax]. This can be done with the option <code>-loss hs</code>:</p>
+<pre><code class="hljs css bash">&gt;&gt; ./fasttext supervised -input cooking.train -output model_cooking -lr 1.0 -epoch 25 -wordNgrams 2 -bucket 200000 -dim 50 -loss hs
+Read 0M words
+Number of words:  9012
+Number of labels: 734
+Progress: 100.0%  words/sec/thread: 2199406  lr: 0.000000  loss: 1.718807  eta: 0h0m 
+</code></pre>
+<p>Training should now take less than a second.</p>
+<h2><a class="anchor" aria-hidden="true" name="conclusion"></a><a href="#conclusion" aria-hidden="true" class="hash-link" ><svg aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Conclusion</h2>
+<p>In this tutorial, we gave a brief overview of how to use fastText to train powerful text classifiers. We had a light overview of some of the most important options to tune.</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="options.html">← List of options</a><a class="docs-next button" href="unsupervised-tutorial.html">Word representations →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/fasttext-icon-white-web.png" alt="fastText"/></a><div><h5>Support</h5><a href="/docs/en/support.html">Getting Started</a><a href="/docs/en/supervised-tutorial.html">Tutorials</a><a href="/docs/en/faqs.html">FAQs</a><a href="/docs/en/api.html">API</a></div><div><h5>Community</h5><a href="https://www.facebook.com/groups/1174547215919768/" target="_blank">Facebook Group</a><a href="http://stackoverflow.com/questions/tagged/fasttext" target="_blank">Stack Overflow</a><a href="https://groups.google.com/forum/#!forum/fasttext-library" target="_blank">Google Group</a></div><div><h5>More</h5><a href="/blog">Blog</a><a href="https://github.com/facebookresearch/fastText" target="_blank">GitHub</a><a class="github-button" href="https://github.com/facebookresearch/fastText/" data-icon="octicon-star" data-count-href="/fastText/stargazers" data-count-api="/repos/fastText#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2017 Facebook Inc.</section></footer></div><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-44373548-30', 'auto');
+              ga('send', 'pageview');
+            </script></body></html>

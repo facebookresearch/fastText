@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>fasttext.cc/blog</id>
+    <title>fastText Blog</title>
+    <updated>2017-10-02T06:00:00Z</updated>
+    <generator>Feed for Node.js</generator>
+    <link rel="alternate" href="fasttext.cc/blog"/>
+    <subtitle>The best place to stay up-to-date with the latest fastText news and events.</subtitle>
+    <logo>fasttext.ccimg/fasttext-icon-white-web.png</logo>
+    <entry>
+        <title type="html"><![CDATA[Language identification]]></title>
+        <id>fasttext.cc/blog/2017/10/02/blog-post.html</id>
+        <link href="fasttext.cc/blog/2017/10/02/blog-post.html">
+        </link>
+        <updated>2017-10-02T06:00:00Z</updated>
+        <summary type="html"><![CDATA[
+## Fast and accurate language identification using fastText
+
+We are excited to announce that we are publishing a fast and accurate tool for text-based language identification. It can recognize more than 170 languages, takes less than 1MB of memory and can classify thousands of documents per second. It is based on fastText library and is released [here](https://fasttext.cc/docs/en/language-identification.html) as open source, free to use by everyone. We are releasing several versions of the model, each optimized for different memory usage, and compared them to the popular tool [langid.py](https://github.com/saffsd/langid.py).
+
+]]></summary>
+        <author>
+            <name>Edouard Grave</name>
+            <uri>https://research.fb.com/people/grave-edouard/</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[fastText on mobile]]></title>
+        <id>fasttext.cc/blog/2017/05/02/blog-post.html</id>
+        <link href="fasttext.cc/blog/2017/05/02/blog-post.html">
+        </link>
+        <updated>2017-05-02T06:00:00Z</updated>
+        <summary type="html"><![CDATA[
+Today, the Facebook AI Research (FAIR) team released pre-trained vectors in 294 languages, accompanied by two quick-start tutorials, to increase fastText’s accessibility to the large community of students, software developers, and researchers interested in machine learning. fastText’s models now fit on smartphones and small computers like Raspberry Pi devices thanks to a new functionality that reduces memory usage.
+
+First open-sourced last summer, [fastText](https://github.com/facebookresearch/fastText) was designed to be accessible to anyone with generic hardware like notebooks and X86 cloud instances, or almost any platform with enough memory. Smartphone and small computer support extend fastText’s accessibility to an even larger community and a greater range of applications.
+
+]]></summary>
+        <author>
+            <name>Armand Joulin</name>
+            <uri>https://research.fb.com/people/joulin-armand/</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Releasing fastText]]></title>
+        <id>fasttext.cc/blog/2016/08/18/blog-post.html</id>
+        <link href="fasttext.cc/blog/2016/08/18/blog-post.html">
+        </link>
+        <updated>2016-08-18T06:00:00Z</updated>
+        <summary type="html"><![CDATA[
+## Faster, better text classification!
+
+Understanding the meaning of words that roll off your tongue as you talk, or your fingertips as you tap out posts is one of the biggest technical challenges facing artificial intelligence researchers. But it is an essential need. Automatic text processing forms a key part of the day-to-day interaction with your computer; it’s a critical component of everything from web search and content ranking to spam filtering, and when it works well, it’s completely invisible to you. With the growing amount of online data, there is a need for more flexible tools to better understand the content of very large datasets, in order to provide more accurate classification results.
+
+To address this need, the [Facebook AI Research (FAIR) lab](https://research.fb.com/category/facebook-ai-research-fair/) is open-sourcing [fastText](https://github.com/facebookresearch/fastText), a library designed to help build scalable solutions for text representation and classification. Our ongoing commitment to collaboration and sharing with the community extends beyond just delivering code. We know it’s important to share our learnings to advance the field, so have also [published](http://arxiv.org/abs/1607.04606) [our research](http://arxiv.org/abs/1607.01759) relating to fastText.
+
+FastText combines some of the most successful concepts introduced by the natural language processing and machine learning communities in the last few decades. These include representing sentences with bag of words and bag of n-grams, as well as using subword information, and sharing information across classes through a hidden representation. We also employ a hierachical softmax that takes advantage of the unbalanced distribution of the classes to speed up computation. These different concepts are being used for two different tasks: efficient text classification and learning word vector representations.
+
+]]></summary>
+        <author>
+            <name>Edouard Grave</name>
+            <uri>https://research.fb.com/people/grave-edouard/</uri>
+        </author>
+    </entry>
+</feed>
