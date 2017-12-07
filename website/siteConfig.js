@@ -91,7 +91,7 @@ const siteConfig = {
   },
   separateCss: ["static/docs/en/html"],
   disableTitleTagline: true,
-  projectName: "fasttext",
+  projectName: "fastText",
   tagline:
     "Library for efficient text classification and representation learning",
   /* remove this to disable google analytics tracking */
