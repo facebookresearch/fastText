@@ -123,6 +123,19 @@ jobs:
           command: |
             . .circleci/gcc_test.sh
 
+  "debian-wheezy":
+    docker:
+      - image: debian:wheezy
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/setup_debian.sh
+            . .circleci/gcc_test.sh
+            . .circleci/cmake_test.sh
+
+
   "website-build":
     docker:
       - image: node:latest
@@ -149,4 +162,5 @@ workflows:
       - "gcc6"
       - "gcc7"
       - "gcclatest"
+      - "debian-wheezy"
       - "website-build"

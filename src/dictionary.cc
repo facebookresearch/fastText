@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <iterator>
 #include <cmath>
+#include <stdexcept>
 
 namespace fasttext {
 
