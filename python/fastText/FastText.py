@@ -280,7 +280,6 @@ def train_supervised(
     label="__label__",
     verbose=2,
     pretrainedVectors="",
-    saveOutput=0
 ):
     """
     Train a supervised model and return a model object.
@@ -322,7 +321,6 @@ def train_unsupervised(
     label="__label__",
     verbose=2,
     pretrainedVectors="",
-    saveOutput=0
 ):
     """
     Train an unsupervised model and return a model object.

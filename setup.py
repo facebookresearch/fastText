@@ -18,7 +18,7 @@ import sys
 import setuptools
 import os
 
-__version__ = '0.0.3'
+__version__ = '0.0.6'
 FASTTEXT_SRC = "src"
 
 # Based on https://github.com/pybind/python_example
@@ -81,16 +81,18 @@ def has_flag(compiler, flagname):
 
 
 def cpp_flag(compiler):
-    """Return the -std=c++[11/14] compiler flag.
-    The c++14 is preferred over c++11 (when it is available).
+    """Return the -std=c++[0x/11/14] compiler flag.
+    The c++14 is preferred over c++0x/11 (when it is available).
     """
     if has_flag(compiler, '-std=c++14'):
         return '-std=c++14'
     elif has_flag(compiler, '-std=c++11'):
         return '-std=c++11'
+    elif has_flag(compiler, '-std=c++0x'):
+        return '-std=c++0x'
     else:
         raise RuntimeError(
-            'Unsupported compiler -- at least C++11 support '
+            'Unsupported compiler -- at least C++0x support '
             'is needed!'
         )
 
@@ -124,7 +126,7 @@ class BuildExt(build_ext):
 
 
 setup(
-    name='fastTextpy',
+    name='fasttext',
     version=__version__,
     author='Christian Puhrsch',
     author_email='cpuhrsch@fb.com',
@@ -135,7 +137,11 @@ setup(
     license='BSD',
     install_requires=['pybind11>=2.2', "setuptools >= 0.7.0"],
     cmdclass={'build_ext': BuildExt},
-    packages=[str('fastText')],
+    packages=[
+        str('fastText'),
+        str('fastText.util'),
+        str('fastText.tests'),
+    ],
     package_dir={str(''): str('python')},
-    zip_safe=False
+    zip_safe=False,
 )
