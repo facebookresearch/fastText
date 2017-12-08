@@ -43,7 +43,12 @@ There are few unofficial wrappers for python or lua available on github.
 FastText works on discrete tokens and thus cannot be directly used on continuous tokens. However, one can discretize continuous tokens to use fastText on them, for example by rounding values to a specific digit ("12.3" becomes "12").
 
 ## There are misspellings in the dictionary. Should we improve text normalization?
+
 If the words are infrequent, there is no need to worry.
+
+## I'm encountering a NaN, why could this be?
+
+You'll likely see this behavior because your learning rate is too high. Try reducing it until you don't see this error anymore.
 
 ## My compiler / architecture can't build fastText. What should I do?
 Try a newer version of your compiler. We try to maintain compatibility with older versions of gcc and many platforms, however sometimes maintaining backwards compatibility becomes very hard. In general, compilers and tool chains that ship with LTS versions of major linux distributions should be fair game. In any case, create an issue with your compiler version and architecture and we'll try to implement compatibility.

@@ -68,7 +68,7 @@ one 0.32731 0.044409 -0.46484 0.14716 0.7431 0.24684 -0.11301 0.51721 0.73262 ..
 
 The first line is a header containing the number of words and the dimensionality of the vectors. The subsequent lines are the word vectors for all words in the vocabulary, sorted by decreasing frequency.
 
-### Advanced readers: skipgram versus cbow
+## Advanced readers: skipgram versus cbow
 
 fastText provides two models for computing word representations: skipgram and cbow ('**c**ontinuous-**b**ag-**o**f-**w**ords').
 
@@ -86,7 +86,7 @@ To train a cbow model with fastText, you run the following command:
 
 In practice, we observe that skipgram models works better with subword information than cbow. 
 
-### Advanced readers: playing with the parameters
+## Advanced readers: playing with the parameters
 
 So far, we run fastText with the default parameters, but depending on the data, these parameters may not be optimal. Let us give an introduction to some of the key parameters for word vectors.
 
@@ -196,7 +196,7 @@ ecotourism 0.697081
 
 Thanks to the information contained within the word, the vector of our misspelled word matches to reasonable words! It is not perfect but the main information has been captured.
 
-### Advanced reader: measure of similarity
+## Advanced reader: measure of similarity
 
 In order to find nearest neighbors, we need to compute a similarity score between words. Our words are represented by continuous word vectors and we can thus apply simple similarities to them. In particular we use the cosine of the angles between two vectors. This similarity is computed for all words in the vocabulary, and the 10 most similar words are shown.  Of course, if the word appears in the vocabulary, it will appear on top, with a similarity of 1.
 

@@ -126,7 +126,7 @@ R@5  0.146
 Number of examples: 3000
 ```
 
-### Advanced reader: precision and recall
+## Advanced readers: precision and recall
 
 The precision is the number of correct labels among the labels predicted by fastText. The recall is the number of labels that successfully were predicted, among all the real labels. Let's take an example to make this more clear:
 
@@ -257,7 +257,7 @@ With a few steps, we were able to go from a precision at one of 12.4% to 59.9%. 
 * changing the learning rate (using the option `-lr`, standard range `[0.1 - 1.0]`) ;
 * using word n-grams (using the option `-wordNgrams`, standard range `[1 - 5]`).
 
-### Advanced readers: What is a Bigram?
+## Advanced readers: What is a Bigram?
 
 A 'unigram' refers to a single undividing unit, or token,  usually used as an input to a model. For example a unigram can a word or a letter depending on the model. In fastText, we work at the word level and thus unigrams are words.
 

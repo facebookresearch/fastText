@@ -12,6 +12,8 @@
 #include <assert.h>
 
 #include <random>
+#include <exception>
+#include <stdexcept>
 
 #include "utils.h"
 #include "vector.h"
@@ -73,6 +75,9 @@ real Matrix::dotRow(const Vector& vec, int64_t i) const {
   for (int64_t j = 0; j < n_; j++) {
     d += at(i, j) * vec.data_[j];
   }
+  if (std::isnan(d)) {
+    throw std::runtime_error("Encountered NaN.");
+  }
   return d;
 }
 
@@ -116,6 +121,9 @@ real Matrix::l2NormRow(int64_t i) const {
   for (auto j = 0; j < n_; j++) {
     const real v = at(i,j);
     norm += v * v;
+  }
+  if (std::isnan(norm)) {
+    throw std::runtime_error("Encountered NaN.");
   }
   return std::sqrt(norm);
 }
