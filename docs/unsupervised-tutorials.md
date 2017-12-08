@@ -4,9 +4,9 @@ title: Word representations
 ---
 A popular idea in modern machine learning is to represent words by vectors. These vectors capture hidden information about a language, like word analogies or semantic. It is also used to improve performance of text classifiers.
 
-In this tutorial, we show how to build these word vectors with the fastText tool. To download and install fastText, follow the first steps of [the tutorial on text classification](https://github.com/facebookresearch/fastText/blob/master/tutorials/supervised-learning.md).
+In this tutorial, we show how to build these word vectors with the fastText tool. To download and install fastText, follow the first steps of [the tutorial on text classification](https://fasttext.cc/docs/en/supervised-tutorial.html).
 
-# Getting the data
+## Getting the data
 
 In order to compute word vectors, you need a large text corpus. Depending on the corpus, the word vectors will capture different information. In this tutorial, we focus on Wikipedia's articles but other sources could be considered, like  news or Webcrawl (more examples [here](http://statmt.org/)). To download a raw dump of Wikipedia, run the following command: 
 
@@ -22,7 +22,7 @@ $ wget -c http://mattmahoney.net/dc/enwik9.zip -P data
 $ unzip data/enwik9.zip -d data
 ```
 
-A raw Wikipedia dump contains  a lot of HTML / XML data. We pre-process it with the wikifil.pl script bundled with fastText (this script was originally developed by Matt Mahoney, and can be found on his [website](http://mattmahoney.net/) )
+A raw Wikipedia dump contains a lot of HTML / XML data. We pre-process it with the wikifil.pl script bundled with fastText (this script was originally developed by Matt Mahoney, and can be found on his [website](http://mattmahoney.net/) )
 
 ```bash
 $ perl wikifil.pl data/enwik9 > data/fil9
@@ -37,7 +37,7 @@ anarchism originated as a term of abuse first used against early working class
 
 The text is nicely pre-processed and can be used to learn our word vectors. 
 
-# Training word vectors
+## Training word vectors
 
 Learning  word vectors on this data can now be achieved with a single command:
 
@@ -68,7 +68,7 @@ one 0.32731 0.044409 -0.46484 0.14716 0.7431 0.24684 -0.11301 0.51721 0.73262 ..
 
 The first line is a header containing the number of words and the dimensionality of the vectors. The subsequent lines are the word vectors for all words in the vocabulary, sorted by decreasing frequency.
 
-## Advanced readers: skipgram versus cbow
+### Advanced readers: skipgram versus cbow
 
 fastText provides two models for computing word representations: skipgram and cbow ('**c**ontinuous-**b**ag-**o**f-**w**ords').
 
@@ -76,7 +76,7 @@ The skipgram model learns to predict a target word thanks to a nearby word. On t
 
 Let us illustrate this difference with an example:  given the sentence *'Poets have been mysteriously silent on the subject of cheese'* and the target word '*silent*', a skipgram model tries to predict the target using a random close-by word, like '*subject' *or* '*mysteriously*'**. *The cbow model takes all the words in a surrounding window, like {*been, *mysteriously*, on, the*}, and uses the sum of their vectors to predict the target. The figure below summarizes this difference with another example.
 
-![cbow vs skipgram](https://github.com/facebookresearch/fastText/blob/master/tutorials/cbo_vs_skipgram.png)
+![cbow vs skipgram](https://fasttext.cc/img/cbo_vs_skipgram.png)
 To train a cbow model with fastText, you run the following command:
 
 ```bash
@@ -86,7 +86,7 @@ To train a cbow model with fastText, you run the following command:
 
 In practice, we observe that skipgram models works better with subword information than cbow. 
 
-## Advanced readers: playing with the parameters
+### Advanced readers: playing with the parameters
 
 So far, we run fastText with the default parameters, but depending on the data, these parameters may not be optimal. Let us give an introduction to some of the key parameters for word vectors.
 
@@ -110,7 +110,7 @@ $ ./fasttext skipgram -input data/fil9 -output result/fil9 -thread 4
 
 
 
-# Printing word vectors
+## Printing word vectors
 
 Searching and printing word vectors directly from  the `fil9.vec`  file  is cumbersome. Fortunately, there is a `print-word-vectors` functionality in fastText.  
 
@@ -134,7 +134,7 @@ $ echo "enviroment" | ./fasttext print-word-vectors result/fil9.bin
 You still get a word vector for it! But how good it is? Let s find out in the next sections!
 
 
-# Nearest neighbor queries
+## Nearest neighbor queries
 
 A simple way to check the quality of a word vector is to look at its nearest neighbors. This give an intuition of the type of semantic information the vectors are able to capture.
 
@@ -146,7 +146,7 @@ Pre-computing word vectors... done.
 ```
 
 
- Then we are prompted to type our query word, let us try *asparagus* :
+Then we are prompted to type our query word, let us try *asparagus* :
 
 ```bash
 Query word? asparagus
@@ -196,11 +196,11 @@ ecotourism 0.697081
 
 Thanks to the information contained within the word, the vector of our misspelled word matches to reasonable words! It is not perfect but the main information has been captured.
 
-## Advanced reader: measure of similarity
+### Advanced reader: measure of similarity
 
 In order to find nearest neighbors, we need to compute a similarity score between words. Our words are represented by continuous word vectors and we can thus apply simple similarities to them. In particular we use the cosine of the angles between two vectors. This similarity is computed for all words in the vocabulary, and the 10 most similar words are shown.  Of course, if the word appears in the vocabulary, it will appear on top, with a similarity of 1.
 
-# Word analogies
+## Word analogies
 
 In a similar spirit, one can play around with word analogies. For example, we can see if our model can guess what is to France, what Berlin is to Germany. 
 
@@ -241,7 +241,7 @@ famicom 0.745298
 Our model considers that the *nintendo* analogy of a *psx* is the *gamecube*, which seems  reasonable. Of course the quality of the analogies depend on the dataset used to train the model and one can only hope to cover fields only in the dataset.
 
 
-# Importance of character n-grams
+## Importance of character n-grams
 
 Using subword-level information is particularly interesting to build vectors for unknown words. For example, the word *gearshift* does not exist on Wikipedia but we can still query its closest existing words:
 
@@ -304,6 +304,6 @@ hospitality 0.701426
 
 The nearest neighbors capture different variation around the word *accommodation*. We also get semantically related words such as *amenities* or *lodging*. 
 
-# Conclusion
+## Conclusion
 
-In this tutorial, we show how to obtain  word vectors from Wikipedia. This can be done for any language and you can find pre-trained models with the default setting for 294 of them [here](https://github.com/facebookresearch/fastText/blob/master/pretrained-vectors.md)
+In this tutorial, we show how to obtain word vectors from Wikipedia. This can be done for any language and you we provide [pre-trained models](https://fasttext.cc/docs/en/pretrained-vectors.html) with the default setting for 294 of them.

@@ -51,7 +51,7 @@ The commands supported by fasttext are:
 
 ```
 
-In this tutorial, we mainly use the `supervised`, `test` and `predict` subcommands, which corresponds to learning (and using) text classifier. For an introduction to the other functionalities of fastText, please see the [tutorial about learning word vectors](https://github.com/facebookresearch/fastText/blob/master/tutorials/unsupervised-learning.md).
+In this tutorial, we mainly use the `supervised`, `test` and `predict` subcommands, which corresponds to learning (and using) text classifier. For an introduction to the other functionalities of fastText, please see the [tutorial about learning word vectors](https://fasttext.cc/docs/en/unsupervised-tutorial.html).
 
 ## Getting and preparing the data
 
