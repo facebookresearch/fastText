@@ -26,7 +26,10 @@ class Vector {
     real* data_;
 
     explicit Vector(int64_t);
+    Vector(const Vector&);
     ~Vector();
+
+    Vector& operator=(const Vector&);
 
     real& operator[](int64_t);
     const real& operator[](int64_t) const;

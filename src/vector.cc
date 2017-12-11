@@ -24,8 +24,22 @@ Vector::Vector(int64_t m) {
   data_ = new real[m];
 }
 
+Vector::Vector(const Vector& other)
+  : m_(other.m_),
+    data_(new real[m_])
+{
+  memcpy(data_, other.data_, m_ * sizeof(real));
+}
+
 Vector::~Vector() {
   delete[] data_;
+}
+
+Vector& Vector::operator=(const Vector& other) {
+  Vector tmp(other);
+  m_ = tmp.m_;
+  std::swap(data_, tmp.data_);
+  return *this;
 }
 
 int64_t Vector::size() const {
