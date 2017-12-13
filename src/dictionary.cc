@@ -80,7 +80,9 @@ const std::vector<int32_t> Dictionary::getSubwords(
     return getSubwords(i);
   }
   std::vector<int32_t> ngrams;
-  computeSubwords(BOW + word + EOW, ngrams);
+  if (word != EOS) {
+    computeSubwords(BOW + word + EOW, ngrams);
+  }
   return ngrams;
 }
 
@@ -94,7 +96,9 @@ void Dictionary::getSubwords(const std::string& word,
     ngrams.push_back(i);
     substrings.push_back(words_[i].word);
   }
-  computeSubwords(BOW + word + EOW, ngrams, substrings);
+  if (word != EOS) {
+    computeSubwords(BOW + word + EOW, ngrams, substrings);
+  }
 }
 
 bool Dictionary::discard(int32_t id, real rand) const {
@@ -296,7 +300,9 @@ void Dictionary::addSubwords(std::vector<int32_t>& line,
                              const std::string& token,
                              int32_t wid) const {
   if (wid < 0) { // out of vocab
-    computeSubwords(BOW + token + EOW, line);
+    if (token != EOS) {
+      computeSubwords(BOW + token + EOW, line);
+    }
   } else {
     if (args_->maxn <= 0) { // in vocab w/o subwords
       line.push_back(wid);
