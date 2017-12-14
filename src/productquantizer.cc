@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <iostream>
 #include <numeric>
+#include <stdexcept>
 
 namespace fasttext {
 
@@ -128,8 +129,8 @@ void ProductQuantizer::kmeans(const real *x, real* c, int32_t n, int32_t d) {
 
 void ProductQuantizer::train(int32_t n, const real * x) {
   if (n < ksub_) {
-    std::cerr<<"Matrix too small for quantization, must have > 256 rows"<<std::endl;
-    exit(1);
+    throw std::invalid_argument(
+        "Matrix too small for quantization, must have at least " + std::to_string(ksub_) + " rows");
   }
   std::vector<int32_t> perm(n, 0);
   std::iota(perm.begin(), perm.end(), 0);

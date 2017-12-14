@@ -8,5 +8,7 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-apt-get update
-apt-get install -y vim g++ make cmake wget git python-pip python-dev build-essential
+# This script illustrates how to run the build tests locally
+# This requires docker
+
+tail -n 15 .circleci/config.yml | sed s/.\\+\"\\\(\.\\+\\\)\"/\\1/g | xargs -P 4 -o -I {} bash -c "circleci build --job {} && (>&2 echo "{}")" > /dev/null

@@ -80,12 +80,12 @@ class Dictionary {
     std::string getWord(int32_t) const;
     const std::vector<int32_t>& getSubwords(int32_t) const;
     const std::vector<int32_t> getSubwords(const std::string&) const;
-    void computeSubwords(const std::string&, std::vector<int32_t>&) const;
-    void computeSubwords(
+    void getSubwords(
         const std::string&,
         std::vector<int32_t>&,
         std::vector<std::string>&) const;
-    void getSubwords(
+    void computeSubwords(const std::string&, std::vector<int32_t>&) const;
+    void computeSubwords(
         const std::string&,
         std::vector<int32_t>&,
         std::vector<std::string>&) const;

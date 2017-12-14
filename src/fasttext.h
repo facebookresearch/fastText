@@ -39,7 +39,7 @@ class FastText {
 
   std::shared_ptr<Model> model_;
 
-  std::atomic<int64_t> tokenCount;
+  std::atomic<int64_t> tokenCount_;
   clock_t start;
   void signModel(std::ostream&);
   bool checkModel(std::istream&);

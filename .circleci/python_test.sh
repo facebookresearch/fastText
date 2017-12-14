@@ -8,5 +8,5 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-apt-get update
-apt-get install -y vim g++ make cmake wget git python-pip python-dev build-essential
+pip install .
+python runtests.py -u

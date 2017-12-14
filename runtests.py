@@ -9,7 +9,7 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-# To run this tests you must first fetch all the required test data.
+# To run the integration tests you must first fetch all the required test data.
 # Have a look at tests/fetch_test_data.sh
 # You will then need to point this script to the corresponding folder
 
@@ -21,11 +21,34 @@ from __future__ import unicode_literals
 import unittest
 import argparse
 from fastText.tests import gen_tests
+from fastText.tests import gen_unit_tests
+
+
+def run_tests(tests):
+    suite = unittest.TestLoader().loadTestsFromTestCase(tests)
+    unittest.TextTestRunner(verbosity=3).run(suite)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("data_dir", help="Full path to data directory")
+    parser.add_argument(
+        "-u", "--unit-tests", help="run unit tests", action="store_true"
+    )
+    parser.add_argument(
+        "-i",
+        "--integration-tests",
+        help="run integration tests",
+        action="store_true"
+    )
+    parser.add_argument("--data_dir", help="Full path to data directory")
     args = parser.parse_args()
-    tests = gen_tests(args.data_dir)
-    suite = unittest.TestLoader().loadTestsFromTestCase(tests)
-    unittest.TextTestRunner(verbosity=3).run(suite)
+    if args.unit_tests:
+        run_tests(gen_unit_tests())
+    if args.integration_tests:
+        if args.data_dir is None:
+            raise ValueError(
+                "Need data directory! Consult tests/fetch_test_data.sh"
+            )
+        run_tests(gen_tests(args.data_dir))
+    if not args.unit_tests and not args.integration_tests:
+        print("Ran no tests")

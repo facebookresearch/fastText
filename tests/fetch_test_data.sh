@@ -8,7 +8,7 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-DATADIR=data
+DATADIR=${DATADIR:-data}
 
 report_error() {
    echo "Error on line $1 of $0"
@@ -28,27 +28,10 @@ normalize_text() {
 set -e
 trap 'report_error $LINENO' ERR
 
-mkdir "${DATADIR}"
+mkdir -p "${DATADIR}"
 
-data_result="${DATADIR}/dbpedia_csv.tar.gz"
-if [ ! -f "$data_result" ] || \
-   [ $(md5sum "$data_result" | cut -f 1 -d ' ') != "8139d58cf075c7f70d085358e73af9b3" ]
-then
-  wget -c "https://github.com/le-scientifique/torchDatasets/raw/master/dbpedia_csv.tar.gz" -O "$data_result"
-  tar -xzvf "$data_result" -C "${DATADIR}"
-fi
 
-data_result="${DATADIR}/dbpedia.train"
-if [ ! -f "$data_result" ]
-then
-  cat "${DATADIR}/dbpedia_csv/train.csv" | normalize_text > "$data_result" || rm -f "$data_result"
-fi
-
-data_result="${DATADIR}/dbpedia.test"
-if [ ! -f "$data_result" ]
-then
-  cat "${DATADIR}/dbpedia_csv/test.csv" | normalize_text > "$data_result" || rm -f "$data_result"
-fi
+# Unsupervised datasets
 
 data_result="${DATADIR}/rw_queries.txt"
 if [ ! -f "$data_result" ]
@@ -75,6 +58,56 @@ if [ ! -f "$data_result" ]
 then
   wget -c https://nlp.stanford.edu/~lmthang/morphoNLM/rw.zip -P "${DATADIR}"
   unzip "${DATADIR}/rw.zip" -d "${DATADIR}" || rm -f "$data_result"
+fi
+
+# Supervised datasets
+# Each datasets comes with a .train and a .test to measure performance
+
+echo "Downloading dataset dbpedia"
+
+data_result="${DATADIR}/dbpedia_csv.tar.gz"
+if [ ! -f "$data_result" ] || \
+   [ $(md5sum "$data_result" | cut -f 1 -d ' ') != "8139d58cf075c7f70d085358e73af9b3" ]
+then
+  wget -c "https://github.com/le-scientifique/torchDatasets/raw/master/dbpedia_csv.tar.gz" -O "$data_result"
+  tar -xzvf "$data_result" -C "${DATADIR}"
+fi
+
+data_result="${DATADIR}/dbpedia.train"
+if [ ! -f "$data_result" ]
+then
+  cat "${DATADIR}/dbpedia_csv/train.csv" | normalize_text > "$data_result" || rm -f "$data_result"
+fi
+
+data_result="${DATADIR}/dbpedia.test"
+if [ ! -f "$data_result" ]
+then
+  cat "${DATADIR}/dbpedia_csv/test.csv" | normalize_text > "$data_result" || rm -f "$data_result"
+fi
+
+echo "Downloading dataset tatoeba for langid"
+
+data_result="${DATADIR}"/langid/all.txt
+if [ ! -f "$data_result" ]
+then
+  mkdir -p "${DATADIR}"/langid
+  wget http://downloads.tatoeba.org/exports/sentences.tar.bz2 -O "${DATADIR}"/langid/sentences.tar.bz2
+  tar xvfj "${DATADIR}"/langid/sentences.tar.bz2 --directory "${DATADIR}"/langid || exit 1
+  awk -F"\t" '{print"__label__"$2" "$3}' < "${DATADIR}"/langid/sentences.csv | shuf > "$data_result"
+fi
+
+# Called valid in blog post - https://fasttext.cc/blog/2017/10/02/blog-post.html
+# Called test here for consistency
+data_result="${DATADIR}/langid.test"
+if [ ! -f "$data_result" ]
+then
+  head -n 10000 "${DATADIR}"/langid/all.txt > "$data_result"
+fi
+
+data_result="${DATADIR}/langid.train"
+if [ ! -f "$data_result" ]
+then
+  tail -n +10001 "${DATADIR}"/langid/all.txt > "$data_result"
 fi
 
 DATASET=(

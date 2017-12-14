@@ -244,17 +244,26 @@ void FastText::loadModel(std::istream& in) {
 
 void FastText::printInfo(real progress, real loss) {
   real t = real(clock() - start) / CLOCKS_PER_SEC;
-  real wst = real(tokenCount) / t;
+  real wst_real = real(tokenCount_) / t;
+  int32_t wst = wst_real;
   real lr = args_->lr * (1.0 - progress);
-  int eta = int(t / progress * (1 - progress) / args_->thread);
-  int etah = eta / 3600;
-  int etam = (eta - etah * 3600) / 60;
+  int32_t eta;
+  if (progress == 0 || t == 0) {
+    eta = 720 * 3600; // One month.
+  } else {
+    eta = int32_t((t / progress) * (1 - progress) / args_->thread);
+  }
+  int32_t etah = eta / 3600;
+  int32_t etam = (eta - etah * 3600) / 60;
+  progress = progress * 100;
   std::cerr << std::fixed;
-  std::cerr << "\rProgress: " << std::setprecision(1) << 100 * progress << "%";
-  std::cerr << "  words/sec/thread: " << std::setprecision(0) << wst;
-  std::cerr << "  lr: " << std::setprecision(6) << lr;
-  std::cerr << "  loss: " << std::setprecision(6) << loss;
-  std::cerr << "  eta: " << etah << "h" << etam << "m ";
+  std::cerr << "\rProgress: ";
+  std::cerr << std::setprecision(1) << std::setw(6) << progress << "%";
+  std::cerr << " words/s: " << std::setw(9) << wst;
+  std::cerr << " lr: " << std::setw(9) << std::setprecision(6) << lr;
+  std::cerr << " loss: " << std::setw(9) << std::setprecision(6) << loss;
+  std::cerr << " eta: " << std::setw(3) << etah;
+  std::cerr << "h" << std::setw(2) << etam << "m";
   std::cerr << std::flush;
 }
 
@@ -569,8 +578,8 @@ void FastText::trainThread(int32_t threadId) {
   const int64_t ntokens = dict_->ntokens();
   int64_t localTokenCount = 0;
   std::vector<int32_t> line, labels;
-  while (tokenCount < args_->epoch * ntokens) {
-    real progress = real(tokenCount) / (args_->epoch * ntokens);
+  while (tokenCount_ < args_->epoch * ntokens) {
+    real progress = real(tokenCount_) / (args_->epoch * ntokens);
     real lr = args_->lr * (1.0 - progress);
     if (args_->model == model_name::sup) {
       localTokenCount += dict_->getLine(ifs, line, labels, model.rng);
@@ -583,7 +592,7 @@ void FastText::trainThread(int32_t threadId) {
       skipgram(model, lr, line);
     }
     if (localTokenCount > args_->lrUpdateRate) {
-      tokenCount += localTokenCount;
+      tokenCount_ += localTokenCount;
       localTokenCount = 0;
       if (threadId == 0 && args_->verbose > 1) {
         printInfo(progress, model.getLoss());
@@ -675,7 +684,7 @@ void FastText::train(std::shared_ptr<Args> args) {
 
 void FastText::startThreads() {
   start = clock();
-  tokenCount = 0;
+  tokenCount_ = 0;
   if (args_->thread > 1) {
     std::vector<std::thread> threads;
     for (int32_t i = 0; i < args_->thread; i++) {

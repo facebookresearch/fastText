@@ -12,4 +12,4 @@ from __future__ import unicode_literals
 
 from .test_configurations import get_supervised_models
 from .test_script import gen_tests
-from .test_script import gen_small_tests
+from .test_script import gen_unit_tests
