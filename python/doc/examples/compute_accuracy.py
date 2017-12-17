@@ -14,15 +14,50 @@ from __future__ import unicode_literals
 from __future__ import division, absolute_import, print_function
 
 from fastText import load_model
+from fastText import util
 import argparse
 import numpy as np
 
 
-def closest_ind(query, vectors, cossims):
-    np.matmul(vectors, query, out=cossims)
+def process_question(question, cossims, model, words, vectors):
+    correct = 0
+    num_qs = 0
+    num_lines = 0
+    for line in question:
+        num_lines += 1
+        qwords = line.split()
+        # We lowercase all words to correspond to the preprocessing
+        # we applied to our data.
+        qwords = [x.lower().strip() for x in qwords]
+        # If one of the words is not in the vocabulary we skip this question
+        found = True
+        for w in qwords:
+            if w not in words:
+                found = False
+                break
+        if not found:
+            continue
+        # The first three words form the query
+        # We retrieve their word vectors and normalize them
+        query = qwords[:3]
+        query = [model.get_word_vector(x) for x in query]
+        query = [x / np.linalg.norm(x) for x in query]
+        # Get the query vector. Example:
+        # Germany  - Berlin + France
+        query = query[1] - query[0] + query[2]
+        # We don't need to rank all the words, only until we found
+        # the first word not equal to our set of query words.
+        ban_set = list(map(lambda x: words.index(x), qwords[:3]))
+        if words[util.find_nearest_neighbor(
+            query, vectors, ban_set, cossims=cossims
+        )] == qwords[3]:
+            correct += 1
+        num_qs += 1
+    return correct, num_qs, num_lines
 
 
-def print_score(
+# We use the same conventions as within compute-accuracy
+def print_compute_accuracy_score(
     question, correct, num_qs, total_accuracy, semantic_accuracy,
     syntactic_accuracy
 ):
@@ -63,7 +98,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
     args.threshold = int(args.threshold)
 
+    # Retrieve list of normalized word vectors for the first words up
+    # until the threshold count.
     f = load_model(args.model)
+    # Gets words with associated frequeny sorted by default by descending order
     words, freq = f.get_words(include_freq=True)
     words = words[:args.threshold]
     vectors = np.zeros((len(words), f.get_dimension()), dtype=float)
@@ -74,7 +112,7 @@ if __name__ == "__main__":
 
     total_correct = 0
     total_qs = 0
-    num_lines = 0
+    total_num_lines = 0
 
     total_se_correct = 0
     total_se_qs = 0
@@ -83,79 +121,40 @@ if __name__ == "__main__":
     total_sy_qs = 0
 
     qid = 0
+    questions = []
     with open(args.question_words, 'r') as fqw:
-        correct = 0
-        num_qs = 0
-        question = ""
-        # For efficiency
-        cossims = np.zeros(len(words), dtype=float)
-        for line in fqw:
-            if line[0] == ":":
-                if question != "":
-                    total_qs += num_qs
-                    total_correct += correct
-                    score = correct / num_qs
-                    if (qid <= 5):
-                        total_se_correct += correct
-                        total_se_qs += num_qs
-                    else:
-                        total_sy_correct += correct
-                        total_sy_qs += num_qs
-                    print_score(
-                        question,
-                        correct,
-                        num_qs,
-                        total_correct / float(total_qs),
-                        total_se_correct / float(total_se_qs)
-                        if total_se_qs > 0 else 0,
-                        total_sy_correct / float(total_sy_qs)
-                        if total_sy_qs > 0 else 0,
-                    )
-                correct = 0
-                num_qs = 0
-                question = line.strip().replace(":", "")
-                qid += 1
-            else:
-                num_lines += 1
-                qwords = line.split()
-                qwords = [x.lower().strip() for x in qwords]
-                found = True
-                for w in qwords:
-                    if w not in words:
-                        found = False
-                        break
-                if not found:
-                    continue
-                query = qwords[:3]
-                query = [f.get_word_vector(x) for x in query]
-                query = [x / np.linalg.norm(x) for x in query]
-                query = query[1] - query[0] + query[2]
-                ban_set = qwords[:3]
-                closest_ind(query, vectors, cossims)
-                rank = len(cossims) - 1
-                result_i = np.argpartition(cossims, rank)[rank]
-                result = words[result_i]
-                while result in ban_set:
-                    rank -= 1
-                    result_i = np.argpartition(cossims, rank)[rank]
-                    result = words[result_i]
-                if result == qwords[3]:
-                    correct += 1
-                num_qs += 1
+        questions = fqw.read().split(':')[1:]
+    # For efficiency preallocate the memory to calculate cosine similarities
+    cossims = np.zeros(len(words), dtype=float)
+    for question in questions:
+        quads = question.split('\n')
+        question = quads[0].strip()
+        quads = quads[1:-1]
+        correct, num_qs, num_lines = process_question(
+            quads, cossims, f, words, vectors
+        )
+        total_qs += num_qs
+        total_correct += correct
+        total_num_lines += num_lines
 
-    total_qs += num_qs
-    total_correct += correct
-    total_sy_correct += correct
-    total_sy_qs += num_qs
-    print_score(
-        question,
-        correct,
-        num_qs,
-        total_correct / float(total_qs),
-        total_se_correct / float(total_se_qs) if total_se_qs > 0 else 0,
-        total_sy_correct / float(total_sy_qs) if total_sy_qs > 0 else 0,
-    )
+        if (qid < 5):
+            total_se_correct += correct
+            total_se_qs += num_qs
+        else:
+            total_sy_correct += correct
+            total_sy_qs += num_qs
+
+        print_compute_accuracy_score(
+            question,
+            correct,
+            num_qs,
+            total_correct / float(total_qs),
+            total_se_correct / float(total_se_qs) if total_se_qs > 0 else 0,
+            total_sy_correct / float(total_sy_qs) if total_sy_qs > 0 else 0,
+        )
+        qid += 1
+
     print(
         "Questions seen / total: {0} {1}   {2:.2f} %".
-        format(total_qs, num_lines, total_qs / num_lines * 100)
+        format(total_qs, total_num_lines, total_qs / total_num_lines * 100)
     )

@@ -80,16 +80,16 @@ void printPrintNgramsUsage() {
 }
 
 void quantize(const std::vector<std::string>& args) {
-  std::shared_ptr<Args> a = std::make_shared<Args>();
+  Args a = Args();
   if (args.size() < 3) {
     printQuantizeUsage();
-    a->printHelp();
+    a.printHelp();
     exit(EXIT_FAILURE);
   }
-  a->parseArgs(args);
+  a.parseArgs(args);
   FastText fasttext;
   // parseArgs checks if a->output is given.
-  fasttext.loadModel(a->output + ".bin");
+  fasttext.loadModel(a.output + ".bin");
   fasttext.quantize(a);
   fasttext.saveModel();
   exit(0);
@@ -245,13 +245,13 @@ void analogies(const std::vector<std::string> args) {
 }
 
 void train(const std::vector<std::string> args) {
-  std::shared_ptr<Args> a = std::make_shared<Args>();
-  a->parseArgs(args);
+  Args a = Args();
+  a.parseArgs(args);
   FastText fasttext;
   fasttext.train(a);
   fasttext.saveModel();
   fasttext.saveVectors();
-  if (a->saveOutput) {
+  if (a.saveOutput) {
     fasttext.saveOutput();
   }
 }

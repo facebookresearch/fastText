@@ -64,9 +64,8 @@ PYBIND11_MODULE(fasttext_pybind, m) {
       .export_values();
 
   m.def("train", [](fasttext::FastText& ft, fasttext::Args& a) {
-    std::shared_ptr<fasttext::Args> sa = std::make_shared<fasttext::Args>(a);
-    ft.train(sa);
-  });
+    ft.train(a);
+  }, py::call_guard<py::gil_scoped_release>());
 
   py::class_<fasttext::Vector>(m, "Vector", py::buffer_protocol())
       .def(py::init<ssize_t>())
@@ -180,18 +179,17 @@ PYBIND11_MODULE(fasttext_pybind, m) {
              int verbose,
              int32_t dsub,
              bool qnorm) {
-            std::shared_ptr<fasttext::Args> qa =
-                std::make_shared<fasttext::Args>();
-            qa->input = input;
-            qa->qout = qout;
-            qa->cutoff = cutoff;
-            qa->retrain = retrain;
-            qa->epoch = epoch;
-            qa->lr = lr;
-            qa->thread = thread;
-            qa->verbose = verbose;
-            qa->dsub = dsub;
-            qa->qnorm = qnorm;
+            fasttext::Args qa = fasttext::Args();
+            qa.input = input;
+            qa.qout = qout;
+            qa.cutoff = cutoff;
+            qa.retrain = retrain;
+            qa.epoch = epoch;
+            qa.lr = lr;
+            qa.thread = thread;
+            qa.verbose = verbose;
+            qa.dsub = dsub;
+            qa.qnorm = qnorm;
             m.quantize(qa);
           })
       .def(
@@ -205,11 +203,7 @@ PYBIND11_MODULE(fasttext_pybind, m) {
             m.predict(ioss, k, predictions);
             return predictions;
           })
-      .def(
-          "isQuant",
-          [](fasttext::FastText& m) {
-            return m.isQuant();
-          })
+      .def("isQuant", [](fasttext::FastText& m) { return m.isQuant(); })
       .def(
           "getWordId",
           [](fasttext::FastText& m, const std::string word) {

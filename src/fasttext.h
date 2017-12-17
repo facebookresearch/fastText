@@ -14,6 +14,8 @@
 #include <atomic>
 #include <memory>
 #include <set>
+#include <chrono>
+#include <iostream>
 
 #include "args.h"
 #include "dictionary.h"
@@ -40,7 +42,9 @@ class FastText {
   std::shared_ptr<Model> model_;
 
   std::atomic<int64_t> tokenCount_;
-  clock_t start;
+  std::atomic<real> loss_;
+
+  clock_t start_;
   void signModel(std::ostream&);
   bool checkModel(std::istream&);
 
@@ -75,7 +79,7 @@ class FastText {
   void saveModel();
   void loadModel(std::istream&);
   void loadModel(const std::string&);
-  void printInfo(real, real);
+  void printInfo(real, real, std::ostream& log_stream);
 
   void supervised(
       Model&,
@@ -86,7 +90,7 @@ class FastText {
   void skipgram(Model&, real, const std::vector<int32_t>&);
   std::vector<int32_t> selectEmbeddings(int32_t) const;
   void getSentenceVector(std::istream&, Vector&);
-  void quantize(std::shared_ptr<Args>);
+  void quantize(const Args);
   void test(std::istream&, int32_t);
   void predict(std::istream&, int32_t, bool);
   void predict(
@@ -100,7 +104,7 @@ class FastText {
   void nn(int32_t);
   void analogies(int32_t);
   void trainThread(int32_t);
-  void train(std::shared_ptr<Args>);
+  void train(const Args);
 
   void loadVectors(std::string);
   int getDimension() const;

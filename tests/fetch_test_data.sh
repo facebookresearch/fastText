@@ -96,18 +96,39 @@ then
   awk -F"\t" '{print"__label__"$2" "$3}' < "${DATADIR}"/langid/sentences.csv | shuf > "$data_result"
 fi
 
-# Called valid in blog post - https://fasttext.cc/blog/2017/10/02/blog-post.html
-# Called test here for consistency
-data_result="${DATADIR}/langid.test"
+data_result="${DATADIR}/langid.train"
+if [ ! -f "$data_result" ]
+then
+  tail -n +10001 "${DATADIR}"/langid/all.txt > "$data_result"
+fi
+
+data_result="${DATADIR}/langid.valid"
 if [ ! -f "$data_result" ]
 then
   head -n 10000 "${DATADIR}"/langid/all.txt > "$data_result"
 fi
 
-data_result="${DATADIR}/langid.train"
+echo "Downloading cooking dataset"
+
+data_result="${DATADIR}"/cooking/cooking.stackexchange.txt
 if [ ! -f "$data_result" ]
 then
-  tail -n +10001 "${DATADIR}"/langid/all.txt > "$data_result"
+  mkdir -p "${DATADIR}"/cooking/
+  wget https://s3-us-west-1.amazonaws.com/fasttext-vectors/cooking.stackexchange.tar.gz -O "${DATADIR}"/cooking/cooking.stackexchange.tar.gz
+  tar xvzf "${DATADIR}"/cooking/cooking.stackexchange.tar.gz --directory "${DATADIR}"/cooking || exit 1
+  cat "${DATADIR}"/cooking/cooking.stackexchange.txt | sed -e "s/\([.\!?,'/()]\)/ \1 /g" | tr "[:upper:]" "[:lower:]" > "${DATADIR}"/cooking/cooking.preprocessed.txt
+fi
+
+data_result="${DATADIR}"/cooking.train
+if [ ! -f "$data_result" ]
+then
+  head -n 12404 "${DATADIR}"/cooking/cooking.preprocessed.txt > "${DATADIR}"/cooking.train
+fi
+
+data_result="${DATADIR}"/cooking.valid
+if [ ! -f "$data_result" ]
+then
+  tail -n 3000 "${DATADIR}"/cooking/cooking.preprocessed.txt > "${DATADIR}"/cooking.valid
 fi
 
 DATASET=(
