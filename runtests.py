@@ -40,7 +40,7 @@ if __name__ == "__main__":
         help="run integration tests",
         action="store_true"
     )
-    parser.add_argument("--data_dir", help="Full path to data directory")
+    parser.add_argument("--data-dir", help="Full path to data directory")
     args = parser.parse_args()
     if args.unit_tests:
         run_tests(gen_unit_tests())

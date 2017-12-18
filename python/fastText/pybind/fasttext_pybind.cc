@@ -71,11 +71,11 @@ PYBIND11_MODULE(fasttext_pybind, m) {
       .def(py::init<ssize_t>())
       .def_buffer([](fasttext::Vector& m) -> py::buffer_info {
         return py::buffer_info(
-            m.data_,
+            m.data(),
             sizeof(fasttext::real),
             py::format_descriptor<fasttext::real>::format(),
             1,
-            {m.m_},
+            {m.size()},
             {sizeof(fasttext::real)});
       });
 
@@ -85,12 +85,13 @@ PYBIND11_MODULE(fasttext_pybind, m) {
       .def(py::init<ssize_t, ssize_t>())
       .def_buffer([](fasttext::Matrix& m) -> py::buffer_info {
         return py::buffer_info(
-            m.data_,
+            m.data(),
             sizeof(fasttext::real),
             py::format_descriptor<fasttext::real>::format(),
             2,
-            {m.m_, m.n_},
-            {sizeof(fasttext::real) * m.n_, sizeof(fasttext::real) * (int64_t)1});
+            {m.size(0), m.size(1)},
+            {sizeof(fasttext::real) * m.size(1),
+             sizeof(fasttext::real) * (int64_t)1});
       });
 
   py::class_<fasttext::FastText>(m, "fasttext")

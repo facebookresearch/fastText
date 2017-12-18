@@ -12,7 +12,9 @@
 #include <cstdint>
 #include <istream>
 #include <ostream>
+#include <vector>
 
+#include <assert.h>
 #include "real.h"
 
 namespace fasttext {
@@ -20,35 +22,56 @@ namespace fasttext {
 class Vector;
 
 class Matrix {
+ protected:
+  std::vector<real> data_;
+  const int64_t m_;
+  const int64_t n_;
 
-  public:
-    real* data_;
-    int64_t m_;
-    int64_t n_;
+ public:
+  Matrix();
+  explicit Matrix(int64_t, int64_t);
+  Matrix(const Matrix&) = default;
+  Matrix& operator=(const Matrix&) = delete;
 
-    Matrix();
-    Matrix(int64_t, int64_t);
-    Matrix(const Matrix&);
-    Matrix& operator=(const Matrix&);
-    ~Matrix();
+  inline real* data() {
+    return data_.data();
+  }
+  inline const real* data() const {
+    return data_.data();
+  }
 
-    inline const real& at(int64_t i, int64_t j) const {return data_[i * n_ + j];};
-    inline real& at(int64_t i, int64_t j) {return data_[i * n_ + j];};
+  inline const real& at(int64_t i, int64_t j) const {
+    return data_[i * n_ + j];
+  };
+  inline real& at(int64_t i, int64_t j) {
+    return data_[i * n_ + j];
+  };
 
+  inline int64_t size(int64_t dim) const {
+    assert(dim == 0 || dim == 1);
+    if (dim == 0) {
+      return m_;
+    }
+    return n_;
+  }
+  inline int64_t rows() const {
+    return m_;
+  }
+  inline int64_t cols() const {
+    return n_;
+  }
+  void zero();
+  void uniform(real);
+  real dotRow(const Vector&, int64_t) const;
+  void addRow(const Vector&, int64_t, real);
 
-    void zero();
-    void uniform(real);
-    real dotRow(const Vector&, int64_t) const;
-    void addRow(const Vector&, int64_t, real);
+  void multiplyRow(const Vector& nums, int64_t ib = 0, int64_t ie = -1);
+  void divideRow(const Vector& denoms, int64_t ib = 0, int64_t ie = -1);
 
-    void multiplyRow(const Vector& nums, int64_t ib = 0, int64_t ie = -1);
-    void divideRow(const Vector& denoms, int64_t ib = 0, int64_t ie = -1);
+  real l2NormRow(int64_t i) const;
+  void l2NormRow(Vector& norms) const;
 
-    real l2NormRow(int64_t i) const;
-    void l2NormRow(Vector& norms) const;
-
-    void save(std::ostream&);
-    void load(std::istream&);
+  void save(std::ostream&);
+  void load(std::istream&);
 };
-
 }

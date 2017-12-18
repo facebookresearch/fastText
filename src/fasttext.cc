@@ -265,9 +265,9 @@ void FastText::printInfo(real progress, real loss, std::ostream& log_stream) {
 }
 
 std::vector<int32_t> FastText::selectEmbeddings(int32_t cutoff) const {
-  Vector norms(input_->m_);
+  Vector norms(input_->size(0));
   input_->l2NormRow(norms);
-  std::vector<int32_t> idx(input_->m_, 0);
+  std::vector<int32_t> idx(input_->size(0), 0);
   std::iota(idx.begin(), idx.end(), 0);
   auto eosid = dict_->getId(Dictionary::EOS);
   std::sort(idx.begin(), idx.end(),
@@ -287,7 +287,7 @@ void FastText::quantize(const Args qargs) {
   args_->qout = qargs.qout;
   args_->output = qargs.output;
 
-  if (qargs.cutoff > 0 && qargs.cutoff < input_->m_) {
+  if (qargs.cutoff > 0 && qargs.cutoff < input_->size(0)) {
     auto idx = selectEmbeddings(qargs.cutoff);
     dict_->prune(idx);
     std::shared_ptr<Matrix> ninput =
@@ -618,7 +618,7 @@ void FastText::loadVectors(std::string filename) {
     words.push_back(word);
     dict_->add(word);
     for (size_t j = 0; j < dim; j++) {
-      in >> mat->data_[i * dim + j];
+      in >> mat->at(i, j);
     }
   }
   in.close();
@@ -631,7 +631,7 @@ void FastText::loadVectors(std::string filename) {
     int32_t idx = dict_->getId(words[i]);
     if (idx < 0 || idx >= dict_->nwords()) continue;
     for (size_t j = 0; j < dim; j++) {
-      input_->data_[idx * dim + j] = mat->data_[i * dim + j];
+      input_->at(idx, j) = mat->at(i, j);
     }
   }
 }

@@ -26,14 +26,14 @@ Model::Model(
     std::shared_ptr<Args> args,
     int32_t seed)
     : hidden_(args->dim),
-      output_(wo->m_),
+      output_(wo->size(0)),
       grad_(args->dim),
       rng(seed),
       quant_(false) {
   wi_ = wi;
   wo_ = wo;
   args_ = args;
-  osz_ = wo->m_;
+  osz_ = wo->size(0);
   hsz_ = args->dim;
   negpos = 0;
   loss_ = 0.0;
