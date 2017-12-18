@@ -591,9 +591,12 @@ void FastText::trainThread(int32_t threadId) {
     if (localTokenCount > args_->lrUpdateRate) {
       tokenCount_ += localTokenCount;
       localTokenCount = 0;
-      if (threadId == 0) loss_ = model.getLoss();
+      if (threadId == 0 && args_->verbose > 1)
+        loss_ = model.getLoss();
     }
   }
+  if (threadId == 0)
+    loss_ = model.getLoss();
   ifs.close();
 }
 
