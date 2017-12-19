@@ -11,6 +11,7 @@
 RESULTDIR=result
 DATADIR=data
 
+sudo apt-get install cmake
 ./.circleci/pull_data.sh
 mkdir buildc && cd buildc && cmake .. && make && cd ..
 cp buildc/fasttext .
