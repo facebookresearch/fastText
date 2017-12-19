@@ -23,6 +23,7 @@ class Args {
   protected:
     std::string lossToString(loss_name);
     std::string boolToString(bool);
+    std::string modelToString(model_name);
 
   public:
     Args();
@@ -49,19 +50,20 @@ class Args {
     std::string pretrainedVectors;
     bool saveOutput;
 
-  bool qout;
-  bool retrain;
-  bool qnorm;
-  size_t cutoff;
-  size_t dsub;
+    bool qout;
+    bool retrain;
+    bool qnorm;
+    size_t cutoff;
+    size_t dsub;
 
-  void parseArgs(const std::vector<std::string>& args);
-  void printHelp();
-  void printBasicHelp();
-  void printDictionaryHelp();
-  void printTrainingHelp();
-  void printQuantizationHelp();
-  void save(std::ostream&);
-  void load(std::istream&);
+    void parseArgs(const std::vector<std::string>& args);
+    void printHelp();
+    void printBasicHelp();
+    void printDictionaryHelp();
+    void printTrainingHelp();
+    void printQuantizationHelp();
+    void save(std::ostream&);
+    void load(std::istream&);
+    void dump(std::ostream&);
 };
 }

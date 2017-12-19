@@ -104,6 +104,7 @@ class Dictionary {
     void threshold(int64_t, int64_t);
     void prune(std::vector<int32_t>&);
     bool isPruned() { return pruneidx_size_ >= 0; }
+    void dump(std::ostream&) const;
 };
 
 }

@@ -477,4 +477,15 @@ void Dictionary::prune(std::vector<int32_t>& idx) {
   initNgrams();
 }
 
+void Dictionary::dump(std::ostream& out) const {
+  out << words_.size() << std::endl;
+  for (auto it : words_) {
+    std::string entryType = "word";
+    if (it.type == entry_type::label) {
+      entryType = "label";
+    }
+    out << it.word << " " << it.count << " " << entryType << std::endl;
+  }
+}
+
 }

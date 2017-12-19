@@ -65,6 +65,18 @@ std::string Args::boolToString(bool b) {
   }
 }
 
+std::string Args::modelToString(model_name mn) {
+  switch (mn) {
+    case model_name::cbow:
+      return "cbow";
+    case model_name::sg:
+      return "sg";
+    case model_name::sup:
+      return "sup";
+  }
+  return "Unknown model name!"; // should never happen
+}
+
 void Args::parseArgs(const std::vector<std::string>& args) {
   std::string command(args[1]);
   if (command == "supervised") {
@@ -260,6 +272,22 @@ void Args::load(std::istream& in) {
   in.read((char*) &(maxn), sizeof(int));
   in.read((char*) &(lrUpdateRate), sizeof(int));
   in.read((char*) &(t), sizeof(double));
+}
+
+void Args::dump(std::ostream& out) {
+  out << "dim" << " " << dim << std::endl;
+  out << "ws" << " " << ws << std::endl;
+  out << "epoch" << " " << epoch << std::endl;
+  out << "minCount" << " " << minCount << std::endl;
+  out << "neg" << " " << neg << std::endl;
+  out << "wordNgrams" << " " << wordNgrams << std::endl;
+  out << "loss" << " " << lossToString(loss) << std::endl;
+  out << "model" << " " << modelToString(model) << std::endl;
+  out << "bucket" << " " << bucket << std::endl;
+  out << "minn" << " " << minn << std::endl;
+  out << "maxn" << " " << maxn << std::endl;
+  out << "lrUpdateRate" << " " << lrUpdateRate << std::endl;
+  out << "t" << " " << t << std::endl;
 }
 
 }

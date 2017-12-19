@@ -73,5 +73,7 @@ class Matrix {
 
   void save(std::ostream&);
   void load(std::istream&);
+
+  void dump(std::ostream&) const;
 };
 }

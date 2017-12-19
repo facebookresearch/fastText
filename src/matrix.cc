@@ -117,4 +117,18 @@ void Matrix::load(std::istream& in) {
   data_ = std::vector<real>(m_ * n_);
   in.read((char*)data_.data(), m_ * n_ * sizeof(real));
 }
+
+void Matrix::dump(std::ostream& out) const {
+  out << m_ << " " << n_ << std::endl;
+  for (int64_t i = 0; i < m_; i++) {
+    for (int64_t j = 0; j < n_; j++) {
+      if (j > 0) {
+        out << " ";
+      }
+      out << at(i, j);
+    }
+    out << std::endl;
+  }
+};
+
 }
