@@ -131,6 +131,26 @@ then
   tail -n 3000 "${DATADIR}"/cooking/cooking.preprocessed.txt > "${DATADIR}"/cooking.valid
 fi
 
+echo "Checking for YFCC100M"
+
+data_result="${DATADIR}"/YFCC100M/train
+if [ ! -f "$data_result" ]
+then
+  echo 'Download YFCC100M, unpack it and place train into the following path: '"$data_result"
+  echo 'You can download YFCC100M at :'"https://fasttext.cc/docs/en/dataset.html"
+  echo 'After you download this, run the script again'
+  exit 1
+fi
+
+data_result="${DATADIR}"/YFCC100M/test
+if [ ! -f "$data_result" ]
+then
+  echo 'Download YFCC100M, unpack it and place test into the following path: '"$data_result"
+  echo 'You can download YFCC100M at :'"https://fasttext.cc/docs/en/dataset.html"
+  echo 'After you download this, run the script again'
+  exit 1
+fi
+
 DATASET=(
   ag_news
   sogou_news

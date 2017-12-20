@@ -364,7 +364,7 @@ class TestFastTextUnitPy(unittest.TestCase):
 
 # Generate a supervised test case
 # The returned function will be set as an attribute to a test class
-def gen_sup_test(configuration):
+def gen_sup_test(configuration, data_dir):
     def sup_test(self):
         def get_path_size(path):
             path_size = subprocess.check_output(["stat", "-c", "%s",
@@ -404,10 +404,20 @@ def gen_sup_test(configuration):
                     msg_prefix + "Size: Want: " + size_msg
                 )
 
+        configuration["args"]["input"] = os.path.join(
+            data_dir, configuration["args"]["input"]
+        )
+        configuration["quant_args"]["input"] = configuration["args"]["input"]
+        configuration["test"]["data"] = os.path.join(
+            data_dir, configuration["test"]["data"]
+        )
+        configuration["quant_test"]["data"] = configuration["test"]["data"]
         output = os.path.join(tempfile.mkdtemp(), configuration["dataset"])
-        model = train_supervised(**configuration["train_args"])
+        print()
+        model = train_supervised(**configuration["args"])
         model.save_model(output + ".bin")
         check(model, output + ".bin", configuration["test"], False)
+        print()
         model.quantize(**configuration["quant_args"])
         model.save_model(output + ".ftz")
         check(
@@ -503,9 +513,11 @@ def gen_tests(data_dir):
     class TestFastTextPy(unittest.TestCase):
         pass
 
-    for configuration in get_supervised_models(data_dir=data_dir):
+    i = 0
+    for configuration in get_supervised_models():
         setattr(
-            TestFastTextPy, "test_" + configuration["dataset"],
-            gen_sup_test(configuration)
+            TestFastTextPy, "test_sup_" + str(i) + "_" + configuration["dataset"],
+            gen_sup_test(configuration, data_dir)
         )
+        i += 1
     return TestFastTextPy

@@ -40,6 +40,13 @@ if __name__ == "__main__":
         help="run integration tests",
         action="store_true"
     )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        default=1,
+        help="verbosity level (default 1)",
+        type=int,
+    )
     parser.add_argument("--data-dir", help="Full path to data directory")
     args = parser.parse_args()
     if args.unit_tests:

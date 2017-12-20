@@ -11,7 +11,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import multiprocessing
-import os
 
 # This script represents a collection of integration tests
 # Each integration test comes with a full set of parameters,
@@ -19,15 +18,138 @@ import os
 # These configurations can be used by various fastText apis
 # to confirm some level of correctness.
 
-# Supervised models
-# See https://fasttext.cc/docs/en/supervised-models.html
-
 
 def max_thread():
     return multiprocessing.cpu_count() - 1
 
 
-def get_supervised_models(data_dir=""):
+def check_supervised_configuration(configuration, verbose=1):
+    configuration["args"]["verbose"] = verbose
+    configuration["quant_args"]["verbose"] = verbose
+    return configuration
+
+
+def check_supervised_configurations(configurations, verbose=1):
+    for i in range(len(configurations)):
+        configurations[i] = check_supervised_configuration(
+            configurations[i], verbose=verbose
+        )
+    return configurations
+
+
+def flickr_job(thread=max_thread()):
+    config = {}
+    config["dataset"] = "YFCC100M"
+    config["args"] = {
+        "dim": 256,
+        "wordNgrams": 2,
+        "minCount": 10,
+        "bucket": 10000000,
+        "epoch": 20,
+        "loss": "hs",
+        "minCountLabel": 100,
+        "thread": thread
+    }
+    config["args"]["input"] = "YFCC100M/train"
+    config["quant_args"] = {
+        "dsub": 2,
+        "lr": "0.1",
+        "epoch": 5,
+        "cutoff": 100000,
+        "qnorm": True,
+        "retrain": True,
+        "qout": True
+    }
+    config["quant_args"]["input"] = config["args"]["input"]
+    config["test"] = {
+        "n": 647224,
+        "p1": 0.471,
+        "r1": 0.0722,
+        "size": 12060039727,
+        "data": "YFCC100M/test",
+    }
+    # One quant example (to illustrate slack): 0.344, 0.0528, 64506972
+    config["quant_test"] = {
+        "n": 647224,
+        "p1": 0.300,
+        "r1": 0.0450,
+        "size": 70000000,
+        "data": "YFCC100M/test",
+    }
+    return config
+
+
+def langid_job1(thread=max_thread()):
+    config = {}
+    config["dataset"] = "langid"
+    config["args"] = {"dim": 16, "minn": 2, "maxn": 4, "thread": thread}
+    config["args"]["input"] = "langid.train"
+    config["quant_args"] = {"qnorm": True, "cutoff": 50000, "retrain": True}
+    config["quant_args"]["input"] = config["args"]["input"]
+    config["test"] = {
+        "n": 10000,
+        "p1": 0.985,
+        "r1": 0.985,
+        "size": 368369579,
+        "data": "langid.valid",
+    }
+    # One quant example (to illustrate slack): 0.984 0.984 932793
+    config["quant_test"] = {
+        "p1": 0.97,
+        "r1": 0.97,
+        "size": 1000000,
+    }
+    config["quant_test"]["n"] = config["test"]["n"]
+    config["quant_test"]["data"] = config["test"]["data"]
+    return config
+
+
+def langid_job2(thread=max_thread()):
+    config = langid_job1(thread).copy()
+    config["args"]["loss"] = "hs"
+    return config
+
+
+def cooking_job1(thread=max_thread()):
+    config = {}
+    config["dataset"] = "cooking"
+    config["args"] = {
+        "epoch": 25,
+        "lr": 1.0,
+        "wordNgrams": 2,
+        "minCount": 1,
+        "thread": thread,
+    }
+    config["args"]["input"] = "cooking.train"
+    config["quant_args"] = {"qnorm": True, "cutoff": 50000, "retrain": True}
+    config["quant_args"]["input"] = config["args"]["input"]
+    config["test"] = {
+        "n": 3000,
+        "p1": 0.59,
+        "r1": 0.25,
+        "size": 804047585,
+        "data": "cooking.valid",
+    }
+    # One quant example (to illustrate slack): 0.602 0.26 3439172
+    config["quant_test"] = {
+        "p1": 0.55,
+        "r1": 0.20,
+        "size": 4000000,
+    }
+    config["quant_test"]["n"] = config["test"]["n"]
+    config["quant_test"]["data"] = config["test"]["data"]
+    return config
+
+
+def cooking_job2(thread=max_thread()):
+    config = cooking_job1(thread).copy()
+    config["args"]["loss"] = "hs"
+    return config
+
+
+# Supervised models
+# See https://fasttext.cc/docs/en/supervised-models.html
+def get_supervised_models(thread=max_thread(), verbose=1):
     sup_job_dataset = [
         "ag_news", "sogou_news", "dbpedia", "yelp_review_polarity",
         "yelp_review_full", "yahoo_answers", "amazon_review_full",
@@ -40,7 +162,7 @@ def get_supervised_models(data_dir=""):
         "minCount": 1,
         "bucket": 10000000,
         "epoch": 5,
-        "thread": max_thread(),
+        "thread": thread,
         "verbose": 1,
     }
     quant_params = {
@@ -53,8 +175,8 @@ def get_supervised_models(data_dir=""):
 
     sup_job_n = [7600, 60000, 70000, 38000, 50000, 60000, 650000, 400000]
 
-    sup_job_p1 = [0.921, 0.968, 0.984, 0.956, 0.638, 0.723, 0.603, 0.946]
-    sup_job_r1 = [0.921, 0.968, 0.984, 0.956, 0.638, 0.723, 0.603, 0.946]
+    sup_job_p1 = [0.915, 0.968, 0.984, 0.956, 0.638, 0.723, 0.603, 0.946]
+    sup_job_r1 = [0.915, 0.968, 0.984, 0.956, 0.638, 0.723, 0.603, 0.946]
     sup_job_size = [
         405607193, 421445471, 447481878, 427867393, 431292576, 517549567,
         483742593, 493604598
@@ -76,10 +198,7 @@ def get_supervised_models(data_dir=""):
         args["input"] = sup_job_dataset[i] + ".train"
         quant_args["lr"] = sup_job_lr[i]
         quant_args["input"] = sup_job_dataset[i] + ".train"
-        if data_dir:
-            args["input"] = os.path.join(data_dir, args["input"])
-            quant_args["input"] = os.path.join(data_dir, quant_args["input"])
-        configuration["train_args"] = args
+        configuration["args"] = args
         configuration["quant_args"] = quant_args
         test = {
             "n": sup_job_n[i],
@@ -95,10 +214,15 @@ def get_supervised_models(data_dir=""):
             "size": sup_job_quant_size[i],
             "data": sup_job_dataset[i] + ".test",
         }
-        if data_dir:
-            test["data"] = os.path.join(data_dir, test["data"])
-            quant_test["data"] = os.path.join(data_dir, quant_test["data"])
         configuration["test"] = test
         configuration["quant_test"] = quant_test
         configurations.append(configuration)
+    configurations.append(flickr_job())
+    configurations.append(langid_job1())
+    configurations.append(langid_job2())
+    configurations.append(cooking_job1())
+    configurations.append(cooking_job2())
+    configurations = check_supervised_configurations(
+        configurations, verbose=verbose
+    )
     return configurations
