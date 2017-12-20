@@ -31,9 +31,8 @@ jobs:
       - checkout
       - run:
           command: |
-            sudo pip install pybind11
-            sudo python setup.py install
-            . .circleci/cmake_test.sh
+            . .circleci/setup_circleimg.sh
+            . .circleci/python_test.sh
 
   "py353":
     docker:
@@ -43,9 +42,8 @@ jobs:
       - checkout
       - run:
           command: |
-            sudo pip install pybind11
-            sudo python setup.py install
-            . .circleci/cmake_test.sh
+            . .circleci/setup_circleimg.sh
+            . .circleci/python_test.sh
 
   "py346":
     docker:
@@ -55,21 +53,8 @@ jobs:
       - checkout
       - run:
           command: |
-            sudo pip install pybind11
-            sudo python setup.py install
-            . .circleci/cmake_test.sh
-
-  "py336":
-    docker:
-      - image: circleci/python:3.3.6
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - run:
-          command: |
-            sudo pip install pybind11
-            sudo python setup.py install
-            . .circleci/cmake_test.sh
+            . .circleci/setup_circleimg.sh
+            . .circleci/python_test.sh
 
   "py2713":
     docker:
@@ -79,9 +64,8 @@ jobs:
       - checkout
       - run:
           command: |
-            sudo pip install pybind11
-            sudo python setup.py install
-            . .circleci/cmake_test.sh
+            . .circleci/setup_circleimg.sh
+            . .circleci/python_test.sh
 
   "gcc5":
     docker:
@@ -123,6 +107,61 @@ jobs:
           command: |
             . .circleci/gcc_test.sh
 
+  "debian-wheezy-gcc":        
+    docker:        
+      - image: debian:wheezy        
+    working_directory: ~/repo        
+    steps:        
+      - checkout        
+      - run:        
+          command: |        
+            . .circleci/setup_debian.sh        
+            . .circleci/gcc_test.sh        
+         
+  "debian-wheezy-cmake":        
+    docker:        
+      - image: debian:wheezy        
+    working_directory: ~/repo        
+    steps:        
+      - checkout        
+      - run:        
+          command: |        
+            . .circleci/setup_debian.sh        
+            . .circleci/cmake_test.sh        
+        
+  "debian-jessie-gcc":        
+    docker:        
+      - image: debian:jessie        
+    working_directory: ~/repo        
+    steps:        
+      - checkout        
+      - run:        
+          command: |        
+            . .circleci/setup_debian.sh        
+            . .circleci/gcc_test.sh        
+        
+  "debian-jessie-cmake":        
+    docker:        
+      - image: debian:jessie        
+    working_directory: ~/repo        
+    steps:        
+      - checkout        
+      - run:        
+          command: |        
+            . .circleci/setup_debian.sh        
+            . .circleci/cmake_test.sh        
+        
+  "debian-jessie-python":        
+    docker:        
+      - image: debian:jessie        
+    working_directory: ~/repo        
+    steps:        
+      - checkout        
+      - run:        
+          command: |        
+            . .circleci/setup_debian.sh        
+            . .circleci/python_test.sh
+
   "website-build":
     docker:
       - image: node:latest
@@ -143,10 +182,14 @@ workflows:
       - "py361"
       - "py353"
       - "py346"
-      - "py336"
       - "py2713"
       - "gcc5"
       - "gcc6"
       - "gcc7"
       - "gcclatest"
       - "website-build"
+      - "debian-wheezy-gcc"        
+      - "debian-wheezy-cmake"        
+      - "debian-jessie-gcc"        
+      - "debian-jessie-cmake"        
+      - "debian-jessie-python"
