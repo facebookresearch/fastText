@@ -194,7 +194,6 @@ void FastText::loadModel(const std::string& filename) {
 
 void FastText::loadModel(std::istream& in) {
   args_ = std::make_shared<Args>();
-  dict_ = std::make_shared<Dictionary>(args_);
   input_ = std::make_shared<Matrix>();
   output_ = std::make_shared<Matrix>();
   qinput_ = std::make_shared<QMatrix>();
@@ -204,7 +203,7 @@ void FastText::loadModel(std::istream& in) {
     // backward compatibility: old supervised models do not use char ngrams.
     args_->maxn = 0;
   }
-  dict_->load(in);
+  dict_ = std::make_shared<Dictionary>(args_, in);
 
   bool quant_input;
   in.read((char*) &quant_input, sizeof(bool));

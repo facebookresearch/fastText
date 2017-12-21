@@ -69,6 +69,7 @@ class Dictionary {
     static const std::string EOW;
 
     explicit Dictionary(std::shared_ptr<Args>);
+    explicit Dictionary(std::shared_ptr<Args>, std::istream&);
     int32_t nwords() const;
     int32_t nlabels() const;
     int64_t ntokens() const;
