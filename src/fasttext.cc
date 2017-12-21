@@ -366,7 +366,7 @@ void FastText::test(std::istream& in, int32_t k) {
   std::vector<int32_t> line, labels;
 
   while (in.peek() != EOF) {
-    dict_->getLine(in, line, labels, model_->rng);
+    dict_->getLine(in, line, labels);
     if (labels.size() > 0 && line.size() > 0) {
       std::vector<std::pair<real, int32_t>> modelPredictions;
       model_->predict(line, k, modelPredictions);
@@ -390,7 +390,7 @@ void FastText::predict(std::istream& in, int32_t k,
                        std::vector<std::pair<real,std::string>>& predictions) const {
   std::vector<int32_t> words, labels;
   predictions.clear();
-  dict_->getLine(in, words, labels, model_->rng);
+  dict_->getLine(in, words, labels);
   predictions.clear();
   if (words.empty()) return;
   Vector hidden(args_->dim);
@@ -430,7 +430,7 @@ void FastText::getSentenceVector(
   svec.zero();
   if (args_->model == model_name::sup) {
     std::vector<int32_t> line, labels;
-    dict_->getLine(in, line, labels, model_->rng);
+    dict_->getLine(in, line, labels);
     for (int32_t i = 0; i < line.size(); i++) {
       addInputVector(svec, line[i]);
     }
@@ -578,7 +578,7 @@ void FastText::trainThread(int32_t threadId) {
     real progress = real(tokenCount_) / (args_->epoch * ntokens);
     real lr = args_->lr * (1.0 - progress);
     if (args_->model == model_name::sup) {
-      localTokenCount += dict_->getLine(ifs, line, labels, model.rng);
+      localTokenCount += dict_->getLine(ifs, line, labels);
       supervised(model, lr, line, labels);
     } else if (args_->model == model_name::cbow) {
       localTokenCount += dict_->getLine(ifs, line, model.rng);

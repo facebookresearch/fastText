@@ -63,9 +63,10 @@ PYBIND11_MODULE(fasttext_pybind, m) {
       .value("softmax", fasttext::loss_name::softmax)
       .export_values();
 
-  m.def("train", [](fasttext::FastText& ft, fasttext::Args& a) {
-    ft.train(a);
-  }, py::call_guard<py::gil_scoped_release>());
+  m.def(
+      "train",
+      [](fasttext::FastText& ft, fasttext::Args& a) { ft.train(a); },
+      py::call_guard<py::gil_scoped_release>());
 
   py::class_<fasttext::Vector>(m, "Vector", py::buffer_protocol())
       .def(py::init<ssize_t>())
@@ -120,8 +121,7 @@ PYBIND11_MODULE(fasttext_pybind, m) {
           [](fasttext::FastText& m,
              fasttext::Vector& v,
              const std::string text) {
-            std::stringstream ioss;
-            copy(text.begin(), text.end(), std::ostream_iterator<char>(ioss));
+            std::stringstream ioss(text);
             m.getSentenceVector(ioss, v);
           })
       .def(
@@ -129,8 +129,7 @@ PYBIND11_MODULE(fasttext_pybind, m) {
           [](fasttext::FastText& m, const std::string text) {
             std::vector<std::string> text_split;
             std::shared_ptr<const fasttext::Dictionary> d = m.getDictionary();
-            std::stringstream ioss;
-            copy(text.begin(), text.end(), std::ostream_iterator<char>(ioss));
+            std::stringstream ioss(text);
             std::string token;
             while (!ioss.eof()) {
               while (d->readWord(ioss, token)) {
@@ -138,6 +137,28 @@ PYBIND11_MODULE(fasttext_pybind, m) {
               }
             }
             return text_split;
+          })
+      .def(
+          "getLine",
+          [](fasttext::FastText& m, const std::string text) {
+            std::shared_ptr<const fasttext::Dictionary> d = m.getDictionary();
+            std::stringstream ioss(text);
+            std::string token;
+            std::vector<std::string> words;
+            std::vector<std::string> labels;
+            while (!ioss.eof()) {
+              while (d->readWord(ioss, token)) {
+                fasttext::entry_type type = d->getType(token);
+                if (type == fasttext::entry_type::word) {
+                  words.push_back(token);
+                } else {
+                  labels.push_back(token);
+                }
+              }
+            }
+            return std::
+                pair<std::vector<std::string>, std::vector<std::string>>(
+                    words, labels);
           })
       .def(
           "getVocab",
@@ -199,8 +220,7 @@ PYBIND11_MODULE(fasttext_pybind, m) {
           // to exactly mimic the behavior of the cli
           [](fasttext::FastText& m, const std::string text, int32_t k) {
             std::vector<std::pair<fasttext::real, std::string>> predictions;
-            std::stringstream ioss;
-            copy(text.begin(), text.end(), std::ostream_iterator<char>(ioss));
+            std::stringstream ioss(text);
             m.predict(ioss, k, predictions);
             return predictions;
           })

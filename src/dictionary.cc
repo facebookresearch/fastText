@@ -351,8 +351,7 @@ int32_t Dictionary::getLine(std::istream& in,
 
 int32_t Dictionary::getLine(std::istream& in,
                             std::vector<int32_t>& words,
-                            std::vector<int32_t>& labels,
-                            std::minstd_rand& rng) const {
+                            std::vector<int32_t>& labels) const {
   std::vector<int32_t> word_hashes;
   std::string token;
   int32_t ntokens = 0;

@@ -172,6 +172,17 @@ class _FastText():
         else:
             return self.get_words(include_freq)
 
+    def get_line(self, text):
+        """
+        Split a line of text into words and labels. Labels must start with
+        the prefix used to create the model (__label__ by default).
+        """
+        if text.find('\n') != -1:
+            raise ValueError(
+                "get_line processes one line at a time (remove \'\\n\')"
+            )
+        return self.f.getLine(text)
+
     def save_model(self, path):
         """Save the model to the given path"""
         self.f.saveModel(path)
@@ -251,6 +262,10 @@ def _build_args(args):
 
 def tokenize(text):
     """Given a string of text, tokenize it and return a list of tokens"""
+    if text.find('\n') != -1:
+        raise ValueError(
+            "tokenize processes one line at a time (remove \'\\n\')"
+        )
     f = fasttext.fasttext()
     return f.tokenize(text)
 
@@ -330,7 +345,7 @@ def train_unsupervised(
     as UTF-8. You might want to consult standard preprocessing scripts such
     as tokenizer.perl mentioned here: http://www.statmt.org/wmt07/baseline.html
 
-    The input fiel must not contain any labels or use the specified label prefix
+    The input field must not contain any labels or use the specified label prefix
     unless it is ok for those words to be ignored. For an example consult the
     dataset pulled by the example script word-vector-example.sh, which is
     part of the fastText repository.

@@ -52,5 +52,6 @@ if __name__ == "__main__":
         input=os.path.join(os.getenv("DATADIR", ''), 'fil9'),
         model='skipgram',
     )
+    model.save_model("fil9.bin")
     dataset, corr, oov = compute_similarity('rw.txt')
     print("{0:20s}: {1:2.0f}  (OOV: {2:2.0f}%)".format(dataset, corr, 0))

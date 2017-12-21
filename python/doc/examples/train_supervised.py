@@ -17,46 +17,23 @@ import os
 from fastText import train_supervised
 from fastText.util import test
 
-
-# Return top-k predictions and probabilities for each line in the given file.
-def get_predictions(filename, model, k=1):
-    predictions = []
-    probabilities = []
-    with open(filename) as f:
-        for line in f:
-            line = line.strip()
-            labels, probs = model.predict(line, k)
-            predictions.append(labels)
-            probabilities.append(probs)
-    return predictions, probabilities
-
-
-# Parse and return list of labels
-def get_labels_from_file(filename, prefix="__label__"):
-    labels = []
-    with open(filename) as f:
-        for line in f:
-            line_labels = []
-            tokens = line.split()
-            for token in tokens:
-                if token.startswith(prefix):
-                    line_labels.append(token)
-            labels.append(line_labels)
-    return labels
-
-
 if __name__ == "__main__":
     train_data = os.path.join(os.getenv("DATADIR", ''), 'cooking.train')
     valid_data = os.path.join(os.getenv("DATADIR", ''), 'cooking.valid')
     # train_supervised uses the same arguments and defaults as the fastText cli
     model = train_supervised(
-        input=train_data, epoch=25, lr=1.0, wordNgrams=2, verbose=2, minCount=1
+        input=train_data, epoch=25, lr=1.0, wordNgrams=2, verbose=1, minCount=1
     )
-    k = 1
-    predictions, _ = get_predictions(valid_data, model, k=k)
-    valid_labels = get_labels_from_file(valid_data)
-    p, r = test(predictions, valid_labels, k=k)
-    print("N\t" + str(len(valid_labels)))
-    print("P@{}\t{:.3f}".format(k, p))
-    print("R@{}\t{:.3f}".format(k, r))
-    model.save_model(train_data + '.bin')
+    predictions = []
+    true_labels = []
+    with open(valid_data, 'r') as fid:
+        for line in fid:
+            words, labels = model.get_line(line.strip())
+            pred_labels, probs = model.predict(" ".join(words))
+            predictions += [pred_labels]
+            true_labels += [labels]
+    p, r = test(predictions, true_labels)
+    print("N\t" + str(len(predictions)))
+    print("P@{}\t{:.3f}".format(1, p))
+    print("R@{}\t{:.3f}".format(1, r))
+    model.save_model("cooking.bin")

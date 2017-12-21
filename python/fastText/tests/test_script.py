@@ -227,8 +227,18 @@ class TestFastTextUnitPy(unittest.TestCase):
     def gen_test_tokenize(self, kwargs):
         self.assertEqual(["asdf", "asdb"], fastText.tokenize("asdf asdb"))
         self.assertEqual(["asdf"], fastText.tokenize("asdf"))
-        self.assertEqual(["asdf", fastText.EOS], fastText.tokenize("asdf\n"))
-        self.assertEqual([fastText.EOS], fastText.tokenize("\n"))
+        gotError = False
+        try:
+            self.assertEqual([fastText.EOS], fastText.tokenize("\n"))
+        except ValueError:
+            gotError = True
+        self.assertTrue(gotError)
+        gotError = False
+        try:
+            self.assertEqual(["asdf", fastText.EOS], fastText.tokenize("asdf\n"))
+        except ValueError:
+            gotError = True
+        self.assertTrue(gotError)
         self.assertEqual([], fastText.tokenize(""))
         self.assertEqual([], fastText.tokenize(" "))
         # An empty string is not a token (it's just whitespace)

@@ -98,8 +98,8 @@ class Dictionary {
     void save(std::ostream&) const;
     void load(std::istream&);
     std::vector<int64_t> getCounts(entry_type) const;
-    int32_t getLine(std::istream&, std::vector<int32_t>&,
-                    std::vector<int32_t>&, std::minstd_rand&) const;
+    int32_t getLine(std::istream&, std::vector<int32_t>&, std::vector<int32_t>&)
+        const;
     int32_t getLine(std::istream&, std::vector<int32_t>&,
                     std::minstd_rand&) const;
     void threshold(int64_t, int64_t);
