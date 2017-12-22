@@ -8,6 +8,8 @@
  */
 
 #include <iostream>
+#include <queue>
+#include <iomanip>
 #include "fasttext.h"
 #include "args.h"
 
@@ -132,19 +134,24 @@ void test(const std::vector<std::string>& args) {
   FastText fasttext;
   fasttext.loadModel(args[2]);
 
+  std::tuple<int64_t, double, double> result;
   std::string infile = args[3];
   if (infile == "-") {
-    fasttext.test(std::cin, k);
+    result = fasttext.test(std::cin, k);
   } else {
     std::ifstream ifs(infile);
     if (!ifs.is_open()) {
       std::cerr << "Test file cannot be opened!" << std::endl;
       exit(EXIT_FAILURE);
     }
-    fasttext.test(ifs, k);
+    result = fasttext.test(ifs, k);
     ifs.close();
   }
-  exit(0);
+  std::cout << "N" << "\t" << std::get<0>(result) << std::endl;
+  std::cout << std::setprecision(3);
+  std::cout << "P@" << k << "\t" << std::get<1>(result) << std::endl;
+  std::cout << "R@" << k << "\t" << std::get<2>(result) << std::endl;
+  std::cerr << "Number of examples: " << std::get<0>(result) << std::endl;
 }
 
 void predict(const std::vector<std::string>& args) {

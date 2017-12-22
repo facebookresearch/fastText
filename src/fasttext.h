@@ -16,6 +16,8 @@
 #include <set>
 #include <chrono>
 #include <iostream>
+#include <queue>
+#include <tuple>
 
 #include "args.h"
 #include "dictionary.h"
@@ -91,7 +93,7 @@ class FastText {
   std::vector<int32_t> selectEmbeddings(int32_t) const;
   void getSentenceVector(std::istream&, Vector&);
   void quantize(const Args);
-  void test(std::istream&, int32_t);
+  std::tuple<int64_t, double, double> test(std::istream&, int32_t);
   void predict(std::istream&, int32_t, bool);
   void predict(
       std::istream&,

@@ -360,7 +360,9 @@ void FastText::skipgram(Model& model, real lr,
   }
 }
 
-void FastText::test(std::istream& in, int32_t k) {
+std::tuple<int64_t, double, double> FastText::test(
+    std::istream& in,
+    int32_t k) {
   int32_t nexamples = 0, nlabels = 0;
   double precision = 0.0;
   std::vector<int32_t> line, labels;
@@ -379,11 +381,8 @@ void FastText::test(std::istream& in, int32_t k) {
       nlabels += labels.size();
     }
   }
-  std::cout << "N" << "\t" << nexamples << std::endl;
-  std::cout << std::setprecision(3);
-  std::cout << "P@" << k << "\t" << precision / (k * nexamples) << std::endl;
-  std::cout << "R@" << k << "\t" << precision / nlabels << std::endl;
-  std::cerr << "Number of examples: " << nexamples << std::endl;
+  return std::tuple<int64_t, double, double>(
+      nexamples, precision / (k * nexamples), precision / nlabels);
 }
 
 void FastText::predict(std::istream& in, int32_t k,
