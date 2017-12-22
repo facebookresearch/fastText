@@ -97,7 +97,6 @@ class _FastText():
         self.f.getInputVector(b, ind)
         return np.array(b)
 
-    # Process one line only!
     def predict(self, text, k=1):
         """
         Given a string, get a list of labels and a list of
@@ -112,16 +111,28 @@ class _FastText():
         return, formfeed and the null character.
 
         If the model is not supervised, this function will throw a ValueError.
+
+        If given a list of strings, it will return a list of results as usually
+        received for a single line of text.
         """
-        if text.find('\n') != -1:
-            raise ValueError(
-                "predict processes one line at a time (remove \'\\n\')"
-            )
-        text += "\n"
-        pairs = self.f.predict(text, k)
-        probs, labels = zip(*pairs)
-        probs = np.exp(np.array(probs))
-        return labels, probs
+
+        def check(text):
+            if text.find('\n') != -1:
+                raise ValueError(
+                    "predict processes one line at a time (remove \'\\n\')"
+                )
+            text += "\n"
+            return text
+
+        if type(text) == list:
+            text = [check(entry) for entry in text]
+            all_probs, all_labels = self.f.multilinePredict(text, k)
+            return all_labels, np.array(all_probs, copy=False)
+        else:
+            text = check(text)
+            pairs = self.f.predict(text, k)
+            probs, labels = zip(*pairs)
+            return labels, np.array(probs, copy=False)
 
     def get_input_matrix(self):
         """

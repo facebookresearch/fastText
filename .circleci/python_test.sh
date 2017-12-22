@@ -8,5 +8,5 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 #
 
-pip install .
+sudo pip install .
 python runtests.py -u

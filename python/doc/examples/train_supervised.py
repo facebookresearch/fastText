@@ -24,14 +24,14 @@ if __name__ == "__main__":
     model = train_supervised(
         input=train_data, epoch=25, lr=1.0, wordNgrams=2, verbose=1, minCount=1
     )
-    predictions = []
     true_labels = []
+    all_words = []
     with open(valid_data, 'r') as fid:
         for line in fid:
             words, labels = model.get_line(line.strip())
-            pred_labels, probs = model.predict(" ".join(words))
-            predictions += [pred_labels]
+            all_words.append(" ".join(words))
             true_labels += [labels]
+    predictions, _ = model.predict(all_words)
     p, r = test(predictions, true_labels)
     print("N\t" + str(len(predictions)))
     print("P@{}\t{:.3f}".format(1, p))

@@ -126,7 +126,7 @@ def build_supervised_model(data, kwargs):
     kwargs = default_kwargs(kwargs)
     with tempfile.NamedTemporaryFile(delete=False) as tmpf:
         for line in data:
-            line = "__label__" + line + "\n"
+            line = "__label__" + line.strip() + "\n"
             tmpf.write(line.encode("UTF-8"))
         tmpf.flush()
         model = train_supervised(input=tmpf.name, **kwargs)
@@ -171,7 +171,7 @@ class TestFastTextUnitPy(unittest.TestCase):
         for word in words:
             f.get_word_vector(word)
 
-    def gen_test_predict(self, kwargs):
+    def gen_test_supervised_predict(self, kwargs):
         # Confirm number of labels, confirm labels for easy dataset
         # Confirm 1 label and 0 label dataset
 
@@ -183,6 +183,40 @@ class TestFastTextUnitPy(unittest.TestCase):
             data = get_random_data(100)
             for line in data:
                 labels, probs = f.predict(line, k)
+
+    def gen_test_supervised_multiline_predict(self, kwargs):
+        # Confirm number of labels, confirm labels for easy dataset
+        # Confirm 1 label and 0 label dataset
+
+        def check_predict(f):
+            for k in [1, 2, 5]:
+                words = get_random_words(10)
+                agg_labels = []
+                agg_probs = []
+                for w in words:
+                    labels, probs = f.predict(w, k)
+                    agg_labels += [labels]
+                    agg_probs += [probs]
+                all_labels1, all_probs1 = f.predict(words, k)
+                data = get_random_data(10)
+                for line in data:
+                    labels, probs = f.predict(line, k)
+                    agg_labels += [labels]
+                    agg_probs += [probs]
+                all_labels2, all_probs2 = f.predict(data, k)
+                all_labels = list(all_labels1) + list(all_labels2)
+                all_probs = list(all_probs1) + list(all_probs2)
+                for label1, label2 in zip(all_labels, agg_labels):
+                    self.assertEqual(list(label1), list(label2))
+                for prob1, prob2 in zip(all_probs, agg_probs):
+                    self.assertEqual(list(prob1), list(prob2))
+
+        check_predict(build_supervised_model(get_random_data(100), kwargs))
+        check_predict(
+            build_supervised_model(
+                get_random_data(100, min_words_line=1), kwargs
+            )
+        )
 
     def gen_test_vocab(self, kwargs):
         # Confirm empty dataset, confirm all label dataset
@@ -235,7 +269,9 @@ class TestFastTextUnitPy(unittest.TestCase):
         self.assertTrue(gotError)
         gotError = False
         try:
-            self.assertEqual(["asdf", fastText.EOS], fastText.tokenize("asdf\n"))
+            self.assertEqual(
+                ["asdf", fastText.EOS], fastText.tokenize("asdf\n")
+            )
         except ValueError:
             gotError = True
         self.assertTrue(gotError)
@@ -445,6 +481,9 @@ def gen_unit_tests(verbose=0):
     ]
     general_settings = [
         {
+            "minn": 2,
+            "maxn": 4,
+        }, {
             "minn": 0,
             "maxn": 0,
             "bucket": 0
@@ -456,6 +495,9 @@ def gen_unit_tests(verbose=0):
     ]
     supervised_settings = [
         {
+            "minn": 2,
+            "maxn": 4,
+        }, {
             "minn": 0,
             "maxn": 0,
             "bucket": 0
@@ -470,6 +512,9 @@ def gen_unit_tests(verbose=0):
     ]
     unsupervised_settings = [
         {
+            "minn": 2,
+            "maxn": 4,
+        }, {
             "minn": 0,
             "maxn": 0,
             "bucket": 0
@@ -526,7 +571,8 @@ def gen_tests(data_dir):
     i = 0
     for configuration in get_supervised_models():
         setattr(
-            TestFastTextPy, "test_sup_" + str(i) + "_" + configuration["dataset"],
+            TestFastTextPy,
+            "test_sup_" + str(i) + "_" + configuration["dataset"],
             gen_sup_test(configuration, data_dir)
         )
         i += 1

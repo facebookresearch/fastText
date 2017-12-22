@@ -160,7 +160,8 @@ jobs:
       - run:        
           command: |        
             . .circleci/setup_debian.sh        
-            . .circleci/python_test.sh
+            pip install .
+            python runtests.py -u
 
   "website-build":
     docker:
