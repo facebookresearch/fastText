@@ -710,28 +710,4 @@ bool FastText::isQuant() const {
   return quant_;
 }
 
-void FastText::dumpArgs() const {
-  args_->dump(std::cout);
-}
-
-void FastText::dumpDict() const {
-  dict_->dump(std::cout);
-}
-
-void FastText::dumpInput() const {
-  if (quant_) {
-    std::cerr << "Not supported for quantized models." << std::endl;
-  } else {
-    input_->dump(std::cout);
-  }
-}
-
-void FastText::dumpOutput() const {
-  if (quant_) {
-    std::cerr << "Not supported for quantized models." << std::endl;
-  } else {
-    output_->dump(std::cout);
-  }
-}
-
 }

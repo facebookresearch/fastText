@@ -283,13 +283,21 @@ void dump(const std::vector<std::string>& args) {
   FastText fasttext;
   fasttext.loadModel(modelPath);
   if (option == "args") {
-    fasttext.dumpArgs();
+    fasttext.getArgs().dump(std::cout);
   } else if (option == "dict") {
-    fasttext.dumpDict();
+    fasttext.getDictionary()->dump(std::cout);
   } else if (option == "input") {
-    fasttext.dumpInput();
+    if (fasttext.isQuant()) {
+      std::cerr << "Not supported for quantized models." << std::endl;
+    } else {
+      fasttext.getInputMatrix()->dump(std::cout);
+    }
   } else if (option == "output") {
-    fasttext.dumpOutput();
+    if (fasttext.isQuant()) {
+      std::cerr << "Not supported for quantized models." << std::endl;
+    } else {
+      fasttext.getOutputMatrix()->dump(std::cout);
+    }
   } else {
     printDumpUsage();
     exit(EXIT_FAILURE);

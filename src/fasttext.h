@@ -111,10 +111,5 @@ class FastText {
   void loadVectors(std::string);
   int getDimension() const;
   bool isQuant() const;
-
-  void dumpArgs() const;
-  void dumpDict() const;
-  void dumpInput() const;
-  void dumpOutput() const;
 };
 }

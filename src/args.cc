@@ -45,7 +45,7 @@ Args::Args() {
   dsub = 2;
 }
 
-std::string Args::lossToString(loss_name ln) {
+std::string Args::lossToString(loss_name ln) const {
   switch (ln) {
     case loss_name::hs:
       return "hs";
@@ -57,7 +57,7 @@ std::string Args::lossToString(loss_name ln) {
   return "Unknown loss!"; // should never happen
 }
 
-std::string Args::boolToString(bool b) {
+std::string Args::boolToString(bool b) const {
   if (b) {
     return "true";
   } else {
@@ -65,7 +65,7 @@ std::string Args::boolToString(bool b) {
   }
 }
 
-std::string Args::modelToString(model_name mn) {
+std::string Args::modelToString(model_name mn) const {
   switch (mn) {
     case model_name::cbow:
       return "cbow";
@@ -274,7 +274,7 @@ void Args::load(std::istream& in) {
   in.read((char*) &(t), sizeof(double));
 }
 
-void Args::dump(std::ostream& out) {
+void Args::dump(std::ostream& out) const {
   out << "dim" << " " << dim << std::endl;
   out << "ws" << " " << ws << std::endl;
   out << "epoch" << " " << epoch << std::endl;

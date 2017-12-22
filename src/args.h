@@ -21,9 +21,9 @@ enum class loss_name : int { hs = 1, ns, softmax };
 
 class Args {
   protected:
-    std::string lossToString(loss_name);
-    std::string boolToString(bool);
-    std::string modelToString(model_name);
+    std::string lossToString(loss_name) const;
+    std::string boolToString(bool) const;
+    std::string modelToString(model_name) const;
 
   public:
     Args();
@@ -64,6 +64,6 @@ class Args {
     void printQuantizationHelp();
     void save(std::ostream&);
     void load(std::istream&);
-    void dump(std::ostream&);
+    void dump(std::ostream&) const;
 };
 }
