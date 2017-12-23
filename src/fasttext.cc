@@ -15,7 +15,6 @@
 #include <thread>
 #include <string>
 #include <vector>
-#include <queue>
 #include <algorithm>
 #include <stdexcept>
 #include <numeric>
@@ -479,7 +478,6 @@ void FastText::ngramVectors(std::string word) {
 void FastText::precomputeWordVectors(Matrix& wordVectors) {
   Vector vec(args_->dim);
   wordVectors.zero();
-  std::cerr << "Pre-computing word vectors...";
   for (int32_t i = 0; i < dict_->nwords(); i++) {
     std::string word = dict_->getWord(i);
     getWordVector(vec, word);
@@ -488,16 +486,20 @@ void FastText::precomputeWordVectors(Matrix& wordVectors) {
       wordVectors.addRow(vec, i, 1.0 / norm);
     }
   }
-  std::cerr << " done." << std::endl;
 }
 
-void FastText::findNN(const Matrix& wordVectors, const Vector& queryVec,
-                      int32_t k, const std::set<std::string>& banSet) {
+void FastText::findNN(
+    const Matrix& wordVectors,
+    const Vector& queryVec,
+    int32_t k,
+    const std::set<std::string>& banSet,
+    std::vector<std::pair<real, std::string>>& results) {
+  results.clear();
+  std::priority_queue<std::pair<real, std::string>> heap;
   real queryNorm = queryVec.norm();
   if (std::abs(queryNorm) < 1e-8) {
     queryNorm = 1;
   }
-  std::priority_queue<std::pair<real, std::string>> heap;
   Vector vec(args_->dim);
   for (int32_t i = 0; i < dict_->nwords(); i++) {
     std::string word = dict_->getWord(i);
@@ -508,26 +510,10 @@ void FastText::findNN(const Matrix& wordVectors, const Vector& queryVec,
   while (i < k && heap.size() > 0) {
     auto it = banSet.find(heap.top().second);
     if (it == banSet.end()) {
-      std::cout << heap.top().second << " " << heap.top().first << std::endl;
+      results.push_back(std::pair<real, std::string>(heap.top().first, heap.top().second));
       i++;
     }
     heap.pop();
-  }
-}
-
-void FastText::nn(int32_t k) {
-  std::string queryWord;
-  Vector queryVec(args_->dim);
-  Matrix wordVectors(dict_->nwords(), args_->dim);
-  precomputeWordVectors(wordVectors);
-  std::set<std::string> banSet;
-  std::cout << "Query word? ";
-  while (std::cin >> queryWord) {
-    banSet.clear();
-    banSet.insert(queryWord);
-    getWordVector(queryVec, queryWord);
-    findNN(wordVectors, queryVec, k, banSet);
-    std::cout << "Query word? ";
   }
 }
 
@@ -538,6 +524,7 @@ void FastText::analogies(int32_t k) {
   precomputeWordVectors(wordVectors);
   std::set<std::string> banSet;
   std::cout << "Query triplet (A - B + C)? ";
+  std::vector<std::pair<real, std::string>> results;
   while (true) {
     banSet.clear();
     query.zero();
@@ -554,7 +541,10 @@ void FastText::analogies(int32_t k) {
     getWordVector(buffer, word);
     query.addVector(buffer, 1.0);
 
-    findNN(wordVectors, query, k, banSet);
+    findNN(wordVectors, query, k, banSet, results);
+    for (auto& pair : results) {
+      std::cout << pair.second << " " << pair.first << std::endl;
+    }
     std::cout << "Query triplet (A - B + C)? ";
   }
 }

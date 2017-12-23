@@ -239,7 +239,26 @@ void nn(const std::vector<std::string> args) {
   }
   FastText fasttext;
   fasttext.loadModel(std::string(args[2]));
-  fasttext.nn(k);
+  std::string queryWord;
+  std::shared_ptr<const Dictionary> dict = fasttext.getDictionary();
+  Vector queryVec(fasttext.getDimension());
+  Matrix wordVectors(dict->nwords(), fasttext.getDimension());
+  std::cerr << "Pre-computing word vectors...";
+  fasttext.precomputeWordVectors(wordVectors);
+  std::cerr << " done." << std::endl;
+  std::set<std::string> banSet;
+  std::cout << "Query word? ";
+  std::vector<std::pair<real, std::string>> results;
+  while (std::cin >> queryWord) {
+    banSet.clear();
+    banSet.insert(queryWord);
+    fasttext.getWordVector(queryVec, queryWord);
+    fasttext.findNN(wordVectors, queryVec, k, banSet, results);
+    for (auto& pair : results) {
+      std::cout << pair.second << " " << pair.first << std::endl;
+    }
+    std::cout << "Query word? ";
+  }
   exit(0);
 }
 

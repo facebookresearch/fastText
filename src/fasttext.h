@@ -101,9 +101,12 @@ class FastText {
       std::vector<std::pair<real, std::string>>&) const;
   void ngramVectors(std::string);
   void precomputeWordVectors(Matrix&);
-  void
-  findNN(const Matrix&, const Vector&, int32_t, const std::set<std::string>&);
-  void nn(int32_t);
+  void findNN(
+      const Matrix&,
+      const Vector&,
+      int32_t,
+      const std::set<std::string>&,
+      std::vector<std::pair<real, std::string>>& results);
   void analogies(int32_t);
   void trainThread(int32_t);
   void train(const Args);
