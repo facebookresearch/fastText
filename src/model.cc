@@ -168,7 +168,14 @@ void Model::predict(const std::vector<int32_t>& input, int32_t k,
 
 void Model::findKBest(int32_t k, std::vector<std::pair<real, int32_t>>& heap,
                       Vector& hidden, Vector& output) const {
-  computeOutputSoftmax(hidden, output);
+  if (args_->loss == loss_name::softmax) {
+    computeOutputSoftmax(hidden, output);
+  } else {
+    output.mul(*wo_, hidden);
+    for (int32_t i = 0; i < osz_; i++) {
+      output[i] = sigmoid(output[i]);
+    }
+  }
   for (int32_t i = 0; i < osz_; i++) {
     if (heap.size() == k && std_log(output[i]) < heap.front().first) {
       continue;
