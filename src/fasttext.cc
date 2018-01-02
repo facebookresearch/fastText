@@ -315,6 +315,11 @@ void FastText::quantize(const Args qargs) {
   model_ = std::make_shared<Model>(input_, output_, args_, 0);
   model_->quant_ = quant_;
   model_->setQuantizePointer(qinput_, qoutput_, args_->qout);
+  if (args_->model == model_name::sup) {
+    model_->setTargetCounts(dict_->getCounts(entry_type::label));
+  } else {
+    model_->setTargetCounts(dict_->getCounts(entry_type::word));
+  }
 }
 
 void FastText::supervised(

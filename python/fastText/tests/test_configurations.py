@@ -37,7 +37,9 @@ def check_supervised_configurations(configurations, verbose=1):
     return configurations
 
 
-def flickr_job(thread=max_thread()):
+def flickr_job(thread=None):
+    if thread is None:
+        thread = max_thread()
     config = {}
     config["dataset"] = "YFCC100M"
     config["args"] = {
@@ -53,7 +55,7 @@ def flickr_job(thread=max_thread()):
     config["args"]["input"] = "YFCC100M/train"
     config["quant_args"] = {
         "dsub": 2,
-        "lr": "0.1",
+        "lr": 0.1,
         "epoch": 5,
         "cutoff": 100000,
         "qnorm": True,
@@ -63,8 +65,8 @@ def flickr_job(thread=max_thread()):
     config["quant_args"]["input"] = config["args"]["input"]
     config["test"] = {
         "n": 647224,
-        "p1": 0.471,
-        "r1": 0.0722,
+        "p1": 0.470,
+        "r1": 0.071,
         "size": 12060039727,
         "data": "YFCC100M/test",
     }
@@ -79,7 +81,9 @@ def flickr_job(thread=max_thread()):
     return config
 
 
-def langid_job1(thread=max_thread()):
+def langid_job1(thread=None):
+    if thread is None:
+        thread = max_thread()
     config = {}
     config["dataset"] = "langid"
     config["args"] = {"dim": 16, "minn": 2, "maxn": 4, "thread": thread}
@@ -90,7 +94,7 @@ def langid_job1(thread=max_thread()):
         "n": 10000,
         "p1": 0.985,
         "r1": 0.985,
-        "size": 368369579,
+        "size": 368132610,
         "data": "langid.valid",
     }
     # One quant example (to illustrate slack): 0.984 0.984 932793
@@ -104,13 +108,17 @@ def langid_job1(thread=max_thread()):
     return config
 
 
-def langid_job2(thread=max_thread()):
+def langid_job2(thread=None):
+    if thread is None:
+        thread = max_thread()
     config = langid_job1(thread).copy()
     config["args"]["loss"] = "hs"
     return config
 
 
-def cooking_job1(thread=max_thread()):
+def cooking_job1(thread=None):
+    if thread is None:
+        thread = max_thread()
     config = {}
     config["dataset"] = "cooking"
     config["args"] = {
@@ -141,7 +149,9 @@ def cooking_job1(thread=max_thread()):
     return config
 
 
-def cooking_job2(thread=max_thread()):
+def cooking_job2(thread=None):
+    if thread is None:
+        thread = max_thread()
     config = cooking_job1(thread).copy()
     config["args"]["loss"] = "hs"
     return config
@@ -149,7 +159,9 @@ def cooking_job2(thread=max_thread()):
 
 # Supervised models
 # See https://fasttext.cc/docs/en/supervised-models.html
-def get_supervised_models(thread=max_thread(), verbose=1):
+def get_supervised_models(thread=None, verbose=1):
+    if thread is None:
+        thread = max_thread()
     sup_job_dataset = [
         "ag_news", "sogou_news", "dbpedia", "yelp_review_polarity",
         "yelp_review_full", "yahoo_answers", "amazon_review_full",
@@ -175,17 +187,17 @@ def get_supervised_models(thread=max_thread(), verbose=1):
 
     sup_job_n = [7600, 60000, 70000, 38000, 50000, 60000, 650000, 400000]
 
-    sup_job_p1 = [0.915, 0.968, 0.984, 0.956, 0.638, 0.723, 0.603, 0.946]
-    sup_job_r1 = [0.915, 0.968, 0.984, 0.956, 0.638, 0.723, 0.603, 0.946]
+    sup_job_p1 = [0.915, 0.968, 0.983, 0.956, 0.638, 0.723, 0.600, 0.940]
+    sup_job_r1 = [0.915, 0.968, 0.983, 0.956, 0.638, 0.723, 0.600, 0.940]
     sup_job_size = [
         405607193, 421445471, 447481878, 427867393, 431292576, 517549567,
         483742593, 493604598
     ]
 
-    sup_job_quant_p1 = [0.918, 0.965, 0.984, 0.950, 0.625, 0.707, 0.58, 0.940]
-    sup_job_quant_r1 = [0.918, 0.965, 0.984, 0.950, 0.625, 0.707, 0.58, 0.940]
+    sup_job_quant_p1 = [0.918, 0.965, 0.983, 0.950, 0.625, 0.707, 0.58, 0.920]
+    sup_job_quant_r1 = [0.918, 0.965, 0.983, 0.950, 0.625, 0.707, 0.58, 0.920]
     sup_job_quant_size = [
-        1600000, 1457000, 1690000, 1550000, 1567896, 1655000, 1600000, 1575000
+        1600000, 1500000, 1700000, 1600000, 1600000, 1700000, 1600000, 1600000
     ]
 
     configurations = []

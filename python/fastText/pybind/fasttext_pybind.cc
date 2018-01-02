@@ -18,6 +18,32 @@
 #include <sstream>
 #include <cmath>
 
+std::pair<std::vector<std::string>, std::vector<std::string>> getLineText(
+    fasttext::FastText& m,
+    const std::string text) {
+  std::shared_ptr<const fasttext::Dictionary> d = m.getDictionary();
+  std::stringstream ioss(text);
+  std::string token;
+  std::vector<std::string> words;
+  std::vector<std::string> labels;
+  while (d->readWord(ioss, token)) {
+    uint32_t h = d->hash(token);
+    int32_t wid = d->getId(token, h);
+    fasttext::entry_type type = wid < 0 ? d->getType(token) : d->getType(wid);
+
+    if (type == fasttext::entry_type::word) {
+      words.push_back(token);
+    // Labels must not be OOV!
+    } else if (type == fasttext::entry_type::label && wid >= 0) {
+      labels.push_back(token);
+    }
+    if (token == fasttext::Dictionary::EOS)
+      break;
+  }
+  return std::pair<std::vector<std::string>, std::vector<std::string>>(
+      words, labels);
+}
+
 namespace py = pybind11;
 
 PYBIND11_MODULE(fasttext_pybind, m) {
@@ -118,6 +144,17 @@ PYBIND11_MODULE(fasttext_pybind, m) {
           "saveModel",
           [](fasttext::FastText& m, std::string s) { m.saveModel(s); })
       .def(
+          "test",
+          [](fasttext::FastText& m, const std::string filename, int32_t k) {
+            std::ifstream ifs(filename);
+            if (!ifs.is_open()) {
+              throw std::invalid_argument("Test file cannot be opened!");
+            }
+            std::tuple<int64_t, double, double> result = m.test(ifs, k);
+            ifs.close();
+            return result;
+          })
+      .def(
           "getSentenceVector",
           [](fasttext::FastText& m,
              fasttext::Vector& v,
@@ -139,27 +176,24 @@ PYBIND11_MODULE(fasttext_pybind, m) {
             }
             return text_split;
           })
+      .def("getLine", &getLineText)
       .def(
-          "getLine",
-          [](fasttext::FastText& m, const std::string text) {
+          "multilineGetLine",
+          [](fasttext::FastText& m, const std::vector<std::string> lines) {
             std::shared_ptr<const fasttext::Dictionary> d = m.getDictionary();
-            std::stringstream ioss(text);
-            std::string token;
+            std::vector<std::vector<std::string>> all_words;
+            std::vector<std::vector<std::string>> all_labels;
             std::vector<std::string> words;
             std::vector<std::string> labels;
-            while (!ioss.eof()) {
-              while (d->readWord(ioss, token)) {
-                fasttext::entry_type type = d->getType(token);
-                if (type == fasttext::entry_type::word) {
-                  words.push_back(token);
-                } else {
-                  labels.push_back(token);
-                }
-              }
+            std::string token;
+            for (const auto& text : lines) {
+              auto pair = getLineText(m, text);
+              all_words.push_back(pair.first);
+              all_labels.push_back(pair.second);
             }
-            return std::
-                pair<std::vector<std::string>, std::vector<std::string>>(
-                    words, labels);
+            return std::pair<
+                std::vector<std::vector<std::string>>,
+                std::vector<std::vector<std::string>>>(all_words, all_labels);
           })
       .def(
           "getVocab",
@@ -240,7 +274,7 @@ PYBIND11_MODULE(fasttext_pybind, m) {
                 std::vector<std::vector<std::string>>>
                 all_predictions;
             std::vector<std::pair<fasttext::real, std::string>> predictions;
-            for (auto& text : lines) {
+            for (const std::string& text : lines) {
               std::stringstream ioss(text);
               predictions.clear();
               m.predict(ioss, k, predictions);

@@ -23,7 +23,6 @@ import random
 import sys
 import copy
 import numpy as np
-import multiprocessing
 try:
     import unicode
 except ImportError:
@@ -155,12 +154,7 @@ def read_labels(data_file):
 
 
 class TestFastTextUnitPy(unittest.TestCase):
-    @classmethod
-    def num_thread(cls):
-        return multiprocessing.cpu_count() - 1
-
-    # TODO: Unit test if can get and set Input/Output with Python bindings
-    # TODO: Unit test copy behavior of fasttext model
+    # TODO: Unit test copy behavior of fasttext
 
     def gen_test_get_vector(self, kwargs):
         # Confirm if no subwords, OOV is zero, confirm min=10 means words < 10 get zeros
@@ -170,6 +164,71 @@ class TestFastTextUnitPy(unittest.TestCase):
         words += get_random_words(100)
         for word in words:
             f.get_word_vector(word)
+
+    def gen_test_multi_get_line(self, kwargs):
+        data = get_random_data(100)
+        model1 = build_supervised_model(data, kwargs)
+        model2 = build_unsupervised_model(data, kwargs)
+        lines1 = []
+        lines2 = []
+        for line in data:
+            words, labels = model1.get_line(line)
+            lines1.append(words)
+            self.assertEqual(len(labels), 0)
+            words, labels = model2.get_line(line)
+            lines2.append(words)
+            self.assertEqual(len(labels), 0)
+        all_lines1, all_labels1 = model1.get_line(data)
+        all_lines2, all_labels2 = model2.get_line(data)
+        self.assertEqual(lines1, all_lines1)
+        self.assertEqual(lines2, all_lines2)
+        for labels in all_labels1:
+            self.assertEqual(len(labels), 0)
+        for labels in all_labels2:
+            self.assertEqual(len(labels), 0)
+
+    def gen_test_supervised_util_test(self, kwargs):
+        def check(data):
+            third = int(len(data) / 3)
+            train_data = data[:2 * third]
+            valid_data = data[third:]
+            with tempfile.NamedTemporaryFile(
+                delete=False
+            ) as tmpf, tempfile.NamedTemporaryFile(delete=False) as tmpf2:
+                for line in train_data:
+                    tmpf.write(
+                        ("__label__" + line.strip() + "\n").encode("UTF-8")
+                    )
+                tmpf.flush()
+                for line in valid_data:
+                    tmpf2.write(
+                        ("__label__" + line.strip() + "\n").encode("UTF-8")
+                    )
+                tmpf2.flush()
+                model = train_supervised(input=tmpf.name, **kwargs)
+                true_labels = []
+                all_words = []
+                with open(tmpf2.name, 'r') as fid:
+                    for line in fid:
+                        if sys.version_info < (3, 0):
+                            line = line.decode("UTF-8")
+                        if len(line.strip()) == 0:
+                            continue
+                        words, labels = model.get_line(line.strip())
+                        if len(labels) == 0:
+                            continue
+                        all_words.append(" ".join(words))
+                        true_labels += [labels]
+                predictions, _ = model.predict(all_words)
+                p, r = util.test(predictions, true_labels)
+                N = len(predictions)
+                Nt, pt, rt = model.test(tmpf2.name)
+                self.assertEqual(N, Nt)
+                self.assertEqual(p, pt)
+                self.assertEqual(r, rt)
+
+        # Need at least one word to have a label and a word to prevent error
+        check(get_random_data(100, min_words_line=2))
 
     def gen_test_supervised_predict(self, kwargs):
         # Confirm number of labels, confirm labels for easy dataset
@@ -261,20 +320,8 @@ class TestFastTextUnitPy(unittest.TestCase):
     def gen_test_tokenize(self, kwargs):
         self.assertEqual(["asdf", "asdb"], fastText.tokenize("asdf asdb"))
         self.assertEqual(["asdf"], fastText.tokenize("asdf"))
-        gotError = False
-        try:
-            self.assertEqual([fastText.EOS], fastText.tokenize("\n"))
-        except ValueError:
-            gotError = True
-        self.assertTrue(gotError)
-        gotError = False
-        try:
-            self.assertEqual(
-                ["asdf", fastText.EOS], fastText.tokenize("asdf\n")
-            )
-        except ValueError:
-            gotError = True
-        self.assertTrue(gotError)
+        self.assertEqual([fastText.EOS], fastText.tokenize("\n"))
+        self.assertEqual(["asdf", fastText.EOS], fastText.tokenize("asdf\n"))
         self.assertEqual([], fastText.tokenize(""))
         self.assertEqual([], fastText.tokenize(" "))
         # An empty string is not a token (it's just whitespace)
@@ -307,7 +354,7 @@ class TestFastTextUnitPy(unittest.TestCase):
             if len(subvectors) == 0:
                 vec2 = np.zeros((f.get_dimension(), ))
             else:
-                subvectors = np.stack(subvectors)
+                subvectors = np.vstack(subvectors)
                 vec2 = np.sum((subvectors / len(subwords)), 0)
 
             # Build word vector from subinds
@@ -419,15 +466,10 @@ def gen_sup_test(configuration, data_dir):
             return path_size
 
         def check(model, model_filename, test, lessthan, msg_prefix=""):
-            lines, labels = read_labels(test["data"])
-            predictions = []
-            for line in lines:
-                pred_label, _ = model.predict(line)
-                predictions.append(pred_label)
-            p1_local_out, r1_local_out = util.test(predictions, labels)
+            N_local_out, p1_local_out, r1_local_out = model.test(test["data"])
             self.assertEqual(
-                len(predictions), test["n"], msg_prefix + "N: Want: " +
-                str(test["n"]) + " Is: " + str(len(predictions))
+                N_local_out, test["n"], msg_prefix + "N: Want: " +
+                str(test["n"]) + " Is: " + str(N_local_out)
             )
             self.assertTrue(
                 p1_local_out >= test["p1"], msg_prefix + "p1: Want: " +
@@ -462,12 +504,22 @@ def gen_sup_test(configuration, data_dir):
         print()
         model = train_supervised(**configuration["args"])
         model.save_model(output + ".bin")
-        check(model, output + ".bin", configuration["test"], False)
+        check(
+            model,
+            output + ".bin",
+            configuration["test"],
+            False,
+            msg_prefix="Supervised: "
+        )
         print()
         model.quantize(**configuration["quant_args"])
         model.save_model(output + ".ftz")
         check(
-            model, output + ".ftz", configuration["quant_test"], True, "Quant: "
+            model,
+            output + ".ftz",
+            configuration["quant_test"],
+            True,
+            msg_prefix="Quantized: "
         )
 
     return sup_test
@@ -564,12 +616,12 @@ def gen_unit_tests(verbose=0):
     return TestFastTextUnitPy
 
 
-def gen_tests(data_dir):
+def gen_tests(data_dir, verbose=1):
     class TestFastTextPy(unittest.TestCase):
         pass
 
     i = 0
-    for configuration in get_supervised_models():
+    for configuration in get_supervised_models(verbose=verbose):
         setattr(
             TestFastTextPy,
             "test_sup_" + str(i) + "_" + configuration["dataset"],

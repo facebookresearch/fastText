@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import numpy as np
 
 
+# TODO: Add example on reproducing model.test with util.test and model.get_line
 def test(predictions, labels, k=1):
     """
     Return precision and recall modeled after fasttext's test

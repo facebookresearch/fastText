@@ -50,12 +50,12 @@ if __name__ == "__main__":
     parser.add_argument("--data-dir", help="Full path to data directory")
     args = parser.parse_args()
     if args.unit_tests:
-        run_tests(gen_unit_tests())
+        run_tests(gen_unit_tests(verbose=args.verbose))
     if args.integration_tests:
         if args.data_dir is None:
             raise ValueError(
                 "Need data directory! Consult tests/fetch_test_data.sh"
             )
-        run_tests(gen_tests(args.data_dir))
+        run_tests(gen_tests(args.data_dir, verbose=args.verbose))
     if not args.unit_tests and not args.integration_tests:
         print("Ran no tests")

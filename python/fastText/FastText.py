@@ -116,13 +116,13 @@ class _FastText():
         received for a single line of text.
         """
 
-        def check(text):
-            if text.find('\n') != -1:
+        def check(entry):
+            if entry.find('\n') != -1:
                 raise ValueError(
                     "predict processes one line at a time (remove \'\\n\')"
                 )
-            text += "\n"
-            return text
+            entry += "\n"
+            return entry
 
         if type(text) == list:
             text = [check(entry) for entry in text]
@@ -188,19 +188,33 @@ class _FastText():
         Split a line of text into words and labels. Labels must start with
         the prefix used to create the model (__label__ by default).
         """
-        if text.find('\n') != -1:
-            raise ValueError(
-                "get_line processes one line at a time (remove \'\\n\')"
-            )
-        return self.f.getLine(text)
+
+        def check(entry):
+            if entry.find('\n') != -1:
+                raise ValueError(
+                    "get_line processes one line at a time (remove \'\\n\')"
+                )
+            entry += "\n"
+            return entry
+
+        if type(text) == list:
+            text = [check(entry) for entry in text]
+            return self.f.multilineGetLine(text)
+        else:
+            text = check(text)
+            return self.f.getLine(text)
 
     def save_model(self, path):
         """Save the model to the given path"""
         self.f.saveModel(path)
 
+    def test(self, path, k=1):
+        """Evaluate supervised model using file given by path"""
+        return self.f.test(path, k)
+
     def quantize(
         self,
-        input="",
+        input=None,
         qout=False,
         cutoff=0,
         retrain=False,
@@ -224,6 +238,10 @@ class _FastText():
             thread = a.thread
         if not verbose:
             verbose = a.verbose
+        if retrain and not input:
+            raise ValueError("Need input file path if retraining")
+        if input is None:
+            input = ""
         self.f.quantize(
             input, qout, cutoff, retrain, epoch, lr, thread, verbose, dsub,
             qnorm
@@ -273,10 +291,6 @@ def _build_args(args):
 
 def tokenize(text):
     """Given a string of text, tokenize it and return a list of tokens"""
-    if text.find('\n') != -1:
-        raise ValueError(
-            "tokenize processes one line at a time (remove \'\\n\')"
-        )
     f = fasttext.fasttext()
     return f.tokenize(text)
 

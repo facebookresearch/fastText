@@ -4,7 +4,7 @@
 
 ## Requirements
 
-**fastText** builds on modern Mac OS and Linux distributions.
+[fastText](https://fasttext.cc/) builds on modern Mac OS and Linux distributions.
 Since it uses C\++11 features, it requires a compiler with good C++11 support.
 These include :
 
@@ -12,24 +12,19 @@ These include :
 
 You will need
 
-* python 2.7 or newer
-* numpy & scipy
+* [Python](https://www.python.org/) version 2.7 or >=3.4
+* [NumPy](http://www.numpy.org/) & [SciPy](https://www.scipy.org/)
 * [pybind11](https://github.com/pybind/pybind11)
 
-## Building fastTextpy
+## Building fastText
 
-In order to build `fastTextpy`, do the following:
-
-```
-$ python setup.py install
-```
-
-This will add the module fastTextpy to your python interpreter.
-Depending on your system you might need to use 'sudo', for example
+The easiest way to get the latest version of [fastText is to use pip](https://pypi.python.org/pypi/fasttext).
 
 ```
-$ sudo python setup.py install
+$ pip install fasttext
 ```
+
+If you want to use the latest unstable release you will need to build from source using setup.py.
 
 Now you can import this library with
 
@@ -37,115 +32,57 @@ Now you can import this library with
 import fastText
 ```
 
-
 ## Examples
 
-If you're already largely familiar with fastText you could skip this section 
-and take a look at the examples within the doc folder.
+In general it is assumed that the reader already has good knowledge of fastText. For this consider the main [README](https://github.com/facebookresearch/fastText/blob/master/README.md) and in particular [the tutorials on our website](https://fasttext.cc/docs/en/supervised-tutorial.html).
 
-## Using models
+We recommend you look at the [examples within the doc folder](https://github.com/facebookresearch/fastText/tree/master/python/doc/examples).
 
-First, you'll need to train a model with fastText. For example
-
-```
-./fasttext skipgram -input data/fil9 -output result/fil9
-```
-
-You can see more examples within the scripts in the [fastText repository](https://github.com/facebookresearch/fastText).
-
-Next, you can load this model from Python and query it. 
-
-```
-from fastText import load_model
-
-f = load_model('result/model.bin')
-words, frequency = f.get_words()
-subwords = f.get_subwords("Paris")
-```
-
-If you trained an unsupervised model, you can get word vectors with
-
-```
-vector = f.get_word_vector("London")
-```
-
-If you trained a supervised model, you can get the top k labels and get their probabilities with
-
-```
-k = 5
-labels, probabilities = f.predict("I like this Product", k)
-```
-
-A more advanced application might look like this:
-
-Getting the word vectors of all words:
-
-```
-words, frequency = f.get_words()
-for w in words:
-    print((w, f.get_word_vector(w))
-```
-
-## Training models
-
-Training a model is easy. For example
-
-```
-from fastText import train_supervised
-from fastText import train_unsupervised
-
-model_unsup = train_unsupervised(
-    input=<data>,
-    epoch=1,
-    model="cbow",
-    thread=10
-)
-model_unsup.save_model(<path>)
-
-model_sup = train_supervised(
-    input=<labeled_data>
-    epoch=1,
-    thread=10
-)
-```
-
-You can then use the model objects just as exemplified above.
-
-To get extended help on these functions use the python help functions.
+As with any package you can get help on any Python function using the help function.
 
 For example
 
 ```
-Help on function train_unsupervised in module fastText.FastText:
++>>> import fastText
++>>> help(fastText.FastText)
 
-train_unsupervised(input, model=u'skipgram', lr=0.05, dim=100, ws=5, epoch=5, minCount=5, minCountLabel=0, minn=3, maxn=6, neg=5, wordNgrams=1, loss=u'ns', bucket=2000000, thread=12, lrUpdateRate=100, t=0.0001, label=u'__label__', verbose=2, pretrainedVectors=u'', saveOutput=0)
-    Train an unsupervised model and return a model object.
+Help on module fastText.FastText in fastText:
 
-    input must be a filepath. The input text does not need to be tokenized
-    as per the tokenize function, but it must be preprocessed and encoded
-    as UTF-8. You might want to consult standard preprocessing scripts such
-    as tokenizer.perl mentioned here: http://www.statmt.org/wmt07/baseline.html
+NAME
+    fastText.FastText
 
-    The input fiel must not contain any labels or use the specified label prefix
-    unless it is ok for those words to be ignored. For an example consult the
-    dataset pulled by the example script word-vector-example.sh, which is
-    part of the fastText repository.
+DESCRIPTION
+    # Copyright (c) 2017-present, Facebook, Inc.
+    # All rights reserved.
+    #
+    # This source code is licensed under the BSD-style license found in the
+    # LICENSE file in the root directory of this source tree. An additional grant
+    # of patent rights can be found in the PATENTS file in the same directory.
+
+FUNCTIONS
+    load_model(path)
+        Load a model given a filepath and return a model object.
+
+    tokenize(text)
+        Given a string of text, tokenize it and return a list of tokens
+[...]
 ```
 
-## Processing data
+## IMPORTANT: Preprocessing data / enconding conventions
 
-You can tokenize using the fastText Dictionary method readWord.
+In general it is important to properly preprocess your data. In particular our example scripts in the [root folder](https://github.com/facebookresearch/fastText) do this. 
 
-This will give you a list of tokens split on the same whitespace characters that fastText splits on.
+fastText assumes UTF-8 encoded text. All text must be [unicode for Python2](https://docs.python.org/2/library/functions.html#unicode) and [str for Python3](https://docs.python.org/3.5/library/stdtypes.html#textseq). The passed text will be [encoded as UTF-8 by pybind11](https://pybind11.readthedocs.io/en/master/advanced/cast/strings.html?highlight=utf-8#strings-bytes-and-unicode-conversions) before passed to the fastText C++ library. This means it is important to use UTF-8 encoded text when building a model. On Unix-like systems you can convert text using [iconv](https://en.wikipedia.org/wiki/Iconv).
 
-It will also add the EOS character as necessary, which is exposed via fastText.EOS
+fastText will tokenize (split text into pieces) based on the following ASCII characters (bytes). In particular, it is not aware of UTF-8 whitespace. We advice the user to convert UTF-8 whitespace / word boundaries into one of the following symbols as appropiate.
 
-Then resulting text is then stored entirely in memory.
+* space
+* tab
+* vertical tab
+* carriage return
+* formfeed
+* the null character
 
-For example:
+The newline character is used to delimit lines of text. In particular, the EOS token is appended to a line of text if a newline character is encountered. The only exception is if the number of tokens exceeds the MAX\_LINE\_SIZE constant as defined in the [Dictionary header](https://github.com/facebookresearch/fastText/blob/master/src/dictionary.h). This means if you have text that is not separate by newlines, such as the [fil9 dataset](http://mattmahoney.net/dc/textdata), it will be broken into chunks with MAX\_LINE\_SIZE of tokens and the EOS token is not appended.
 
-```
-from fastText import tokenize
-with open(<PATH>, 'r') as f:
-    tokens = tokenize(f.read())
-```
+The length of a token is the number of UTF-8 characters by considering the [leading two bits of a byte](https://en.wikipedia.org/wiki/UTF-8#Description) to identify [subsequent bytes of a multi-byte sequence](https://github.com/facebookresearch/fastText/blob/master/src/dictionary.cc). Knowing this is especially important when choosing the minimum and maximum length of subwords. Further, the EOS token (as specified in the [Dictionary header](https://github.com/facebookresearch/fastText/blob/master/src/dictionary.h)) is considered a character and will not be broken into subwords.

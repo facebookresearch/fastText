@@ -34,6 +34,7 @@ jobs:
             . .circleci/setup_circleimg.sh
             . .circleci/python_test.sh
 
+
   "py353":
     docker:
       - image: circleci/python:3.5.3
@@ -66,6 +67,51 @@ jobs:
           command: |
             . .circleci/setup_circleimg.sh
             . .circleci/python_test.sh
+
+  "py361-pypi":
+    docker:
+      - image: circleci/python:3.6.1
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/setup_circleimg.sh
+            . .circleci/pip_test.sh
+
+
+  "py353-pypi":
+    docker:
+      - image: circleci/python:3.5.3
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/setup_circleimg.sh
+            . .circleci/pip_test.sh
+
+  "py346-pypi":
+    docker:
+      - image: circleci/python:3.4.6
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/setup_circleimg.sh
+            . .circleci/pip_test.sh
+
+  "py2713-pypi":
+    docker:
+      - image: circleci/python:2.7.13
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/setup_circleimg.sh
+            . .circleci/pip_test.sh
 
   "gcc5":
     docker:
@@ -184,6 +230,10 @@ workflows:
       - "py353"
       - "py346"
       - "py2713"
+      - "py361-pip"
+      - "py353-pip"
+      - "py346-pip"
+      - "py2713-pip"
       - "gcc5"
       - "gcc6"
       - "gcc7"

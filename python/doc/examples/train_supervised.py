@@ -15,25 +15,30 @@ from __future__ import division, absolute_import, print_function
 
 import os
 from fastText import train_supervised
-from fastText.util import test
+
+
+def print_results(N, p, r):
+    print("N\t" + str(N))
+    print("P@{}\t{:.3f}".format(1, p))
+    print("R@{}\t{:.3f}".format(1, r))
 
 if __name__ == "__main__":
     train_data = os.path.join(os.getenv("DATADIR", ''), 'cooking.train')
     valid_data = os.path.join(os.getenv("DATADIR", ''), 'cooking.valid')
+
     # train_supervised uses the same arguments and defaults as the fastText cli
     model = train_supervised(
-        input=train_data, epoch=25, lr=1.0, wordNgrams=2, verbose=1, minCount=1
+        input=train_data, epoch=25, lr=1.0, wordNgrams=2, verbose=2, minCount=1
     )
-    true_labels = []
-    all_words = []
-    with open(valid_data, 'r') as fid:
-        for line in fid:
-            words, labels = model.get_line(line.strip())
-            all_words.append(" ".join(words))
-            true_labels += [labels]
-    predictions, _ = model.predict(all_words)
-    p, r = test(predictions, true_labels)
-    print("N\t" + str(len(predictions)))
-    print("P@{}\t{:.3f}".format(1, p))
-    print("R@{}\t{:.3f}".format(1, r))
+    print_results(*model.test(valid_data))
+
+    model = train_supervised(
+        input=train_data, epoch=25, lr=1.0, wordNgrams=2, verbose=2, minCount=1,
+        loss="hs"
+    )
+    print_results(*model.test(valid_data))
     model.save_model("cooking.bin")
+
+    model.quantize(input=train_data, qnorm=True, retrain=True, cutoff=100000)
+    print_results(*model.test(valid_data))
+    model.save_model("cooking.ftz")
