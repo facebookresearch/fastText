@@ -71,10 +71,12 @@ def has_flag(compiler, flagname):
     the specified compiler.
     """
     import tempfile
+    if not isinstance(flagname, list):
+        flagname = [flagname]
     with tempfile.NamedTemporaryFile('w', suffix='.cpp') as f:
         f.write('int main (int argc, char **argv) { return 0; }')
         try:
-            compiler.compile([f.name], extra_postargs=[flagname])
+            compiler.compile([f.name], extra_postargs=flagname)
         except setuptools.distutils.errors.CompileError:
             return False
     return True
@@ -106,9 +108,8 @@ class BuildExt(build_ext):
 
     def build_extensions(self):
         if sys.platform == 'darwin':
-            if has_flag(self.compiler, '-stdlib=libc++'):
-                self.c_opts['unix'] += ['-stdlib=libc++']
-            self.c_opts['unix'] += ['-mmacosx-version-min=10.7']
+            if has_flag(self.compiler, ['-stdlib=libc++', '-mmacosx-version-min=10.7']):
+                self.c_opts['unix'] += ['-stdlib=libc++', '-mmacosx-version-min=10.7']
         ct = self.compiler.compiler_type
         opts = self.c_opts.get(ct, [])
         if ct == 'unix':
