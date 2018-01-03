@@ -18,13 +18,21 @@ You will need
 
 ## Building fastText
 
-The easiest way to get the latest version of [fastText is to use pip](https://pypi.python.org/pypi/fasttext).
+The easiest way to install fastText is to use [pip](https://pip.pypa.io/en/stable/).
 
 ```
-$ pip install fasttext
+$ git clone https://github.com/facebookresearch/fastText.git
+$ cd fastText
+$ pip install .
 ```
 
-If you want to use the latest unstable release you will need to build from source using setup.py.
+Alternatively you can also install fastText using setuptools.
+
+```
+$ git clone https://github.com/facebookresearch/fastText.git
+$ cd fastText
+$ python setup.py install
+```
 
 Now you can import this library with
 

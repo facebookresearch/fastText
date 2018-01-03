@@ -118,7 +118,7 @@ For now this is not part of a release, so you will need to clone the master bran
 ```
 $ git clone https://github.com/facebookresearch/fastText.git
 $ cd fastText
-$ python setup.py install
+$ pip install .
 ```
 
 For further information and introduction see python/README.md
