@@ -366,8 +366,9 @@ void FastText::skipgram(Model& model, real lr,
 
 std::tuple<int64_t, double, double> FastText::test(
     std::istream& in,
-    int32_t k) {
-  int32_t nexamples = 0, nlabels = 0;
+    int32_t k,
+    real threshold) {
+  int32_t nexamples = 0, nlabels = 0, npredictions = 0;
   double precision = 0.0;
   std::vector<int32_t> line, labels;
 
@@ -375,7 +376,7 @@ std::tuple<int64_t, double, double> FastText::test(
     dict_->getLine(in, line, labels);
     if (labels.size() > 0 && line.size() > 0) {
       std::vector<std::pair<real, int32_t>> modelPredictions;
-      model_->predict(line, k, modelPredictions);
+      model_->predict(line, k, threshold, modelPredictions);
       for (auto it = modelPredictions.cbegin(); it != modelPredictions.cend(); it++) {
         if (std::find(labels.begin(), labels.end(), it->second) != labels.end()) {
           precision += 1.0;
@@ -383,14 +384,19 @@ std::tuple<int64_t, double, double> FastText::test(
       }
       nexamples++;
       nlabels += labels.size();
+      npredictions += modelPredictions.size();
     }
   }
   return std::tuple<int64_t, double, double>(
-      nexamples, precision / (k * nexamples), precision / nlabels);
+      nexamples, precision / npredictions, precision / nlabels);
 }
 
-void FastText::predict(std::istream& in, int32_t k,
-                       std::vector<std::pair<real,std::string>>& predictions) const {
+void FastText::predict(
+  std::istream& in,
+  int32_t k,
+  std::vector<std::pair<real,std::string>>& predictions,
+  real threshold
+) const {
   std::vector<int32_t> words, labels;
   predictions.clear();
   dict_->getLine(in, words, labels);
@@ -399,17 +405,22 @@ void FastText::predict(std::istream& in, int32_t k,
   Vector hidden(args_->dim);
   Vector output(dict_->nlabels());
   std::vector<std::pair<real,int32_t>> modelPredictions;
-  model_->predict(words, k, modelPredictions, hidden, output);
+  model_->predict(words, k, threshold, modelPredictions, hidden, output);
   for (auto it = modelPredictions.cbegin(); it != modelPredictions.cend(); it++) {
     predictions.push_back(std::make_pair(it->first, dict_->getLabel(it->second)));
   }
 }
 
-void FastText::predict(std::istream& in, int32_t k, bool print_prob) {
+void FastText::predict(
+  std::istream& in,
+  int32_t k,
+  bool print_prob,
+  real threshold
+) {
   std::vector<std::pair<real,std::string>> predictions;
   while (in.peek() != EOF) {
     predictions.clear();
-    predict(in, k, predictions);
+    predict(in, k, predictions, threshold);
     if (predictions.empty()) {
       std::cout << std::endl;
       continue;

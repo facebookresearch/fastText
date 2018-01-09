@@ -93,12 +93,13 @@ class FastText {
   std::vector<int32_t> selectEmbeddings(int32_t) const;
   void getSentenceVector(std::istream&, Vector&);
   void quantize(const Args);
-  std::tuple<int64_t, double, double> test(std::istream&, int32_t);
-  void predict(std::istream&, int32_t, bool);
+  std::tuple<int64_t, double, double> test(std::istream&, int32_t, real = 0.0);
+  void predict(std::istream&, int32_t, bool, real = 0.0);
   void predict(
       std::istream&,
       int32_t,
-      std::vector<std::pair<real, std::string>>&) const;
+      std::vector<std::pair<real, std::string>>&,
+      real = 0.0) const;
   void ngramVectors(std::string);
   void precomputeWordVectors(Matrix&);
   void findNN(

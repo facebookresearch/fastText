@@ -43,19 +43,21 @@ void printQuantizeUsage() {
 
 void printTestUsage() {
   std::cerr
-    << "usage: fasttext test <model> <test-data> [<k>]\n\n"
+    << "usage: fasttext test <model> <test-data> [<k>] [<th>]\n\n"
     << "  <model>      model filename\n"
     << "  <test-data>  test data filename (if -, read from stdin)\n"
     << "  <k>          (optional; 1 by default) predict top k labels\n"
+    << "  <th>         (optional; 0.0 by default) probability threshold\n"
     << std::endl;
 }
 
 void printPredictUsage() {
   std::cerr
-    << "usage: fasttext predict[-prob] <model> <test-data> [<k>]\n\n"
+    << "usage: fasttext predict[-prob] <model> <test-data> [<k>] [<th>]\n\n"
     << "  <model>      model filename\n"
     << "  <test-data>  test data filename (if -, read from stdin)\n"
     << "  <k>          (optional; 1 by default) predict top k labels\n"
+    << "  <th>         (optional; 0.0 by default) probability threshold\n"
     << std::endl;
 }
 
@@ -122,13 +124,17 @@ void printDumpUsage() {
 }
 
 void test(const std::vector<std::string>& args) {
-  if (args.size() < 4 || args.size() > 5) {
+  if (args.size() < 4 || args.size() > 6) {
     printTestUsage();
     exit(EXIT_FAILURE);
   }
   int32_t k = 1;
-  if (args.size() >= 5) {
+  real threshold = 0.0;
+  if (args.size() > 4) {
     k = std::stoi(args[4]);
+    if (args.size() == 6) {
+      threshold = std::stof(args[5]);
+    }
   }
 
   FastText fasttext;
@@ -137,14 +143,14 @@ void test(const std::vector<std::string>& args) {
   std::tuple<int64_t, double, double> result;
   std::string infile = args[3];
   if (infile == "-") {
-    result = fasttext.test(std::cin, k);
+    result = fasttext.test(std::cin, k, threshold);
   } else {
     std::ifstream ifs(infile);
     if (!ifs.is_open()) {
       std::cerr << "Test file cannot be opened!" << std::endl;
       exit(EXIT_FAILURE);
     }
-    result = fasttext.test(ifs, k);
+    result = fasttext.test(ifs, k, threshold);
     ifs.close();
   }
   std::cout << "N" << "\t" << std::get<0>(result) << std::endl;
@@ -155,13 +161,17 @@ void test(const std::vector<std::string>& args) {
 }
 
 void predict(const std::vector<std::string>& args) {
-  if (args.size() < 4 || args.size() > 5) {
+  if (args.size() < 4 || args.size() > 6) {
     printPredictUsage();
     exit(EXIT_FAILURE);
   }
   int32_t k = 1;
-  if (args.size() >= 5) {
+  real threshold = 0.0;
+  if (args.size() > 4) {
     k = std::stoi(args[4]);
+    if (args.size() == 6) {
+      threshold = std::stof(args[5]);
+    }
   }
 
   bool print_prob = args[1] == "predict-prob";
@@ -170,14 +180,14 @@ void predict(const std::vector<std::string>& args) {
 
   std::string infile(args[3]);
   if (infile == "-") {
-    fasttext.predict(std::cin, k, print_prob);
+    fasttext.predict(std::cin, k, print_prob, threshold);
   } else {
     std::ifstream ifs(infile);
     if (!ifs.is_open()) {
       std::cerr << "Input file cannot be opened!" << std::endl;
       exit(EXIT_FAILURE);
     }
-    fasttext.predict(ifs, k, print_prob);
+    fasttext.predict(ifs, k, print_prob, threshold);
     ifs.close();
   }
 
@@ -346,7 +356,7 @@ int main(int argc, char** argv) {
     nn(args);
   } else if (command == "analogies") {
     analogies(args);
-  } else if (command == "predict" || command == "predict-prob" ) {
+  } else if (command == "predict" || command == "predict-prob") {
     predict(args);
   } else if (command == "dump") {
     dump(args);

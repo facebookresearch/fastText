@@ -253,10 +253,13 @@ PYBIND11_MODULE(fasttext_pybind, m) {
           "predict",
           // NOTE: text needs to end in a newline
           // to exactly mimic the behavior of the cli
-          [](fasttext::FastText& m, const std::string& text, int32_t k) {
+          [](fasttext::FastText& m,
+             const std::string text,
+             int32_t k,
+             fasttext::real threshold) {
             std::vector<std::pair<fasttext::real, std::string>> predictions;
             std::stringstream ioss(text);
-            m.predict(ioss, k, predictions);
+            m.predict(ioss, k, predictions, threshold);
             for (auto& pair : predictions) {
               pair.first = std::exp(pair.first);
             }
@@ -268,7 +271,8 @@ PYBIND11_MODULE(fasttext_pybind, m) {
           // to exactly mimic the behavior of the cli
           [](fasttext::FastText& m,
              const std::vector<std::string>& lines,
-             int32_t k) {
+             int32_t k,
+             fasttext::real threshold) {
             std::pair<
                 std::vector<std::vector<fasttext::real>>,
                 std::vector<std::vector<std::string>>>
@@ -277,7 +281,7 @@ PYBIND11_MODULE(fasttext_pybind, m) {
             for (const std::string& text : lines) {
               std::stringstream ioss(text);
               predictions.clear();
-              m.predict(ioss, k, predictions);
+              m.predict(ioss, k, predictions, threshold);
               all_predictions.first.push_back(std::vector<fasttext::real>());
               all_predictions.second.push_back(std::vector<std::string>());
               for (auto& pair : predictions) {

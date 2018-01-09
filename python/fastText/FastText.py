@@ -97,13 +97,17 @@ class _FastText():
         self.f.getInputVector(b, ind)
         return np.array(b)
 
-    def predict(self, text, k=1):
+    def predict(self, text, k=1, threshold=0.0):
         """
         Given a string, get a list of labels and a list of
         corresponding probabilities. k controls the number
         of returned labels. A choice of 5, will return the 5
         most probable labels. By default this returns only
-        the most likely label and probability.
+        the most likely label and probability. threshold filters
+        the returned labels by a threshold on probability. A
+        choice of 0.5 will return labels with at least 0.5
+        probability. k and threshold will be applied together to
+        determine the returned labels.
 
         This function assumes to be given
         a single line of text. We split words on whitespace (space,
@@ -126,11 +130,11 @@ class _FastText():
 
         if type(text) == list:
             text = [check(entry) for entry in text]
-            all_probs, all_labels = self.f.multilinePredict(text, k)
+            all_probs, all_labels = self.f.multilinePredict(text, k, threshold)
             return all_labels, np.array(all_probs, copy=False)
         else:
             text = check(text)
-            pairs = self.f.predict(text, k)
+            pairs = self.f.predict(text, k, threshold)
             probs, labels = zip(*pairs)
             return labels, np.array(probs, copy=False)
 
