@@ -36,9 +36,9 @@ echo 'Otherwise you can expect the commands in this script to fail'
 for i in {0..7}
 do
   echo "Working on dataset ${DATASET[i]}"
-  ./fasttext quantize -input "${DATADIR}/${DATASET[i]}.train" \
+  ../../fasttext quantize -input "${DATADIR}/${DATASET[i]}.train" \
     -output "${RESULTDIR}/${DATASET[i]}" -lr "${LR[i]}" \
     -thread 4 -qnorm -retrain -epoch 5 -cutoff 100000 > /dev/null
-  ./fasttext test "${RESULTDIR}/${DATASET[i]}.ftz" \
+  ../../fasttext test "${RESULTDIR}/${DATASET[i]}.ftz" \
     "${DATADIR}/${DATASET[i]}.test"
 done
