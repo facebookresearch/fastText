@@ -248,8 +248,8 @@ void FastText::printInfo(real progress, real loss, std::ostream& log_stream) {
     eta = int(t / progress * (1 - progress) / args_->thread);
     wst = double(tokenCount_) / t;
   }
-  int64_t etam = (eta % 3600) / 60;
-  int64_t etah = etam / 60;
+  int32_t etah = eta / 3600;
+  int32_t etam = (eta % 3600) / 60;
   progress = progress * 100;
   log_stream << std::fixed;
   log_stream << "Progress: ";
