@@ -28,6 +28,7 @@ class Args {
   public:
     Args();
     std::string input;
+    std::string inputModel;
     std::string output;
     double lr;
     int lrUpdateRate;
@@ -55,6 +56,8 @@ class Args {
     bool qnorm;
     size_t cutoff;
     size_t dsub;
+
+    bool incr;
 
     void parseArgs(const std::vector<std::string>& args);
     void printHelp();

@@ -324,6 +324,8 @@ def train_supervised(
     label="__label__",
     verbose=2,
     pretrainedVectors="",
+    incr=False,
+    inputModel=""
 ):
     """
     Train a supervised model and return a model object.
@@ -365,6 +367,8 @@ def train_unsupervised(
     label="__label__",
     verbose=2,
     pretrainedVectors="",
+    incr=False,
+    inputModel=""
 ):
     """
     Train an unsupervised model and return a model object.

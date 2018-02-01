@@ -43,6 +43,8 @@ Args::Args() {
   qnorm = false;
   cutoff = 0;
   dsub = 2;
+
+  incr = false;
 }
 
 std::string Args::lossToString(loss_name ln) const {
@@ -54,7 +56,6 @@ std::string Args::lossToString(loss_name ln) const {
     case loss_name::softmax:
       return "softmax";
   }
-  return "Unknown loss!"; // should never happen
 }
 
 std::string Args::boolToString(bool b) const {
@@ -102,6 +103,8 @@ void Args::parseArgs(const std::vector<std::string>& args) {
         exit(EXIT_FAILURE);
       } else if (args[ai] == "-input") {
         input = std::string(args.at(ai + 1));
+      } else if (args[ai] == "-inputModel") {
+        inputModel = std::string(args.at(ai + 1));
       } else if (args[ai] == "-output") {
         output = std::string(args.at(ai + 1));
       } else if (args[ai] == "-lr") {
@@ -166,6 +169,8 @@ void Args::parseArgs(const std::vector<std::string>& args) {
         cutoff = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-dsub") {
         dsub = std::stoi(args.at(ai + 1));
+      } else if (args[ai] == "-incr") {
+        incr = true;
       } else {
         std::cerr << "Unknown argument: " << args[ai] << std::endl;
         printHelp();
@@ -182,6 +187,13 @@ void Args::parseArgs(const std::vector<std::string>& args) {
     printHelp();
     exit(EXIT_FAILURE);
   }
+
+  if (incr && inputModel.empty()) {
+    std::cerr << "Empty input model." << std::endl;
+    printHelp();
+    exit(EXIT_FAILURE);
+  }
+
   if (wordNgrams <= 1 && maxn == 0) {
     bucket = 0;
   }
@@ -199,6 +211,7 @@ void Args::printBasicHelp() {
   std::cerr
     << "\nThe following arguments are mandatory:\n"
     << "  -input              training file path\n"
+    << "  -inputModel         trained model file path (only for incremental training)\n"
     << "  -output             output file path\n"
     << "\nThe following arguments are optional:\n"
     << "  -verbose            verbosity level [" << verbose << "]\n";
@@ -229,7 +242,8 @@ void Args::printTrainingHelp() {
     << "  -loss               loss function {ns, hs, softmax} [" << lossToString(loss) << "]\n"
     << "  -thread             number of threads [" << thread << "]\n"
     << "  -pretrainedVectors  pretrained word vectors for supervised learning ["<< pretrainedVectors <<"]\n"
-    << "  -saveOutput         whether output params should be saved [" << boolToString(saveOutput) << "]\n";
+    << "  -saveOutput         whether output params should be saved [" << boolToString(saveOutput) << "]\n"
+    << "  -incr               incremental training, default [" << boolToString(incr) << "]\n";
 }
 
 void Args::printQuantizationHelp() {

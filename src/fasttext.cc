@@ -130,10 +130,7 @@ bool FastText::checkModel(std::istream& in) {
     return false;
   }
   in.read((char*)&(version), sizeof(int32_t));
-  if (version > FASTTEXT_VERSION) {
-    return false;
-  }
-  return true;
+  return version <= FASTTEXT_VERSION;
 }
 
 void FastText::signModel(std::ostream& out) {
@@ -415,7 +412,8 @@ void FastText::predict(
   std::istream& in,
   int32_t k,
   bool print_prob,
-  real threshold
+  real threshold,
+  std::string separator
 ) {
   std::vector<std::pair<real,std::string>> predictions;
   while (in.peek() != EOF) {
@@ -431,7 +429,7 @@ void FastText::predict(
       }
       std::cout << it->second;
       if (print_prob) {
-        std::cout << " " << std::exp(it->first);
+        std::cout << separator << std::exp(it->first);
       }
     }
     std::cout << std::endl;
@@ -646,33 +644,196 @@ void FastText::loadVectors(std::string filename) {
 void FastText::train(const Args args) {
   args_ = std::make_shared<Args>(args);
   dict_ = std::make_shared<Dictionary>(args_);
+
   if (args_->input == "-") {
     // manage expectations
     throw std::invalid_argument("Cannot use stdin for training!");
   }
-  std::ifstream ifs(args_->input);
-  if (!ifs.is_open()) {
-    throw std::invalid_argument(
-        args_->input + " cannot be opened for training!");
-  }
-  dict_->readFromFile(ifs);
-  ifs.close();
 
-  if (args_->pretrainedVectors.size() != 0) {
-    loadVectors(args_->pretrainedVectors);
+  if (!args.incr) {
+    std::ifstream ifs(args_->input);
+    if (!ifs.is_open()) {
+      throw std::invalid_argument(args_->input + " cannot be opened for training!");
+    }
+
+    dict_->readFromFile(ifs);
+    ifs.close();
+
+    if (args_->pretrainedVectors.size() != 0) {
+      loadVectors(args_->pretrainedVectors);
+    } else {
+      input_ = std::make_shared<Matrix>(dict_->nwords() + args_->bucket, args_->dim);
+      input_->uniform(1.0 / args_->dim);
+    }
+
+    if (args_->model == model_name::sup) {
+      output_ = std::make_shared<Matrix>(dict_->nlabels(), args_->dim);
+    } else {
+      output_ = std::make_shared<Matrix>(dict_->nwords(), args_->dim);
+    }
+    output_->zero();
   } else {
-    input_ = std::make_shared<Matrix>(dict_->nwords()+args_->bucket, args_->dim);
-    input_->uniform(1.0 / args_->dim);
+    std::ifstream inModel(args_->inputModel);
+    if (!inModel.is_open()) {
+      throw std::invalid_argument(args_->inputModel + " cannot be opened for re-training");
+    }
+
+    if (!checkModel(inModel)) {
+      throw std::invalid_argument(args_->inputModel + " has wrong model format");
+    }
+
+    std::shared_ptr<Args> old_args_ = std::make_shared<Args>();
+    old_args_->load(inModel);
+
+    std::cerr<<"Update args"<<std::endl;
+    args_->dim = old_args_->dim;
+    args_->ws = old_args_->ws;
+    args_->neg = old_args_->neg;
+    args_->wordNgrams = old_args_->wordNgrams;
+    args_->loss = old_args_->loss;
+    args_->model = old_args_->model;
+
+    if (args_->epoch <= 0) { args_->epoch = old_args_->epoch; }
+    if (args_->minCount <= 0) { args_->minCount = old_args_->minCount; }
+    if (args_->bucket <= 0) { args_->bucket = old_args_->bucket; }
+    if (args_->minn <= 0) { args_->minn = old_args_->minn; }
+    if (args_->maxn <= 0) { args_->maxn = old_args_->maxn; }
+    if (args_->lrUpdateRate <= 0) { args_->lrUpdateRate = old_args_->lrUpdateRate; }
+    if (fabs(args_->t - 0.0) <= 1e-5) { args_->t = old_args_->t; }
+    if (fabs(args_->lr - 0.0) <= 1e-6) { args_->lr = old_args_->lr; }
+
+    std::cerr<<"Load dict from trained model"<<std::endl;
+    Dictionary dictInModel =  Dictionary(args_, inModel);
+
+    std::cerr<<"Load dict from training data"<<std::endl;
+    std::ifstream ifs(args_->input);
+    if (!ifs.is_open()) {
+      throw std::invalid_argument(args_->input + " cannot be opened for training");
+    }
+
+    Dictionary dictInData = Dictionary(args_);
+    dictInData.readFromFile(ifs);
+    ifs.close();
+
+    std::cerr<<"Merge dict"<<std::endl;
+    dict_->addDict(dictInModel, true);
+    dict_->addDict(dictInData, false);
+
+    std::cerr<<"Restore previous input matrix"<<std::endl;
+    Matrix inputInModel = Matrix();
+    QMatrix qinputInModel = QMatrix();
+
+    bool quant_input;
+    inModel.read((char*)& quant_input, sizeof(bool));
+    if (quant_input) {
+      quant_ = true;
+      qinputInModel.load(inModel);
+    } else {
+      inputInModel.load(inModel);
+    }
+
+    if (!quant_input && dict_->isPruned()) {
+      throw std::invalid_argument(
+          "Invalid model file.\n"
+              "Please download the updated model from www.fasttext.cc.\n"
+              "See issue #332 on Github for more information.\n");
+    }
+
+    input_ = std::make_shared<Matrix>(dict_->nwords() + args_->bucket, args_->dim);
+    input_->uniform(real(1.0 / args_->dim));
+
+    if (quant_) {
+      throw std::invalid_argument("not implemented");
+    } else {
+      Vector wordVector(args_->dim);
+
+      for (auto i = 0; i < dictInModel.nwords(); ++i) {
+        std::string w = dictInModel.getWord(i);
+        int32_t idx = dict_->getId(dictInModel.getWord(i));
+
+        if (0 <= idx && idx < dict_->nwords()) {
+          for (auto j = 0; j < args_->dim; ++j) {
+            wordVector[j] = inputInModel.at(i, j);
+          }
+
+          input_->addRow(wordVector, idx, 1.0);
+          wordVector.zero();
+        } else {
+          std::cerr << "not found: (word, index) = ("
+                    << dictInModel.getWord(i) << ", "
+                    << idx << ")" << std::endl;
+        }
+      }
+    }
+
+    std::cerr<<"Restore previous output matrix"<<std::endl;
+    Matrix outputInModel = Matrix();
+    QMatrix qoutputInModel = QMatrix();
+
+    inModel.read((char*)& args_->qout, sizeof(bool));
+    if (quant_ && args_->qout) {
+      qoutputInModel.load(inModel);
+    } else {
+      outputInModel.load(inModel);
+    }
+
+    if (args_->model == model_name::sup) {
+      output_ = std::make_shared<Matrix>(dict_->nlabels(), args_->dim);
+    } else {
+      output_ = std::make_shared<Matrix>(dict_->nwords(), args_->dim);
+    }
+    output_->zero();
+
+    if (quant_ && args_->qout) {
+      if (args_->model == model_name::sup) {
+        throw std::invalid_argument("Not implemented for supervised classification");
+      } else {
+        throw std::invalid_argument("Not implemented for supervised word2vec");
+      }
+    } else {
+      if (args_->model == model_name::sup) {
+        Vector labelVector(args_->dim);
+
+        for (auto i = 0; i < dictInModel.nlabels(); ++i) {
+          int32_t idx = dict_->getId(dictInModel.getWord(dictInModel.nwords() + i));
+
+          if (0 <= idx && idx < dict_->nwords() + dict_->nlabels()) {
+            for (auto j = 0; j < args_->dim; ++j) {
+              labelVector[j] = outputInModel.at(i, j);
+            }
+
+            output_->addRow(labelVector, idx - dict_->nwords(), 1.0);
+            labelVector.zero();
+          }
+        }
+      } else {
+        Vector wordVector(args_->dim);
+
+        for (auto i = 0; i < dictInModel.nwords(); ++i) {
+          int32_t idx = dict_->getId(dictInModel.getWord(i));
+
+          if (0 <= idx && idx < dict_->nwords()) {
+            for (auto j = 0; j < args_->dim; ++j) {
+              wordVector[j] = outputInModel.at(i, j);
+            }
+
+            output_->addRow(wordVector, idx, 1.0);
+            wordVector.zero();
+          }
+        }
+      }
+    }
+
+    inModel.close();
   }
 
-  if (args_->model == model_name::sup) {
-    output_ = std::make_shared<Matrix>(dict_->nlabels(), args_->dim);
-  } else {
-    output_ = std::make_shared<Matrix>(dict_->nwords(), args_->dim);
-  }
-  output_->zero();
+  std::cerr<<"start training..."<<std::endl;
   startThreads();
   model_ = std::make_shared<Model>(input_, output_, args_, 0);
+
+  model_->quant_ = quant_;
+  model_->setQuantizePointer(qinput_, qoutput_, args_->qout);
+
   if (args_->model == model_name::sup) {
     model_->setTargetCounts(dict_->getCounts(entry_type::label));
   } else {

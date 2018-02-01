@@ -497,4 +497,31 @@ void Dictionary::dump(std::ostream& out) const {
   }
 }
 
+void Dictionary::addDict(Dictionary dict, bool resetToken) {
+  for (auto i = 0; i < dict.nwords(); ++i) {
+    add(dict.getWord(i));
+  }
+
+  for (auto i = 0; i < dict.nlabels(); ++i) {
+    add(dict.getWord(dict.nwords() + i));
+  }
+
+  if (resetToken) {
+    ntokens_ = 0;
+  } else {
+    ntokens_ += dict.ntokens();
+  }
+
+  threshold(args_->minCount, args_->minCountLabel);
+  initTableDiscard();
+  initNgrams();
+  if (args_->verbose > 0) {
+    std::cerr << "Read " << dict.ntokens() / 1000000 << "M words" << std::endl;
+    std::cerr << "Number of words:  " << nwords_ << std::endl;
+    std::cerr << "Number of labels: " << nlabels_ << std::endl;
+  }
+  if (size_ == 0) {
+    throw std::invalid_argument("Empty vocabulary. Try a smaller -minCount value.");
+  }
+}
 }

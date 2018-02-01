@@ -174,6 +174,8 @@ In order to train a text classifier using the method described in [2](#bag-of-tr
 
 ```
 $ ./fasttext supervised -input train.txt -output model
+
+$ ./fasttext supervised -input train.txt -output model -inputModel model.bin -incr   # for incremental training
 ```
 
 where `train.txt` is a text file containing a training sentence per line along with the labels.

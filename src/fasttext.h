@@ -94,7 +94,7 @@ class FastText {
   void getSentenceVector(std::istream&, Vector&);
   void quantize(const Args);
   std::tuple<int64_t, double, double> test(std::istream&, int32_t, real = 0.0);
-  void predict(std::istream&, int32_t, bool, real = 0.0);
+  void predict(std::istream&, int32_t, bool, real = 0.0, std::string separator = "\t");
   void predict(
       std::istream&,
       int32_t,
