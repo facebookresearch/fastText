@@ -112,6 +112,8 @@ void Model::computeOutputSoftmax() {
   computeOutputSoftmax(hidden_, output_);
 }
 
+// compute the output layer, then the error and gradient,
+// and apply the gradient to the output weight matrix
 real Model::softmax(int32_t target, real lr) {
   grad_.zero();
   computeOutputSoftmax();
@@ -124,6 +126,8 @@ real Model::softmax(int32_t target, real lr) {
   return -log(output_[target]);
 }
 
+// calculate the hidden layer as the average of the products of
+// each input word's representation and the input weights matrix
 void Model::computeHidden(const std::vector<int32_t>& input, Vector& hidden) const {
   assert(hidden.size() == hsz_);
   hidden.zero();
@@ -235,9 +239,12 @@ void Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
   }
   nexamples_ += 1;
 
+  // for the supervised model only, adjust the gradient to the input length
   if (args_->model == model_name::sup) {
     grad_.mul(1.0 / input.size());
   }
+
+  // apply the gradient to the input weight matrix
   for (auto it = input.cbegin(); it != input.cend(); ++it) {
     wi_->addRow(grad_, *it, 1.0);
   }
