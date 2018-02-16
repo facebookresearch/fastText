@@ -223,7 +223,7 @@ This will create a `.ftz` file with a smaller memory footprint. All the standard
 ```
 $ ./fasttext test model.ftz test.txt
 ```
-The quantization procedure follows the steps described in [3](#fastext-zip). You can
+The quantization procedure follows the steps described in [3](#fasttextzip-compressing-text-classification-models). You can
 run the script `quantization-example.sh` for an example.
 
 
