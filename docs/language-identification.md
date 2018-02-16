@@ -27,7 +27,7 @@ af als am an ar arz as ast av az azb ba bar bcl be bg bh bn bo bpy br bs bxr ca 
 
 If you use these models, please cite the following papers:
 
-[1] A. Joulin, E. Grave, P. Bojanowski, T. Mikolov, *Bag of Tricks for Efficient Text Classification* (https://arxiv.org/abs/1607.01759)
+[1] A. Joulin, E. Grave, P. Bojanowski, T. Mikolov, [*Bag of Tricks for Efficient Text Classification*](https://arxiv.org/abs/1607.01759)
 ```
 @article{joulin2016bag,
   title={Bag of Tricks for Efficient Text Classification},
@@ -36,7 +36,7 @@ If you use these models, please cite the following papers:
   year={2016}
 }
 ```
-[2] A. Joulin, E. Grave, P. Bojanowski, M. Douze, H. Jégou, T. Mikolov, *FastText.zip: Compressing text classification models* (https://arxiv.org/abs/1612.03651)
+[2] A. Joulin, E. Grave, P. Bojanowski, M. Douze, H. Jégou, T. Mikolov, [*FastText.zip: Compressing text classification models* ](https://arxiv.org/abs/1612.03651)
 ```
 @article{joulin2016fasttext,
   title={FastText.zip: Compressing text classification models},
