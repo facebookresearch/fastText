@@ -292,6 +292,11 @@ void train(const std::vector<std::string> args) {
   Args a = Args();
   a.parseArgs(args);
   FastText fasttext;
+  std::ofstream ofs(a.output+".bin");
+  if (!ofs.is_open()) {
+    throw std::invalid_argument(a.output + ".bin cannot be opened for saving.");
+  }
+  ofs.close();
   fasttext.train(a);
   fasttext.saveModel();
   fasttext.saveVectors();
