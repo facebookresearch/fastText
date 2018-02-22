@@ -32,7 +32,7 @@
 
 ### Models
 - Recent state-of-the-art [English word vectors](https://fasttext.cc/docs/en/english-vectors.html).
-- Word vectors for [157 languages trained on Wikipedia and Crawl](https://github.com/facebookresearch/fastText/blob/master/crawl-vectors.md).
+- Word vectors for [157 languages trained on Wikipedia and Crawl](https://github.com/facebookresearch/fastText/blob/master/docs/crawl-vectors.md).
 - Models for [language identification](https://fasttext.cc/docs/en/language-identification.html#content) and [various supervised tasks](https://fasttext.cc/docs/en/supervised-models.html#content).
 
 ### Supplementary data
