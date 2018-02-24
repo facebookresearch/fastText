@@ -31,10 +31,13 @@ class _FastText():
     strings are then encoded as UTF-8 and fed to the fastText C++ API.
     """
 
-    def __init__(self, model=None):
+    def __init__(self, model=None, in_bytes=False):
         self.f = fasttext.fasttext()
         if model is not None:
-            self.f.loadModel(model)
+            if in_bytes:
+                self.f.loadModel(model, len(model))
+            else:
+                self.f.loadModel(model)
 
     def is_quantized(self):
         return self.f.isQuant()
@@ -299,9 +302,9 @@ def tokenize(text):
     return f.tokenize(text)
 
 
-def load_model(path):
+def load_model(path, in_bytes=False):
     """Load a model given a filepath and return a model object."""
-    return _FastText(path)
+    return _FastText(path, in_bytes)
 
 
 def train_supervised(

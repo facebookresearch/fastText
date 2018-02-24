@@ -188,6 +188,29 @@ void FastText::loadModel(const std::string& filename) {
   ifs.close();
 }
 
+struct membuf: std::streambuf {
+  membuf(char const* base, size_t size) {
+    char* p(const_cast<char*>(base));
+    this->setg(p, p, p + size);
+  }
+};
+
+struct imemstream: virtual membuf, std::istream {
+  imemstream(char const* base, size_t size): membuf(base, size), std::istream(static_cast<std::streambuf*>(this)) {}
+};
+
+void FastText::loadModel(const char* modelBytes, size_t size) {
+  imemstream ifs(modelBytes, size);
+
+  if (!checkModel(ifs)) {
+    std::cerr << "Invalid file format" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+
+  loadModel(ifs);
+  ifs.clear();
+}
+
 void FastText::loadModel(std::istream& in) {
   args_ = std::make_shared<Args>();
   input_ = std::make_shared<Matrix>();
