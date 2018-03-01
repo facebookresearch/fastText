@@ -219,7 +219,7 @@ jobs:
           command: |
             git config --global user.email "docusaurus-bot@users.noreply.github.com"
             git config --global user.name "Website Deployment Script"
-            echo "machine github.com login docusaurus-bot password $GITHUB_TOKEN_DOCUSAURUS_BOT	" > ~/.netrc
+            echo "machine github.com login docusaurus-bot password $GITHUB_TOKEN_DOCUSAURUS_BOT" > ~/.netrc
             cd website && npm install && GIT_USER=docusaurus-bot npm run publish-gh-pages
 
 workflows:
