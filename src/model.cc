@@ -12,6 +12,7 @@
 #include <iostream>
 #include <assert.h>
 #include <algorithm>
+#include "matrix.h"
 #include <stdexcept>
 
 namespace fasttext {
@@ -95,6 +96,13 @@ void Model::computeOutputSoftmax(Vector& hidden, Vector& output) const {
   } else {
     output.mul(*wo_, hidden);
   }
+
+  std::cout << "output weights:";
+  wo_->dump(std::cout);
+  std::cout << std::endl;
+
+  std::cout << "output layer before softmax: " << output << std::endl << std::flush;
+
   real max = output[0], z = 0.0;
   for (int32_t i = 0; i < osz_; i++) {
     max = std::max(output[i], max);
@@ -106,10 +114,32 @@ void Model::computeOutputSoftmax(Vector& hidden, Vector& output) const {
   for (int32_t i = 0; i < osz_; i++) {
     output[i] /= z;
   }
+  std::cout << "softmax max: " << max << ", output layer: " << output << std::endl << std::flush;
 }
 
 void Model::computeOutputSoftmax() {
   computeOutputSoftmax(hidden_, output_);
+}
+
+// compute the output layer, then compute and apply the gradient
+real Model::weighted_softmax(real confidences[], real lr) {
+
+    grad_.zero();
+    computeOutputSoftmax();
+    real loss = 0;
+
+    for (int32_t i = 0; i < osz_; i++) {
+
+        real error = confidences[i] - output_[i];
+        real alpha = lr * error;
+
+        grad_.addRow(*wo_, i, alpha);
+        wo_->addRow(hidden_, i, alpha);
+
+        loss += error;
+    }
+
+    return (loss == 0) ? 0 : -log(loss);
 }
 
 // compute the output layer, then the error and gradient,
@@ -224,6 +254,41 @@ void Model::dfs(int32_t k, real threshold, int32_t node, real score,
   dfs(k, threshold, tree[node].left, score + std_log(1.0 - f), heap, hidden);
   dfs(k, threshold, tree[node].right, score + std_log(f), heap, hidden);
 }
+
+void Model::update_supervised(const std::vector<int32_t>& input, const std::vector<int32_t>& given_labels,
+                              const std::vector<float>& specified_label_confidences, real lr) {
+    if (input.size() == 0) return;
+    computeHidden(input, hidden_);
+
+    // create a confidences vector to be juxtaposed with the output layer
+    real label_confidences[osz_] = {0};
+
+    //for (real lc : label_confidences) std::cout << lc << " ";
+
+    //std::cout << given_labels.size() << std::endl;
+    for (int32_t g = 0; g < given_labels.size(); g++) {
+        label_confidences[given_labels[g]] = specified_label_confidences[g];
+        //std::cout << "given_labels[g] " << given_labels[g] << " specified_label_confidences[g]: " << specified_label_confidences[g] << std::endl;
+    }
+
+    //for (real lc : label_confidences) std::cout << lc << " ";
+    //std::cout << std::endl << std::flush;
+
+    loss_ += weighted_softmax(label_confidences, lr);
+    //loss_ = loss_ / osz_;
+
+    nexamples_ += 1;
+
+    // adjust the gradient to the input length
+    assert (args_->model == model_name::sup);
+    grad_.mul(1.0 / input.size());
+
+    // apply the gradient to the input weight matrix
+    for (auto it = input.cbegin(); it != input.cend(); ++it) {
+        wi_->addRow(grad_, *it, 1.0);
+    }
+}
+
 
 void Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
   assert(target >= 0);

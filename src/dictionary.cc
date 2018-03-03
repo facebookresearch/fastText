@@ -369,13 +369,51 @@ int32_t Dictionary::getLine(std::istream& in,
       addSubwords(words, token, wid);
       word_hashes.push_back(h);
     } else if (type == entry_type::label && wid >= 0) {
-      labels.push_back(wid - nwords_);
+       labels.push_back(wid - nwords_);
     }
     if (token == EOS) break;
   }
   addWordNgrams(words, word_hashes, args_->wordNgrams);
   return ntokens;
 }
+
+int32_t Dictionary::getSupervisedLine(std::istream& in,
+                            std::vector<int32_t>& words,
+                            std::vector<int32_t>& labels,
+                            std::vector<float>& confidences) const {
+    std::vector<int32_t> word_hashes;
+    std::string token;
+    int32_t ntokens = 0;
+
+    reset(in);
+    words.clear();
+    labels.clear();
+    confidences.clear();
+    while (readWord(in, token)) {
+        uint32_t h = hash(token);
+        int32_t wid = getId(token, h);
+        entry_type type = wid < 0 ? getType(token) : getType(wid);
+
+        ntokens++;
+        if (type == entry_type::word) {
+            addSubwords(words, token, wid);
+            word_hashes.push_back(h);
+        } else if (type == entry_type::label && wid >= 0) {
+            labels.push_back(wid - nwords_);
+            // std::cout << wid - nwords_<< " conf= ";
+            if (readWord(in, token)) { // TODO: should complain if label is not followed by a confidence
+                confidences.push_back(stof(token));
+                //std::cout << stof(token) << " | ";
+            }
+        }
+        //std::cout << std::endl << std::flush;
+        if (token == EOS) break;
+    }
+    addWordNgrams(words, word_hashes, args_->wordNgrams);
+    return ntokens;
+}
+
+
 
 void Dictionary::pushHash(std::vector<int32_t>& hashes, int32_t id) const {
   if (pruneidx_size_ == 0 || id < 0) return;

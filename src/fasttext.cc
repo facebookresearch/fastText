@@ -322,15 +322,17 @@ void FastText::quantize(const Args qargs) {
   }
 }
 
+// update the model by the error of an arbitrarily chosen single label's prediction for the given input line
 void FastText::supervised(
     Model& model,
     real lr,
     const std::vector<int32_t>& line,
-    const std::vector<int32_t>& labels) {
-  if (labels.size() == 0 || line.size() == 0) return;
-  std::uniform_int_distribution<> uniform(0, labels.size() - 1);
-  int32_t i = uniform(model.rng);
-  model.update(line, labels[i], lr);
+    const std::vector<int32_t>& labels,
+    const std::vector<float>& label_confidences) {
+    if (labels.size() == 0 || line.size() == 0) return;
+    if (line.size() == 0) return;
+
+    model.update_supervised(line, labels, label_confidences, lr);
 }
 
 void FastText::cbow(Model& model, real lr,
@@ -579,12 +581,13 @@ void FastText::trainThread(int32_t threadId) {
   const int64_t ntokens = dict_->ntokens();
   int64_t localTokenCount = 0;
   std::vector<int32_t> line, labels;
+  std::vector<float> label_confidences;
   while (tokenCount_ < args_->epoch * ntokens) {
     real progress = real(tokenCount_) / (args_->epoch * ntokens);
     real lr = args_->lr * (1.0 - progress);
     if (args_->model == model_name::sup) {
-      localTokenCount += dict_->getLine(ifs, line, labels);
-      supervised(model, lr, line, labels);
+      localTokenCount += dict_->getSupervisedLine(ifs, line, labels, label_confidences);
+      supervised(model, lr, line, labels, label_confidences);
     } else if (args_->model == model_name::cbow) {
       localTokenCount += dict_->getLine(ifs, line, model.rng);
       cbow(model, lr, line);
