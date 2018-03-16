@@ -451,6 +451,11 @@ void Dictionary::load(std::istream& in) {
   }
 }
 
+void Dictionary::init() {
+  initTableDiscard();
+  initNgrams();
+}
+
 void Dictionary::prune(std::vector<int32_t>& idx) {
   std::vector<int32_t> words, ngrams;
   for (auto it = idx.cbegin(); it != idx.cend(); ++it) {
