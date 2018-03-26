@@ -245,8 +245,8 @@ void FastText::printInfo(real progress, real loss, std::ostream& log_stream) {
     eta = int(t / progress * (1 - progress) / args_->thread);
     wst = double(tokenCount_) / t;
   }
-  int64_t etam = (eta % 3600) / 60;
-  int64_t etah = etam / 60;
+  int32_t etah = eta / 3600;
+  int32_t etam = (eta % 3600) / 60;
   progress = progress * 100;
   log_stream << std::fixed;
   log_stream << "Progress: ";
@@ -629,6 +629,7 @@ void FastText::loadVectors(std::string filename) {
   in.close();
 
   dict_->threshold(1, 0);
+  dict_->init();
   input_ = std::make_shared<Matrix>(dict_->nwords()+args_->bucket, args_->dim);
   input_->uniform(1.0 / args_->dim);
 

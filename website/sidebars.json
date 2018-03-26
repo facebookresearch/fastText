@@ -7,6 +7,7 @@
   "download": {
     "Download": [
       "english-vectors",
+      "crawl-vectors",
       "pretrained-vectors",
       "supervised-models",
       "language-identification",

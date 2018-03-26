@@ -153,59 +153,59 @@ jobs:
           command: |
             . .circleci/gcc_test.sh
 
-  "debian-wheezy-gcc":        
-    docker:        
-      - image: debian:wheezy        
-    working_directory: ~/repo        
-    steps:        
-      - checkout        
-      - run:        
-          command: |        
-            . .circleci/setup_debian.sh        
-            . .circleci/gcc_test.sh        
-         
-  "debian-wheezy-cmake":        
-    docker:        
-      - image: debian:wheezy        
-    working_directory: ~/repo        
-    steps:        
-      - checkout        
-      - run:        
-          command: |        
-            . .circleci/setup_debian.sh        
-            . .circleci/cmake_test.sh        
-        
-  "debian-jessie-gcc":        
-    docker:        
-      - image: debian:jessie        
-    working_directory: ~/repo        
-    steps:        
-      - checkout        
-      - run:        
-          command: |        
-            . .circleci/setup_debian.sh        
-            . .circleci/gcc_test.sh        
-        
-  "debian-jessie-cmake":        
-    docker:        
-      - image: debian:jessie        
-    working_directory: ~/repo        
-    steps:        
-      - checkout        
-      - run:        
-          command: |        
-            . .circleci/setup_debian.sh        
-            . .circleci/cmake_test.sh        
-        
-  "debian-jessie-python":        
-    docker:        
-      - image: debian:jessie        
-    working_directory: ~/repo        
-    steps:        
-      - checkout        
-      - run:        
-          command: |        
-            . .circleci/setup_debian.sh        
+  "debian-wheezy-gcc":
+    docker:
+      - image: debian:wheezy
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/setup_debian.sh
+            . .circleci/gcc_test.sh
+
+  "debian-wheezy-cmake":
+    docker:
+      - image: debian:wheezy
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/setup_debian.sh
+            . .circleci/cmake_test.sh
+
+  "debian-jessie-gcc":
+    docker:
+      - image: debian:jessie
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/setup_debian.sh
+            . .circleci/gcc_test.sh
+
+  "debian-jessie-cmake":
+    docker:
+      - image: debian:jessie
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/setup_debian.sh
+            . .circleci/cmake_test.sh
+
+  "debian-jessie-python":
+    docker:
+      - image: debian:jessie
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/setup_debian.sh
             pip install .
             python runtests.py -u
 
@@ -217,10 +217,10 @@ jobs:
       - checkout
       - run:
           command: |
-            git config --global user.email "cpuhrsch@users.noreply.github.com"
+            git config --global user.email "docusaurus-bot@users.noreply.github.com"
             git config --global user.name "Website Deployment Script"
-            echo "machine github.com login cpuhrsch password $GITHUB_TOKEN" > ~/.netrc
-            cd website && npm install && GIT_USER=cpuhrsch npm run publish-gh-pages
+            echo "machine github.com login docusaurus-bot password $GITHUB_TOKEN_DOCUSAURUS_BOT" > ~/.netrc
+            cd website && npm install && GIT_USER=docusaurus-bot npm run publish-gh-pages
 
 workflows:
   version: 2
@@ -239,8 +239,8 @@ workflows:
       - "gcc7"
       - "gcclatest"
       - "website-build"
-      - "debian-wheezy-gcc"        
-      - "debian-wheezy-cmake"        
-      - "debian-jessie-gcc"        
-      - "debian-jessie-cmake"        
+      - "debian-wheezy-gcc"
+      - "debian-wheezy-cmake"
+      - "debian-jessie-gcc"
+      - "debian-jessie-cmake"
       - "debian-jessie-python"
