@@ -68,10 +68,13 @@ real Model::binaryLogistic(int32_t target, bool label, real lr) {
 real Model::negativeSampling(int32_t target, real lr) {
   real loss = 0.0;
   grad_.zero();
+  // return specified number of negatives
   for (int32_t n = 0; n <= args_->neg; n++) {
     if (n == 0) {
+      // use the target word for positive loss
       loss += binaryLogistic(target, true, lr);
     } else {
+      // negative sampling
       loss += binaryLogistic(getNegative(target), false, lr);
     }
   }
@@ -222,12 +225,18 @@ void Model::dfs(int32_t k, real threshold, int32_t node, real score,
 }
 
 void Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
+  // input is vector of ngrams for context word
+  // target is the target word
+  // lr is learning rate
   assert(target >= 0);
   assert(target < osz_);
   if (input.size() == 0) return;
+  // computes the hidden vector under name hidden_
+  // hidden_ * target is done with binary logistic
   computeHidden(input, hidden_);
   if (args_->loss == loss_name::ns) {
     loss_ += negativeSampling(target, lr);
+    // TODO: add custom negative loss here
   } else if (args_->loss == loss_name::hs) {
     loss_ += hierarchicalSoftmax(target, lr);
   } else {
@@ -244,6 +253,7 @@ void Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
 }
 
 void Model::setTargetCounts(const std::vector<int64_t>& counts) {
+  // for unsupervized counts a dict of words and their counts
   assert(counts.size() == osz_);
   if (args_->loss == loss_name::ns) {
     initTableNegatives(counts);
@@ -254,6 +264,7 @@ void Model::setTargetCounts(const std::vector<int64_t>& counts) {
 }
 
 void Model::initTableNegatives(const std::vector<int64_t>& counts) {
+  // when creating the negatives subsample based on frequency
   real z = 0.0;
   for (size_t i = 0; i < counts.size(); i++) {
     z += pow(counts[i], 0.5);
@@ -269,6 +280,7 @@ void Model::initTableNegatives(const std::vector<int64_t>& counts) {
 
 int32_t Model::getNegative(int32_t target) {
   int32_t negative;
+  // make sure the target is not the same as the negative returned
   do {
     negative = negatives_[negpos];
     negpos = (negpos + 1) % negatives_.size();

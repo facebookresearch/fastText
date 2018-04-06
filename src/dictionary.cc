@@ -47,13 +47,14 @@ int32_t Dictionary::find(const std::string& w, uint32_t h) const {
 }
 
 void Dictionary::add(const std::string& w) {
+  // finds int representation of word
   int32_t h = find(w);
   ntokens_++;
   if (word2int_[h] == -1) {
     entry e;
     e.word = w;
     e.count = 1;
-    e.type = getType(w);
+    e.type = getType(w); 
     words_.push_back(e);
     word2int_[h] = size_++;
   } else {
@@ -203,6 +204,7 @@ bool Dictionary::readWord(std::istream& in, std::string& word) const
   int c;
   std::streambuf& sb = *in.rdbuf();
   word.clear();
+  // sbumpc: returns the character at the current position and advances the current position to the next character.
   while ((c = sb.sbumpc()) != EOF) {
     if (c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == '\v' ||
         c == '\f' || c == '\0') {
@@ -218,6 +220,7 @@ bool Dictionary::readWord(std::istream& in, std::string& word) const
         return true;
       }
     }
+    // append char to the end of pointer
     word.push_back(c);
   }
   // trigger eofbit
@@ -228,7 +231,11 @@ bool Dictionary::readWord(std::istream& in, std::string& word) const
 void Dictionary::readFromFile(std::istream& in) {
   std::string word;
   int64_t minThreshold = 1;
+  // puts word token in variable 'word' till we get to the end
   while (readWord(in, word)) {
+    // adds an entity to dict with types (label,..) identified
+    // word2int[string] -> int is the hash from word to int representation
+    // words[int] -> count is the hash from word to count
     add(word);
     if (ntokens_ % 1000000 == 0 && args_->verbose > 1) {
       std::cerr << "\rRead " << ntokens_  / 1000000 << "M words" << std::flush;
@@ -238,7 +245,9 @@ void Dictionary::readFromFile(std::istream& in) {
       threshold(minThreshold, minThreshold);
     }
   }
+  // thresholding to minimum number of words
   threshold(args_->minCount, args_->minCountLabel);
+  // discarding words that don't meet the threshold
   initTableDiscard();
   initNgrams();
   if (args_->verbose > 0) {

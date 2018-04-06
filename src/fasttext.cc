@@ -358,6 +358,8 @@ void FastText::skipgram(Model& model, real lr,
     const std::vector<int32_t>& ngrams = dict_->getSubwords(line[w]);
     for (int32_t c = -boundary; c <= boundary; c++) {
       if (c != 0 && w + c >= 0 && w + c < line.size()) {
+        // TODO: do a lookup on w for negatives and pass that through
+        // ngrams is the one to use for the update
         model.update(ngrams, line[w + c], lr);
       }
     }
@@ -589,6 +591,8 @@ void FastText::trainThread(int32_t threadId) {
       localTokenCount += dict_->getLine(ifs, line, model.rng);
       cbow(model, lr, line);
     } else if (args_->model == model_name::sg) {
+      // line here is the vector of words from the line
+      // is filtered to only entry_type: label
       localTokenCount += dict_->getLine(ifs, line, model.rng);
       skipgram(model, lr, line);
     }
@@ -645,17 +649,20 @@ void FastText::loadVectors(std::string filename) {
 }
 
 void FastText::train(const Args args) {
-  args_ = std::make_shared<Args>(args);
+  args_ = std::make_shared<Args>(args); 
+  // create dictionary for all tokens
   dict_ = std::make_shared<Dictionary>(args_);
   if (args_->input == "-") {
     // manage expectations
     throw std::invalid_argument("Cannot use stdin for training!");
   }
+  // create a stream of tokens from input file
   std::ifstream ifs(args_->input);
   if (!ifs.is_open()) {
     throw std::invalid_argument(
         args_->input + " cannot be opened for training!");
   }
+  // reading input file stream
   dict_->readFromFile(ifs);
   ifs.close();
 
@@ -663,15 +670,19 @@ void FastText::train(const Args args) {
     loadVectors(args_->pretrainedVectors);
   } else {
     input_ = std::make_shared<Matrix>(dict_->nwords()+args_->bucket, args_->dim);
+    // fill it with a uniform real distribution of values
     input_->uniform(1.0 / args_->dim);
   }
 
   if (args_->model == model_name::sup) {
+    // supervised model
     output_ = std::make_shared<Matrix>(dict_->nlabels(), args_->dim);
   } else {
+    // unsupervised
     output_ = std::make_shared<Matrix>(dict_->nwords(), args_->dim);
   }
   output_->zero();
+  // start the training threads
   startThreads();
   model_ = std::make_shared<Model>(input_, output_, args_, 0);
   if (args_->model == model_name::sup) {

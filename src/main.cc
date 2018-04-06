@@ -289,6 +289,7 @@ void analogies(const std::vector<std::string> args) {
 }
 
 void train(const std::vector<std::string> args) {
+  // Entry point for model training
   Args a = Args();
   a.parseArgs(args);
   FastText fasttext;
