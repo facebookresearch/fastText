@@ -224,7 +224,7 @@ void Model::dfs(int32_t k, real threshold, int32_t node, real score,
   dfs(k, threshold, tree[node].right, score + std_log(f), heap, hidden);
 }
 
-void Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
+void Model::update(const std::vector<int32_t>& input, int32_t target, std::vector<int32_t> negativeIds, real lr) {
   // input is vector of ngrams for context word
   // target is the target word
   // lr is learning rate
@@ -236,7 +236,12 @@ void Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
   computeHidden(input, hidden_);
   if (args_->loss == loss_name::ns) {
     loss_ += negativeSampling(target, lr);
-    // TODO: add custom negative loss here
+    if (!negativeIds.empty()) {
+        for (auto &nid : negativeIds) {
+            loss_ += binaryLogistic(nid, false, lr);
+        }
+    }
+
   } else if (args_->loss == loss_name::hs) {
     loss_ += hierarchicalSoftmax(target, lr);
   } else {

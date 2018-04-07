@@ -46,6 +46,7 @@ class Args {
     int thread;
     double t;
     std::string label;
+    std::string negativeTokenPrefix;
     int verbose;
     std::string pretrainedVectors;
     bool saveOutput;

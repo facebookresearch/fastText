@@ -34,6 +34,7 @@ Args::Args() {
   lrUpdateRate = 100;
   t = 1e-4;
   label = "__label__";
+  negativeTokenPrefix = "__neg__";
   verbose = 2;
   pretrainedVectors = "";
   saveOutput = false;
@@ -146,6 +147,8 @@ void Args::parseArgs(const std::vector<std::string>& args) {
         t = std::stof(args.at(ai + 1));
       } else if (args[ai] == "-label") {
         label = std::string(args.at(ai + 1));
+      } else if (args[ai] == "-negPrefix") {
+        negativeTokenPrefix = std::string(args.at(ai + 1));
       } else if (args[ai] == "-verbose") {
         verbose = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-pretrainedVectors") {
@@ -214,7 +217,8 @@ void Args::printDictionaryHelp() {
     << "  -minn               min length of char ngram [" << minn << "]\n"
     << "  -maxn               max length of char ngram [" << maxn << "]\n"
     << "  -t                  sampling threshold [" << t << "]\n"
-    << "  -label              labels prefix [" << label << "]\n";
+    << "  -label              labels prefix [" << label << "]\n"
+    << "  -negPrefix          negative token prefix [" << negativeTokenPrefix << "] negative tokens are associated with preceeding positive token \n";
 }
 
 void Args::printTrainingHelp() {

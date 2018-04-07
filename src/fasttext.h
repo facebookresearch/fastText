@@ -89,7 +89,7 @@ class FastText {
       const std::vector<int32_t>&,
       const std::vector<int32_t>&);
   void cbow(Model&, real, const std::vector<int32_t>&);
-  void skipgram(Model&, real, const std::vector<int32_t>&);
+  void skipgram(Model&, real, const std::vector<word_token>&);
   std::vector<int32_t> selectEmbeddings(int32_t) const;
   void getSentenceVector(std::istream&, Vector&);
   void quantize(const Args);

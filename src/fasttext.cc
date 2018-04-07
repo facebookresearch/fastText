@@ -330,7 +330,7 @@ void FastText::supervised(
   if (labels.size() == 0 || line.size() == 0) return;
   std::uniform_int_distribution<> uniform(0, labels.size() - 1);
   int32_t i = uniform(model.rng);
-  model.update(line, labels[i], lr);
+  model.update(line, labels[i], std::vector<int32_t>(), lr);
 }
 
 void FastText::cbow(Model& model, real lr,
@@ -346,21 +346,20 @@ void FastText::cbow(Model& model, real lr,
         bow.insert(bow.end(), ngrams.cbegin(), ngrams.cend());
       }
     }
-    model.update(bow, line[w], lr);
+    model.update(bow, line[w], std::vector<int32_t>(), lr);
   }
 }
 
 void FastText::skipgram(Model& model, real lr,
-                        const std::vector<int32_t>& line) {
+                        const std::vector<word_token>& line) {
   std::uniform_int_distribution<> uniform(1, args_->ws);
   for (int32_t w = 0; w < line.size(); w++) {
     int32_t boundary = uniform(model.rng);
-    const std::vector<int32_t>& ngrams = dict_->getSubwords(line[w]);
+    const std::vector<int32_t>& ngrams = dict_->getSubwords(line[w].id);
     for (int32_t c = -boundary; c <= boundary; c++) {
       if (c != 0 && w + c >= 0 && w + c < line.size()) {
-        // TODO: do a lookup on w for negatives and pass that through
         // ngrams is the one to use for the update
-        model.update(ngrams, line[w + c], lr);
+        model.update(ngrams, line[w + c].id, line[w].negative_ids, lr);
       }
     }
   }
@@ -581,6 +580,7 @@ void FastText::trainThread(int32_t threadId) {
   const int64_t ntokens = dict_->ntokens();
   int64_t localTokenCount = 0;
   std::vector<int32_t> line, labels;
+  std::vector<word_token> lineWithNegs;
   while (tokenCount_ < args_->epoch * ntokens) {
     real progress = real(tokenCount_) / (args_->epoch * ntokens);
     real lr = args_->lr * (1.0 - progress);
@@ -593,8 +593,8 @@ void FastText::trainThread(int32_t threadId) {
     } else if (args_->model == model_name::sg) {
       // line here is the vector of words from the line
       // is filtered to only entry_type: label
-      localTokenCount += dict_->getLine(ifs, line, model.rng);
-      skipgram(model, lr, line);
+      localTokenCount += dict_->getLine(ifs, lineWithNegs, model.rng);
+      skipgram(model, lr, lineWithNegs);
     }
     if (localTokenCount > args_->lrUpdateRate) {
       tokenCount_ += localTokenCount;

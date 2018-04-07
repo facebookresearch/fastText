@@ -23,13 +23,18 @@
 namespace fasttext {
 
 typedef int32_t id_type;
-enum class entry_type : int8_t {word=0, label=1};
+enum class entry_type : int8_t {word=0, label=1, negativeWord=2};
 
 struct entry {
   std::string word;
   int64_t count;
   entry_type type;
   std::vector<int32_t> subwords;
+};
+
+struct word_token {
+  int32_t id;
+  std::vector<int32_t> negative_ids;
 };
 
 class Dictionary {
@@ -101,6 +106,8 @@ class Dictionary {
     int32_t getLine(std::istream&, std::vector<int32_t>&, std::vector<int32_t>&)
         const;
     int32_t getLine(std::istream&, std::vector<int32_t>&,
+                    std::minstd_rand&) const;
+    int32_t getLine(std::istream&, std::vector<word_token>&,
                     std::minstd_rand&) const;
     void threshold(int64_t, int64_t);
     void prune(std::vector<int32_t>&);

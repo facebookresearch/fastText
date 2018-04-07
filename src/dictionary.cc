@@ -12,6 +12,7 @@
 #include <assert.h>
 
 #include <iostream>
+#include <string>
 #include <fstream>
 #include <algorithm>
 #include <iterator>
@@ -48,16 +49,26 @@ int32_t Dictionary::find(const std::string& w, uint32_t h) const {
 
 void Dictionary::add(const std::string& w) {
   // finds int representation of word
-  int32_t h = find(w);
+  entry_type type = getType(w);
+  std::string word;
+  if (type == entry_type::negativeWord) {
+    type = entry_type::word;
+    word = w.substr(args_->negativeTokenPrefix.length(), w.length());
+  } else {
+    word = w;
+  }
+  int32_t h = find(word);
   ntokens_++;
   if (word2int_[h] == -1) {
     entry e;
-    e.word = w;
+    e.word = word;
     e.count = 1;
-    e.type = getType(w); 
+    e.type = type;
     words_.push_back(e);
     word2int_[h] = size_++;
   } else {
+    // counting both postitive and negative words
+    // since we only care to differentiate between positive and negative when we train
     words_[word2int_[h]].count++;
   }
 }
@@ -132,7 +143,13 @@ entry_type Dictionary::getType(int32_t id) const {
 }
 
 entry_type Dictionary::getType(const std::string& w) const {
-  return (w.find(args_->label) == 0) ? entry_type::label : entry_type::word;
+    if (w.find(args_->label) == 0) {
+        return entry_type::label;
+    } else if (w.find(args_->negativeTokenPrefix) == 0) {
+        return entry_type::negativeWord;
+    } else {
+        return entry_type::word;
+    }
 }
 
 std::string Dictionary::getWord(int32_t id) const {
@@ -333,6 +350,49 @@ void Dictionary::reset(std::istream& in) const {
     in.clear();
     in.seekg(std::streampos(0));
   }
+}
+
+int32_t Dictionary::getLine(std::istream& in,
+                            std::vector<word_token>& words,
+                            std::minstd_rand& rng) const {
+  std::uniform_real_distribution<> uniform(0, 1);
+  std::string token;
+  std::string word;
+  entry_type type;
+  int32_t ntokens = 0;
+
+  reset(in);
+  words.clear();
+  // this is the last valid wid
+  while (readWord(in, token)) {
+
+    type = getType(token);
+
+    if (type == entry_type::negativeWord) {
+        word = token.substr(args_->negativeTokenPrefix.length(), token.length());
+    } else {
+        word = token;
+    }
+
+    int32_t h = find(word);
+    int32_t wid = word2int_[h];
+    if (wid < 0) continue;
+
+    ntokens++;
+    if (type == entry_type::word && !discard(wid, uniform(rng))) {
+        // push previous word since we have a new kid on the block
+        word_token w = {wid, std::vector<int32_t>()};
+        words.push_back(w);
+    } else if (type == entry_type::negativeWord) {
+        // add negative word to the last positive word
+        // no sampling here
+        if (!words.empty()) {
+            words.back().negative_ids.push_back(wid);
+        }
+    }
+    if (ntokens > MAX_LINE_SIZE || token == EOS) break;
+  }
+  return ntokens;
 }
 
 int32_t Dictionary::getLine(std::istream& in,
