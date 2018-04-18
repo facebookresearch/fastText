@@ -119,7 +119,7 @@ void printDumpUsage() {
   std::cout
     << "usage: fasttext dump <model> <option>\n\n"
     << "  <model>      model filename\n"
-    << "  <option>     option from args,dict,input,output"
+    << "  <option>     option from args,dict,input,output,vectors"
     << std::endl;
 }
 
@@ -299,8 +299,8 @@ void train(const std::vector<std::string> args) {
   ofs.close();
   fasttext.train(a);
   fasttext.saveModel();
-  fasttext.saveVectors();
   if (a.saveOutput) {
+    fasttext.saveVectors();
     fasttext.saveOutput();
   }
 }
@@ -331,6 +331,12 @@ void dump(const std::vector<std::string>& args) {
       std::cerr << "Not supported for quantized models." << std::endl;
     } else {
       fasttext.getOutputMatrix()->dump(std::cout);
+    }
+  } else if (option == "vectors") {
+    if (fasttext.isQuant()) {
+      std::cerr << "Not supported for quantized models." << std::endl;
+    } else {
+      fasttext.dumpVectors(std::cout);
     }
   } else {
     printDumpUsage();
