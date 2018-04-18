@@ -47,6 +47,12 @@ class Args {
     double t;
     std::string label;
     std::string negativeTokenPrefix;
+    std::string globalContextTokenPrefix;
+    std::string splitPrefix;
+    std::string splitChar;
+    bool ignoreContextNegatives;
+    bool ignoreGlobalContext;
+    bool ignoreSplits;
     int verbose;
     std::string pretrainedVectors;
     bool saveOutput;

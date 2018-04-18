@@ -23,7 +23,13 @@
 namespace fasttext {
 
 typedef int32_t id_type;
-enum class entry_type : int8_t {word=0, label=1, negativeWord=2};
+enum class entry_type : int8_t {
+    word=0, 
+    label=1, 
+    negativeWord=2, 
+    globalContext=3,
+    splitWord=4
+};
 
 struct entry {
   std::string word;
@@ -35,6 +41,8 @@ struct entry {
 struct word_token {
   int32_t id;
   std::vector<int32_t> negative_ids;
+  std::vector<int32_t> global_context_ids;
+  std::vector<int32_t> split_ids;
 };
 
 class Dictionary {
@@ -49,6 +57,7 @@ class Dictionary {
     void reset(std::istream&) const;
     void pushHash(std::vector<int32_t>&, int32_t) const;
     void addSubwords(std::vector<int32_t>&, const std::string&, int32_t) const;
+    void addWord(std::string&, entry_type&);
 
     std::shared_ptr<Args> args_;
     std::vector<int32_t> word2int_;
@@ -86,6 +95,7 @@ class Dictionary {
     std::string getWord(int32_t) const;
     const std::vector<int32_t>& getSubwords(int32_t) const;
     const std::vector<int32_t> getSubwords(const std::string&) const;
+    const std::vector<std::string> getWordSplits(const std::string&) const;
     void getSubwords(
         const std::string&,
         std::vector<int32_t>&,

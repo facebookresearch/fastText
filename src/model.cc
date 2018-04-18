@@ -224,7 +224,7 @@ void Model::dfs(int32_t k, real threshold, int32_t node, real score,
   dfs(k, threshold, tree[node].right, score + std_log(f), heap, hidden);
 }
 
-void Model::update(const std::vector<int32_t>& input, int32_t target, std::vector<int32_t> negativeIds, real lr) {
+void Model::update(const std::vector<int32_t>& input, int32_t target, std::vector<int32_t> negativeIds, std::vector<int32_t> globalContext, real lr) {
   // input is vector of ngrams for context word
   // target is the target word
   // lr is learning rate
@@ -235,10 +235,18 @@ void Model::update(const std::vector<int32_t>& input, int32_t target, std::vecto
   // hidden_ * target is done with binary logistic
   computeHidden(input, hidden_);
   if (args_->loss == loss_name::ns) {
+    // negative sampling loss
     loss_ += negativeSampling(target, lr);
+    // contextual negatives loss
     if (!negativeIds.empty()) {
         for (auto &nid : negativeIds) {
             loss_ += binaryLogistic(nid, false, lr);
+        }
+    }
+    // global context positive loss
+    if (!globalContext.empty()) {
+        for (auto &gid : globalContext) {
+            loss_ += binaryLogistic(gid, true, lr);
         }
     }
 

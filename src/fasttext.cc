@@ -330,7 +330,7 @@ void FastText::supervised(
   if (labels.size() == 0 || line.size() == 0) return;
   std::uniform_int_distribution<> uniform(0, labels.size() - 1);
   int32_t i = uniform(model.rng);
-  model.update(line, labels[i], std::vector<int32_t>(), lr);
+  model.update(line, labels[i], std::vector<int32_t>(), std::vector<int32_t>(), lr);
 }
 
 void FastText::cbow(Model& model, real lr,
@@ -346,7 +346,7 @@ void FastText::cbow(Model& model, real lr,
         bow.insert(bow.end(), ngrams.cbegin(), ngrams.cend());
       }
     }
-    model.update(bow, line[w], std::vector<int32_t>(), lr);
+    model.update(bow, line[w], std::vector<int32_t>(), std::vector<int32_t>(), lr);
   }
 }
 
@@ -355,14 +355,26 @@ void FastText::skipgram(Model& model, real lr,
   std::uniform_int_distribution<> uniform(1, args_->ws);
   for (int32_t w = 0; w < line.size(); w++) {
     int32_t boundary = uniform(model.rng);
+    // subwords are only created for learning but we never output the vectors for these
     const std::vector<int32_t>& ngrams = dict_->getSubwords(line[w].id);
+    // join ngrams with the split tokens for a word to update model for
+    const std::vector<int32_t>& ctx = append(ngrams, line[w].split_ids);
+
     for (int32_t c = -boundary; c <= boundary; c++) {
       if (c != 0 && w + c >= 0 && w + c < line.size()) {
         // ngrams is the one to use for the update
-        model.update(ngrams, line[w + c].id, line[w].negative_ids, lr);
+        model.update(ctx, line[w + c].id, line[w].negative_ids, line[w].global_context_ids, lr);
       }
     }
   }
+}
+
+const std::vector<int32_t> FastText::append(const std::vector<int32_t> &a, const std::vector<int32_t> &b) const {
+    std::vector<int32_t> out;
+    out.reserve( a.size() + b.size() );                // preallocate memory
+    out.insert( out.end(), a.begin(), a.end() );        // add A;
+    out.insert( out.end(), b.begin(), b.end() );        // add B;
+    return out;
 }
 
 std::tuple<int64_t, double, double> FastText::test(
@@ -580,7 +592,9 @@ void FastText::trainThread(int32_t threadId) {
   const int64_t ntokens = dict_->ntokens();
   int64_t localTokenCount = 0;
   std::vector<int32_t> line, labels;
-  std::vector<word_token> lineWithNegs;
+  std::vector<word_token> lineWithContext;
+  std::cout << " epoch: " << args_->epoch << std::endl;
+  std::cout << " ntokens: " << ntokens << std::endl;
   while (tokenCount_ < args_->epoch * ntokens) {
     real progress = real(tokenCount_) / (args_->epoch * ntokens);
     real lr = args_->lr * (1.0 - progress);
@@ -593,8 +607,8 @@ void FastText::trainThread(int32_t threadId) {
     } else if (args_->model == model_name::sg) {
       // line here is the vector of words from the line
       // is filtered to only entry_type: label
-      localTokenCount += dict_->getLine(ifs, lineWithNegs, model.rng);
-      skipgram(model, lr, lineWithNegs);
+      localTokenCount += dict_->getLine(ifs, lineWithContext, model.rng);
+      skipgram(model, lr, lineWithContext);
     }
     if (localTokenCount > args_->lrUpdateRate) {
       tokenCount_ += localTokenCount;

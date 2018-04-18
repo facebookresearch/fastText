@@ -49,6 +49,7 @@ class FastText {
   clock_t start_;
   void signModel(std::ostream&);
   bool checkModel(std::istream&);
+  const std::vector<int32_t> append(const std::vector<int32_t>&, const std::vector<int32_t>&) const;
 
   bool quant_;
   int32_t version;

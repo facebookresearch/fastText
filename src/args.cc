@@ -35,9 +35,15 @@ Args::Args() {
   t = 1e-4;
   label = "__label__";
   negativeTokenPrefix = "__neg__";
+  globalContextTokenPrefix = "__global__";
+  splitPrefix = "__split__";
+  splitChar = "_";
   verbose = 2;
   pretrainedVectors = "";
   saveOutput = false;
+  ignoreContextNegatives = false;
+  ignoreGlobalContext = false;
+  ignoreSplits = false;
 
   qout = false;
   retrain = false;
@@ -149,10 +155,25 @@ void Args::parseArgs(const std::vector<std::string>& args) {
         label = std::string(args.at(ai + 1));
       } else if (args[ai] == "-negPrefix") {
         negativeTokenPrefix = std::string(args.at(ai + 1));
+      } else if (args[ai] == "-globalPrefix") {
+        globalContextTokenPrefix = std::string(args.at(ai + 1));
+      } else if (args[ai] == "-splitPrefix") {
+        splitPrefix = std::string(args.at(ai + 1));
+      } else if (args[ai] == "-splitChar") {
+        splitChar = std::string(args.at(ai + 1));
       } else if (args[ai] == "-verbose") {
         verbose = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-pretrainedVectors") {
         pretrainedVectors = std::string(args.at(ai + 1));
+      } else if (args[ai] == "-ignoreGContext") {
+        ignoreGlobalContext = true;
+        ai--;
+      } else if (args[ai] == "-ignoreCNegs") {
+        ignoreContextNegatives = true;
+        ai--;
+      } else if (args[ai] == "-ignoreSplits") {
+        ignoreSplits = true;
+        ai--;
       } else if (args[ai] == "-saveOutput") {
         saveOutput = true;
         ai--;
@@ -218,7 +239,13 @@ void Args::printDictionaryHelp() {
     << "  -maxn               max length of char ngram [" << maxn << "]\n"
     << "  -t                  sampling threshold [" << t << "]\n"
     << "  -label              labels prefix [" << label << "]\n"
-    << "  -negPrefix          negative token prefix [" << negativeTokenPrefix << "] negative tokens are associated with preceeding positive token \n";
+    << "  -negPrefix          negative token prefix [" << negativeTokenPrefix << "] negative tokens are associated with preceeding positive token \n"
+    << "  -globalPrefix       global context token prefix [" << globalContextTokenPrefix << "] global context is associated with all tokens in the line\n"
+    << "  -splitPrefix        prefix for tokens to split [" << splitPrefix << "]  prefix stripped off when creating token \n"
+    << "  -splitChar          char to split text on [" << splitChar << "] these tokens are considered words and not ngrams. Using splits and ngrams together is not supported \n"
+    << "  -ignoreCNegs        ignore negative tokens. Negatives tokens have [" << negativeTokenPrefix << "] preceding them [" << boolToString(ignoreContextNegatives) << "]\n"
+    << "  -ignoreGContext     ignore global context tokens. Global cotext tokens have [" << globalContextTokenPrefix << "] preceding them [" << boolToString(ignoreGlobalContext) << "]\n"
+    << "  -ignoreSplits       ignore split prefix. Only the original token is used, with prefix [" << splitPrefix << "] stripped off [" << boolToString(ignoreSplits) << "]\n";
 }
 
 void Args::printTrainingHelp() {

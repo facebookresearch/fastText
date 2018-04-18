@@ -52,11 +52,44 @@ void Dictionary::add(const std::string& w) {
   entry_type type = getType(w);
   std::string word;
   if (type == entry_type::negativeWord) {
+    if (args_->ignoreContextNegatives) return;
     type = entry_type::word;
     word = w.substr(args_->negativeTokenPrefix.length(), w.length());
+    addWord(word, type);
+  } else if (type == entry_type::globalContext) {
+    if (args_->ignoreGlobalContext) return;
+    type = entry_type::word;
+    word = w.substr(args_->globalContextTokenPrefix.length(), w.length());
+    addWord(word, type);
+  } else if (type == entry_type::splitWord) {
+    type = entry_type::word;
+    word = w.substr(args_->splitPrefix.length(), w.length());
+    addWord(word, type);
+    std::vector<std::string> splits = getWordSplits(word);
+    for (auto &split: splits) {
+        addWord(split, type);
+    }
   } else {
     word = w;
+    addWord(word, type);
   }
+}
+
+const std::vector<std::string> Dictionary::getWordSplits(
+    const std::string& word) const {
+  std::vector<std::string> split;
+  std::size_t current, previous = 0;
+  current = word.find(args_->splitChar);
+  while (current != std::string::npos) {
+    split.push_back(word.substr(previous, current - previous));
+    previous = current + 1;
+    current = word.find(args_->splitChar, previous);
+  }
+  split.push_back(word.substr(previous, current - previous));
+  return split;
+}
+
+void Dictionary::addWord(std::string& word, entry_type& type) {
   int32_t h = find(word);
   ntokens_++;
   if (word2int_[h] == -1) {
@@ -67,8 +100,7 @@ void Dictionary::add(const std::string& w) {
     words_.push_back(e);
     word2int_[h] = size_++;
   } else {
-    // counting both postitive and negative words
-    // since we only care to differentiate between positive and negative when we train
+    // counting both postitive and negative and global words
     words_[word2int_[h]].count++;
   }
 }
@@ -147,6 +179,10 @@ entry_type Dictionary::getType(const std::string& w) const {
         return entry_type::label;
     } else if (w.find(args_->negativeTokenPrefix) == 0) {
         return entry_type::negativeWord;
+    } else if (w.find(args_->globalContextTokenPrefix) == 0) {
+        return entry_type::globalContext;
+    } else if (w.find(args_->splitPrefix) == 0) {
+        return entry_type::splitWord;
     } else {
         return entry_type::word;
     }
@@ -189,14 +225,18 @@ void Dictionary::computeSubwords(const std::string& word,
 
 void Dictionary::computeSubwords(const std::string& word,
                                std::vector<int32_t>& ngrams) const {
+  // ngrams here is the list of subword ids
+  // word is the word string
   for (size_t i = 0; i < word.size(); i++) {
     std::string ngram;
+    // skipping BOW token
     if ((word[i] & 0xC0) == 0x80) continue;
     for (size_t j = i, n = 1; j < word.size() && n <= args_->maxn; n++) {
       ngram.push_back(word[j++]);
       while (j < word.size() && (word[j] & 0xC0) == 0x80) {
         ngram.push_back(word[j++]);
       }
+      // gets hashes for ngrams and pushes that in
       if (n >= args_->minn && !(n == 1 && (i == 0 || j == word.size()))) {
         int32_t h = hash(ngram) % args_->bucket;
         pushHash(ngrams, h);
@@ -206,9 +246,11 @@ void Dictionary::computeSubwords(const std::string& word,
 }
 
 void Dictionary::initNgrams() {
+  // size_ is the total size of the vocabulary of words
   for (size_t i = 0; i < size_; i++) {
     std::string word = BOW + words_[i].word + EOW;
     words_[i].subwords.clear();
+    // add the word as a subword
     words_[i].subwords.push_back(i);
     if (words_[i].word != EOS) {
       computeSubwords(word, words_[i].subwords);
@@ -266,6 +308,7 @@ void Dictionary::readFromFile(std::istream& in) {
   threshold(args_->minCount, args_->minCountLabel);
   // discarding words that don't meet the threshold
   initTableDiscard();
+  // also computes subwords and stores along with the words
   initNgrams();
   if (args_->verbose > 0) {
     std::cerr << "\rRead " << ntokens_  / 1000000 << "M words" << std::endl;
@@ -360,6 +403,7 @@ int32_t Dictionary::getLine(std::istream& in,
   std::string word;
   entry_type type;
   int32_t ntokens = 0;
+  std::vector<int32_t> global_context = std::vector<int32_t>();
 
   reset(in);
   words.clear();
@@ -369,7 +413,13 @@ int32_t Dictionary::getLine(std::istream& in,
     type = getType(token);
 
     if (type == entry_type::negativeWord) {
+        if (args_->ignoreContextNegatives) continue;
         word = token.substr(args_->negativeTokenPrefix.length(), token.length());
+    } else if (type == entry_type::globalContext) {
+        if (args_->ignoreGlobalContext) continue;
+        word = token.substr(args_->globalContextTokenPrefix.length(), token.length());
+    } else if (type == entry_type::splitWord) {
+        word = token.substr(args_->splitPrefix.length(), token.length());
     } else {
         word = token;
     }
@@ -381,7 +431,7 @@ int32_t Dictionary::getLine(std::istream& in,
     ntokens++;
     if (type == entry_type::word && !discard(wid, uniform(rng))) {
         // push previous word since we have a new kid on the block
-        word_token w = {wid, std::vector<int32_t>()};
+        word_token w = {wid, std::vector<int32_t>(), global_context, std::vector<int32_t>()};
         words.push_back(w);
     } else if (type == entry_type::negativeWord) {
         // add negative word to the last positive word
@@ -389,6 +439,22 @@ int32_t Dictionary::getLine(std::istream& in,
         if (!words.empty()) {
             words.back().negative_ids.push_back(wid);
         }
+    } else if (type == entry_type::globalContext) {
+        global_context.push_back(wid);
+    } else if (type == entry_type::splitWord) {
+        std::vector<int32_t> splits = std::vector<int32_t>();
+        if (!args_->ignoreSplits) {
+            for (auto &split: getWordSplits(word)) {
+                int32_t hs = find(split);
+                int32_t wids = word2int_[hs];
+                if (wids >= 0) {
+                    splits.push_back(wids);
+                }
+            }
+        }
+
+        word_token w = {wid, std::vector<int32_t>(), global_context, splits};
+        words.push_back(w);
     }
     if (ntokens > MAX_LINE_SIZE || token == EOS) break;
   }
