@@ -8,7 +8,7 @@
 #
 
 CXX = c++
-CXXFLAGS = -pthread -std=c++11x -march=native
+CXXFLAGS = -pthread -std=c++0x -march=native
 OBJS = args.o dictionary.o productquantizer.o matrix.o qmatrix.o vector.o model.o utils.o fasttext.o
 INCLUDES = -I.
 
