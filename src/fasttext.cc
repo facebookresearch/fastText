@@ -603,8 +603,6 @@ void FastText::trainThread(int32_t threadId) {
   int64_t localTokenCount = 0;
   std::vector<int32_t> line, labels;
   std::vector<word_token> lineWithContext;
-  std::cout << " epoch: " << args_->epoch << std::endl;
-  std::cout << " ntokens: " << ntokens << std::endl;
   while (tokenCount_ < args_->epoch * ntokens) {
     real progress = real(tokenCount_) / (args_->epoch * ntokens);
     real lr = args_->lr * (1.0 - progress);
