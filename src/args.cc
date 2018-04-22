@@ -260,7 +260,7 @@ void Args::printTrainingHelp() {
     << "  -loss               loss function {ns, hs, softmax} [" << lossToString(loss) << "]\n"
     << "  -thread             number of threads [" << thread << "]\n"
     << "  -pretrainedVectors  pretrained word vectors for supervised learning ["<< pretrainedVectors <<"]\n"
-    << "  -saveOutput         whether output params should be saved [" << boolToString(saveOutput) << "]\n";
+    << "  -saveOutput         whether output params and vector should be saved [" << boolToString(saveOutput) << "]\n";
 }
 
 void Args::printQuantizationHelp() {
