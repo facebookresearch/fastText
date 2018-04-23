@@ -65,9 +65,11 @@ void Dictionary::add(const std::string& w) {
     type = entry_type::word;
     word = w.substr(args_->splitPrefix.length(), w.length());
     addWord(word, type);
-    std::vector<std::string> splits = getWordSplits(word);
-    for (auto &split: splits) {
-        addWord(split, type);
+    if (!args_->ignoreSplits) {
+        std::vector<std::string> splits = getWordSplits(word);
+        for (auto &split: splits) {
+            addWord(split, type);
+        }
     }
   } else {
     word = w;
@@ -448,6 +450,7 @@ int32_t Dictionary::getLine(std::istream& in,
                 int32_t hs = find(split);
                 int32_t wids = word2int_[hs];
                 if (wids >= 0) {
+                    ntokens++; // split word is also a token
                     splits.push_back(wids);
                 }
             }
