@@ -11,6 +11,7 @@
 
 #include <stdlib.h>
 
+#include <fstream>
 #include <iostream>
 #include <stdexcept>
 
@@ -182,6 +183,7 @@ void Args::parseArgs(const std::vector<std::string>& args) {
       exit(EXIT_FAILURE);
     }
   }
+
   if (input.empty() || output.empty()) {
     std::cerr << "Empty input or output path." << std::endl;
     printHelp();
@@ -193,6 +195,18 @@ void Args::parseArgs(const std::vector<std::string>& args) {
     printHelp();
     exit(EXIT_FAILURE);
   }
+
+  if (incr && inputModel == output + ".bin") {
+    std::cerr << "output model name should not be same as inputModel" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+
+  std::ofstream ofs(output + ".bin", std::ofstream::binary);
+  if (!ofs.is_open()) {
+    std::cerr << output + ".bin cannot be opened for saving!" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+  ofs.close();
 
   if (wordNgrams <= 1 && maxn == 0) {
     bucket = 0;
@@ -211,9 +225,9 @@ void Args::printBasicHelp() {
   std::cerr
     << "\nThe following arguments are mandatory:\n"
     << "  -input              training file path\n"
-    << "  -inputModel         trained model file path (only for incremental training)\n"
     << "  -output             output file path\n"
     << "\nThe following arguments are optional:\n"
+    << "  -inputModel         trained model file path (required only for incremental training)\n"
     << "  -verbose            verbosity level [" << verbose << "]\n";
 }
 
