@@ -143,6 +143,9 @@ PYBIND11_MODULE(fasttext_pybind, m) {
           "loadModel",
           [](fasttext::FastText& m, std::string s) { m.loadModel(s); })
       .def(
+          "loadModel",
+          [](fasttext::FastText& m, const char* modelBytes, size_t size) { m.loadModel(modelBytes, size); })
+      .def(
           "saveModel",
           [](fasttext::FastText& m, std::string s) { m.saveModel(s); })
       .def(
