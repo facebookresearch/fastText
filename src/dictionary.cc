@@ -25,7 +25,7 @@ const std::string Dictionary::BOW = "<";
 const std::string Dictionary::EOW = ">";
 
 Dictionary::Dictionary(std::shared_ptr<Args> args) : args_(args),
-  word2int_(MAX_VOCAB_SIZE, -1), size_(0), nwords_(0), nlabels_(0),
+  word2int_(args_->max_vocab_size, -1), size_(0), nwords_(0), nlabels_(0),
   ntokens_(0), pruneidx_size_(-1) {}
 
 Dictionary::Dictionary(std::shared_ptr<Args> args, std::istream& in) : args_(args),
@@ -228,13 +228,19 @@ bool Dictionary::readWord(std::istream& in, std::string& word) const
 void Dictionary::readFromFile(std::istream& in) {
   std::string word;
   int64_t minThreshold = 1;
+  std::cerr << "Max vocabulary size: " << args_->max_vocab_size << std::endl;
+  // puts word token in variable 'word' till we get to the end
   while (readWord(in, word)) {
+     // adds an entity to dict with types (label,..) identified
+     // word2int[string] -> int is the hash from word to int representation
+     // words[int] -> count is the hash from word to count
     add(word);
     if (ntokens_ % 1000000 == 0 && args_->verbose > 1) {
       std::cerr << "\rRead " << ntokens_  / 1000000 << "M words" << std::flush;
     }
-    if (size_ > 0.75 * MAX_VOCAB_SIZE) {
+    if (size_ > 0.75 * args_->max_vocab_size) {
       minThreshold++;
+      std::cerr << "Minimum count threshold changed to: " << minThreshold << std::endl;
       threshold(minThreshold, minThreshold);
     }
   }
