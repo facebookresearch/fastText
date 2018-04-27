@@ -32,7 +32,7 @@
 
 ### Models
 - Recent state-of-the-art [English word vectors](https://fasttext.cc/docs/en/english-vectors.html).
-- Word vectors for [294 languages trained on Wikipedia](https://github.com/facebookresearch/fastText/blob/master/pretrained-vectors.md).
+- Word vectors for [157 languages trained on Wikipedia and Crawl](https://github.com/facebookresearch/fastText/blob/master/docs/crawl-vectors.md).
 - Models for [language identification](https://fasttext.cc/docs/en/language-identification.html#content) and [various supervised tasks](https://fasttext.cc/docs/en/supervised-models.html#content).
 
 ### Supplementary data
@@ -94,7 +94,7 @@ $ unzip v0.1.0.zip
 $ cd fastText-0.1.0
 $ make
 ```
- 
+
 This will produce object files for all the classes as well as the main binary `fasttext`.
 If you do not plan on using the default system-wide compiler, update the two macros defined at the beginning of the Makefile (CC and INCLUDES).
 
@@ -225,7 +225,7 @@ This will create a `.ftz` file with a smaller memory footprint. All the standard
 ```
 $ ./fasttext test model.ftz test.txt
 ```
-The quantization procedure follows the steps described in [3](#fastext-zip). You can
+The quantization procedure follows the steps described in [3](#fasttextzip-compressing-text-classification-models). You can
 run the script `quantization-example.sh` for an example.
 
 
