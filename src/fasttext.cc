@@ -711,12 +711,12 @@ void FastText::train(const Args args) {
 
     std::cerr<<"Update args"<<std::endl;
     args_->dim = old_args_->dim;
-    args_->ws = old_args_->ws;
-    args_->neg = old_args_->neg;
-    args_->wordNgrams = old_args_->wordNgrams;
     args_->loss = old_args_->loss;
     args_->model = old_args_->model;
 
+    if (args_->ws <= 0) { args_->ws = old_args_->ws; }
+    if (args_->neg <= 0) { args_->neg = old_args_->neg; }
+    if (args_->wordNgrams <= 0) { args_->wordNgrams = old_args_->wordNgrams; }
     if (args_->epoch <= 0) { args_->epoch = old_args_->epoch; }
     if (args_->minCount <= 0) { args_->minCount = old_args_->minCount; }
     if (args_->bucket <= 0) { args_->bucket = old_args_->bucket; }
