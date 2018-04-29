@@ -23,6 +23,7 @@ Args::Args() {
   epoch = 5;
   minCount = 5;
   minCountLabel = 0;
+  minCountGlobal = 1;
   neg = 5;
   wordNgrams = 1;
   loss = loss_name::ns;
@@ -30,7 +31,7 @@ Args::Args() {
   bucket = 2000000;
   minn = 3;
   maxn = 6;
-  max_vocab_size = 30000000;
+  maxVocabSize = 30000000;
   thread = 12;
   lrUpdateRate = 100;
   t = 1e-4;
@@ -126,6 +127,8 @@ void Args::parseArgs(const std::vector<std::string>& args) {
         minCount = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-minCountLabel") {
         minCountLabel = std::stoi(args.at(ai + 1));
+      } else if (args[ai] == "-minCountGlobal") {
+        minCountGlobal = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-neg") {
         neg = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-wordNgrams") {
@@ -148,8 +151,8 @@ void Args::parseArgs(const std::vector<std::string>& args) {
         minn = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-maxn") {
         maxn = std::stoi(args.at(ai + 1));
-      } else if (args[ai] == "-max_vocab_size") {
-        max_vocab_size = std::stoi(args.at(ai + 1));
+      } else if (args[ai] == "-maxVocabSize") {
+        maxVocabSize = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-thread") {
         thread = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-t") {
@@ -236,11 +239,12 @@ void Args::printDictionaryHelp() {
     << "\nThe following arguments for the dictionary are optional:\n"
     << "  -minCount           minimal number of word occurences [" << minCount << "]\n"
     << "  -minCountLabel      minimal number of label occurences [" << minCountLabel << "]\n"
+    << "  -minCountGlobal     minimal number of global context occurences [" << minCountGlobal << "]\n"
     << "  -wordNgrams         max length of word ngram [" << wordNgrams << "]\n"
     << "  -bucket             number of buckets [" << bucket << "]\n"
     << "  -minn               min length of char ngram [" << minn << "]\n"
     << "  -maxn               max length of char ngram [" << maxn << "]\n"
-    << "  -max_vocab_size     max tokens in vocabulary. Pruning happens at 0.75 of this: [" << max_vocab_size << "]\n"
+    << "  -maxVocabSize       max tokens in vocabulary. Pruning happens at 0.75 of this: [" << maxVocabSize << "]\n"
     << "  -t                  sampling threshold [" << t << "]\n"
     << "  -label              labels prefix [" << label << "]\n"
     << "  -negPrefix          negative token prefix [" << negativeTokenPrefix << "] negative tokens are associated with preceeding positive token \n"
@@ -291,6 +295,8 @@ void Args::save(std::ostream& out) {
   out.write((char*) &(maxn), sizeof(int));
   out.write((char*) &(lrUpdateRate), sizeof(int));
   out.write((char*) &(t), sizeof(double));
+  out.write((char*) &(maxVocabSize), sizeof(int32_t));
+  out.write((char*) &(minCountGlobal), sizeof(int));
 }
 
 void Args::load(std::istream& in) {
@@ -307,6 +313,8 @@ void Args::load(std::istream& in) {
   in.read((char*) &(maxn), sizeof(int));
   in.read((char*) &(lrUpdateRate), sizeof(int));
   in.read((char*) &(t), sizeof(double));
+  in.read((char*) &(maxVocabSize), sizeof(int32_t));
+  in.read((char*) &(minCountGlobal), sizeof(int));
 }
 
 void Args::dump(std::ostream& out) const {
@@ -322,7 +330,7 @@ void Args::dump(std::ostream& out) const {
   out << "minn" << " " << minn << std::endl;
   out << "maxn" << " " << maxn << std::endl;
   out << "lrUpdateRate" << " " << lrUpdateRate << std::endl;
-  out << "max_vocab_size" << " " << max_vocab_size << std::endl;
+  out << "max_vocab_size" << " " << maxVocabSize << std::endl;
   out << "t" << " " << t << std::endl;
 }
 

@@ -36,6 +36,7 @@ class Args {
     int epoch;
     int minCount;
     int minCountLabel;
+    int minCountGlobal;
     int neg;
     int wordNgrams;
     loss_name loss;
@@ -43,7 +44,7 @@ class Args {
     int bucket;
     int minn;
     int maxn;
-    int32_t max_vocab_size;
+    int32_t maxVocabSize;
     int thread;
     double t;
     std::string label;

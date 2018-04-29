@@ -90,6 +90,7 @@ class Dictionary {
     int32_t getId(const std::string&, uint32_t h) const;
     entry_type getType(int32_t) const;
     entry_type getType(const std::string&) const;
+    bool isWordType(const entry_type& e) const;
     bool discard(int32_t, real) const;
     std::string getWord(int32_t) const;
     const std::vector<int32_t>& getSubwords(int32_t) const;
@@ -118,7 +119,7 @@ class Dictionary {
                     std::minstd_rand&) const;
     int32_t getLine(std::istream&, std::vector<word_token>&,
                     std::minstd_rand&) const;
-    void threshold(int64_t, int64_t);
+    void threshold(int64_t, int64_t, int64_t);
     void prune(std::vector<int32_t>&);
     bool isPruned() { return pruneidx_size_ >= 0; }
     void dump(std::ostream&) const;

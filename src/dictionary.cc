@@ -26,7 +26,7 @@ const std::string Dictionary::BOW = "<";
 const std::string Dictionary::EOW = ">";
 
 Dictionary::Dictionary(std::shared_ptr<Args> args) : args_(args),
-  word2int_(args_->max_vocab_size, -1), size_(0), nwords_(0), nlabels_(0),
+  word2int_(args_->maxVocabSize, -1), size_(0), nwords_(0), nlabels_(0),
   ntokens_(0), pruneidx_size_(-1) {}
 
 Dictionary::Dictionary(std::shared_ptr<Args> args, std::istream& in) : args_(args),
@@ -41,6 +41,7 @@ int32_t Dictionary::find(const std::string& w) const {
 int32_t Dictionary::find(const std::string& w, uint32_t h) const {
   int32_t word2intsize = word2int_.size();
   int32_t id = h % word2intsize;
+  // if we find word for a hash return
   while (word2int_[id] != -1 && words_[word2int_[id]].word != w) {
     id = (id + 1) % word2intsize;
   }
@@ -53,16 +54,13 @@ void Dictionary::add(const std::string& w) {
   std::string word;
   if (type == entry_type::negativeWord) {
     if (args_->ignoreContextNegatives) return;
-    type = entry_type::word;
     word = w.substr(args_->negativeTokenPrefix.length(), w.length());
     addWord(word, type);
   } else if (type == entry_type::globalContext) {
     if (args_->ignoreGlobalContext) return;
-    type = entry_type::word;
     word = w.substr(args_->globalContextTokenPrefix.length(), w.length());
     addWord(word, type);
   } else if (type == entry_type::splitWord) {
-    type = entry_type::word;
     word = w.substr(args_->splitPrefix.length(), w.length());
     addWord(word, type);
     if (!args_->ignoreSplits) {
@@ -190,6 +188,14 @@ entry_type Dictionary::getType(const std::string& w) const {
     }
 }
 
+bool Dictionary::isWordType(const entry_type& e) const {
+    return (e == entry_type::word) ||
+           (e == entry_type::negativeWord) ||
+           (e == entry_type:: globalContext) ||
+           (e == entry_type::splitWord);
+}
+
+
 std::string Dictionary::getWord(int32_t id) const {
   assert(id >= 0);
   assert(id < size_);
@@ -292,7 +298,8 @@ bool Dictionary::readWord(std::istream& in, std::string& word) const
 void Dictionary::readFromFile(std::istream& in) {
   std::string word;
   int64_t minThreshold = 1;
-  std::cerr << "Max vocabulary size: " << args_->max_vocab_size << std::endl;
+  int64_t minThresholdGlobal = 1;
+  std::cerr << "Max vocabulary size: " << args_->maxVocabSize << std::endl;
   // puts word token in variable 'word' till we get to the end
   while (readWord(in, word)) {
      // adds an entity to dict with types (label,..) identified
@@ -302,14 +309,14 @@ void Dictionary::readFromFile(std::istream& in) {
     if (ntokens_ % 1000000 == 0 && args_->verbose > 1) {
       std::cerr << "\rRead " << ntokens_  / 1000000 << "M words" << std::flush;
     }
-    if (size_ > 0.75 * args_->max_vocab_size) {
+    if (size_ > 0.75 * args_->maxVocabSize) {
       minThreshold++;
       std::cerr << "Minimum count threshold changed to: " << minThreshold << std::endl;
-      threshold(minThreshold, minThreshold);
+      threshold(minThreshold, minThreshold, minThresholdGlobal);
     }
   }
   // thresholding to minimum number of words
-  threshold(args_->minCount, args_->minCountLabel);
+  threshold(args_->minCount, args_->minCountLabel, args_->minCountGlobal);
   // discarding words that don't meet the threshold
   initTableDiscard();
   // also computes subwords and stores along with the words
@@ -325,13 +332,16 @@ void Dictionary::readFromFile(std::istream& in) {
   }
 }
 
-void Dictionary::threshold(int64_t t, int64_t tl) {
+void Dictionary::threshold(int64_t t, int64_t tl, int64_t tg) {
   sort(words_.begin(), words_.end(), [](const entry& e1, const entry& e2) {
       if (e1.type != e2.type) return e1.type < e2.type;
       return e1.count > e2.count;
     });
   words_.erase(remove_if(words_.begin(), words_.end(), [&](const entry& e) {
         return (e.type == entry_type::word && e.count < t) ||
+               (e.type == entry_type::negativeWord && e.count < t) ||
+               (e.type == entry_type::splitWord && e.count < t) ||
+               (e.type == entry_type::globalContext && e.count < tg) ||
                (e.type == entry_type::label && e.count < tl);
       }), words_.end());
   words_.shrink_to_fit();
@@ -342,7 +352,7 @@ void Dictionary::threshold(int64_t t, int64_t tl) {
   for (auto it = words_.begin(); it != words_.end(); ++it) {
     int32_t h = find(it->word);
     word2int_[h] = size_++;
-    if (it->type == entry_type::word) nwords_++;
+    if (isWordType(it->type)) nwords_++;
     if (it->type == entry_type::label) nlabels_++;
   }
 }

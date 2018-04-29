@@ -656,7 +656,7 @@ void FastText::loadVectors(std::string filename) {
   }
   in.close();
 
-  dict_->threshold(1, 0);
+  dict_->threshold(1, 0, 1);
   dict_->init();
   input_ = std::make_shared<Matrix>(dict_->nwords()+args_->bucket, args_->dim);
   input_->uniform(1.0 / args_->dim);
