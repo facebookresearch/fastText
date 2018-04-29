@@ -47,7 +47,6 @@ struct word_token {
 
 class Dictionary {
   protected:
-    static const int32_t MAX_VOCAB_SIZE = 30000000;
     static const int32_t MAX_LINE_SIZE = 1024;
 
     int32_t find(const std::string&) const;

@@ -43,6 +43,7 @@ class Args {
     int bucket;
     int minn;
     int maxn;
+    int32_t max_vocab_size;
     int thread;
     double t;
     std::string label;

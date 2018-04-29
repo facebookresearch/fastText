@@ -30,6 +30,7 @@ Args::Args() {
   bucket = 2000000;
   minn = 3;
   maxn = 6;
+  max_vocab_size = 30000000;
   thread = 12;
   lrUpdateRate = 100;
   t = 1e-4;
@@ -147,6 +148,8 @@ void Args::parseArgs(const std::vector<std::string>& args) {
         minn = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-maxn") {
         maxn = std::stoi(args.at(ai + 1));
+      } else if (args[ai] == "-max_vocab_size") {
+        max_vocab_size = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-thread") {
         thread = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-t") {
@@ -237,6 +240,7 @@ void Args::printDictionaryHelp() {
     << "  -bucket             number of buckets [" << bucket << "]\n"
     << "  -minn               min length of char ngram [" << minn << "]\n"
     << "  -maxn               max length of char ngram [" << maxn << "]\n"
+    << "  -max_vocab_size     max tokens in vocabulary. Pruning happens at 0.75 of this: [" << max_vocab_size << "]\n"
     << "  -t                  sampling threshold [" << t << "]\n"
     << "  -label              labels prefix [" << label << "]\n"
     << "  -negPrefix          negative token prefix [" << negativeTokenPrefix << "] negative tokens are associated with preceeding positive token \n"
@@ -318,6 +322,7 @@ void Args::dump(std::ostream& out) const {
   out << "minn" << " " << minn << std::endl;
   out << "maxn" << " " << maxn << std::endl;
   out << "lrUpdateRate" << " " << lrUpdateRate << std::endl;
+  out << "max_vocab_size" << " " << max_vocab_size << std::endl;
   out << "t" << " " << t << std::endl;
 }
 
