@@ -5,6 +5,7 @@ title: Word vectors for 157 languages
 
 We distribute pre-trained word vectors for 157 languages, trained on [*Common Crawl*](http://commoncrawl.org/) and [*Wikipedia*](https://www.wikipedia.org) using fastText.
 These models were trained using CBOW with position-weights, in dimension 300, with character n-grams of length 5, a window of size 5 and 10 negatives.
+We also distribute three new word analogy datasets, for French, Hindi and Polish.
 
 ### Format
 
@@ -58,6 +59,10 @@ E. Grave\*, P. Bojanowski\*, P. Gupta, A. Joulin, T. Mikolov, [*Learning Word Ve
   year={2018}
 }
 ```
+
+### Evaluation datasets
+
+The analogy evaluation datasets described in the paper are available here: [French](https://s3-us-west-1.amazonaws.com/fasttext-vectors/word-analogies/questions-words-fr.txt), [Hindi](https://s3-us-west-1.amazonaws.com/fasttext-vectors/word-analogies/questions-words-hi.txt), [Polish](https://s3-us-west-1.amazonaws.com/fasttext-vectors/word-analogies/questions-words-pl.txt).
 
 ### Models
 
