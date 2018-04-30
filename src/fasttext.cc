@@ -239,7 +239,6 @@ void FastText::loadModel(std::istream& in) {
 }
 
 void FastText::printInfo(real progress, real loss, std::ostream& log_stream) {
-
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
   double t = std::chrono::duration_cast<std::chrono::seconds> (end - start_).count();
   double lr = args_->lr * (1.0 - progress);
@@ -254,7 +253,7 @@ void FastText::printInfo(real progress, real loss, std::ostream& log_stream) {
   }
   int32_t etah = eta / 3600;
   int32_t etam = (eta % 3600) / 60;
-   
+
   log_stream << std::fixed;
   log_stream << "Progress: ";
   log_stream << std::setprecision(1) << std::setw(5) << progress << "%";
