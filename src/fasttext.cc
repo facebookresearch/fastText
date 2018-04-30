@@ -686,7 +686,6 @@ void FastText::train(const Args args) {
 }
 
 void FastText::startThreads() {
-  //start_ = clock();
   start_ = std::chrono::steady_clock::now();
   tokenCount_ = 0;
   loss_ = -1;
