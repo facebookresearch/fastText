@@ -248,7 +248,7 @@ void FastText::printInfo(real progress, real loss, std::ostream& log_stream) {
   int64_t eta = 2592000; // Default to one month in seconds (720 * 3600)
 
   if (progress > 0 && t >= 0) {
-  	progress = progress * 100;
+    progress = progress * 100;
     eta = (100 / progress) * t;
     wst = double(tokenCount_) / t;
   }
