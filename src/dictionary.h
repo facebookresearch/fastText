@@ -43,6 +43,7 @@ struct word_token {
   std::vector<int32_t> negative_ids;
   std::vector<int32_t> global_context_ids;
   std::vector<int32_t> split_ids;
+  uint8_t weight;
 };
 
 class Dictionary {
@@ -86,6 +87,7 @@ class Dictionary {
     int32_t nwords() const;
     int32_t nlabels() const;
     int64_t ntokens() const;
+    const std::pair<std::string, uint8_t> getTokenWithWeight(const std::string&) const;
     int32_t getId(const std::string&) const;
     int32_t getId(const std::string&, uint32_t h) const;
     entry_type getType(int32_t) const;

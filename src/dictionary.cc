@@ -18,6 +18,7 @@
 #include <iterator>
 #include <cmath>
 #include <stdexcept>
+#include <utility>
 
 namespace fasttext {
 
@@ -63,7 +64,9 @@ void Dictionary::add(const std::string& w) {
     addWord(word, type);
   } else if (type == entry_type::splitWord) {
     type = entry_type::word;
-    word = w.substr(args_->splitPrefix.length(), w.length());
+    std::pair<std::string, uint8_t> tokenWithWeight = getTokenWithWeight(w);
+    std::string token = tokenWithWeight.first;
+    word = token.substr(args_->splitPrefix.length(), w.length());
     addWord(word, type);
     if (!args_->ignoreSplits) {
         std::vector<std::string> splits = getWordSplits(word);
@@ -72,7 +75,8 @@ void Dictionary::add(const std::string& w) {
         }
     }
   } else {
-    word = w;
+    std::pair<std::string, uint8_t> tokenWithWeight = getTokenWithWeight(w);
+    std::string word = tokenWithWeight.first;
     addWord(word, type);
   }
 }
@@ -105,6 +109,27 @@ void Dictionary::addWord(std::string& word, entry_type& type) {
     // counting both postitive and negative and global words
     words_[word2int_[h]].count++;
   }
+}
+
+const std::pair<std::string, uint8_t> Dictionary::getTokenWithWeight(const std::string& word) const {
+    if (args_->parseWeights) {
+      std::size_t pos = word.find(":");
+      std::string t = word.substr(0, pos);
+      uint8_t weight = 1;
+      char *ptr;
+      if (pos != std::string::npos) {
+        long weight_long = strtoul(word.substr(pos + 1).c_str(), &ptr, 10);
+        if (weight_long > UINT8_MAX) {
+            weight = UINT8_MAX;
+        } else if (weight_long < 1) {
+            weight = 1;
+        } else {
+            weight = (int) weight_long;
+        }
+      }
+      return std::make_pair(t, weight);
+    } 
+    return std::make_pair(word, 1);
 }
 
 int32_t Dictionary::nwords() const {
@@ -310,7 +335,7 @@ void Dictionary::readFromFile(std::istream& in) {
   }
   // thresholding to minimum number of words
   threshold(args_->minCount, args_->minCountLabel);
-  // discarding words that don't meet the threshold
+  // create a probility table for subsampling words
   initTableDiscard();
   // also computes subwords and stores along with the words
   initNgrams();
@@ -351,6 +376,7 @@ void Dictionary::initTableDiscard() {
   pdiscard_.resize(size_);
   for (size_t i = 0; i < size_; i++) {
     real f = real(words_[i].count) / real(ntokens_);
+    // pdiscard_ is actually the probability of keeping the word
     pdiscard_[i] = std::sqrt(args_->t / f) + args_->t / f;
   }
 }
@@ -405,6 +431,7 @@ int32_t Dictionary::getLine(std::istream& in,
   std::uniform_real_distribution<> uniform(0, 1);
   std::string token;
   std::string word;
+  uint8_t weight;
   entry_type type;
   int32_t ntokens = 0;
   std::vector<int32_t> global_context = std::vector<int32_t>();
@@ -423,9 +450,14 @@ int32_t Dictionary::getLine(std::istream& in,
         if (args_->ignoreGlobalContext) continue;
         word = token.substr(args_->globalContextTokenPrefix.length(), token.length());
     } else if (type == entry_type::splitWord) {
+        std::pair<std::string, uint8_t> tokenWithWeight = getTokenWithWeight(token);
+        token = tokenWithWeight.first;
+        weight = tokenWithWeight.second;
         word = token.substr(args_->splitPrefix.length(), token.length());
     } else {
-        word = token;
+        std::pair<std::string, uint8_t> tokenWithWeight = getTokenWithWeight(token);
+        word = tokenWithWeight.first;
+        weight = tokenWithWeight.second;
     }
 
     int32_t h = find(word);
@@ -433,9 +465,10 @@ int32_t Dictionary::getLine(std::istream& in,
     if (wid < 0) continue;
 
     ntokens++;
+
     if (type == entry_type::word && !discard(wid, uniform(rng))) {
         // push previous word since we have a new kid on the block
-        word_token w = {wid, std::vector<int32_t>(), global_context, std::vector<int32_t>()};
+        word_token w = {wid, std::vector<int32_t>(), global_context, std::vector<int32_t>(), weight};
         words.push_back(w);
     } else if (type == entry_type::negativeWord) {
         // add negative word to the last positive word
@@ -458,7 +491,7 @@ int32_t Dictionary::getLine(std::istream& in,
             }
         }
 
-        word_token w = {wid, std::vector<int32_t>(), global_context, splits};
+        word_token w = {wid, std::vector<int32_t>(), global_context, splits, weight};
         words.push_back(w);
     }
     if (ntokens > MAX_LINE_SIZE || token == EOS) break;
