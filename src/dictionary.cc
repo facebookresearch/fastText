@@ -156,6 +156,7 @@ void Dictionary::getSubwords(const std::string& word,
 bool Dictionary::discard(int32_t id, real rand) const {
   assert(id >= 0);
   assert(id < nwords_);
+  if (args_->noSubsampling) return false;
   if (args_->model == model_name::sup) return false;
   return rand > pdiscard_[id];
 }
@@ -311,7 +312,8 @@ void Dictionary::readFromFile(std::istream& in) {
   // thresholding to minimum number of words
   threshold(args_->minCount, args_->minCountLabel);
   // discarding words that don't meet the threshold
-  initTableDiscard();
+  if (!args_->noSubsampling) initTableDiscard();
+
   // also computes subwords and stores along with the words
   initNgrams();
   if (args_->verbose > 0) {

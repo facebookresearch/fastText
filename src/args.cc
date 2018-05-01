@@ -45,6 +45,7 @@ Args::Args() {
   ignoreContextNegatives = false;
   ignoreGlobalContext = false;
   ignoreSplits = false;
+  noSubsampling = false;
 
   qout = false;
   retrain = false;
@@ -177,6 +178,9 @@ void Args::parseArgs(const std::vector<std::string>& args) {
       } else if (args[ai] == "-ignoreSplits") {
         ignoreSplits = true;
         ai--;
+      } else if (args[ai] == "-noSubsampling") {
+        noSubsampling = true;
+        ai--;
       } else if (args[ai] == "-saveOutput") {
         saveOutput = true;
         ai--;
@@ -264,6 +268,7 @@ void Args::printTrainingHelp() {
     << "  -loss               loss function {ns, hs, softmax} [" << lossToString(loss) << "]\n"
     << "  -thread             number of threads [" << thread << "]\n"
     << "  -pretrainedVectors  pretrained word vectors for supervised learning ["<< pretrainedVectors <<"]\n"
+    << "  -noSubsampling      disable subsampling ["<< boolToString(noSubsampling) <<"]\n"
     << "  -saveOutput         whether output params and vector should be saved [" << boolToString(saveOutput) << "]\n";
 }
 
@@ -291,6 +296,7 @@ void Args::save(std::ostream& out) {
   out.write((char*) &(maxn), sizeof(int));
   out.write((char*) &(lrUpdateRate), sizeof(int));
   out.write((char*) &(t), sizeof(double));
+  out.write((char*) &(noSubsampling), sizeof(double));
 }
 
 void Args::load(std::istream& in) {
@@ -307,6 +313,7 @@ void Args::load(std::istream& in) {
   in.read((char*) &(maxn), sizeof(int));
   in.read((char*) &(lrUpdateRate), sizeof(int));
   in.read((char*) &(t), sizeof(double));
+  in.read((char*) &(noSubsampling), sizeof(double));
 }
 
 void Args::dump(std::ostream& out) const {
@@ -324,6 +331,7 @@ void Args::dump(std::ostream& out) const {
   out << "lrUpdateRate" << " " << lrUpdateRate << std::endl;
   out << "max_vocab_size" << " " << max_vocab_size << std::endl;
   out << "t" << " " << t << std::endl;
+  out << "noSubsampling" << " " << boolToString(noSubsampling) << std::endl;
 }
 
 }
