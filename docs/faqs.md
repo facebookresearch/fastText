@@ -26,7 +26,7 @@ This allows to build vectors even for misspelled words or concatenation of words
 
 ## Why is the hierarchical softmax slightly worse in performance than the full softmax? 
 
-The hierachical softmax is an approximation of the full softmax loss that allows to train on large number of class efficiently. This is often at the cost of a few percent of accuracy. 
+The hierarchical softmax is an approximation of the full softmax loss that allows to train on large number of class efficiently. This is often at the cost of a few percent of accuracy.
 Note also that this loss is thought for classes that are unbalanced, that is some classes are more frequent than others. If your dataset has a balanced number of examples per class, it is worth trying the negative sampling loss (-loss ns -neg 100).
 However, negative sampling will still be very slow at test time, since the full softmax will be computed.
 
