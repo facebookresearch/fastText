@@ -135,6 +135,8 @@ class _FastText():
         else:
             text = check(text)
             pairs = self.f.predict(text, k, threshold)
+            if not pairs:
+                return ()
             probs, labels = zip(*pairs)
             return labels, np.array(probs, copy=False)
 
