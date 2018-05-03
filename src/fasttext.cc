@@ -373,7 +373,7 @@ void FastText::skipgram(Model& model, real lr,
     for (int32_t c = -boundary; c <= boundary; c++) {
       if (c != 0 && w + c >= 0 && w + c < line.size()) {
         // ngrams is the one to use for the update
-        model.update(ctx, line[w + c].id, line[w].negative_ids, line[w].global_context_ids, lr);
+        model.update(ctx, line[w + c].id, line[w].negative_ids, line[w].global_context_ids, lr * line[w].weight);
       }
     }
   }

@@ -49,6 +49,7 @@ Args::Args() {
   ignoreGlobalContext = false;
   ignoreSplits = false;
   noSubsampling = false;
+  parseWeights = false;
 
   qout = false;
   retrain = false;
@@ -181,6 +182,9 @@ void Args::parseArgs(const std::vector<std::string>& args) {
       } else if (args[ai] == "-ignoreGContext") {
         ignoreGlobalContext = true;
         ai--;
+      } else if (args[ai] == "-parseWeights") {
+        parseWeights = true;
+        ai--;
       } else if (args[ai] == "-ignoreCNegs") {
         ignoreContextNegatives = true;
         ai--;
@@ -265,7 +269,8 @@ void Args::printDictionaryHelp() {
     << "  -splitChar          char to split text on [" << splitChar << "] these tokens are considered words and not ngrams. Using splits and ngrams together is not supported \n"
     << "  -ignoreCNegs        ignore negative tokens. Negatives tokens have [" << negativeTokenPrefix << "] preceding them [" << boolToString(ignoreContextNegatives) << "]\n"
     << "  -ignoreGContext     ignore global context tokens. Global cotext tokens have [" << globalContextTokenPrefix << "] preceding them [" << boolToString(ignoreGlobalContext) << "]\n"
-    << "  -ignoreSplits       ignore split prefix. Only the original token is used, with prefix [" << splitPrefix << "] stripped off [" << boolToString(ignoreSplits) << "]\n";
+    << "  -ignoreSplits       ignore split prefix. Only the original token is used, with prefix [" << splitPrefix << "] stripped off [" << boolToString(ignoreSplits) << "]\n"
+    << "  -parseWeights       parse weights from word tokens, does not apply to neg, global or split. Weight is unsigned int in range [1-255], eg. word:3 [" << boolToString(parseWeights) << "]\n";
 }
 
 void Args::printTrainingHelp() {

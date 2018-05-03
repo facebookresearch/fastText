@@ -277,7 +277,7 @@ void Model::setTargetCounts(const std::vector<int64_t>& counts) {
 }
 
 void Model::initTableNegatives(const std::vector<int64_t>& counts) {
-  // when creating the negatives subsample based on frequency
+  // table for negative sampling 
   real z = 0.0;
   for (size_t i = 0; i < counts.size(); i++) {
     z += pow(counts[i], 0.5);

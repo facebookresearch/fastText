@@ -58,6 +58,7 @@ class Args {
     bool ignoreGlobalContext;
     bool ignoreSplits;
     bool noSubsampling;
+    bool parseWeights;
     int verbose;
     std::string pretrainedVectors;
     bool saveOutput;
