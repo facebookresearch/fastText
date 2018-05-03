@@ -130,10 +130,13 @@ If you use these word vectors, please cite the following paper:
 P. Bojanowski\*, E. Grave\*, A. Joulin, T. Mikolov, [*Enriching Word Vectors with Subword Information*](https://arxiv.org/abs/1607.04606)
 
 ```markup
-@article{bojanowski2016enriching,
+@article{bojanowski2017enriching,
   title={Enriching Word Vectors with Subword Information},
   author={Bojanowski, Piotr and Grave, Edouard and Joulin, Armand and Mikolov, Tomas},
-  journal={arXiv preprint arXiv:1607.04606},
-  year={2016}
+  journal={Transactions of the Association for Computational Linguistics},
+  volume={5},
+  year={2017},
+  issn={2307-387X},
+  pages={135--146}
 }
 ```

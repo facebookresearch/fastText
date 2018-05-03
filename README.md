@@ -283,11 +283,14 @@ Please cite [1](#enriching-word-vectors-with-subword-information) if using this 
 [1] P. Bojanowski\*, E. Grave\*, A. Joulin, T. Mikolov, [*Enriching Word Vectors with Subword Information*](https://arxiv.org/abs/1607.04606)
 
 ```
-@article{bojanowski2016enriching,
+@article{bojanowski2017enriching,
   title={Enriching Word Vectors with Subword Information},
   author={Bojanowski, Piotr and Grave, Edouard and Joulin, Armand and Mikolov, Tomas},
-  journal={arXiv preprint arXiv:1607.04606},
-  year={2016}
+  journal={Transactions of the Association for Computational Linguistics},
+  volume={5},
+  year={2017},
+  issn={2307-387X},
+  pages={135--146}
 }
 ```
 
@@ -296,11 +299,14 @@ Please cite [1](#enriching-word-vectors-with-subword-information) if using this 
 [2] A. Joulin, E. Grave, P. Bojanowski, T. Mikolov, [*Bag of Tricks for Efficient Text Classification*](https://arxiv.org/abs/1607.01759)
 
 ```
-@article{joulin2016bag,
+@InProceedings{joulin2017bag,
   title={Bag of Tricks for Efficient Text Classification},
   author={Joulin, Armand and Grave, Edouard and Bojanowski, Piotr and Mikolov, Tomas},
-  journal={arXiv preprint arXiv:1607.01759},
-  year={2016}
+  booktitle={Proceedings of the 15th Conference of the European Chapter of the Association for Computational Linguistics: Volume 2, Short Papers},
+  month={April},
+  year={2017},
+  publisher={Association for Computational Linguistics},
+  pages={427--431},
 }
 ```
 

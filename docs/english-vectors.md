@@ -18,6 +18,19 @@ Pre-trained word vectors learned on different sources can be downloaded below:
 The first line of the file contains the number of words in the vocabulary and the size of the vectors.
 Each line contains a word followed by its vectors, like in the default fastText text format.
 Each value is space separated. Words are ordered by descending frequency.
+These text models can easily be loaded in Python using the following code:
+```python
+import io
+
+def load_vectors(fname):
+    fin = io.open(fname, 'r', encoding='utf-8', newline='\n', errors='ignore')
+    n, d = map(int, fin.readline().split())
+    data = {}
+    for line in fin:
+        tokens = line.rstrip().split(' ')
+        data[tokens[0]] = map(float, tokens[1:])
+    return data
+```
 
 ### License
 
