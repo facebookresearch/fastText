@@ -37,6 +37,7 @@ class Args {
     int minCount;
     int minCountLabel;
     int minCountGlobal;
+    int minCountCustom;
     int neg;
     int wordNgrams;
     loss_name loss;
@@ -50,6 +51,7 @@ class Args {
     std::string label;
     std::string negativeTokenPrefix;
     std::string globalContextTokenPrefix;
+    std::string customCountTokenPrefix;
     std::string splitPrefix;
     std::string splitChar;
     bool ignoreContextNegatives;

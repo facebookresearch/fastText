@@ -596,7 +596,7 @@ void FastText::trainThread(int32_t threadId) {
   if (args_->model == model_name::sup) {
     model.setTargetCounts(dict_->getCounts(entry_type::label));
   } else {
-    model.setTargetCounts(dict_->getCounts(entry_type::word));
+    model.setTargetCounts(dict_->getCounts(Dictionary::isWordType));
   }
 
   const int64_t ntokens = dict_->ntokens();
@@ -656,7 +656,7 @@ void FastText::loadVectors(std::string filename) {
   }
   in.close();
 
-  dict_->threshold(1, 0, 1);
+  dict_->threshold(1, 0, 1, 1);
   dict_->init();
   input_ = std::make_shared<Matrix>(dict_->nwords()+args_->bucket, args_->dim);
   input_->uniform(1.0 / args_->dim);
@@ -710,7 +710,7 @@ void FastText::train(const Args args) {
   if (args_->model == model_name::sup) {
     model_->setTargetCounts(dict_->getCounts(entry_type::label));
   } else {
-    model_->setTargetCounts(dict_->getCounts(entry_type::word));
+    model_->setTargetCounts(dict_->getCounts(Dictionary::isWordType));
   }
 }
 

@@ -60,6 +60,9 @@ void Dictionary::add(const std::string& w) {
     if (args_->ignoreGlobalContext) return;
     word = w.substr(args_->globalContextTokenPrefix.length(), w.length());
     addWord(word, type);
+  } else if (type == entry_type::customCountWord) {
+    word = w.substr(args_->customCountTokenPrefix.length(), w.length());
+    addWord(word, type);
   } else if (type == entry_type::splitWord) {
     word = w.substr(args_->splitPrefix.length(), w.length());
     addWord(word, type);
@@ -181,6 +184,8 @@ entry_type Dictionary::getType(const std::string& w) const {
         return entry_type::negativeWord;
     } else if (w.find(args_->globalContextTokenPrefix) == 0) {
         return entry_type::globalContext;
+    } else if (w.find(args_->customCountTokenPrefix) == 0) {
+        return entry_type::customCountWord;
     } else if (w.find(args_->splitPrefix) == 0) {
         return entry_type::splitWord;
     } else {
@@ -188,10 +193,11 @@ entry_type Dictionary::getType(const std::string& w) const {
     }
 }
 
-bool Dictionary::isWordType(const entry_type& e) const {
+bool Dictionary::isWordType(const entry_type& e) {
     return (e == entry_type::word) ||
            (e == entry_type::negativeWord) ||
            (e == entry_type:: globalContext) ||
+           (e == entry_type:: customCountWord) ||
            (e == entry_type::splitWord);
 }
 
@@ -298,7 +304,6 @@ bool Dictionary::readWord(std::istream& in, std::string& word) const
 void Dictionary::readFromFile(std::istream& in) {
   std::string word;
   int64_t minThreshold = 1;
-  int64_t minThresholdGlobal = 1;
   std::cerr << "Max vocabulary size: " << args_->maxVocabSize << std::endl;
   // puts word token in variable 'word' till we get to the end
   while (readWord(in, word)) {
@@ -312,11 +317,11 @@ void Dictionary::readFromFile(std::istream& in) {
     if (size_ > 0.75 * args_->maxVocabSize) {
       minThreshold++;
       std::cerr << "Minimum count threshold changed to: " << minThreshold << std::endl;
-      threshold(minThreshold, minThreshold, minThresholdGlobal);
+      threshold(minThreshold, minThreshold, args_->minCountGlobal, args_->minCountCustom);
     }
   }
   // thresholding to minimum number of words
-  threshold(args_->minCount, args_->minCountLabel, args_->minCountGlobal);
+  threshold(args_->minCount, args_->minCountLabel, args_->minCountGlobal, args_->minCountCustom);
   // discarding words that don't meet the threshold
   initTableDiscard();
   // also computes subwords and stores along with the words
@@ -332,7 +337,7 @@ void Dictionary::readFromFile(std::istream& in) {
   }
 }
 
-void Dictionary::threshold(int64_t t, int64_t tl, int64_t tg) {
+void Dictionary::threshold(int64_t t, int64_t tl, int64_t tg, int64_t tc) {
   sort(words_.begin(), words_.end(), [](const entry& e1, const entry& e2) {
       if (e1.type != e2.type) return e1.type < e2.type;
       return e1.count > e2.count;
@@ -342,6 +347,7 @@ void Dictionary::threshold(int64_t t, int64_t tl, int64_t tg) {
                (e.type == entry_type::negativeWord && e.count < t) ||
                (e.type == entry_type::splitWord && e.count < t) ||
                (e.type == entry_type::globalContext && e.count < tg) ||
+               (e.type == entry_type::customCountWord && e.count < tc) ||
                (e.type == entry_type::label && e.count < tl);
       }), words_.end());
   words_.shrink_to_fit();
@@ -369,6 +375,14 @@ std::vector<int64_t> Dictionary::getCounts(entry_type type) const {
   std::vector<int64_t> counts;
   for (auto& w : words_) {
     if (w.type == type) counts.push_back(w.count);
+  }
+  return counts;
+}
+
+std::vector<int64_t> Dictionary::getCounts(bool (*filter)(const entry_type&)) const {
+  std::vector<int64_t> counts;
+  for (auto& w : words_) {
+    if ((*filter)(w.type)) counts.push_back(w.count);
   }
   return counts;
 }
