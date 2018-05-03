@@ -36,6 +36,8 @@ class Args {
     int epoch;
     int minCount;
     int minCountLabel;
+    int minCountGlobal;
+    int minCountCustom;
     int neg;
     int wordNgrams;
     loss_name loss;
@@ -43,12 +45,13 @@ class Args {
     int bucket;
     int minn;
     int maxn;
-    int32_t max_vocab_size;
+    int32_t maxVocabSize;
     int thread;
     double t;
     std::string label;
     std::string negativeTokenPrefix;
     std::string globalContextTokenPrefix;
+    std::string customCountTokenPrefix;
     std::string splitPrefix;
     std::string splitChar;
     bool ignoreContextNegatives;

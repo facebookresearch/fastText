@@ -28,7 +28,8 @@ enum class entry_type : int8_t {
     label=1, 
     negativeWord=2, 
     globalContext=3,
-    splitWord=4
+    splitWord=4,
+    customCountWord=5
 };
 
 struct entry {
@@ -90,6 +91,7 @@ class Dictionary {
     int32_t getId(const std::string&, uint32_t h) const;
     entry_type getType(int32_t) const;
     entry_type getType(const std::string&) const;
+    static bool isWordType(const entry_type& e);
     bool discard(int32_t, real) const;
     std::string getWord(int32_t) const;
     const std::vector<int32_t>& getSubwords(int32_t) const;
@@ -112,13 +114,14 @@ class Dictionary {
     void save(std::ostream&) const;
     void load(std::istream&);
     std::vector<int64_t> getCounts(entry_type) const;
+    std::vector<int64_t> getCounts(bool (*filter)(const entry_type&)) const;
     int32_t getLine(std::istream&, std::vector<int32_t>&, std::vector<int32_t>&)
         const;
     int32_t getLine(std::istream&, std::vector<int32_t>&,
                     std::minstd_rand&) const;
     int32_t getLine(std::istream&, std::vector<word_token>&,
                     std::minstd_rand&) const;
-    void threshold(int64_t, int64_t);
+    void threshold(int64_t, int64_t, int64_t, int64_t);
     void prune(std::vector<int32_t>&);
     bool isPruned() { return pruneidx_size_ >= 0; }
     void dump(std::ostream&) const;

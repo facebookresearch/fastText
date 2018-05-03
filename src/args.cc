@@ -23,6 +23,8 @@ Args::Args() {
   epoch = 5;
   minCount = 5;
   minCountLabel = 0;
+  minCountGlobal = 1;
+  minCountCustom = 5;
   neg = 5;
   wordNgrams = 1;
   loss = loss_name::ns;
@@ -30,13 +32,14 @@ Args::Args() {
   bucket = 2000000;
   minn = 3;
   maxn = 6;
-  max_vocab_size = 30000000;
+  maxVocabSize = 30000000;
   thread = 12;
   lrUpdateRate = 100;
   t = 1e-4;
   label = "__label__";
   negativeTokenPrefix = "__neg__";
   globalContextTokenPrefix = "__global__";
+  customCountTokenPrefix = "__cc__";
   splitPrefix = "__split__";
   splitChar = "_";
   verbose = 2;
@@ -127,6 +130,10 @@ void Args::parseArgs(const std::vector<std::string>& args) {
         minCount = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-minCountLabel") {
         minCountLabel = std::stoi(args.at(ai + 1));
+      } else if (args[ai] == "-minCountCustom") {
+        minCountCustom = std::stoi(args.at(ai + 1));
+      } else if (args[ai] == "-minCountGlobal") {
+        minCountGlobal = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-neg") {
         neg = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-wordNgrams") {
@@ -149,8 +156,8 @@ void Args::parseArgs(const std::vector<std::string>& args) {
         minn = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-maxn") {
         maxn = std::stoi(args.at(ai + 1));
-      } else if (args[ai] == "-max_vocab_size") {
-        max_vocab_size = std::stoi(args.at(ai + 1));
+      } else if (args[ai] == "-maxVocabSize") {
+        maxVocabSize = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-thread") {
         thread = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-t") {
@@ -161,6 +168,8 @@ void Args::parseArgs(const std::vector<std::string>& args) {
         negativeTokenPrefix = std::string(args.at(ai + 1));
       } else if (args[ai] == "-globalPrefix") {
         globalContextTokenPrefix = std::string(args.at(ai + 1));
+      } else if (args[ai] == "-ccPrefix") {
+        customCountTokenPrefix = std::string(args.at(ai + 1));
       } else if (args[ai] == "-splitPrefix") {
         splitPrefix = std::string(args.at(ai + 1));
       } else if (args[ai] == "-splitChar") {
@@ -240,15 +249,18 @@ void Args::printDictionaryHelp() {
     << "\nThe following arguments for the dictionary are optional:\n"
     << "  -minCount           minimal number of word occurences [" << minCount << "]\n"
     << "  -minCountLabel      minimal number of label occurences [" << minCountLabel << "]\n"
+    << "  -minCountGlobal     minimal number of global context occurences [" << minCountGlobal << "]\n"
+    << "  -minCountCustom     minimal number of custom token [" << minCountCustom << "]\n"
     << "  -wordNgrams         max length of word ngram [" << wordNgrams << "]\n"
     << "  -bucket             number of buckets [" << bucket << "]\n"
     << "  -minn               min length of char ngram [" << minn << "]\n"
     << "  -maxn               max length of char ngram [" << maxn << "]\n"
-    << "  -max_vocab_size     max tokens in vocabulary. Pruning happens at 0.75 of this: [" << max_vocab_size << "]\n"
+    << "  -maxVocabSize       max tokens in vocabulary. Pruning happens at 0.75 of this: [" << maxVocabSize << "]\n"
     << "  -t                  sampling threshold [" << t << "]\n"
     << "  -label              labels prefix [" << label << "]\n"
     << "  -negPrefix          negative token prefix [" << negativeTokenPrefix << "] negative tokens are associated with preceeding positive token \n"
     << "  -globalPrefix       global context token prefix [" << globalContextTokenPrefix << "] global context is associated with all tokens in the line\n"
+    << "  -ccPrefix           token prefix for custom counts [" << customCountTokenPrefix << "]  \n"
     << "  -splitPrefix        prefix for tokens to split [" << splitPrefix << "]  prefix stripped off when creating token \n"
     << "  -splitChar          char to split text on [" << splitChar << "] these tokens are considered words and not ngrams. Using splits and ngrams together is not supported \n"
     << "  -ignoreCNegs        ignore negative tokens. Negatives tokens have [" << negativeTokenPrefix << "] preceding them [" << boolToString(ignoreContextNegatives) << "]\n"
@@ -297,6 +309,9 @@ void Args::save(std::ostream& out) {
   out.write((char*) &(lrUpdateRate), sizeof(int));
   out.write((char*) &(t), sizeof(double));
   out.write((char*) &(noSubsampling), sizeof(double));
+  out.write((char*) &(maxVocabSize), sizeof(int32_t));
+  out.write((char*) &(minCountGlobal), sizeof(int));
+  out.write((char*) &(minCountCustom), sizeof(int));
 }
 
 void Args::load(std::istream& in) {
@@ -314,6 +329,9 @@ void Args::load(std::istream& in) {
   in.read((char*) &(lrUpdateRate), sizeof(int));
   in.read((char*) &(t), sizeof(double));
   in.read((char*) &(noSubsampling), sizeof(double));
+  in.read((char*) &(maxVocabSize), sizeof(int32_t));
+  in.read((char*) &(minCountGlobal), sizeof(int));
+  in.read((char*) &(minCountCustom), sizeof(int));
 }
 
 void Args::dump(std::ostream& out) const {
@@ -321,6 +339,8 @@ void Args::dump(std::ostream& out) const {
   out << "ws" << " " << ws << std::endl;
   out << "epoch" << " " << epoch << std::endl;
   out << "minCount" << " " << minCount << std::endl;
+  out << "minCountGlobal" << " " << minCountGlobal << std::endl;
+  out << "minCountCustom" << " " << minCountCustom << std::endl;
   out << "neg" << " " << neg << std::endl;
   out << "wordNgrams" << " " << wordNgrams << std::endl;
   out << "loss" << " " << lossToString(loss) << std::endl;
@@ -329,7 +349,7 @@ void Args::dump(std::ostream& out) const {
   out << "minn" << " " << minn << std::endl;
   out << "maxn" << " " << maxn << std::endl;
   out << "lrUpdateRate" << " " << lrUpdateRate << std::endl;
-  out << "max_vocab_size" << " " << max_vocab_size << std::endl;
+  out << "max_vocab_size" << " " << maxVocabSize << std::endl;
   out << "t" << " " << t << std::endl;
   out << "noSubsampling" << " " << boolToString(noSubsampling) << std::endl;
 }
