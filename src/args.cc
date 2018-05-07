@@ -201,13 +201,6 @@ void Args::parseArgs(const std::vector<std::string>& args) {
     exit(EXIT_FAILURE);
   }
 
-  std::ofstream ofs(output + ".bin", std::ofstream::binary);
-  if (!ofs.is_open()) {
-    std::cerr << output + ".bin cannot be opened for saving!" << std::endl;
-    exit(EXIT_FAILURE);
-  }
-  ofs.close();
-
   if (wordNgrams <= 1 && maxn == 0) {
     bucket = 0;
   }
