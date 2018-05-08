@@ -1,0 +1,2 @@
+fastText
+fasttext_pybind

@@ -314,7 +314,10 @@ PYBIND11_MODULE(fasttext_pybind, m) {
           "getWordVector",
           [](fasttext::FastText& m,
              fasttext::Vector& vec,
-             const std::string word) { m.getWordVector(vec, word); })
+             const std::string word,
+             const bool normalise) {
+              m.getWordVector(vec, word, normalise); 
+            })
       .def(
           "getSubwords",
           [](fasttext::FastText& m, const std::string word) {

@@ -33,6 +33,13 @@ real Vector::norm() const {
   return std::sqrt(sum);
 }
 
+void Vector::normalise() {
+  real denominator = norm();
+  for (int64_t i = 0; i < size(); i++) {
+    data_[i] = data_[i] / denominator;
+  }
+}
+
 void Vector::mul(real a) {
   for (int64_t i = 0; i < size(); i++) {
     data_[i] *= a;
