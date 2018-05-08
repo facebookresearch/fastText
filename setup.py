@@ -12,17 +12,26 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import os
+import setuptools
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
+import subprocess
 import sys
-import setuptools
-import os
+
 
 __version__ = '0.8.22'
 FASTTEXT_SRC = "src"
 
-# Based on https://github.com/pybind/python_example
 
+try:
+    import pybind11
+except ImportError:
+    if subprocess.call([sys.executable, '-m', 'pip', 'install', 'pybind11']):
+        raise RuntimeError('pybind11 install failed.')
+
+
+# Based on https://github.com/pybind/python_example
 
 class get_pybind_include(object):
     """Helper class to determine the pybind11 include path
