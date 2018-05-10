@@ -24,6 +24,9 @@ namespace fasttext {
 
 typedef int32_t id_type;
 enum class entry_type : int8_t {
+    // for word and its special types: negativeWord, globalContext, splitWord and customCountWord
+    // the value of the enum determines what entry_type a token has
+    // higher values get precedence
     word=0, 
     label=1, 
     negativeWord=2, 

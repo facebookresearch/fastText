@@ -110,6 +110,10 @@ void Dictionary::addWord(std::string& word, entry_type& type) {
   } else {
     // counting both postitive and negative and global words
     words_[word2int_[h]].count++;
+    // give token higher entry type
+    if (type > words_[word2int_[h]].type) {
+        words_[word2int_[h]].type = type;
+    }
   }
 }
 
