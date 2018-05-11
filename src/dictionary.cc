@@ -227,8 +227,8 @@ entry_type Dictionary::getType(const std::string& w) const {
 bool Dictionary::isWordType(const entry_type& e) {
     return (e == entry_type::word) ||
            (e == entry_type::negativeWord) ||
-           (e == entry_type:: globalContext) ||
-           (e == entry_type:: customCountWord) ||
+           (e == entry_type::globalContext) ||
+           (e == entry_type::customCountWord) ||
            (e == entry_type::splitWord);
 }
 
