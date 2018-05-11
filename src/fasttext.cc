@@ -244,7 +244,7 @@ void FastText::loadModel(std::istream& in) {
   if (args_->model == model_name::sup) {
     model_->setTargetCounts(dict_->getCounts(entry_type::label));
   } else {
-    model_->setTargetCounts(dict_->getCounts(entry_type::word));
+    model_->setTargetCounts(dict_->getCounts(Dictionary::isWordType));
   }
 }
 
@@ -328,7 +328,7 @@ void FastText::quantize(const Args qargs) {
   if (args_->model == model_name::sup) {
     model_->setTargetCounts(dict_->getCounts(entry_type::label));
   } else {
-    model_->setTargetCounts(dict_->getCounts(entry_type::word));
+    model_->setTargetCounts(dict_->getCounts(Dictionary::isWordType));
   }
 }
 
