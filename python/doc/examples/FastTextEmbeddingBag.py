@@ -22,7 +22,6 @@ import random
 import string
 import time
 from fastText import load_model
-from torch.autograd import Variable
 
 
 class FastTextEmbeddingBag(EmbeddingBag):
@@ -41,8 +40,8 @@ class FastTextEmbeddingBag(EmbeddingBag):
             word_subinds = np.concatenate((word_subinds, subinds))
             word_offsets.append(word_offsets[-1] + len(subinds))
         word_offsets = word_offsets[:-1]
-        ind = Variable(torch.LongTensor(word_subinds))
-        offsets = Variable(torch.LongTensor(word_offsets))
+        ind = torch.LongTensor(word_subinds)
+        offsets = torch.LongTensor(word_offsets)
         return super().forward(ind, offsets)
 
 
