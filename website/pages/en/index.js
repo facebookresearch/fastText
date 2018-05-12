@@ -126,11 +126,11 @@ class Index extends React.Component {
                 pinned : "true",
               },
               {
-                content: "Pre-trained on 294 different languages of Wikipedia",
+                content: "Pre-trained models for 157 different languages",
                 image: siteConfig.baseUrl + "img/model-red.png",
                 imageAlign: "top",
-                title: "[Wiki word vectors](" + siteConfig.baseUrl + "docs/en/pretrained-vectors.html)",
-                imageLink: siteConfig.baseUrl + "docs/en/pretrained-vectors.html",
+                title: "[Multi-lingual word vectors](" + siteConfig.baseUrl + "docs/en/crawl-vectors.html)",
+                imageLink: siteConfig.baseUrl + "docs/en/crawl-vectors.html",
               },
             ]}
           layout="twoColumn"
@@ -192,7 +192,7 @@ class Index extends React.Component {
                     title: "[Bag of Tricks for Efficient Text Classification](https://arxiv.org/abs/1607.01759)",
                   },
                   {
-                    content: "A. Joulin, E. Grave, P. Bojanowski, M. Douze, H. Jégou, T. Mikolov",
+                    content: "A. Joulin, E. Grave, P. Bojanowski, M. Douze, H. Jegou, T. Mikolov",
                     title: "[FastText.zip: Compressing text classification models](https://arxiv.org/abs/1612.03651)",
                   }
 
@@ -235,9 +235,9 @@ class Index extends React.Component {
               layout="threeColumn"
             />
           </Container>
-	  <br/>
-	  <br/>
-	  </div>
+          <br/>
+          <br/>
+          </div>
           <div className="productShowcaseSection paddingTop">
             <h2>
               {"Users"}

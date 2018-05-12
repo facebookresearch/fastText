@@ -138,7 +138,7 @@ You still get a word vector for it! But how good it is? Let s find out in the ne
 
 A simple way to check the quality of a word vector is to look at its nearest neighbors. This give an intuition of the type of semantic information the vectors are able to capture.
 
-This can be achieve with the *nn   *functionality. For example, we can query the 10 nearest neighbors of a word by running the following command:
+This can be achieve with the *nn* functionality. For example, we can query the 10 nearest neighbors of a word by running the following command:
 
 ```bash
 $ ./fasttext nn result/fil9.bin
@@ -204,7 +204,7 @@ In order to find nearest neighbors, we need to compute a similarity score betwee
 
 In a similar spirit, one can play around with word analogies. For example, we can see if our model can guess what is to France, what Berlin is to Germany. 
 
-This can be done with the *analogies *functionality. It takes a word triplet (like *Germany Berlin France*) and outputs  the analogy:
+This can be done with the *analogies* functionality. It takes a word triplet (like *Germany Berlin France*) and outputs  the analogy:
 
 ```bash
 $ ./fasttext analogies result/fil9.bin

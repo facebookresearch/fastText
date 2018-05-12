@@ -29,7 +29,7 @@ $ cd fastText-0.1.0
 $ make
 ```
 
-Running the binary without any argument will print the high level documentation, showing the different usecases supported by fastText:
+Running the binary without any argument will print the high level documentation, showing the different use cases supported by fastText:
 
 ```bash
 >> ./fasttext

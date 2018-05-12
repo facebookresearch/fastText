@@ -106,6 +106,7 @@ class Dictionary {
     void prune(std::vector<int32_t>&);
     bool isPruned() { return pruneidx_size_ >= 0; }
     void dump(std::ostream&) const;
+    void init();
 };
 
 }

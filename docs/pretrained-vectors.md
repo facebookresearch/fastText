@@ -6,6 +6,8 @@ title: Wiki word vectors
 We are publishing pre-trained word vectors for 294 languages, trained on [*Wikipedia*](https://www.wikipedia.org) using fastText.
 These vectors in dimension 300 were obtained using the skip-gram model described in [*Bojanowski et al. (2016)*](https://arxiv.org/abs/1607.04606) with default parameters.
 
+Please note that a newer version of multi-lingual word vectors are available at: [https://fasttext.cc/docs/en/crawl-vectors.html].
+
 ### Models
 
 The models can be downloaded from:
@@ -128,10 +130,13 @@ If you use these word vectors, please cite the following paper:
 P. Bojanowski\*, E. Grave\*, A. Joulin, T. Mikolov, [*Enriching Word Vectors with Subword Information*](https://arxiv.org/abs/1607.04606)
 
 ```markup
-@article{bojanowski2016enriching,
+@article{bojanowski2017enriching,
   title={Enriching Word Vectors with Subword Information},
   author={Bojanowski, Piotr and Grave, Edouard and Joulin, Armand and Mikolov, Tomas},
-  journal={arXiv preprint arXiv:1607.04606},
-  year={2016}
+  journal={Transactions of the Association for Computational Linguistics},
+  volume={5},
+  year={2017},
+  issn={2307-387X},
+  pages={135--146}
 }
 ```

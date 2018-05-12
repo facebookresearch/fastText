@@ -58,7 +58,7 @@ const users = [
 
 const siteConfig = {
   title: "fastText" /* title for your website */,
-  url: "fasttext.cc" /* your site url */,
+  url: "https://fasttext.cc" /* your site url */,
   baseUrl: "/" /* base url for your project */,
   repo: "facebookresearch/fastText" /* repo for your project */,
   cname: "fasttext.cc",
