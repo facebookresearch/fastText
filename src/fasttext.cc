@@ -239,18 +239,21 @@ void FastText::loadModel(std::istream& in) {
 }
 
 void FastText::printInfo(real progress, real loss, std::ostream& log_stream) {
-  // clock_t might also only be 32bits wide on some systems
-  double t = double(clock() - start_) / double(CLOCKS_PER_SEC);
+  std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+  double t = std::chrono::duration_cast<std::chrono::duration<double>> (end - start_).count();
   double lr = args_->lr * (1.0 - progress);
   double wst = 0;
-  int64_t eta = 720 * 3600; // Default to one month
+
+  int64_t eta = 2592000; // Default to one month in seconds (720 * 3600)
+
   if (progress > 0 && t >= 0) {
-    eta = int(t / progress * (1 - progress) / args_->thread);
-    wst = double(tokenCount_) / t;
+    progress = progress * 100;
+    eta = t * (100 - progress) / progress;
+    wst = double(tokenCount_) / t / args_->thread;
   }
   int32_t etah = eta / 3600;
   int32_t etam = (eta % 3600) / 60;
-  progress = progress * 100;
+
   log_stream << std::fixed;
   log_stream << "Progress: ";
   log_stream << std::setprecision(1) << std::setw(5) << progress << "%";
@@ -682,7 +685,7 @@ void FastText::train(const Args args) {
 }
 
 void FastText::startThreads() {
-  start_ = clock();
+  start_ = std::chrono::steady_clock::now();
   tokenCount_ = 0;
   loss_ = -1;
   std::vector<std::thread> threads;

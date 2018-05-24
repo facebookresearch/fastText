@@ -46,7 +46,7 @@ class FastText {
   std::atomic<int64_t> tokenCount_;
   std::atomic<real> loss_;
 
-  clock_t start_;
+  std::chrono::steady_clock::time_point start_;
   void signModel(std::ostream&);
   bool checkModel(std::istream&);
 
