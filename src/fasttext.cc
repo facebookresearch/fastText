@@ -71,7 +71,10 @@ void FastText::getWordVector(Vector& vec, const std::string& word, const bool& n
   }
 
   if(normalise) {
-    vec.normalise();
+    real norm = vec.norm();
+    if (norm > 0.0) {
+      vec.mul(1.0 / norm);
+    }
   }
 }
 
