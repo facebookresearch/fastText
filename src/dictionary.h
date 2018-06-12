@@ -86,6 +86,7 @@ class Dictionary {
     static const std::string BOW;
     static const std::string EOW;
 
+    int32_t findWord(const std::string&) const;
     explicit Dictionary(std::shared_ptr<Args>);
     explicit Dictionary(std::shared_ptr<Args>, std::istream&);
     int32_t nwords() const;

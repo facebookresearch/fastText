@@ -29,6 +29,7 @@ class Vector {
     explicit Vector(int64_t);
     Vector(const Vector&) = delete;
     Vector& operator=(const Vector&) = delete;
+    real dot(const Vector&) const;
 
     inline real* data() {
       return data_.data();

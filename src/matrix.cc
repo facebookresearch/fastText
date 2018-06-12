@@ -12,6 +12,9 @@
 #include <random>
 #include <exception>
 #include <stdexcept>
+#include <iostream>
+#include <iomanip>
+
 
 #include "utils.h"
 #include "vector.h"

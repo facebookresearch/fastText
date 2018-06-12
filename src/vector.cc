@@ -53,6 +53,15 @@ void Vector::addVector(const Vector& source, real s) {
   }
 }
 
+real Vector::dot(const Vector& v) const {
+    assert(size() == v.size());
+    real sum = 0;
+    for (auto j = 0; j < v.size(); j++) {
+        sum += data_[j] * v[j];
+    }
+    return sum;
+}
+
 void Vector::addRow(const Matrix& A, int64_t i) {
   assert(i >= 0);
   assert(i < A.size(0));

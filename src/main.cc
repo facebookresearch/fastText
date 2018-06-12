@@ -22,6 +22,7 @@ void printUsage() {
     << "  supervised              train a supervised classifier\n"
     << "  quantize                quantize a model to reduce the memory usage\n"
     << "  test                    evaluate a supervised classifier\n"
+    << "  validate                evaluate unsupervised model loss on sequence data\n"
     << "  predict                 predict most likely labels\n"
     << "  predict-prob            predict most likely labels with probabilities\n"
     << "  skipgram                train a skipgram model\n"
@@ -38,6 +39,14 @@ void printUsage() {
 void printQuantizeUsage() {
   std::cerr
     << "usage: fasttext quantize <args>"
+    << std::endl;
+}
+
+void printValidateUsage() {
+  std::cerr
+    << "usage: fasttext validate <model> <test-data>\n\n"
+    << "  <model>      model filename in .bin format\n"
+    << "  <test-data>  test data filename (if -, read from stdin)\n"
     << std::endl;
 }
 
@@ -121,6 +130,30 @@ void printDumpUsage() {
     << "  <model>      model filename\n"
     << "  <option>     option from args,dict,input,output,vectors"
     << std::endl;
+}
+
+void validate(const std::vector<std::string>& args) {
+  if (args.size() < 4 || args.size() > 4) {
+    printValidateUsage();
+    exit(EXIT_FAILURE);
+  }
+  FastText fasttext;
+  fasttext.loadModel(args[2]);
+  fasttext.dumpVectors(std::cout);
+
+  std::tuple<int64_t, double, double> result;
+  std::string infile = args[3];
+  if (infile == "-") {
+    fasttext.validate(std::cin);
+  } else {
+    std::ifstream ifs(infile);
+    if (!ifs.is_open()) {
+      std::cerr << "Test file cannot be opened!" << std::endl;
+      exit(EXIT_FAILURE);
+    }
+    fasttext.validate(ifs);
+    ifs.close();
+  }
 }
 
 void test(const std::vector<std::string>& args) {
@@ -354,6 +387,8 @@ int main(int argc, char** argv) {
   std::string command(args[1]);
   if (command == "skipgram" || command == "cbow" || command == "supervised") {
     train(args);
+  } else if (command == "validate") {
+    validate(args);
   } else if (command == "test") {
     test(args);
   } else if (command == "quantize") {

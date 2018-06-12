@@ -94,6 +94,7 @@ class Model {
     real sigmoid(real) const;
     real log(real) const;
     real std_log(real) const;
+    real dot(int32_t, int32_t) const;
 
     std::minstd_rand rng;
     bool quant_;

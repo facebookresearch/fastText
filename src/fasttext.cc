@@ -22,7 +22,7 @@
 
 namespace fasttext {
 
-constexpr int32_t FASTTEXT_VERSION = 12; /* Version 1b */
+constexpr int32_t FASTTEXT_VERSION = 13; /* Version 1b */
 constexpr int32_t FASTTEXT_FILEFORMAT_MAGIC_INT32 = 793712314;
 
 FastText::FastText() : quant_(false) {}
@@ -386,6 +386,57 @@ const std::vector<int32_t> FastText::append(const std::vector<int32_t> &a, const
     out.insert( out.end(), b.begin(), b.end() );        // add B;
     return out;
 }
+
+void FastText::validate( std::istream& in) {
+  int32_t npairs = 0; // total numbers of pairs generatable
+  int32_t npairsmatch = 0; // total pairs where we find embeddings for both elements
+  int32_t npairspartialmatch = 0; // total pairs where we find embedding for only one
+  std::string token;
+  std::string previousToken;
+  // evaluate across a rolling window of 2
+  int32_t previous = -2; // -2 is uninitialized, -1 is word not found, index 0 onwards are valid
+  int32_t current = -2;
+
+  Vector previousVector(args_->dim);
+  Vector currentVector(args_->dim);
+  std::vector<real> losses; 
+
+  while (dict_->readWord(in, token)) {
+      current = dict_->findWord(token);
+      if (token == dict_->EOS) {
+          // reinitialize for new line
+          previous = -2;
+          current = -2;
+      } else {
+		if (previous > -2) npairs++;
+        if (previous >= 0) {
+        // not the first token so do computation
+        // since it's a sliding window every token will be considered when it's current
+		  if (current >= 0) {
+			// finally eligible for computation
+            getWordVector(previousVector, previousToken);
+            getWordVector(currentVector, token);
+            losses.push_back(
+                model_->log(
+                    model_->sigmoid(previousVector.dot(currentVector))
+                )
+            );
+		  	npairsmatch++;
+		  }
+		  npairspartialmatch++;
+		}
+        previous = current;
+        previousToken = token;
+      }
+  }
+  float total = accumulate(losses.begin(), losses.end(), 0.0); 
+  std::cout << "Total pairs seen: " << npairs <<  std::endl;
+  std::cout << "Total pairs seen with embeddings: " << npairsmatch <<  std::endl;
+  std::cout << "Total pairs seen with embeddings for at least one: " << npairspartialmatch <<  std::endl;
+  std::cout << "Avg loss across all pairs generated: " <<  total/npairs << std::endl;
+  std::cout << "Avg loss across all pairs with embeddings: " << total/npairsmatch << std::endl;
+}
+
 
 std::tuple<int64_t, double, double> FastText::test(
     std::istream& in,

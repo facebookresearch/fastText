@@ -39,6 +39,10 @@ int32_t Dictionary::find(const std::string& w) const {
   return find(w, hash(w));
 }
 
+int32_t Dictionary::findWord(const std::string& w) const {
+    return word2int_[find(w)];
+}
+
 int32_t Dictionary::find(const std::string& w, uint32_t h) const {
   int32_t word2intsize = word2int_.size();
   int32_t id = h % word2intsize;
