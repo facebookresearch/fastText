@@ -139,7 +139,6 @@ void validate(const std::vector<std::string>& args) {
   }
   FastText fasttext;
   fasttext.loadModel(args[2]);
-  fasttext.dumpVectors(std::cout);
 
   std::tuple<int64_t, double, double> result;
   std::string infile = args[3];
