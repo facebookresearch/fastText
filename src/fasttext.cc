@@ -433,8 +433,10 @@ void FastText::validate( std::istream& in) {
   std::cout << "Total pairs seen: " << npairs <<  std::endl;
   std::cout << "Total pairs seen with embeddings: " << npairsmatch <<  std::endl;
   std::cout << "Total pairs seen with embeddings for at least one: " << npairspartialmatch <<  std::endl;
-  std::cout << "Avg loss across all pairs generated: " <<  total/npairs << std::endl;
-  std::cout << "Avg loss across all pairs with embeddings: " << total/npairsmatch << std::endl;
+  std::cout << "Avg log likelihood across all pairs generated: " <<  total/npairs << std::endl;
+  std::cout << "Avg log likelihood all pairs with embeddings: " << total/npairsmatch << std::endl;
+  std::cout << "Avg log likelihood across all pairs with means plugged in: " <<  ((total/npairsmatch) * (npairs-npairsmatch)+ total)/npairs << std::endl;
+  std::cout << "Avg log likelihood across all pairs with 0 dot products plugged in: " <<  ((model_->log(model_->sigmoid(0))) * (npairs-npairsmatch)+ total)/npairs << std::endl;
 }
 
 
