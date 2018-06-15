@@ -416,9 +416,10 @@ void FastText::validate( std::istream& in) {
 			// finally eligible for computation
             getWordVector(previousVector, previousToken);
             getWordVector(currentVector, token);
+            // sigmoid of cosine similarity for normalization
             losses.push_back(
                 model_->log(
-                    model_->sigmoid(previousVector.dot(currentVector))
+                    model_->sigmoid(previousVector.dot(currentVector) / (previousVector.norm() * currentVector.norm()))
                 )
             );
 		  	npairsmatch++;
