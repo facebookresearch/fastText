@@ -156,5 +156,9 @@ if __name__ == "__main__":
 
     print(
         "Questions seen / total: {0} {1}   {2:.2f} %".
-        format(total_qs, total_num_lines, total_qs / total_num_lines * 100)
+        format(
+            total_qs,
+            total_num_lines,
+            total_qs / total_num_lines * 100 if total_num_lines > 0 else 0,
+        )
     )
