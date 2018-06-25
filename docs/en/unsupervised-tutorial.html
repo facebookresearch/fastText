@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Word representations · fastText</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta property="og:title" content="Word representations · fastText"/><meta property="og:type" content="website"/><meta property="og:url" content="https://fasttext.cc/index.html"/><meta property="og:description" content="A popular idea in modern machine learning is to represent words by vectors. These vectors capture hidden information about a language, like word analogies or semantic. It is also used to improve performance of text classifiers."/><meta property="og:image" content="https://fasttext.cc/img/ogimage.png"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/img/fasttext-icon-bg-web.png"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><link rel="alternate" type="application/atom+xml" href="https://fasttext.cc/blog/atom.xml" title="fastText Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://fasttext.cc/blog/feed.xml" title="fastText Blog RSS Feed"/><script>
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Word representations · fastText</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="A popular idea in modern machine learning is to represent words by vectors. These vectors capture hidden information about a language, like word analogies or semantic. It is also used to improve performance of text classifiers."/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Word representations · fastText"/><meta property="og:type" content="website"/><meta property="og:url" content="https://fasttext.cc/index.html"/><meta property="og:description" content="A popular idea in modern machine learning is to represent words by vectors. These vectors capture hidden information about a language, like word analogies or semantic. It is also used to improve performance of text classifiers."/><meta property="og:image" content="https://fasttext.cc/img/ogimage.png"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/img/fasttext-icon-bg-web.png"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><link rel="alternate" type="application/atom+xml" href="https://fasttext.cc/blog/atom.xml" title="fastText Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://fasttext.cc/blog/feed.xml" title="fastText Blog RSS Feed"/><script>
               (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
               (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
               m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -6,44 +6,61 @@
 
               ga('create', 'UA-44373548-30', 'auto');
               ga('send', 'pageview');
-            </script><link rel="stylesheet" href="/css/main.css"/></head><body class="sideNavVisible doc"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><img class="logo" src="/img/fasttext-icon-white-web.png" alt="fastText"/></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/docs/en/support.html" target="_self">Docs</a></li><li class=""><a href="/docs/en/english-vectors.html" target="_self">Download</a></li><li class=""><a href="/blog" target="_self">Blog</a></li><li class=""><a href="https://github.com/facebookresearch/fastText/" target="_blank">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Tutorials</span></h2></div><div class="navGroups"><div class="navGroup navGroupActive"><h3>Introduction</h3><ul><li class="navListItem"><a class="navItem" href="/docs/en/support.html">Get started</a></li><li class="navListItem"><a class="navItem" href="/docs/en/cheatsheet.html">Cheatsheet</a></li><li class="navListItem"><a class="navItem" href="/docs/en/options.html">List of options</a></li></ul></div><div class="navGroup navGroupActive"><h3>Tutorials</h3><ul><li class="navListItem"><a class="navItem" href="/docs/en/supervised-tutorial.html">Text classification</a></li><li class="navListItem navListItemActive"><a class="navItem navItemActive" href="/docs/en/unsupervised-tutorial.html">Word representations</a></li></ul></div><div class="navGroup navGroupActive"><h3>Help</h3><ul><li class="navListItem"><a class="navItem" href="/docs/en/faqs.html">FAQ</a></li><li class="navListItem"><a class="navItem" href="/docs/en/api.html">API</a></li><li class="navListItem"><a class="navItem" href="/docs/en/references.html">References</a></li></ul></div></div></section></div><script>
-          var toggler = document.getElementById('navToggler');
-          var nav = document.getElementById('docsNav');
-          toggler.onclick = function() {
-            nav.classList.toggle('docsSliderActive');
-          };
-        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1>Word representations</h1></header><article><div><span><p>A popular idea in modern machine learning is to represent words by vectors. These vectors capture hidden information about a language, like word analogies or semantic. It is also used to improve performance of text classifiers.</p>
+            </script><link rel="stylesheet" href="/css/main.css"/></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><img class="logo" src="/img/fasttext-icon-white-web.png" alt="fastText"/></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/docs/en/support.html" target="_self">Docs</a></li><li class=""><a href="/docs/en/english-vectors.html" target="_self">Download</a></li><li class=""><a href="/blog" target="_self">Blog</a></li><li class=""><a href="https://github.com/facebookresearch/fastText/" target="_blank">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><i></i></div><h2><i>›</i><span>Tutorials</span></h2></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Introduction</h3><ul><li class="navListItem"><a class="navItem" href="/docs/en/support.html">Get started</a></li><li class="navListItem"><a class="navItem" href="/docs/en/cheatsheet.html">Cheatsheet</a></li><li class="navListItem"><a class="navItem" href="/docs/en/options.html">List of options</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Tutorials</h3><ul><li class="navListItem"><a class="navItem" href="/docs/en/supervised-tutorial.html">Text classification</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/docs/en/unsupervised-tutorial.html">Word representations</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Help</h3><ul><li class="navListItem"><a class="navItem" href="/docs/en/faqs.html">FAQ</a></li><li class="navListItem"><a class="navItem" href="/docs/en/api.html">API</a></li><li class="navListItem"><a class="navItem" href="/docs/en/references.html">References</a></li></ul></div></div></section></div><script>
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              const headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                if (event.target.tagName === 'A') {
+                  document.body.classList.remove('tocActive');
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle">Word representations</h1></header><article><div><span><p>A popular idea in modern machine learning is to represent words by vectors. These vectors capture hidden information about a language, like word analogies or semantic. It is also used to improve performance of text classifiers.</p>
 <p>In this tutorial, we show how to build these word vectors with the fastText tool. To download and install fastText, follow the first steps of <a href="https://fasttext.cc/docs/en/supervised-tutorial.html">the tutorial on text classification</a>.</p>
 <h2><a class="anchor" aria-hidden="true" id="getting-the-data"></a><a href="#getting-the-data" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Getting the data</h2>
 <p>In order to compute word vectors, you need a large text corpus. Depending on the corpus, the word vectors will capture different information. In this tutorial, we focus on Wikipedia's articles but other sources could be considered, like  news or Webcrawl (more examples <a href="http://statmt.org/">here</a>). To download a raw dump of Wikipedia, run the following command:</p>
-<pre><code class="hljs css bash">wget https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-pages-articles.xml.bz2
+<pre><code class="hljs css languages- bash">wget https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-pages-articles.xml.bz2
 </code></pre>
 <p>Downloading  the Wikipedia corpus takes some time. Instead, lets restrict our study to the  first 1 billion bytes of English Wikipedia. They can be found on Matt Mahoney's <a href="http://mattmahoney.net/">website</a>:</p>
-<pre><code class="hljs css bash">$ mkdir data
+<pre><code class="hljs css languages- bash">$ mkdir data
 $ wget -c http://mattmahoney.net/dc/enwik9.zip -P data
 $ unzip data/enwik9.zip -d data
 </code></pre>
 <p>A raw Wikipedia dump contains a lot of HTML / XML data. We pre-process it with the wikifil.pl script bundled with fastText (this script was originally developed by Matt Mahoney, and can be found on his <a href="http://mattmahoney.net/">website</a> )</p>
-<pre><code class="hljs css bash">$ perl wikifil.pl data/enwik9 &gt; data/fil9
+<pre><code class="hljs css languages- bash">$ perl wikifil.pl data/enwik9 &gt; data/fil9
 </code></pre>
 <p>We can check the file by running the following command:</p>
-<pre><code class="hljs css bash">$ head -c 80 data/fil9
+<pre><code class="hljs css languages- bash">$ head -c 80 data/fil9
 anarchism originated as a term of abuse first used against early working class
 </code></pre>
 <p>The text is nicely pre-processed and can be used to learn our word vectors.</p>
 <h2><a class="anchor" aria-hidden="true" id="training-word-vectors"></a><a href="#training-word-vectors" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Training word vectors</h2>
 <p>Learning  word vectors on this data can now be achieved with a single command:</p>
-<pre><code class="hljs css bash">$ mkdir result
+<pre><code class="hljs css languages- bash">$ mkdir result
 $ ./fasttext skipgram -input data/fil9 -output result/fil9
 </code></pre>
 <p>To decompose this command line: ./fastext calls the binary fastText executable (see how to install fastText here) with the 'skipgram' model  (it can also be 'cbow'). We then specify the requires options '-input' for the location of the data and '-output' for the location where the word representations will be saved.</p>
 <p>While fastText is running,  the progress and estimated time to completion is shown on your screen.  Once the program finishes, there should be two files in the result directory:</p>
-<pre><code class="hljs css bash">$ ls -l result
+<pre><code class="hljs css languages- bash">$ ls -l result
 -rw-r-r-- 1 bojanowski 1876110778 978480850 Dec 20 11:01 fil9.bin
 -rw-r-r-- 1 bojanowski 1876110778 190004182 Dec 20 11:01 fil9.vec
 </code></pre>
 <p>The <code>fil9.bin</code> file is a binary file that stores the whole fastText model and can be subsequently loaded. The <code>fil9.vec</code> file is a text file that contains the word vectors, one per line for each word in the vocabulary:</p>
-<pre><code class="hljs css bash">$ head -n 4 result/fil9.vec
+<pre><code class="hljs css languages- bash">$ head -n 4 result/fil9.vec
 218316 100
 the -0.10363 -0.063669 0.032436 -0.040798 0.53749 0.00097867 0.10083 0.24829 ...
 of -0.0083724 0.0059414 -0.046618 -0.072735 0.83007 0.038895 -0.13634 0.60063 ...
@@ -56,41 +73,41 @@ one 0.32731 0.044409 -0.46484 0.14716 0.7431 0.24684 -0.11301 0.51721 0.73262 ..
 <p>Let us illustrate this difference with an example:  given the sentence <em>'Poets have been mysteriously silent on the subject of cheese'</em> and the target word '<em>silent</em>', a skipgram model tries to predict the target using a random close-by word, like '<em>subject' <em>or</em> '</em>mysteriously<em>'</em><em>. <em>The cbow model takes all the words in a surrounding window, like {</em>been, <em>mysteriously</em>, on, the</em>}, and uses the sum of their vectors to predict the target. The figure below summarizes this difference with another example.</p>
 <p><img src="https://fasttext.cc/img/cbo_vs_skipgram.png" alt="cbow vs skipgram">
 To train a cbow model with fastText, you run the following command:</p>
-<pre><code class="hljs css bash">./fasttext cbow -input data/fil9 -output result/fil9
+<pre><code class="hljs css languages- bash">./fasttext cbow -input data/fil9 -output result/fil9
 </code></pre>
 <p>In practice, we observe that skipgram models works better with subword information than cbow.</p>
 <h2><a class="anchor" aria-hidden="true" id="advanced-readers-playing-with-the-parameters"></a><a href="#advanced-readers-playing-with-the-parameters" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Advanced readers: playing with the parameters</h2>
 <p>So far, we run fastText with the default parameters, but depending on the data, these parameters may not be optimal. Let us give an introduction to some of the key parameters for word vectors.</p>
 <p>The most important parameters of the model are its dimension and the range of size for the subwords. The dimension (<em>dim</em>) controls the size of the vectors, the larger they are the more information they can capture but requires more data to be learned. But, if they are too large, they are harder and slower to train. By default, we use 100 dimensions, but any value in the 100-300 range is as popular. The subwords are all the substrings contained in a word between the minimum size (<em>minn</em>) and the maximal size (<em>maxn</em>). By default, we take all the subword between 3 and 6 characters, but other range could be more appropriate to different languages:</p>
-<pre><code class="hljs css bash">$ ./fasttext skipgram -input data/fil9 -output result/fil9 -minn 2 -maxn 5 -dim 300
+<pre><code class="hljs css languages- bash">$ ./fasttext skipgram -input data/fil9 -output result/fil9 -minn 2 -maxn 5 -dim 300
 </code></pre>
 <p>Depending on the quantity of data you have, you may want to change the parameters of the training.  The <em>epoch</em> parameter controls how many time will loop over your data. By default, we loop over the dataset 5 times.  If you dataset is extremely massive, you may want to loop over it less often. Another important parameter is the learning rate -<em>lr</em>). The higher the learning rate is, the faster the model converge to a solution but at the risk of overfitting to the dataset. The default value is 0.05 which is a good compromise. If you want to play with it we suggest to stay in the range of [0.01, 1]:</p>
-<pre><code class="hljs css bash">$ ./fasttext skipgram -input data/fil9 -output result/fil9 -epoch 1 -lr 0.5
+<pre><code class="hljs css languages- bash">$ ./fasttext skipgram -input data/fil9 -output result/fil9 -epoch 1 -lr 0.5
 </code></pre>
 <p>Finally , fastText is multi-threaded and uses 12 threads by default. If you have less CPU cores (say 4), you can easily set the number of threads using the <em>thread</em> flag:</p>
-<pre><code class="hljs css bash">$ ./fasttext skipgram -input data/fil9 -output result/fil9 -thread 4
+<pre><code class="hljs css languages- bash">$ ./fasttext skipgram -input data/fil9 -output result/fil9 -thread 4
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="printing-word-vectors"></a><a href="#printing-word-vectors" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Printing word vectors</h2>
 <p>Searching and printing word vectors directly from  the <code>fil9.vec</code>  file  is cumbersome. Fortunately, there is a <code>print-word-vectors</code> functionality in fastText.</p>
 <p>For examples, we can print the word vectors of words <em>asparagus,</em> <em>pidgey</em> and <em>yellow</em> with the following command:</p>
-<pre><code class="hljs css bash">$ <span class="hljs-built_in">echo</span> <span class="hljs-string">"asparagus pidgey yellow"</span> | ./fasttext <span class="hljs-built_in">print</span>-word-vectors result/fil9.bin
+<pre><code class="hljs css languages- bash">$ <span class="hljs-built_in">echo</span> <span class="hljs-string">"asparagus pidgey yellow"</span> | ./fasttext <span class="hljs-built_in">print</span>-word-vectors result/fil9.bin
 asparagus 0.46826 -0.20187 -0.29122 -0.17918 0.31289 -0.31679 0.17828 -0.04418 ...
 pidgey -0.16065 -0.45867 0.10565 0.036952 -0.11482 0.030053 0.12115 0.39725 ...
 yellow -0.39965 -0.41068 0.067086 -0.034611 0.15246 -0.12208 -0.040719 -0.30155 ...
 </code></pre>
 <p>A nice feature is that you can also query for words that did not appear in your data! Indeed words are represented by the sum of its substrings. As long as the unknown word is made of known substrings, there is a representation of it!</p>
 <p>As an example let's try with a misspelled word:</p>
-<pre><code class="hljs css bash">$ <span class="hljs-built_in">echo</span> <span class="hljs-string">"enviroment"</span> | ./fasttext <span class="hljs-built_in">print</span>-word-vectors result/fil9.bin
+<pre><code class="hljs css languages- bash">$ <span class="hljs-built_in">echo</span> <span class="hljs-string">"enviroment"</span> | ./fasttext <span class="hljs-built_in">print</span>-word-vectors result/fil9.bin
 </code></pre>
 <p>You still get a word vector for it! But how good it is? Let s find out in the next sections!</p>
 <h2><a class="anchor" aria-hidden="true" id="nearest-neighbor-queries"></a><a href="#nearest-neighbor-queries" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Nearest neighbor queries</h2>
 <p>A simple way to check the quality of a word vector is to look at its nearest neighbors. This give an intuition of the type of semantic information the vectors are able to capture.</p>
 <p>This can be achieve with the <em>nn</em> functionality. For example, we can query the 10 nearest neighbors of a word by running the following command:</p>
-<pre><code class="hljs css bash">$ ./fasttext nn result/fil9.bin
+<pre><code class="hljs css languages- bash">$ ./fasttext nn result/fil9.bin
 Pre-computing word vectors... <span class="hljs-keyword">done</span>.
 </code></pre>
 <p>Then we are prompted to type our query word, let us try <em>asparagus</em> :</p>
-<pre><code class="hljs css bash">Query word? asparagus
+<pre><code class="hljs css languages- bash">Query word? asparagus
 beetroot 0.812384
 tomato 0.806688
 horseradish 0.805928
@@ -103,7 +120,7 @@ celery 0.774529
 beets 0.773984
 </code></pre>
 <p>Nice! It seems that vegetable vectors are similar. Note that the nearest neighbor is the word <em>asparagus</em> itself, this means that this word appeared in the dataset. What about pokemons?</p>
-<pre><code class="hljs css bash">Query word? pidgey
+<pre><code class="hljs css languages- bash">Query word? pidgey
 pidgeot 0.891801
 pidgeotto 0.885109
 pidge 0.884739
@@ -116,7 +133,7 @@ beedrill 0.741579
 charmeleon 0.733625
 </code></pre>
 <p>Different evolution of the same Pokemon have close-by vectors! But what about our misspelled word, is its vector close to anything reasonable? Let s find out:</p>
-<pre><code class="hljs css bash">Query word? enviroment
+<pre><code class="hljs css languages- bash">Query word? enviroment
 enviromental 0.907951
 environ 0.87146
 enviro 0.855381
@@ -134,7 +151,7 @@ ecotourism 0.697081
 <h2><a class="anchor" aria-hidden="true" id="word-analogies"></a><a href="#word-analogies" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Word analogies</h2>
 <p>In a similar spirit, one can play around with word analogies. For example, we can see if our model can guess what is to France, what Berlin is to Germany.</p>
 <p>This can be done with the <em>analogies</em> functionality. It takes a word triplet (like <em>Germany Berlin France</em>) and outputs  the analogy:</p>
-<pre><code class="hljs css bash">$ ./fasttext analogies result/fil9.bin
+<pre><code class="hljs css languages- bash">$ ./fasttext analogies result/fil9.bin
 Pre-computing word vectors... <span class="hljs-keyword">done</span>.
 Query triplet (A - B + C)? berlin germany france
 paris 0.896462
@@ -149,7 +166,7 @@ bordeaux 0.740635
 pigneaux 0.736122
 </code></pre>
 <p>The answer provides by our model is <em>Paris</em>, which is correct. Let's have a look at a less obvious example:</p>
-<pre><code class="hljs css bash">Query triplet (A - B + C)? psx sony nintendo
+<pre><code class="hljs css languages- bash">Query triplet (A - B + C)? psx sony nintendo
 gamecube 0.803352
 nintendogs 0.792646
 playstation 0.77344
@@ -164,7 +181,7 @@ famicom 0.745298
 <p>Our model considers that the <em>nintendo</em> analogy of a <em>psx</em> is the <em>gamecube</em>, which seems  reasonable. Of course the quality of the analogies depend on the dataset used to train the model and one can only hope to cover fields only in the dataset.</p>
 <h2><a class="anchor" aria-hidden="true" id="importance-of-character-n-grams"></a><a href="#importance-of-character-n-grams" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Importance of character n-grams</h2>
 <p>Using subword-level information is particularly interesting to build vectors for unknown words. For example, the word <em>gearshift</em> does not exist on Wikipedia but we can still query its closest existing words:</p>
-<pre><code class="hljs css bash">Query word? gearshift
+<pre><code class="hljs css languages- bash">Query word? gearshift
 gearing 0.790762
 flywheels 0.779804
 flywheel 0.777859
@@ -178,11 +195,11 @@ gearboxes 0.73986
 </code></pre>
 <p>Most of the retrieved words share substantial substrings but a few are actually quite different, like <em>cogwheel</em>. You can try other words like <em>sunbathe</em> or <em>grandnieces</em>.</p>
 <p>Now that we have seen the interest of subword information for unknown words, let s check how it compares to a model that do not use subword information. To train a model without no subwords, just run the following command:</p>
-<pre><code class="hljs css bash">$ ./fasttext skipgram -input data/fil9 -output result/fil9-none -maxn 0
+<pre><code class="hljs css languages- bash">$ ./fasttext skipgram -input data/fil9 -output result/fil9-none -maxn 0
 </code></pre>
 <p>The results are saved in result/fil9-non.vec and result/fil9-non.bin.</p>
 <p>To illustrate the difference, let us take an uncommon word in Wikipedia, like <em>accomodation</em> which is a misspelling of <em>accommodation</em><em>.</em> Here is the nearest neighbors obtained without no subwords:</p>
-<pre><code class="hljs css bash">$ ./fasttext nn result/fil9-none.bin
+<pre><code class="hljs css languages- bash">$ ./fasttext nn result/fil9-none.bin
 Query word? accomodation
 sunnhordland 0.775057
 accomodations 0.769206
@@ -196,7 +213,7 @@ greenbelts 0.733975
 asserbo 0.732465
 </code></pre>
 <p>The result does not make much sense, most of these words are unrelated. On the other hand, using subword information gives the following list of nearest neighbors:</p>
-<pre><code class="hljs css bash">Query word? accomodation
+<pre><code class="hljs css languages- bash">Query word? accomodation
 accomodations 0.96342
 accommodation 0.942124
 accommodations 0.915427
@@ -211,4 +228,4 @@ hospitality 0.701426
 <p>The nearest neighbors capture different variation around the word <em>accommodation</em>. We also get semantically related words such as <em>amenities</em> or <em>lodging</em>.</p>
 <h2><a class="anchor" aria-hidden="true" id="conclusion"></a><a href="#conclusion" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Conclusion</h2>
 <p>In this tutorial, we show how to obtain word vectors from Wikipedia. This can be done for any language and you we provide <a href="https://fasttext.cc/docs/en/pretrained-vectors.html">pre-trained models</a> with the default setting for 294 of them.</p>
-</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="supervised-tutorial.html">← Text classification</a><a class="docs-next button" href="faqs.html">FAQ →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/fasttext-icon-white-web.png" alt="fastText"/></a><div><h5>Support</h5><a href="/docs/en/support.html">Getting Started</a><a href="/docs/en/supervised-tutorial.html">Tutorials</a><a href="/docs/en/faqs.html">FAQs</a><a href="/docs/en/api.html">API</a></div><div><h5>Community</h5><a href="https://www.facebook.com/groups/1174547215919768/" target="_blank">Facebook Group</a><a href="http://stackoverflow.com/questions/tagged/fasttext" target="_blank">Stack Overflow</a><a href="https://groups.google.com/forum/#!forum/fasttext-library" target="_blank">Google Group</a></div><div><h5>More</h5><a href="/blog">Blog</a><a href="https://github.com/facebookresearch/fastText" target="_blank">GitHub</a><a class="github-button" href="https://github.com/facebookresearch/fastText/" data-icon="octicon-star" data-count-href="/fastText/stargazers" data-count-api="/repos/fastText#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2018 Facebook Inc.</section></footer></div></body></html>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/en/supervised-tutorial.html">← Text classification</a><a class="docs-next button" href="/docs/en/faqs.html">FAQ →</a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/fasttext-icon-white-web.png" alt="fastText"/></a><div><h5>Support</h5><a href="/docs/en/support.html">Getting Started</a><a href="/docs/en/supervised-tutorial.html">Tutorials</a><a href="/docs/en/faqs.html">FAQs</a><a href="/docs/en/api.html">API</a></div><div><h5>Community</h5><a href="https://www.facebook.com/groups/1174547215919768/" target="_blank">Facebook Group</a><a href="http://stackoverflow.com/questions/tagged/fasttext" target="_blank">Stack Overflow</a><a href="https://groups.google.com/forum/#!forum/fasttext-library" target="_blank">Google Group</a></div><div><h5>More</h5><a href="/blog">Blog</a><a href="https://github.com/facebookresearch/fastText" target="_blank">GitHub</a><a class="github-button" href="https://github.com/facebookresearch/fastText/" data-icon="octicon-star" data-count-href="/fastText/stargazers" data-count-api="/repos/fastText#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2018 Facebook Inc.</section></footer></div></body></html>
