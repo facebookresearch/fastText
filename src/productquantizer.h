@@ -30,10 +30,10 @@ class ProductQuantizer {
     const int32_t niter_ = 25;
     const real eps_ = 1e-7;
 
-    int32_t dim_;
-    int32_t nsubq_;
-    int32_t dsub_;
-    int32_t lastdsub_;
+    int32_t dim_ = 0;
+    int32_t nsubq_ = 0;
+    int32_t dsub_ = 0;
+    int32_t lastdsub_ = 0;
 
     std::vector<real> centroids_;
 
