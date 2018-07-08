@@ -28,7 +28,7 @@ def load_vectors(fname):
     data = {}
     for line in fin:
         tokens = line.rstrip().split(' ')
-        data[tokens[0]] = map(float, tokens[1:])
+        data[tokens[0]] = [float(x) for x in tokens[1:]])
     return data
 ```
 
