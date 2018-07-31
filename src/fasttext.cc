@@ -548,6 +548,7 @@ void FastText::analogies(int32_t k) {
     banSet.clear();
     query.zero();
     std::cin >> word;
+    if (std::cin.eof()) { break; }
     banSet.insert(word);
     getWordVector(buffer, word);
     query.addVector(buffer, 1.0);
