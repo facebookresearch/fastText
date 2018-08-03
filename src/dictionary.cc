@@ -140,10 +140,18 @@ std::string Dictionary::getWord(int32_t id) const {
   return words_[id].word;
 }
 
+// The correct implementation of fnv should be:
+// h = h ^ uint32_t(uint8_t(str[i]));
+// Unfortunately, earlier version of fasttext used
+// h = h ^ uint32_t(str[i]);
+// which is undefined behavior (as char can be signed or unsigned).
+// Since all fasttext models that were already released were trained
+// using signed char, we fixed the hash function to make models
+// compatible whatever compiler is used.
 uint32_t Dictionary::hash(const std::string& str) const {
   uint32_t h = 2166136261;
   for (size_t i = 0; i < str.size(); i++) {
-    h = h ^ uint32_t(str[i]);
+    h = h ^ uint32_t(int8_t(str[i]));
     h = h * 16777619;
   }
   return h;
