@@ -728,6 +728,7 @@ void FastText::train(const Args args) {
 
     std::cerr<<"Load dict from trained model"<<std::endl;
     Dictionary dictInModel =  Dictionary(args_, inModel);
+    std::cerr<<"Read "<< dictInModel.ntokens() / 1000000 <<"M words"<<std::endl;
 
     std::cerr<<"Load dict from training data"<<std::endl;
     std::ifstream ifs(args_->input);
@@ -739,9 +740,11 @@ void FastText::train(const Args args) {
     dictInData.readFromFile(ifs);
     ifs.close();
 
-    std::cerr<<"Merge dict"<<std::endl;
-    dict_->addDict(dictInModel, true);
-    dict_->addDict(dictInData, false);
+    std::cerr<<"Construct dict"<<std::endl;
+    std::cerr<<"From existing model dict..."<<std::endl;
+    dict_->addDict(dictInModel, false);
+    std::cerr<<"From training data..."<<std::endl;
+    dict_->addDict(dictInData, true);
 
     std::cerr<<"Restore previous input matrix"<<std::endl;
     Matrix inputInModel = Matrix();
@@ -783,9 +786,7 @@ void FastText::train(const Args args) {
           input_->addRow(wordVector, idx, 1.0);
           wordVector.zero();
         } else {
-          std::cerr << "not found: (word, index) = ("
-                    << dictInModel.getWord(i) << ", "
-                    << idx << ")" << std::endl;
+          std::cerr<<"not found: (word, index) = ("<<dictInModel.getWord(i)<<", "<<idx<< ")"<<std::endl;
         }
       }
     }

@@ -106,7 +106,7 @@ class Dictionary {
     void prune(std::vector<int32_t>&);
     bool isPruned() { return pruneidx_size_ >= 0; }
     void dump(std::ostream&) const;
-    void addDict(Dictionary dict, bool resetToken);
+    void addDict(Dictionary dict, bool reset);
     void init();
 };
 
