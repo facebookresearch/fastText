@@ -6,7 +6,6 @@
 # of patent rights can be found in the PATENTS file in the same directory.
 
 from __future__ import absolute_import
-from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
