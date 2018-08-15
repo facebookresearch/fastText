@@ -294,7 +294,6 @@ PYBIND11_MODULE(fasttext_pybind, m) {
             }
             return all_predictions;
           })
-      .def("isQuant", [](fasttext::FastText& m) { return m.isQuant(); })
       .def(
           "getWordId",
           [](fasttext::FastText& m, const std::string word) {
