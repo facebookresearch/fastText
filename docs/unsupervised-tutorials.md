@@ -46,7 +46,7 @@ $ mkdir result
 $ ./fasttext skipgram -input data/fil9 -output result/fil9
 ```
 
-To decompose this command line: ./fastext calls the binary fastText executable (see how to install fastText here) with the 'skipgram' model  (it can also be 'cbow'). We then specify the requires options '-input' for the location of the data and '-output' for the location where the word representations will be saved. 
+To decompose this command line: ./fastext calls the binary fastText executable (see how to install fastText [here](https://fasttext.cc/docs/en/support.html)) with the 'skipgram' model  (it can also be 'cbow'). We then specify the requires options '-input' for the location of the data and '-output' for the location where the word representations will be saved. 
 
 While fastText is running,  the progress and estimated time to completion is shown on your screen.  Once the program finishes, there should be two files in the result directory:
 
