@@ -22,6 +22,10 @@
                 var toggler = document.querySelector(togglerSelector);
                 var target = document.querySelector(targetSelector);
 
+                if (!toggler) {
+                  return;
+                }
+
                 toggler.onclick = function(event) {
                   event.preventDefault();
 
@@ -31,7 +35,7 @@
             });
         </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle">References</h1></header><article><div><span><p>Please cite <a href="#enriching-word-vectors-with-subword-information">1</a> if using this code for learning word representations or <a href="#bag-of-tricks-for-efficient-text-classification">2</a> if using for text classification.</p>
 <p>[1] P. Bojanowski*, E. Grave*, A. Joulin, T. Mikolov, <a href="https://arxiv.org/abs/1607.04606"><em>Enriching Word Vectors with Subword Information</em></a></p>
-<pre><code class="hljs css languages- markup">@article{<span class="hljs-keyword">bojanowski2016enriching,
+<pre><code class="hljs css language-markup">@article{<span class="hljs-keyword">bojanowski2016enriching,
 </span>  title={Enriching Word Vectors with <span class="hljs-keyword">Subword </span>Information},
   author={<span class="hljs-keyword">Bojanowski, </span>Piotr <span class="hljs-keyword">and </span>Grave, Edouard <span class="hljs-keyword">and </span><span class="hljs-keyword">Joulin, </span>Armand <span class="hljs-keyword">and </span>Mikolov, Tomas},
   <span class="hljs-keyword">journal={arXiv </span>preprint arXiv:<span class="hljs-number">1607</span>.<span class="hljs-number">04606</span>},
@@ -39,7 +43,7 @@
 }
 </code></pre>
 <p>[2] A. Joulin, E. Grave, P. Bojanowski, T. Mikolov, <a href="https://arxiv.org/abs/1607.01759"><em>Bag of Tricks for Efficient Text Classification</em></a></p>
-<pre><code class="hljs css languages- markup">@article{<span class="hljs-keyword">joulin2016bag,
+<pre><code class="hljs css language-markup">@article{<span class="hljs-keyword">joulin2016bag,
 </span>  title={<span class="hljs-keyword">Bag </span>of Tricks for Efficient Text Classification},
   author={<span class="hljs-keyword">Joulin, </span>Armand <span class="hljs-keyword">and </span>Grave, Edouard <span class="hljs-keyword">and </span><span class="hljs-keyword">Bojanowski, </span>Piotr <span class="hljs-keyword">and </span>Mikolov, Tomas},
   <span class="hljs-keyword">journal={arXiv </span>preprint arXiv:<span class="hljs-number">1607</span>.<span class="hljs-number">01759</span>},
@@ -47,7 +51,7 @@
 }
 </code></pre>
 <p>[3] A. Joulin, E. Grave, P. Bojanowski, M. Douze, H. Jégou, T. Mikolov, <a href="https://arxiv.org/abs/1612.03651"><em>FastText.zip: Compressing text classification models</em></a></p>
-<pre><code class="hljs css languages- markup">@article{joulin2016fasttext,
+<pre><code class="hljs css language-markup">@article{joulin2016fasttext,
   <span class="hljs-attr">title={FastText.zip:</span> Compressing text classification models},
   <span class="hljs-attr">author={Joulin,</span> Armand <span class="hljs-literal">and</span> Grave, Edouard <span class="hljs-literal">and</span> Bojanowski, Piotr <span class="hljs-literal">and</span> Douze, Matthijs <span class="hljs-literal">and</span> J{\'e}gou, H{\'e}rve <span class="hljs-literal">and</span> Mikolov, Tomas},
   <span class="hljs-attr">journal={arXiv</span> preprint arXiv:<span class="hljs-number">1612.03651</span>},
