@@ -4,6 +4,7 @@
 <url> <loc>https://fasttext.cc/blog/2017/10/02/blog-post.html</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
 <url> <loc>https://fasttext.cc/blog/2017/05/02/blog-post.html</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
 <url> <loc>https://fasttext.cc/blog/2016/08/18/blog-post.html</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
+<url> <loc>https://fasttext.cc/docs/en/aligned-vectors.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fasttext.cc/docs/en/aligned-vectors.html" /> </url>
 <url> <loc>https://fasttext.cc/docs/en/api.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fasttext.cc/docs/en/api.html" /> </url>
 <url> <loc>https://fasttext.cc/docs/en/cheatsheet.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fasttext.cc/docs/en/cheatsheet.html" /> </url>
 <url> <loc>https://fasttext.cc/docs/en/crawl-vectors.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fasttext.cc/docs/en/crawl-vectors.html" /> </url>
