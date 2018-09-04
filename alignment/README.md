@@ -6,11 +6,11 @@ The code is in Python 3 and requires [NumPy](http://www.numpy.org/).
 
 The script `example.sh` shows how to use this code to learn and evaluate a bilingual alignment of word embeddings.
 
-The word embeddings used in [1] can be found on the [fastText project page](fasttext.cc) and the supervised bilingual lexicons on the [MUSE project page](https://github.com/facebookresearch/MUSE).
+The word embeddings used in [1] can be found on the [fastText project page](https://fasttext.cc) and the supervised bilingual lexicons on the [MUSE project page](https://github.com/facebookresearch/MUSE).
 
 ### Download
 
-Wikipedia fastText embeddings aligned with our method can be found [here](fasttext.cc/doc/en/aligned_vectors).
+Wikipedia fastText embeddings aligned with our method can be found [here](https://fasttext.cc/doc/en/aligned_vectors.html).
 
 ### References
 
