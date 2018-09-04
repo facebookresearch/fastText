@@ -116,7 +116,7 @@ The models can be downloaded from:
 ### Format
 
 The word vectors come in both the binary and text default formats of fastText.
-In the text format, each line contain a word followed by its vector. Each value is space separated.
+In the text format, each line contains a word followed by its vector. Each value is space separated.
 Words are ordered by their frequency in a descending order.
 
 ### License
