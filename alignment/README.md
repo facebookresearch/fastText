@@ -18,9 +18,11 @@ If you use this code, please cite:
 
 [1] A. Joulin, P. Bojanowski, T. Mikolov, H. Jegou, E. Grave, [*Loss in Translation: Learning Bilingual Word Mapping with a Retrieval Criterion*](https://arxiv.org/abs/1804.07745)
 
+```
 @InProceedings{joulin2018loss,
     title={Loss in Translation: Learning Bilingual Word Mapping with a Retrieval Criterion},
     author={Joulin, Armand and Bojanowski, Piotr and Mikolov, Tomas and J\'egou, Herv\'e and Grave, Edouard},
     year={2018},
     booktitle={Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing},
 }
+```
