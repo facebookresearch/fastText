@@ -43,8 +43,8 @@ class FastText {
 
   std::shared_ptr<Model> model_;
 
-  std::atomic<int64_t> tokenCount_;
-  std::atomic<real> loss_;
+  std::atomic<int64_t> tokenCount_{};
+  std::atomic<real> loss_{};
 
   std::chrono::steady_clock::time_point start_;
   void signModel(std::ostream&);
