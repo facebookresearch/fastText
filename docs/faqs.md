@@ -53,3 +53,6 @@ You'll likely see this behavior because your learning rate is too high. Try redu
 
 ## My compiler / architecture can't build fastText. What should I do?
 Try a newer version of your compiler. We try to maintain compatibility with older versions of gcc and many platforms, however sometimes maintaining backwards compatibility becomes very hard. In general, compilers and tool chains that ship with LTS versions of major linux distributions should be fair game. In any case, create an issue with your compiler version and architecture and we'll try to implement compatibility.
+
+## How do I run fastText in a fully reproducible way? Each time I run it I get different results.
+If you run fastText multiple times you'll obtain slightly different results each time due to the optimization algorithm (asynchronous stochastic gradient descent, or Hogwild). If you need to get the same results (e.g. to confront different input params set) you have to set the 'thread' parameter to 1. In this way you'll get exactly the same performances at each run (with the same input params).
