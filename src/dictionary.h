@@ -85,11 +85,10 @@ class Dictionary {
         const std::string&,
         std::vector<int32_t>&,
         std::vector<std::string>&) const;
-    void computeSubwords(const std::string&, std::vector<int32_t>&) const;
     void computeSubwords(
         const std::string&,
         std::vector<int32_t>&,
-        std::vector<std::string>&) const;
+        std::vector<std::string>* substrings=nullptr) const;
     uint32_t hash(const std::string& str) const;
     void add(const std::string&);
     bool readWord(std::istream&, std::string&) const;
