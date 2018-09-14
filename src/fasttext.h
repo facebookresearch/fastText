@@ -71,7 +71,7 @@ class FastText {
     addInputVector(vec, ind);
   }
 
-  const Args getArgs() const;
+  const Args & getArgs() const;
   std::shared_ptr<const Dictionary> getDictionary() const;
   std::shared_ptr<const Matrix> getInputMatrix() const;
   std::shared_ptr<const Matrix> getOutputMatrix() const;
@@ -92,7 +92,7 @@ class FastText {
   void skipgram(Model&, real, const std::vector<int32_t>&);
   std::vector<int32_t> selectEmbeddings(int32_t) const;
   void getSentenceVector(std::istream&, Vector&);
-  void quantize(const Args);
+  void quantize(const Args &);
   std::tuple<int64_t, double, double> test(std::istream&, int32_t, real = 0.0);
   void predict(std::istream&, int32_t, bool, real = 0.0);
   void predict(
@@ -110,7 +110,7 @@ class FastText {
       std::vector<std::pair<real, std::string>>& results);
   void analogies(int32_t);
   void trainThread(int32_t);
-  void train(const Args);
+  void train(const Args &);
 
   void loadVectors(std::string);
   int getDimension() const;

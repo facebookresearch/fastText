@@ -416,10 +416,10 @@ void Dictionary::load(std::istream& in) {
   in.read((char*) &ntokens_, sizeof(int64_t));
   in.read((char*) &pruneidx_size_, sizeof(int64_t));
   for (int32_t i = 0; i < size_; i++) {
-    char c;
+    int c;
     entry e;
     while ((c = in.get()) != 0) {
-      e.word.push_back(c);
+      e.word.push_back((char)c);
     }
     in.read((char*) &e.count, sizeof(int64_t));
     in.read((char*) &e.type, sizeof(entry_type));

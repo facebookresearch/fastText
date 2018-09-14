@@ -39,7 +39,7 @@ std::shared_ptr<const Dictionary> FastText::getDictionary() const {
   return dict_;
 }
 
-const Args FastText::getArgs() const {
+const Args & FastText::getArgs() const {
   return *args_.get();
 }
 
@@ -279,7 +279,7 @@ std::vector<int32_t> FastText::selectEmbeddings(int32_t cutoff) const {
   return idx;
 }
 
-void FastText::quantize(const Args qargs) {
+void FastText::quantize(const Args & qargs) {
   if (args_->model != model_name::sup) {
     throw std::invalid_argument(
         "For now we only support quantization of supervised models");
@@ -647,7 +647,7 @@ void FastText::loadVectors(std::string filename) {
   }
 }
 
-void FastText::train(const Args args) {
+void FastText::train(const Args & args) {
   args_ = std::make_shared<Args>(args);
   dict_ = std::make_shared<Dictionary>(args_);
   if (args_->input == "-") {
