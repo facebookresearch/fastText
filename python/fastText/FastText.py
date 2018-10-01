@@ -12,6 +12,7 @@ from __future__ import unicode_literals
 
 import fasttext_pybind as fasttext
 import numpy as np
+import multiprocessing
 
 loss_name = fasttext.loss_name
 model_name = fasttext.model_name
@@ -317,7 +318,7 @@ def train_supervised(
     wordNgrams=1,
     loss="softmax",
     bucket=2000000,
-    thread=12,
+    thread=multiprocessing.cpu_count() - 1,
     lrUpdateRate=100,
     t=1e-4,
     label="__label__",
@@ -358,7 +359,7 @@ def train_unsupervised(
     wordNgrams=1,
     loss="ns",
     bucket=2000000,
-    thread=12,
+    thread=multiprocessing.cpu_count() -1,
     lrUpdateRate=100,
     t=1e-4,
     label="__label__",
