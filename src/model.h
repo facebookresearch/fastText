@@ -118,6 +118,8 @@ class Model {
   bool quant_;
   void
   setQuantizePointer(std::shared_ptr<QMatrix>, std::shared_ptr<QMatrix>, bool);
+
+  static const int32_t kUnlimitedPredictions = -1;
 };
 
 } // namespace fasttext

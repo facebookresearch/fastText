@@ -152,7 +152,9 @@ void Model::predict(
     std::vector<std::pair<real, int32_t>>& heap,
     Vector& hidden,
     Vector& output) const {
-  if (k <= 0) {
+  if (k == Model::kUnlimitedPredictions) {
+    k = osz_;
+  } else if (k <= 0) {
     throw std::invalid_argument("k needs to be 1 or higher!");
   }
   if (args_->model != model_name::sup) {

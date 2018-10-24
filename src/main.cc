@@ -22,6 +22,7 @@ void printUsage() {
       << "  supervised              train a supervised classifier\n"
       << "  quantize                quantize a model to reduce the memory usage\n"
       << "  test                    evaluate a supervised classifier\n"
+      << "  test-label              print labels with precision and recall scores\n"
       << "  predict                 predict most likely labels\n"
       << "  predict-prob            predict most likely labels with probabilities\n"
       << "  skipgram                train a skipgram model\n"
@@ -54,6 +55,16 @@ void printPredictUsage() {
       << "usage: fasttext predict[-prob] <model> <test-data> [<k>] [<th>]\n\n"
       << "  <model>      model filename\n"
       << "  <test-data>  test data filename (if -, read from stdin)\n"
+      << "  <k>          (optional; 1 by default) predict top k labels\n"
+      << "  <th>         (optional; 0.0 by default) probability threshold\n"
+      << std::endl;
+}
+
+void printPrintLabelStatsUsage() {
+  std::cerr
+      << "usage: fasttext test-label <model> <test-data> [<k>] [<th>]\n\n"
+      << "  <model>      model filename\n"
+      << "  <test-data>  test data filename\n"
       << "  <k>          (optional; 1 by default) predict top k labels\n"
       << "  <th>         (optional; 0.0 by default) probability threshold\n"
       << std::endl;
@@ -182,6 +193,35 @@ void predict(const std::vector<std::string>& args) {
     fasttext.predict(ifs, k, print_prob, threshold);
     ifs.close();
   }
+
+  exit(0);
+}
+
+void printLabelStats(const std::vector<std::string>& args) {
+  if (args.size() < 4 || args.size() > 6) {
+    printPrintLabelStatsUsage();
+    exit(EXIT_FAILURE);
+  }
+  int32_t k = 1;
+  real threshold = 0.0;
+  if (args.size() > 4) {
+    k = std::stoi(args[4]);
+    if (args.size() > 5) {
+      threshold = std::stof(args[5]);
+    }
+  }
+
+  FastText fasttext;
+  fasttext.loadModel(std::string(args[2]));
+
+  std::string infile(args[3]);
+  std::ifstream ifs(infile);
+  if (!ifs.is_open()) {
+    std::cerr << "Input file cannot be opened!" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+  fasttext.printLabelStats(ifs, k, threshold);
+  ifs.close();
 
   exit(0);
 }
@@ -355,6 +395,8 @@ int main(int argc, char** argv) {
     analogies(args);
   } else if (command == "predict" || command == "predict-prob") {
     predict(args);
+  } else if (command == "test-label") {
+    printLabelStats(args);
   } else if (command == "dump") {
     dump(args);
   } else {

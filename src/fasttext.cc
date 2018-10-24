@@ -397,26 +397,16 @@ FastText::test(std::istream& in, int32_t k, real threshold) {
 }
 
 void FastText::predict(
-    std::istream& in,
     int32_t k,
-    std::vector<std::pair<real, std::string>>& predictions,
+    const std::vector<int32_t>& words,
+    std::vector<std::pair<real, int32_t>>& predictions,
     real threshold) const {
-  std::vector<int32_t> words, labels;
-  predictions.clear();
-  dict_->getLine(in, words, labels);
-  predictions.clear();
   if (words.empty()) {
     return;
   }
   Vector hidden(args_->dim);
   Vector output(dict_->nlabels());
-  std::vector<std::pair<real, int32_t>> modelPredictions;
-  model_->predict(words, k, threshold, modelPredictions, hidden, output);
-  for (auto it = modelPredictions.cbegin(); it != modelPredictions.cend();
-       it++) {
-    predictions.push_back(
-        std::make_pair(it->first, dict_->getLabel(it->second)));
-  }
+  model_->predict(words, k, threshold, predictions, hidden, output);
 }
 
 void FastText::predict(
@@ -424,10 +414,12 @@ void FastText::predict(
     int32_t k,
     bool print_prob,
     real threshold) {
-  std::vector<std::pair<real, std::string>> predictions;
+  std::vector<std::pair<real, int32_t>> predictions;
   while (in.peek() != EOF) {
+    std::vector<int32_t> words, labels;
+    dict_->getLine(in, words, labels);
     predictions.clear();
-    predict(in, k, predictions, threshold);
+    predict(k, words, predictions, threshold);
     if (predictions.empty()) {
       std::cout << std::endl;
       continue;
@@ -436,13 +428,82 @@ void FastText::predict(
       if (it != predictions.cbegin()) {
         std::cout << " ";
       }
-      std::cout << it->second;
+      std::cout << dict_->getLabel(it->second);
       if (print_prob) {
         std::cout << " " << std::exp(it->first);
       }
     }
     std::cout << std::endl;
   }
+}
+
+void FastText::printLabelStats(
+    const std::vector<LabelStats>& labelStats) const {
+  const static double kUnknownValue = -1.0;
+  auto computeF1Score = [](double precision, double recall) -> double {
+    if (precision == kUnknownValue || recall == kUnknownValue) {
+      return kUnknownValue;
+    }
+    if (precision != 0 && recall != 0) {
+      return 2 * precision * recall / (precision + recall);
+    }
+    return 0.;
+  };
+  auto displayScore = [](double value) {
+    std::cout << std::fixed;
+    std::cout.precision(6);
+    if (value == kUnknownValue) {
+      std::cout << "--------";
+    } else {
+      std::cout << value;
+    }
+  };
+
+  for (size_t labelId = 0; labelId < labelStats.size(); labelId++) {
+    const auto& labelStat = labelStats[labelId];
+    double precision = labelStat.predicted
+        ? ((double)labelStat.predictedGold / labelStat.predicted)
+        : kUnknownValue;
+    double recall = labelStat.gold
+        ? ((double)labelStat.predictedGold / labelStat.gold)
+        : kUnknownValue;
+    double f1score = computeF1Score(precision, recall);
+    std::cout << "F1-Score : ";
+    displayScore(f1score);
+    std::cout << "  Precision : ";
+    displayScore(precision);
+    std::cout << "  Recall : ";
+    displayScore(recall);
+    std::cout << "   " << dict_->getLabel(labelId) << std::endl;
+  }
+}
+
+void FastText::printLabelStats(std::istream& in, int32_t k, real threshold)
+    const {
+  std::vector<std::pair<real, int32_t>> predictions;
+  size_t labelsSize = dict_->nlabels();
+  std::vector<LabelStats> labelStats(labelsSize);
+  while (in.peek() != EOF) {
+    std::vector<int32_t> words, gold;
+    dict_->getLine(in, words, gold);
+    predictions.clear();
+    predict(k, words, predictions, threshold);
+    for (const auto& goldLabelId : gold) {
+      assert(goldLabelId < labelsSize);
+      labelStats[goldLabelId].gold++;
+    }
+    for (const auto& predictedLabel : predictions) {
+      int32_t predictedLabelId = predictedLabel.second;
+      assert(predictedLabelId < labelsSize);
+      labelStats[predictedLabelId].predicted++;
+      if (auto itFound =
+              std::find(gold.begin(), gold.end(), predictedLabelId) !=
+              gold.end()) {
+        labelStats[predictedLabelId].predictedGold++;
+      }
+    }
+  }
+  printLabelStats(labelStats);
 }
 
 void FastText::getSentenceVector(std::istream& in, fasttext::Vector& svec) {
