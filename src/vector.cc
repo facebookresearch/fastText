@@ -11,8 +11,8 @@
 
 #include <assert.h>
 
-#include <iomanip>
 #include <cmath>
+#include <iomanip>
 
 #include "matrix.h"
 #include "qmatrix.h"
@@ -104,8 +104,7 @@ int64_t Vector::argmax() {
   return argmax;
 }
 
-std::ostream& operator<<(std::ostream& os, const Vector& v)
-{
+std::ostream& operator<<(std::ostream& os, const Vector& v) {
   os << std::setprecision(5);
   for (int64_t j = 0; j < v.size(); j++) {
     os << v[j] << ' ';
@@ -113,4 +112,4 @@ std::ostream& operator<<(std::ostream& os, const Vector& v)
   return os;
 }
 
-}
+} // namespace fasttext

@@ -12,11 +12,11 @@
 #include <time.h>
 
 #include <atomic>
-#include <memory>
-#include <set>
 #include <chrono>
 #include <iostream>
+#include <memory>
 #include <queue>
+#include <set>
 #include <tuple>
 
 #include "args.h"
@@ -61,7 +61,7 @@ class FastText {
   int32_t getWordId(const std::string&) const;
   int32_t getSubwordId(const std::string&) const;
   FASTTEXT_DEPRECATED(
-    "getVector is being deprecated and replaced by getWordVector.")
+      "getVector is being deprecated and replaced by getWordVector.")
   void getVector(Vector&, const std::string&) const;
   void getWordVector(Vector&, const std::string&) const;
   void getSubwordVector(Vector&, const std::string&) const;
@@ -116,4 +116,4 @@ class FastText {
   int getDimension() const;
   bool isQuant() const;
 };
-}
+} // namespace fasttext
