@@ -150,9 +150,11 @@ PYBIND11_MODULE(fasttext_pybind, m) {
             if (!ifs.is_open()) {
               throw std::invalid_argument("Test file cannot be opened!");
             }
-            std::tuple<int64_t, double, double> result = m.test(ifs, k);
+            fasttext::MetricsAccumulator metricsAccumulator;
+            m.test(ifs, k, 0.0, metricsAccumulator);
             ifs.close();
-            return result;
+            const auto& metrics = metricsAccumulator.metrics();
+            return std::tuple<int64_t, double, double>(metrics.numExamples, metrics.precision(), metrics.recall());
           })
       .def(
           "getSentenceVector",
