@@ -412,6 +412,30 @@ void FastText::predict(
 void FastText::predict(
     std::istream& in,
     int32_t k,
+    std::vector<std::pair<real, std::string>>& predictions,
+    real threshold) const {
+  std::vector<int32_t> words, labels;
+  predictions.clear();
+  dict_->getLine(in, words, labels);
+  predictions.clear();
+  if (words.empty()) {
+    return;
+  }
+  Vector hidden(args_->dim);
+  Vector output(dict_->nlabels());
+  std::vector<std::pair<real, int32_t>> modelPredictions;
+  model_->predict(words, k, threshold, modelPredictions, hidden, output);
+  for (auto it = modelPredictions.cbegin(); it != modelPredictions.cend();
+       it++) {
+    predictions.push_back(
+        std::make_pair(it->first, dict_->getLabel(it->second)));
+  }
+}
+
+
+void FastText::predict(
+    std::istream& in,
+    int32_t k,
     bool print_prob,
     real threshold) {
   std::vector<std::pair<real, int32_t>> predictions;
