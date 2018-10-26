@@ -59,11 +59,6 @@ class FastText {
   };
 
   void startThreads();
-  void predict(
-      int32_t,
-      const std::vector<int32_t>&,
-      std::vector<std::pair<real, int32_t>>&,
-      real = 0.0) const;
   void printLabelStats(const std::vector<LabelStats>& labelStats) const;
 
  public:
@@ -105,6 +100,11 @@ class FastText {
   void getSentenceVector(std::istream&, Vector&);
   void quantize(const Args);
   std::tuple<int64_t, double, double> test(std::istream&, int32_t, real = 0.0);
+  void predict(
+      int32_t,
+      const std::vector<int32_t>&,
+      std::vector<std::pair<real, int32_t>>&,
+      real = 0.0) const;
   void predict(std::istream&, int32_t, bool, real = 0.0);
   void printLabelStats(std::istream&, int32_t, real = 0.0) const;
   void ngramVectors(std::string);
