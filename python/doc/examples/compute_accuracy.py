@@ -68,7 +68,7 @@ def print_compute_accuracy_score(
             question,
             correct,
             num_qs,
-            correct / float(num_qs) * 100,
+            correct / float(num_qs) * 100 if num_qs > 0 else 0,
             total_accuracy * 100,
             semantic_accuracy * 100,
             syntactic_accuracy * 100,
@@ -148,7 +148,7 @@ if __name__ == "__main__":
             question,
             correct,
             num_qs,
-            total_correct / float(total_qs),
+            total_correct / float(total_qs) if total_qs > 0 else 0,
             total_se_correct / float(total_se_qs) if total_se_qs > 0 else 0,
             total_sy_correct / float(total_sy_qs) if total_sy_qs > 0 else 0,
         )
@@ -156,5 +156,9 @@ if __name__ == "__main__":
 
     print(
         "Questions seen / total: {0} {1}   {2:.2f} %".
-        format(total_qs, total_num_lines, total_qs / total_num_lines * 100)
+        format(
+            total_qs,
+            total_num_lines,
+            total_qs / total_num_lines * 100 if total_num_lines > 0 else 0,
+        )
     )

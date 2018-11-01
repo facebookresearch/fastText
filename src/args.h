@@ -20,53 +20,52 @@ enum class model_name : int { cbow = 1, sg, sup };
 enum class loss_name : int { hs = 1, ns, softmax };
 
 class Args {
-  protected:
-    std::string lossToString(loss_name) const;
-    std::string boolToString(bool) const;
-    std::string modelToString(model_name) const;
+ protected:
+  std::string lossToString(loss_name) const;
+  std::string boolToString(bool) const;
+  std::string modelToString(model_name) const;
 
-  public:
-    Args();
-    std::string input;
-    std::string inputModel;
-    std::string output;
-    double lr;
-    int lrUpdateRate;
-    int dim;
-    int ws;
-    int epoch;
-    int minCount;
-    int minCountLabel;
-    int neg;
-    int wordNgrams;
-    loss_name loss;
-    model_name model;
-    int bucket;
-    int minn;
-    int maxn;
-    int thread;
-    double t;
-    std::string label;
-    int verbose;
-    std::string pretrainedVectors;
-    bool saveOutput;
+ public:
+  Args();
+  std::string input;
+  std::string inputModel;
+  std::string output;
+  double lr;
+  int lrUpdateRate;
+  int dim;
+  int ws;
+  int epoch;
+  int minCount;
+  int minCountLabel;
+  int neg;
+  int wordNgrams;
+  loss_name loss;
+  model_name model;
+  int bucket;
+  int minn;
+  int maxn;
+  int thread;
+  double t;
+  std::string label;
+  int verbose;
+  std::string pretrainedVectors;
+  bool saveOutput;
 
-    bool qout;
-    bool retrain;
-    bool qnorm;
-    size_t cutoff;
-    size_t dsub;
+  bool qout;
+  bool retrain;
+  bool qnorm;
+  size_t cutoff;
+  size_t dsub;
 
-    bool incr;
-
-    void parseArgs(const std::vector<std::string>& args);
-    void printHelp();
-    void printBasicHelp();
-    void printDictionaryHelp();
-    void printTrainingHelp();
-    void printQuantizationHelp();
-    void save(std::ostream&);
-    void load(std::istream&);
-    void dump(std::ostream&) const;
+  bool incr;
+  void parseArgs(const std::vector<std::string>& args);
+  void printHelp();
+  void printBasicHelp();
+  void printDictionaryHelp();
+  void printTrainingHelp();
+  void printQuantizationHelp();
+  void save(std::ostream&);
+  void load(std::istream&);
+  void dump(std::ostream&) const;
 };
-}
+} // namespace fasttext

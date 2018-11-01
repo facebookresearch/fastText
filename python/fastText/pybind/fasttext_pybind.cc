@@ -262,44 +262,24 @@ PYBIND11_MODULE(fasttext_pybind, m) {
              const std::string text,
              int32_t k,
              fasttext::real threshold) {
-            std::vector<std::pair<fasttext::real, std::string>> predictions;
+            std::vector<std::pair<fasttext::real, int32_t>> predictions;
+            std::vector<std::pair<fasttext::real, std::string>> all_predictions;
             std::stringstream ioss(text);
-            m.predict(ioss, k, predictions, threshold);
-            for (auto& pair : predictions) {
-              pair.first = std::exp(pair.first);
-            }
-            return predictions;
-          })
-      .def(
-          "multilinePredict",
-          // NOTE: text needs to end in a newline
-          // to exactly mimic the behavior of the cli
-          [](fasttext::FastText& m,
-             const std::vector<std::string>& lines,
-             int32_t k,
-             fasttext::real threshold) {
-            std::pair<
-                std::vector<std::vector<fasttext::real>>,
-                std::vector<std::vector<std::string>>>
-                all_predictions;
-            std::vector<std::pair<fasttext::real, std::string>> predictions;
-            for (const std::string& text : lines) {
-              std::stringstream ioss(text);
-              predictions.clear();
-              m.predict(ioss, k, predictions, threshold);
-              all_predictions.first.push_back(std::vector<fasttext::real>());
-              all_predictions.second.push_back(std::vector<std::string>());
-              for (auto& pair : predictions) {
-                pair.first = std::exp(pair.first);
-                all_predictions.first[all_predictions.first.size() - 1]
-                    .push_back(pair.first);
-                all_predictions.second[all_predictions.second.size() - 1]
-                    .push_back(pair.second);
-              }
-            }
+            std::shared_ptr<const fasttext::Dictionary> d = m.getDictionary();
+            std::vector<int32_t> words, labels;
+            d->getLine(ioss, words, labels);
+            m.predict(k, words, predictions, threshold);
+            std::transform(
+                predictions.begin(),
+                predictions.end(),
+                std::back_inserter(all_predictions),
+                [&d](const auto& prediction) {
+                  return std::pair<fasttext::real, std::string>(
+                      std::exp(prediction.first),
+                      d->getLabel(prediction.second));
+                });
             return all_predictions;
           })
-      .def("isQuant", [](fasttext::FastText& m) { return m.isQuant(); })
       .def(
           "getWordId",
           [](fasttext::FastText& m, const std::string word) {

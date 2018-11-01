@@ -9,7 +9,6 @@
 
 #include "model.h"
 
-#include <iostream>
 #include <assert.h>
 #include <algorithm>
 #include <stdexcept>
@@ -44,8 +43,10 @@ Model::Model(
   initLog();
 }
 
-void Model::setQuantizePointer(std::shared_ptr<QMatrix> qwi,
-                               std::shared_ptr<QMatrix> qwo, bool qout) {
+void Model::setQuantizePointer(
+    std::shared_ptr<QMatrix> qwi,
+    std::shared_ptr<QMatrix> qwo,
+    bool qout) {
   qwi_ = qwi;
   qwo_ = qwo;
   if (qout) {
@@ -124,11 +125,12 @@ real Model::softmax(int32_t target, real lr) {
   return -log(output_[target]);
 }
 
-void Model::computeHidden(const std::vector<int32_t>& input, Vector& hidden) const {
+void Model::computeHidden(const std::vector<int32_t>& input, Vector& hidden)
+    const {
   assert(hidden.size() == hsz_);
   hidden.zero();
   for (auto it = input.cbegin(); it != input.cend(); ++it) {
-    if(quant_) {
+    if (quant_) {
       hidden.addRow(*qwi_, *it);
     } else {
       hidden.addRow(*wi_, *it);
@@ -137,15 +139,22 @@ void Model::computeHidden(const std::vector<int32_t>& input, Vector& hidden) con
   hidden.mul(1.0 / input.size());
 }
 
-bool Model::comparePairs(const std::pair<real, int32_t> &l,
-                         const std::pair<real, int32_t> &r) {
+bool Model::comparePairs(
+    const std::pair<real, int32_t>& l,
+    const std::pair<real, int32_t>& r) {
   return l.first > r.first;
 }
 
-void Model::predict(const std::vector<int32_t>& input, int32_t k, real threshold,
-                    std::vector<std::pair<real, int32_t>>& heap,
-                    Vector& hidden, Vector& output) const {
-  if (k <= 0) {
+void Model::predict(
+    const std::vector<int32_t>& input,
+    int32_t k,
+    real threshold,
+    std::vector<std::pair<real, int32_t>>& heap,
+    Vector& hidden,
+    Vector& output) const {
+  if (k == Model::kUnlimitedPredictions) {
+    k = osz_;
+  } else if (k <= 0) {
     throw std::invalid_argument("k needs to be 1 or higher!");
   }
   if (args_->model != model_name::sup) {
@@ -162,23 +171,24 @@ void Model::predict(const std::vector<int32_t>& input, int32_t k, real threshold
 }
 
 void Model::predict(
-  const std::vector<int32_t>& input,
-  int32_t k,
-  real threshold,
-  std::vector<std::pair<real, int32_t>>& heap
-) {
+    const std::vector<int32_t>& input,
+    int32_t k,
+    real threshold,
+    std::vector<std::pair<real, int32_t>>& heap) {
   predict(input, k, threshold, heap, hidden_, output_);
 }
 
 void Model::findKBest(
-  int32_t k,
-  real threshold,
-  std::vector<std::pair<real, int32_t>>& heap,
-  Vector& hidden, Vector& output
-) const {
+    int32_t k,
+    real threshold,
+    std::vector<std::pair<real, int32_t>>& heap,
+    Vector& hidden,
+    Vector& output) const {
   computeOutputSoftmax(hidden, output);
   for (int32_t i = 0; i < osz_; i++) {
-    if (output[i] < threshold) continue;
+    if (output[i] < threshold) {
+      continue;
+    }
     if (heap.size() == k && std_log(output[i]) < heap.front().first) {
       continue;
     }
@@ -191,10 +201,16 @@ void Model::findKBest(
   }
 }
 
-void Model::dfs(int32_t k, real threshold, int32_t node, real score,
-                std::vector<std::pair<real, int32_t>>& heap,
-                Vector& hidden) const {
-  if (score < std_log(threshold)) return;
+void Model::dfs(
+    int32_t k,
+    real threshold,
+    int32_t node,
+    real score,
+    std::vector<std::pair<real, int32_t>>& heap,
+    Vector& hidden) const {
+  if (score < std_log(threshold)) {
+    return;
+  }
   if (heap.size() == k && score < heap.front().first) {
     return;
   }
@@ -211,9 +227,9 @@ void Model::dfs(int32_t k, real threshold, int32_t node, real score,
 
   real f;
   if (quant_ && args_->qout) {
-    f= qwo_->dotRow(hidden, node - osz_);
+    f = qwo_->dotRow(hidden, node - osz_);
   } else {
-    f= wo_->dotRow(hidden, node - osz_);
+    f = wo_->dotRow(hidden, node - osz_);
   }
   f = 1. / (1 + std::exp(-f));
 
@@ -224,7 +240,9 @@ void Model::dfs(int32_t k, real threshold, int32_t node, real score,
 void Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
   assert(target >= 0);
   assert(target < osz_);
-  if (input.size() == 0) return;
+  if (input.size() == 0) {
+    return;
+  }
   computeHidden(input, hidden_);
   if (args_->loss == loss_name::ns) {
     loss_ += negativeSampling(target, lr);
@@ -347,7 +365,7 @@ real Model::log(real x) const {
 }
 
 real Model::std_log(real x) const {
-  return std::log(x+1e-5);
+  return std::log(x + 1e-5);
 }
 
 real Model::sigmoid(real x) const {
@@ -356,9 +374,10 @@ real Model::sigmoid(real x) const {
   } else if (x > MAX_SIGMOID) {
     return 1.0;
   } else {
-    int64_t i = int64_t((x + MAX_SIGMOID) * SIGMOID_TABLE_SIZE / MAX_SIGMOID / 2);
+    int64_t i =
+        int64_t((x + MAX_SIGMOID) * SIGMOID_TABLE_SIZE / MAX_SIGMOID / 2);
     return t_sigmoid_[i];
   }
 }
 
-}
+} // namespace fasttext

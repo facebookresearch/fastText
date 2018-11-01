@@ -9,6 +9,7 @@
       "english-vectors",
       "crawl-vectors",
       "pretrained-vectors",
+      "aligned-vectors",
       "supervised-models",
       "language-identification",
       "dataset"

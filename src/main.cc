@@ -7,48 +7,47 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
+#include <iomanip>
 #include <iostream>
 #include <queue>
-#include <iomanip>
-#include "fasttext.h"
 #include "args.h"
+#include "fasttext.h"
 
 using namespace fasttext;
 
 void printUsage() {
   std::cerr
-    << "usage: fasttext <command> <args>\n\n"
-    << "The commands supported by fasttext are:\n\n"
-    << "  supervised              train a supervised classifier\n"
-    << "  quantize                quantize a model to reduce the memory usage\n"
-    << "  test                    evaluate a supervised classifier\n"
-    << "  predict                 predict most likely labels\n"
-    << "  predict-prob            predict most likely labels with probabilities\n"
-    << "  skipgram                train a skipgram model\n"
-    << "  cbow                    train a cbow model\n"
-    << "  print-word-vectors      print word vectors given a trained model\n"
-    << "  print-sentence-vectors  print sentence vectors given a trained model\n"
-    << "  print-ngrams            print ngrams given a trained model and word\n"
-    << "  nn                      query for nearest neighbors\n"
-    << "  analogies               query for analogies\n"
-    << "  dump                    dump arguments,dictionary,input/output vectors\n"
-    << std::endl;
+      << "usage: fasttext <command> <args>\n\n"
+      << "The commands supported by fasttext are:\n\n"
+      << "  supervised              train a supervised classifier\n"
+      << "  quantize                quantize a model to reduce the memory usage\n"
+      << "  test                    evaluate a supervised classifier\n"
+      << "  test-label              print labels with precision and recall scores\n"
+      << "  predict                 predict most likely labels\n"
+      << "  predict-prob            predict most likely labels with probabilities\n"
+      << "  skipgram                train a skipgram model\n"
+      << "  cbow                    train a cbow model\n"
+      << "  print-word-vectors      print word vectors given a trained model\n"
+      << "  print-sentence-vectors  print sentence vectors given a trained model\n"
+      << "  print-ngrams            print ngrams given a trained model and word\n"
+      << "  nn                      query for nearest neighbors\n"
+      << "  analogies               query for analogies\n"
+      << "  dump                    dump arguments,dictionary,input/output vectors\n"
+      << std::endl;
 }
 
 void printQuantizeUsage() {
-  std::cerr
-    << "usage: fasttext quantize <args>"
-    << std::endl;
+  std::cerr << "usage: fasttext quantize <args>" << std::endl;
 }
 
 void printTestUsage() {
   std::cerr
-    << "usage: fasttext test <model> <test-data> [<k>] [<th>]\n\n"
-    << "  <model>      model filename\n"
-    << "  <test-data>  test data filename (if -, read from stdin)\n"
-    << "  <k>          (optional; 1 by default) predict top k labels\n"
-    << "  <th>         (optional; 0.0 by default) probability threshold\n"
-    << std::endl;
+      << "usage: fasttext test <model> <test-data> [<k>] [<th>]\n\n"
+      << "  <model>      model filename\n"
+      << "  <test-data>  test data filename (if -, read from stdin)\n"
+      << "  <k>          (optional; 1 by default) predict top k labels\n"
+      << "  <th>         (optional; 0.0 by default) probability threshold\n"
+      << std::endl;
 }
 
 void printPredictUsage() {
@@ -62,26 +61,33 @@ void printPredictUsage() {
     << std::endl;
 }
 
-void printPrintWordVectorsUsage() {
+void printPrintLabelStatsUsage() {
   std::cerr
-    << "usage: fasttext print-word-vectors <model>\n\n"
-    << "  <model>      model filename\n"
-    << std::endl;
+      << "usage: fasttext test-label <model> <test-data> [<k>] [<th>]\n\n"
+      << "  <model>      model filename\n"
+      << "  <test-data>  test data filename\n"
+      << "  <k>          (optional; 1 by default) predict top k labels\n"
+      << "  <th>         (optional; 0.0 by default) probability threshold\n"
+      << std::endl;
+}
+
+void printPrintWordVectorsUsage() {
+  std::cerr << "usage: fasttext print-word-vectors <model>\n\n"
+            << "  <model>      model filename\n"
+            << std::endl;
 }
 
 void printPrintSentenceVectorsUsage() {
-  std::cerr
-    << "usage: fasttext print-sentence-vectors <model>\n\n"
-    << "  <model>      model filename\n"
-    << std::endl;
+  std::cerr << "usage: fasttext print-sentence-vectors <model>\n\n"
+            << "  <model>      model filename\n"
+            << std::endl;
 }
 
 void printPrintNgramsUsage() {
-  std::cerr
-    << "usage: fasttext print-ngrams <model> <word>\n\n"
-    << "  <model>      model filename\n"
-    << "  <word>       word to print\n"
-    << std::endl;
+  std::cerr << "usage: fasttext print-ngrams <model> <word>\n\n"
+            << "  <model>      model filename\n"
+            << "  <word>       word to print\n"
+            << std::endl;
 }
 
 void quantize(const std::vector<std::string>& args) {
@@ -101,27 +107,23 @@ void quantize(const std::vector<std::string>& args) {
 }
 
 void printNNUsage() {
-  std::cout
-    << "usage: fasttext nn <model> <k>\n\n"
-    << "  <model>      model filename\n"
-    << "  <k>          (optional; 10 by default) predict top k labels\n"
-    << std::endl;
+  std::cout << "usage: fasttext nn <model> <k>\n\n"
+            << "  <model>      model filename\n"
+            << "  <k>          (optional; 10 by default) predict top k labels\n"
+            << std::endl;
 }
 
 void printAnalogiesUsage() {
-  std::cout
-    << "usage: fasttext analogies <model> <k>\n\n"
-    << "  <model>      model filename\n"
-    << "  <k>          (optional; 10 by default) predict top k labels\n"
-    << std::endl;
+  std::cout << "usage: fasttext analogies <model> <k>\n\n"
+            << "  <model>      model filename\n"
+            << "  <k>          (optional; 10 by default) predict top k labels\n"
+            << std::endl;
 }
 
 void printDumpUsage() {
-  std::cout
-    << "usage: fasttext dump <model> <option>\n\n"
-    << "  <model>      model filename\n"
-    << "  <option>     option from args,dict,input,output"
-    << std::endl;
+  std::cout << "usage: fasttext dump <model> <option>\n\n"
+            << "  <model>      model filename\n"
+            << "  <option>     option from args,dict,input,output" << std::endl;
 }
 
 void test(const std::vector<std::string>& args) {
@@ -154,7 +156,8 @@ void test(const std::vector<std::string>& args) {
     result = fasttext.test(ifs, k, threshold);
     ifs.close();
   }
-  std::cout << "N" << "\t" << std::get<0>(result) << std::endl;
+  std::cout << "N"
+            << "\t" << std::get<0>(result) << std::endl;
   std::cout << std::setprecision(3);
   std::cout << "P@" << k << "\t" << std::get<1>(result) << std::endl;
   std::cout << "R@" << k << "\t" << std::get<2>(result) << std::endl;
@@ -191,6 +194,35 @@ void predict(const std::vector<std::string>& args) {
     fasttext.predict(ifs, k, print_prob, threshold);
     ifs.close();
   }
+
+  exit(0);
+}
+
+void printLabelStats(const std::vector<std::string>& args) {
+  if (args.size() < 4 || args.size() > 6) {
+    printPrintLabelStatsUsage();
+    exit(EXIT_FAILURE);
+  }
+  int32_t k = 1;
+  real threshold = 0.0;
+  if (args.size() > 4) {
+    k = std::stoi(args[4]);
+    if (args.size() > 5) {
+      threshold = std::stof(args[5]);
+    }
+  }
+
+  FastText fasttext;
+  fasttext.loadModel(std::string(args[2]));
+
+  std::string infile(args[3]);
+  std::ifstream ifs(infile);
+  if (!ifs.is_open()) {
+    std::cerr << "Input file cannot be opened!" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+  fasttext.printLabelStats(ifs, k, threshold);
+  ifs.close();
 
   exit(0);
 }
@@ -293,7 +325,7 @@ void train(const std::vector<std::string> args) {
   Args a = Args();
   a.parseArgs(args);
   FastText fasttext;
-  std::ofstream ofs(a.output+".bin");
+  std::ofstream ofs(a.output + ".bin");
   if (!ofs.is_open()) {
     throw std::invalid_argument(a.output + ".bin cannot be opened for saving.");
   }
@@ -364,6 +396,8 @@ int main(int argc, char** argv) {
     analogies(args);
   } else if (command == "predict" || command == "predict-prob") {
     predict(args);
+  } else if (command == "test-label") {
+    printLabelStats(args);
   } else if (command == "dump") {
     dump(args);
   } else {

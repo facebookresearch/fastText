@@ -76,4 +76,4 @@ class Matrix {
 
   void dump(std::ostream&) const;
 };
-}
+} // namespace fasttext

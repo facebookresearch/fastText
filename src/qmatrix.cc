@@ -14,17 +14,18 @@
 
 namespace fasttext {
 
-QMatrix::QMatrix() : qnorm_(false),
-  m_(0), n_(0), codesize_(0) {}
+QMatrix::QMatrix() : qnorm_(false), m_(0), n_(0), codesize_(0) {}
 
 QMatrix::QMatrix(const Matrix& mat, int32_t dsub, bool qnorm)
-      : qnorm_(qnorm), m_(mat.size(0)), n_(mat.size(1)),
-        codesize_(m_ * ((n_ + dsub - 1) / dsub)) {
+    : qnorm_(qnorm),
+      m_(mat.size(0)),
+      n_(mat.size(1)),
+      codesize_(m_ * ((n_ + dsub - 1) / dsub)) {
   codes_.resize(codesize_);
-  pq_ = std::unique_ptr<ProductQuantizer>( new ProductQuantizer(n_, dsub));
+  pq_ = std::unique_ptr<ProductQuantizer>(new ProductQuantizer(n_, dsub));
   if (qnorm_) {
     norm_codes_.resize(m_);
-    npq_ = std::unique_ptr<ProductQuantizer>( new ProductQuantizer(1, 1));
+    npq_ = std::unique_ptr<ProductQuantizer>(new ProductQuantizer(1, 1));
   }
   quantize(mat);
 }
@@ -80,33 +81,33 @@ int64_t QMatrix::getN() const {
 }
 
 void QMatrix::save(std::ostream& out) {
-    out.write((char*) &qnorm_, sizeof(qnorm_));
-    out.write((char*) &m_, sizeof(m_));
-    out.write((char*) &n_, sizeof(n_));
-    out.write((char*) &codesize_, sizeof(codesize_));
-    out.write((char*) codes_.data(), codesize_ * sizeof(uint8_t));
-    pq_->save(out);
-    if (qnorm_) {
-      out.write((char*) norm_codes_.data(), m_ * sizeof(uint8_t));
-      npq_->save(out);
-    }
+  out.write((char*)&qnorm_, sizeof(qnorm_));
+  out.write((char*)&m_, sizeof(m_));
+  out.write((char*)&n_, sizeof(n_));
+  out.write((char*)&codesize_, sizeof(codesize_));
+  out.write((char*)codes_.data(), codesize_ * sizeof(uint8_t));
+  pq_->save(out);
+  if (qnorm_) {
+    out.write((char*)norm_codes_.data(), m_ * sizeof(uint8_t));
+    npq_->save(out);
+  }
 }
 
 void QMatrix::load(std::istream& in) {
-    in.read((char*) &qnorm_, sizeof(qnorm_));
-    in.read((char*) &m_, sizeof(m_));
-    in.read((char*) &n_, sizeof(n_));
-    in.read((char*) &codesize_, sizeof(codesize_));
-    codes_ = std::vector<uint8_t>(codesize_);
-    in.read((char*) codes_.data(), codesize_ * sizeof(uint8_t));
-    pq_ = std::unique_ptr<ProductQuantizer>( new ProductQuantizer());
-    pq_->load(in);
-    if (qnorm_) {
-      norm_codes_ = std::vector<uint8_t>(m_);
-      in.read((char*) norm_codes_.data(), m_ * sizeof(uint8_t));
-      npq_ = std::unique_ptr<ProductQuantizer>( new ProductQuantizer());
-      npq_->load(in);
-    }
+  in.read((char*)&qnorm_, sizeof(qnorm_));
+  in.read((char*)&m_, sizeof(m_));
+  in.read((char*)&n_, sizeof(n_));
+  in.read((char*)&codesize_, sizeof(codesize_));
+  codes_ = std::vector<uint8_t>(codesize_);
+  in.read((char*)codes_.data(), codesize_ * sizeof(uint8_t));
+  pq_ = std::unique_ptr<ProductQuantizer>(new ProductQuantizer());
+  pq_->load(in);
+  if (qnorm_) {
+    norm_codes_ = std::vector<uint8_t>(m_);
+    in.read((char*)norm_codes_.data(), m_ * sizeof(uint8_t));
+    npq_ = std::unique_ptr<ProductQuantizer>(new ProductQuantizer());
+    npq_->load(in);
+  }
 }
 
-}
+} // namespace fasttext
