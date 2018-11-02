@@ -52,12 +52,13 @@ void printTestUsage() {
 
 void printPredictUsage() {
   std::cerr
-      << "usage: fasttext predict[-prob] <model> <test-data> [<k>] [<th>]\n\n"
-      << "  <model>      model filename\n"
-      << "  <test-data>  test data filename (if -, read from stdin)\n"
-      << "  <k>          (optional; 1 by default) predict top k labels\n"
-      << "  <th>         (optional; 0.0 by default) probability threshold\n"
-      << std::endl;
+    << "usage: fasttext predict[-prob] <model> <test-data> [<k>] [<th>] [<s>]\n\n"
+    << "  <model>      model filename\n"
+    << "  <test-data>  test data filename (if -, read from stdin)\n"
+    << "  <k>          (optional; 1 by default) predict top k labels\n"
+    << "  <th>         (optional; 0.0 by default) probability threshold\n"
+    << "  <s>          (optional; \\t by default) separator between label and probability"
+    << std::endl;
 }
 
 void printPrintLabelStatsUsage() {

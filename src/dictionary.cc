@@ -538,4 +538,49 @@ void Dictionary::dump(std::ostream& out) const {
   }
 }
 
+
+void Dictionary::addDict(Dictionary dict, bool reset) {
+  for (auto i = 0; i < dict.nwords(); ++i) {
+    entry e = dict.words_[i];
+    int32_t h = find(e.word);
+
+    ntokens_++;
+    if (word2int_[h] == -1) {
+      words_.push_back(e);
+      word2int_[h] = size_++;
+      nwords_++;
+    } else {
+      words_[word2int_[h]].count += e.count;
+    }
+  }
+
+  for (auto i = 0; i < dict.nlabels(); ++i) {
+    entry e = dict.words_[dict.nwords() + i];
+    int32_t h = find(e.word);
+
+    ntokens_++;
+    if (word2int_[h] == -1) {
+      words_.push_back(e);
+      word2int_[h] = size_++;
+      nlabels_++;
+    } else {
+      words_[word2int_[h]].count += e.count;
+    }
+  }
+
+  if (reset) {
+    threshold(args_->minCount, args_->minCountLabel);
+    initTableDiscard();
+    initNgrams();
+  }
+
+  if (args_->verbose > 0) {
+    std::cerr << "Read " << dict.ntokens() / 1000000 << "M words" << std::endl;
+    std::cerr << "Number of words:  " << nwords_ << std::endl;
+    std::cerr << "Number of labels: " << nlabels_ << std::endl;
+  }
+  if (size_ == 0) {
+    throw std::invalid_argument("Empty vocabulary. Try a smaller -minCount value.");
+  }
+}
 } // namespace fasttext

@@ -174,6 +174,8 @@ In order to train a text classifier using the method described in [2](#bag-of-tr
 
 ```
 $ ./fasttext supervised -input train.txt -output model
+
+$ ./fasttext supervised -input train.txt -output model -inputModel oldModel.bin -incr   # for incremental training on new data, not from scratch
 ```
 
 where `train.txt` is a text file containing a training sentence per line along with the labels.
@@ -240,6 +242,7 @@ The following arguments are mandatory:
   -output             output file path
 
 The following arguments are optional:
+  -inputModel         trained model file path (required only for incremental training)
   -verbose            verbosity level [2]
 
 The following arguments for the dictionary are optional:
@@ -263,6 +266,7 @@ The following arguments for training are optional:
   -thread             number of threads [12]
   -pretrainedVectors  pretrained word vectors for supervised learning []
   -saveOutput         whether output params should be saved [0]
+  -incr               incremental training, default [false]
 
 The following arguments for quantization are optional:
   -cutoff             number of words and ngrams to retain [0]

@@ -50,6 +50,7 @@ PYBIND11_MODULE(fasttext_pybind, m) {
   py::class_<fasttext::Args>(m, "args")
       .def(py::init<>())
       .def_readwrite("input", &fasttext::Args::input)
+      .def_readwrite("inputModel", &fasttext::Args::inputModel)
       .def_readwrite("output", &fasttext::Args::output)
       .def_readwrite("lr", &fasttext::Args::lr)
       .def_readwrite("lrUpdateRate", &fasttext::Args::lrUpdateRate)
@@ -71,6 +72,7 @@ PYBIND11_MODULE(fasttext_pybind, m) {
       .def_readwrite("verbose", &fasttext::Args::verbose)
       .def_readwrite("pretrainedVectors", &fasttext::Args::pretrainedVectors)
       .def_readwrite("saveOutput", &fasttext::Args::saveOutput)
+      .def_readwrite("incr", &fasttext::Args::incr)
 
       .def_readwrite("qout", &fasttext::Args::qout)
       .def_readwrite("retrain", &fasttext::Args::retrain)
@@ -140,6 +142,9 @@ PYBIND11_MODULE(fasttext_pybind, m) {
       .def(
           "loadModel",
           [](fasttext::FastText& m, std::string s) { m.loadModel(s); })
+      .def(
+          "loadModel",
+          [](fasttext::FastText& m, const char* modelBytes, size_t size) { m.loadModel(modelBytes, size); })
       .def(
           "saveModel",
           [](fasttext::FastText& m, std::string s) { m.saveModel(s); })

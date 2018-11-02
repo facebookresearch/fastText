@@ -87,6 +87,7 @@ class FastText {
   void saveModel();
   void loadModel(std::istream&);
   void loadModel(const std::string&);
+  void loadModel(const char* modelBytes, size_t size);
   void printInfo(real, real, std::ostream&);
 
   void supervised(
@@ -100,6 +101,7 @@ class FastText {
   void getSentenceVector(std::istream&, Vector&);
   void quantize(const Args);
   std::tuple<int64_t, double, double> test(std::istream&, int32_t, real = 0.0);
+  void predict(std::istream&, int32_t, bool, real = 0.0, std::string separator = "\t");
   void predict(
       int32_t,
       const std::vector<int32_t>&,

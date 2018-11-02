@@ -11,6 +11,7 @@
 
 #include <stdlib.h>
 
+#include <fstream>
 #include <iostream>
 #include <stdexcept>
 
@@ -43,6 +44,8 @@ Args::Args() {
   qnorm = false;
   cutoff = 0;
   dsub = 2;
+
+  incr = false;
 }
 
 std::string Args::lossToString(loss_name ln) const {
@@ -54,7 +57,6 @@ std::string Args::lossToString(loss_name ln) const {
     case loss_name::softmax:
       return "softmax";
   }
-  return "Unknown loss!"; // should never happen
 }
 
 std::string Args::boolToString(bool b) const {
@@ -102,6 +104,8 @@ void Args::parseArgs(const std::vector<std::string>& args) {
         exit(EXIT_FAILURE);
       } else if (args[ai] == "-input") {
         input = std::string(args.at(ai + 1));
+      } else if (args[ai] == "-inputModel") {
+        inputModel = std::string(args.at(ai + 1));
       } else if (args[ai] == "-output") {
         output = std::string(args.at(ai + 1));
       } else if (args[ai] == "-lr") {
@@ -166,6 +170,8 @@ void Args::parseArgs(const std::vector<std::string>& args) {
         cutoff = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-dsub") {
         dsub = std::stoi(args.at(ai + 1));
+      } else if (args[ai] == "-incr") {
+        incr = true;
       } else {
         std::cerr << "Unknown argument: " << args[ai] << std::endl;
         printHelp();
@@ -177,11 +183,24 @@ void Args::parseArgs(const std::vector<std::string>& args) {
       exit(EXIT_FAILURE);
     }
   }
+
   if (input.empty() || output.empty()) {
     std::cerr << "Empty input or output path." << std::endl;
     printHelp();
     exit(EXIT_FAILURE);
   }
+
+  if (incr && inputModel.empty()) {
+    std::cerr << "Empty input model." << std::endl;
+    printHelp();
+    exit(EXIT_FAILURE);
+  }
+
+  if (incr && inputModel == output + ".bin") {
+    std::cerr << "output model name should not be same as inputModel" << std::endl;
+    exit(EXIT_FAILURE);
+  }
+
   if (wordNgrams <= 1 && maxn == 0) {
     bucket = 0;
   }
@@ -199,6 +218,7 @@ void Args::printBasicHelp() {
             << "  -input              training file path\n"
             << "  -output             output file path\n"
             << "\nThe following arguments are optional:\n"
+            << "  -inputModel         trained model file path (required only for incremental training)\n"
             << "  -verbose            verbosity level [" << verbose << "]\n";
 }
 
@@ -236,6 +256,8 @@ void Args::printTrainingHelp() {
       << pretrainedVectors << "]\n"
       << "  -saveOutput         whether output params should be saved ["
       << boolToString(saveOutput) << "]\n";
+      << "  -incr               incremental training, default ["
+      << boolToString(incr) << "]\n";
 }
 
 void Args::printQuantizationHelp() {

@@ -66,7 +66,7 @@ class Dictionary {
   static const std::string EOS;
   static const std::string BOW;
   static const std::string EOW;
-
+  
   explicit Dictionary(std::shared_ptr<Args>);
   explicit Dictionary(std::shared_ptr<Args>, std::istream&);
   int32_t nwords() const;
@@ -106,6 +106,7 @@ class Dictionary {
     return pruneidx_size_ >= 0;
   }
   void dump(std::ostream&) const;
+  void addDict(Dictionary dict, bool reset);
   void init();
 };
 
