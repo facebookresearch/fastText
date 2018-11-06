@@ -14,9 +14,9 @@
 #include <pybind11/stl.h>
 #include <real.h>
 #include <vector.h>
+#include <cmath>
 #include <iterator>
 #include <sstream>
-#include <cmath>
 
 std::pair<std::vector<std::string>, std::vector<std::string>> getLineText(
     fasttext::FastText& m,
@@ -33,7 +33,7 @@ std::pair<std::vector<std::string>, std::vector<std::string>> getLineText(
 
     if (type == fasttext::entry_type::word) {
       words.push_back(token);
-    // Labels must not be OOV!
+      // Labels must not be OOV!
     } else if (type == fasttext::entry_type::label && wid >= 0) {
       labels.push_back(token);
     }
@@ -150,9 +150,12 @@ PYBIND11_MODULE(fasttext_pybind, m) {
             if (!ifs.is_open()) {
               throw std::invalid_argument("Test file cannot be opened!");
             }
-            std::tuple<int64_t, double, double> result = m.test(ifs, k);
+            fasttext::MetricsAccumulator metricsAccumulator;
+            m.test(ifs, k, 0.0, metricsAccumulator);
             ifs.close();
-            return result;
+            const auto& metrics = metricsAccumulator.metrics();
+            return std::tuple<int64_t, double, double>(
+                metrics.numExamples, metrics.precision(), metrics.recall());
           })
       .def(
           "getSentenceVector",

@@ -369,31 +369,26 @@ void FastText::skipgram(
   }
 }
 
-std::tuple<int64_t, double, double>
-FastText::test(std::istream& in, int32_t k, real threshold) {
-  int32_t nexamples = 0, nlabels = 0, npredictions = 0;
-  double precision = 0.0;
-  std::vector<int32_t> line, labels;
+void FastText::test(
+    std::istream& in,
+    int32_t k,
+    real threshold,
+    MetricsAccumulator& accumulator) {
+  std::vector<int32_t> line;
+  std::vector<int32_t> labels;
+  std::vector<std::pair<real, int32_t>> predictions;
 
   while (in.peek() != EOF) {
+    line.clear();
+    labels.clear();
     dict_->getLine(in, line, labels);
-    if (labels.size() > 0 && line.size() > 0) {
-      std::vector<std::pair<real, int32_t>> modelPredictions;
-      model_->predict(line, k, threshold, modelPredictions);
-      for (auto it = modelPredictions.cbegin(); it != modelPredictions.cend();
-           it++) {
-        if (std::find(labels.begin(), labels.end(), it->second) !=
-            labels.end()) {
-          precision += 1.0;
-        }
-      }
-      nexamples++;
-      nlabels += labels.size();
-      npredictions += modelPredictions.size();
+
+    if (!labels.empty() && !line.empty()) {
+      predictions.clear();
+      predict(k, line, predictions, threshold);
+      accumulator.log(labels, predictions);
     }
   }
-  return std::tuple<int64_t, double, double>(
-      nexamples, precision / npredictions, precision / nlabels);
 }
 
 void FastText::predict(
@@ -435,75 +430,6 @@ void FastText::predict(
     }
     std::cout << std::endl;
   }
-}
-
-void FastText::printLabelStats(
-    const std::vector<LabelStats>& labelStats) const {
-  const static double kUnknownValue = -1.0;
-  auto computeF1Score = [](double precision, double recall) -> double {
-    if (precision == kUnknownValue || recall == kUnknownValue) {
-      return kUnknownValue;
-    }
-    if (precision != 0 && recall != 0) {
-      return 2 * precision * recall / (precision + recall);
-    }
-    return 0.;
-  };
-  auto displayScore = [](double value) {
-    std::cout << std::fixed;
-    std::cout.precision(6);
-    if (value == kUnknownValue) {
-      std::cout << "--------";
-    } else {
-      std::cout << value;
-    }
-  };
-
-  for (size_t labelId = 0; labelId < labelStats.size(); labelId++) {
-    const auto& labelStat = labelStats[labelId];
-    double precision = labelStat.predicted
-        ? ((double)labelStat.predictedGold / labelStat.predicted)
-        : kUnknownValue;
-    double recall = labelStat.gold
-        ? ((double)labelStat.predictedGold / labelStat.gold)
-        : kUnknownValue;
-    double f1score = computeF1Score(precision, recall);
-    std::cout << "F1-Score : ";
-    displayScore(f1score);
-    std::cout << "  Precision : ";
-    displayScore(precision);
-    std::cout << "  Recall : ";
-    displayScore(recall);
-    std::cout << "   " << dict_->getLabel(labelId) << std::endl;
-  }
-}
-
-void FastText::printLabelStats(std::istream& in, int32_t k, real threshold)
-    const {
-  std::vector<std::pair<real, int32_t>> predictions;
-  size_t labelsSize = dict_->nlabels();
-  std::vector<LabelStats> labelStats(labelsSize);
-  while (in.peek() != EOF) {
-    std::vector<int32_t> words, gold;
-    dict_->getLine(in, words, gold);
-    predictions.clear();
-    predict(k, words, predictions, threshold);
-    for (const auto& goldLabelId : gold) {
-      assert(goldLabelId < labelsSize);
-      labelStats[goldLabelId].gold++;
-    }
-    for (const auto& predictedLabel : predictions) {
-      int32_t predictedLabelId = predictedLabel.second;
-      assert(predictedLabelId < labelsSize);
-      labelStats[predictedLabelId].predicted++;
-      if (auto itFound =
-              std::find(gold.begin(), gold.end(), predictedLabelId) !=
-              gold.end()) {
-        labelStats[predictedLabelId].predictedGold++;
-      }
-    }
-  }
-  printLabelStats(labelStats);
 }
 
 void FastText::getSentenceVector(std::istream& in, fasttext::Vector& svec) {

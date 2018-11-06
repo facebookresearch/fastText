@@ -130,37 +130,37 @@ void test(const std::vector<std::string>& args) {
     printTestUsage();
     exit(EXIT_FAILURE);
   }
-  int32_t k = 1;
-  real threshold = 0.0;
-  if (args.size() > 4) {
-    k = std::stoi(args[4]);
-    if (args.size() == 6) {
-      threshold = std::stof(args[5]);
-    }
-  }
+
+  const auto& model = args[2];
+  const auto& input = args[3];
+  int32_t k = args.size() > 4 ? std::stoi(args[4]) : 1;
+  real threshold = args.size() > 5 ? std::stof(args[5]) : 0;
 
   FastText fasttext;
-  fasttext.loadModel(args[2]);
+  fasttext.loadModel(model);
 
-  std::tuple<int64_t, double, double> result;
-  std::string infile = args[3];
-  if (infile == "-") {
-    result = fasttext.test(std::cin, k, threshold);
+  MetricsAccumulator metricsAccumulator;
+
+  if (input == "-") {
+    fasttext.test(std::cin, k, threshold, metricsAccumulator);
   } else {
-    std::ifstream ifs(infile);
+    std::ifstream ifs(input);
     if (!ifs.is_open()) {
       std::cerr << "Test file cannot be opened!" << std::endl;
       exit(EXIT_FAILURE);
     }
-    result = fasttext.test(ifs, k, threshold);
-    ifs.close();
+    fasttext.test(ifs, k, threshold, metricsAccumulator);
   }
+
+  const auto& metrics = metricsAccumulator.metrics();
+
   std::cout << "N"
-            << "\t" << std::get<0>(result) << std::endl;
+            << "\t" << metrics.numExamples << std::endl;
   std::cout << std::setprecision(3);
-  std::cout << "P@" << k << "\t" << std::get<1>(result) << std::endl;
-  std::cout << "R@" << k << "\t" << std::get<2>(result) << std::endl;
-  std::cerr << "Number of examples: " << std::get<0>(result) << std::endl;
+  std::cout << "P@" << k << "\t" << metrics.precision() << std::endl;
+  std::cout << "R@" << k << "\t" << metrics.recall() << std::endl;
+  std::cout << "F1"
+            << "\t" << metrics.f1Score() << std::endl;
 }
 
 void predict(const std::vector<std::string>& args) {
@@ -202,26 +202,38 @@ void printLabelStats(const std::vector<std::string>& args) {
     printPrintLabelStatsUsage();
     exit(EXIT_FAILURE);
   }
-  int32_t k = 1;
-  real threshold = 0.0;
-  if (args.size() > 4) {
-    k = std::stoi(args[4]);
-    if (args.size() > 5) {
-      threshold = std::stof(args[5]);
-    }
-  }
+
+  const auto& model = args[2];
+  const auto& input = args[3];
+  int32_t k = args.size() > 4 ? std::stoi(args[4]) : 1;
+  real threshold = args.size() > 5 ? std::stof(args[5]) : 0;
 
   FastText fasttext;
-  fasttext.loadModel(std::string(args[2]));
+  fasttext.loadModel(model);
 
-  std::string infile(args[3]);
-  std::ifstream ifs(infile);
-  if (!ifs.is_open()) {
-    std::cerr << "Input file cannot be opened!" << std::endl;
-    exit(EXIT_FAILURE);
+  LabelMetricsAccumulator metricsAccumulator;
+
+  if (input == "-") {
+    fasttext.test(std::cin, k, threshold, metricsAccumulator);
+  } else {
+    std::ifstream ifs(input);
+    if (!ifs.is_open()) {
+      std::cerr << "Test file cannot be opened!" << std::endl;
+      exit(EXIT_FAILURE);
+    }
+    fasttext.test(ifs, k, threshold, metricsAccumulator);
   }
-  fasttext.printLabelStats(ifs, k, threshold);
-  ifs.close();
+
+  metricsAccumulator.write(std::cout, fasttext.getDictionary());
+  const auto& metrics = metricsAccumulator.metrics();
+
+  std::cout << "N"
+            << "\t" << metrics.numExamples << std::endl;
+  std::cout << std::setprecision(3);
+  std::cout << "P@" << k << "\t" << metrics.precision() << std::endl;
+  std::cout << "R@" << k << "\t" << metrics.recall() << std::endl;
+  std::cout << "F1"
+            << "\t" << metrics.f1Score() << std::endl;
 
   exit(0);
 }
