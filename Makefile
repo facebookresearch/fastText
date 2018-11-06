@@ -15,6 +15,9 @@ INCLUDES = -I.
 opt: CXXFLAGS += -O3 -funroll-loops
 opt: fasttext
 
+coverage: CXXFLAGS += -O0 -fno-inline -fprofile-arcs --coverage
+coverage: fasttext
+
 debug: CXXFLAGS += -g -O0 -fno-inline
 debug: fasttext
 
@@ -52,4 +55,4 @@ fasttext: $(OBJS) src/fasttext.cc
 	$(CXX) $(CXXFLAGS) $(OBJS) src/main.cc -o fasttext
 
 clean:
-	rm -rf *.o fasttext
+	rm -rf *.o *.gcno *.gcda fasttext
