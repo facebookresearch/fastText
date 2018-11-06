@@ -303,6 +303,38 @@ PYBIND11_MODULE(fasttext_pybind, m) {
             return returnedValue;
           })
       .def(
+          "multilinePredict",
+          // NOTE: text needs to end in a newline
+          // to exactly mimic the behavior of the cli
+          [](fasttext::FastText& m,
+             const std::vector<std::string>& lines,
+             int32_t k,
+             fasttext::real threshold) {
+            std::pair<
+                std::vector<std::vector<fasttext::real>>,
+                std::vector<std::vector<std::string>>>
+                all_predictions;
+            std::vector<std::pair<fasttext::real, int32_t>> predictions;
+            std::shared_ptr<const fasttext::Dictionary> d = m.getDictionary();
+            std::vector<int32_t> words, labels;
+            for (const std::string& text : lines) {
+              std::stringstream ioss(text);
+              predictions.clear();
+              d->getLine(ioss, words, labels);
+              m.predict(k, words, predictions, threshold);
+              all_predictions.first.push_back(std::vector<fasttext::real>());
+              all_predictions.second.push_back(std::vector<std::string>());
+              for (auto& pair : predictions) {
+                pair.first = std::exp(pair.first);
+                all_predictions.first[all_predictions.first.size() - 1]
+                    .push_back(pair.first);
+                all_predictions.second[all_predictions.second.size() - 1]
+                    .push_back(d->getLabel(pair.second));
+              }
+            }
+            return all_predictions;
+          })
+      .def(
           "getWordId",
           [](fasttext::FastText& m, const std::string word) {
             return m.getWordId(word);

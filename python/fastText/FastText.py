@@ -128,22 +128,14 @@ class _FastText():
             entry += "\n"
             return entry
 
-        def predict_one(text, k, threshold):
+        if type(text) == list:
+            text = [check(entry) for entry in text]
+            all_probs, all_labels = self.f.multilinePredict(text, k, threshold)
+            return all_labels, np.array(all_probs, copy=False)
+        else:
             text = check(text)
             pairs = self.f.predict(text, k, threshold)
             probs, labels = zip(*pairs)
-            return probs, labels
-
-        if type(text) == list:
-            all_probs = []
-            all_labels = []
-            for entry in text:
-                probs, labels = predict_one(entry, k, threshold)
-                all_probs += probs
-                all_labels += labels
-            return all_labels, np.array(all_probs, copy=False)
-        else:
-            probs, labels = predict_one(text, k, threshold)
             return labels, np.array(probs, copy=False)
 
     def get_input_matrix(self):
