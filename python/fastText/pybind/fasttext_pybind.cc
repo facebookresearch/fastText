@@ -18,6 +18,8 @@
 #include <iterator>
 #include <sstream>
 
+using namespace pybind11::literals;
+
 std::pair<std::vector<std::string>, std::vector<std::string>> getLineText(
     fasttext::FastText& m,
     const std::string text) {
@@ -276,6 +278,29 @@ PYBIND11_MODULE(fasttext_pybind, m) {
                       d->getLabel(prediction.second));
                 });
             return all_predictions;
+          })
+      .def(
+          "testLabel",
+          [](fasttext::FastText& m,
+             const std::string filename,
+             int32_t k,
+             fasttext::real threshold) {
+            std::ifstream ifs(filename);
+            if (!ifs.is_open()) {
+              throw std::invalid_argument("Test file cannot be opened!");
+            }
+            fasttext::Meter meter;
+            m.test(ifs, k, threshold, meter);
+            std::shared_ptr<const fasttext::Dictionary> d = m.getDictionary();
+            std::unordered_map<std::string, py::dict> returnedValue;
+            for (int32_t i = 0; i < d->nlabels(); i++) {
+              returnedValue[d->getLabel(i)] = py::dict(
+                  "precision"_a = meter.precision(i),
+                  "recall"_a = meter.recall(i),
+                  "f1score"_a = meter.f1Score(i));
+            }
+
+            return returnedValue;
           })
       .def(
           "getWordId",

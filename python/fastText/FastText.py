@@ -224,6 +224,17 @@ class _FastText():
         """Evaluate supervised model using file given by path"""
         return self.f.test(path, k)
 
+    def test_label(self, path, k=1, threshold=0.0):
+        """
+        Return the precision and recall score for each label.
+
+        The returned value is a dictionary, where the key is the label.
+        For example:
+        f.test_label(...)
+        {'__label__italian-cuisine' : {'precision' : 0.7, 'recall' : 0.74}}
+        """
+        return self.f.testLabel(path, k, threshold)
+
     def quantize(
         self,
         input=None,
