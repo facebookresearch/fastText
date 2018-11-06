@@ -22,7 +22,7 @@
 #include "args.h"
 #include "dictionary.h"
 #include "matrix.h"
-#include "metrics.h"
+#include "meter.h"
 #include "model.h"
 #include "qmatrix.h"
 #include "real.h"
@@ -94,7 +94,8 @@ class FastText {
   std::vector<int32_t> selectEmbeddings(int32_t) const;
   void getSentenceVector(std::istream&, Vector&);
   void quantize(const Args);
-  void test(std::istream&, int32_t, real, MetricsAccumulator&);
+  std::tuple<int64_t, double, double> test(std::istream&, int32_t, real = 0.0);
+  void test(std::istream&, int32_t, real, Meter&) const;
   void predict(
       int32_t,
       const std::vector<int32_t>&,
@@ -116,5 +117,12 @@ class FastText {
   void loadVectors(std::string);
   int getDimension() const;
   bool isQuant() const;
+
+  FASTTEXT_DEPRECATED(
+      "This function is deprecated, please use `test` function.")
+  void printLabelStats(std::istream&, int32_t, real = 0.0) const;
+  FASTTEXT_DEPRECATED(
+      "This function is deprecated and will be removed along with `printLabelStats`.")
+  void writePerLabelMetrics(std::ostream&, Meter&) const;
 };
 } // namespace fasttext

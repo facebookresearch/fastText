@@ -369,11 +369,17 @@ void FastText::skipgram(
   }
 }
 
-void FastText::test(
-    std::istream& in,
-    int32_t k,
-    real threshold,
-    MetricsAccumulator& accumulator) {
+std::tuple<int64_t, double, double>
+FastText::test(std::istream& in, int32_t k, real threshold) {
+  Meter meter;
+  test(in, k, threshold, meter);
+
+  return std::tuple<int64_t, double, double>(
+      meter.nexamples(), meter.precision(), meter.recall());
+}
+
+void FastText::test(std::istream& in, int32_t k, real threshold, Meter& meter)
+    const {
   std::vector<int32_t> line;
   std::vector<int32_t> labels;
   std::vector<std::pair<real, int32_t>> predictions;
@@ -386,7 +392,7 @@ void FastText::test(
     if (!labels.empty() && !line.empty()) {
       predictions.clear();
       predict(k, line, predictions, threshold);
-      accumulator.log(labels, predictions);
+      meter.log(labels, predictions);
     }
   }
 }
@@ -430,6 +436,13 @@ void FastText::predict(
     }
     std::cout << std::endl;
   }
+}
+
+void FastText::printLabelStats(std::istream& in, int32_t k, real threshold)
+    const {
+  Meter meter;
+  test(in, k, threshold, meter);
+  writePerLabelMetrics(std::cout, meter);
 }
 
 void FastText::getSentenceVector(std::istream& in, fasttext::Vector& svec) {
@@ -712,6 +725,28 @@ int FastText::getDimension() const {
 
 bool FastText::isQuant() const {
   return quant_;
+}
+
+void FastText::writePerLabelMetrics(std::ostream& out, Meter& meter) const {
+  out << std::fixed;
+  out << std::setprecision(6);
+
+  auto writeMetric = [&](const std::string& name, double value) {
+    out << name << " : ";
+    if (std::isfinite(value)) {
+      out << value;
+    } else {
+      out << "--------";
+    }
+    out << "  ";
+  };
+
+  for (int32_t i = 0; i < dict_->nlabels(); i++) {
+    writeMetric("F1-Score", meter.f1Score(i));
+    writeMetric("Precision", meter.precision(i));
+    writeMetric("Recall", meter.recall(i));
+    out << " " << dict_->getLabel(i) << std::endl;
+  }
 }
 
 } // namespace fasttext

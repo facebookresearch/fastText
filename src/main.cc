@@ -60,7 +60,7 @@ void printPredictUsage() {
       << std::endl;
 }
 
-void printPrintLabelStatsUsage() {
+void printTestLabelUsage() {
   std::cerr
       << "usage: fasttext test-label <model> <test-data> [<k>] [<th>]\n\n"
       << "  <model>      model filename\n"
@@ -126,41 +126,40 @@ void printDumpUsage() {
 }
 
 void test(const std::vector<std::string>& args) {
+  bool perLabel = args[1] == "test-label";
+
   if (args.size() < 4 || args.size() > 6) {
-    printTestUsage();
+    perLabel ? printTestLabelUsage() : printTestUsage();
     exit(EXIT_FAILURE);
   }
 
   const auto& model = args[2];
   const auto& input = args[3];
   int32_t k = args.size() > 4 ? std::stoi(args[4]) : 1;
-  real threshold = args.size() > 5 ? std::stof(args[5]) : 0;
+  real threshold = args.size() > 5 ? std::stof(args[5]) : 0.0;
 
   FastText fasttext;
   fasttext.loadModel(model);
 
-  MetricsAccumulator metricsAccumulator;
+  Meter meter;
 
   if (input == "-") {
-    fasttext.test(std::cin, k, threshold, metricsAccumulator);
+    fasttext.test(std::cin, k, threshold, meter);
   } else {
     std::ifstream ifs(input);
     if (!ifs.is_open()) {
       std::cerr << "Test file cannot be opened!" << std::endl;
       exit(EXIT_FAILURE);
     }
-    fasttext.test(ifs, k, threshold, metricsAccumulator);
+    fasttext.test(ifs, k, threshold, meter);
   }
 
-  const auto& metrics = metricsAccumulator.metrics();
+  if (perLabel) {
+    fasttext.writePerLabelMetrics(std::cout, meter);
+  }
+  meter.writeGeneralMetrics(std::cout, k);
 
-  std::cout << "N"
-            << "\t" << metrics.numExamples << std::endl;
-  std::cout << std::setprecision(3);
-  std::cout << "P@" << k << "\t" << metrics.precision() << std::endl;
-  std::cout << "R@" << k << "\t" << metrics.recall() << std::endl;
-  std::cout << "F1"
-            << "\t" << metrics.f1Score() << std::endl;
+  exit(0);
 }
 
 void predict(const std::vector<std::string>& args) {
@@ -193,47 +192,6 @@ void predict(const std::vector<std::string>& args) {
     fasttext.predict(ifs, k, print_prob, threshold);
     ifs.close();
   }
-
-  exit(0);
-}
-
-void printLabelStats(const std::vector<std::string>& args) {
-  if (args.size() < 4 || args.size() > 6) {
-    printPrintLabelStatsUsage();
-    exit(EXIT_FAILURE);
-  }
-
-  const auto& model = args[2];
-  const auto& input = args[3];
-  int32_t k = args.size() > 4 ? std::stoi(args[4]) : 1;
-  real threshold = args.size() > 5 ? std::stof(args[5]) : 0;
-
-  FastText fasttext;
-  fasttext.loadModel(model);
-
-  LabelMetricsAccumulator metricsAccumulator;
-
-  if (input == "-") {
-    fasttext.test(std::cin, k, threshold, metricsAccumulator);
-  } else {
-    std::ifstream ifs(input);
-    if (!ifs.is_open()) {
-      std::cerr << "Test file cannot be opened!" << std::endl;
-      exit(EXIT_FAILURE);
-    }
-    fasttext.test(ifs, k, threshold, metricsAccumulator);
-  }
-
-  metricsAccumulator.write(std::cout, fasttext.getDictionary());
-  const auto& metrics = metricsAccumulator.metrics();
-
-  std::cout << "N"
-            << "\t" << metrics.numExamples << std::endl;
-  std::cout << std::setprecision(3);
-  std::cout << "P@" << k << "\t" << metrics.precision() << std::endl;
-  std::cout << "R@" << k << "\t" << metrics.recall() << std::endl;
-  std::cout << "F1"
-            << "\t" << metrics.f1Score() << std::endl;
 
   exit(0);
 }
@@ -391,7 +349,7 @@ int main(int argc, char** argv) {
   std::string command(args[1]);
   if (command == "skipgram" || command == "cbow" || command == "supervised") {
     train(args);
-  } else if (command == "test") {
+  } else if (command == "test" || command == "test-label") {
     test(args);
   } else if (command == "quantize") {
     quantize(args);
@@ -407,8 +365,6 @@ int main(int argc, char** argv) {
     analogies(args);
   } else if (command == "predict" || command == "predict-prob") {
     predict(args);
-  } else if (command == "test-label") {
-    printLabelStats(args);
   } else if (command == "dump") {
     dump(args);
   } else {

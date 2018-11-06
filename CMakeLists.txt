@@ -23,7 +23,7 @@ set(HEADER_FILES
     src/dictionary.h
     src/fasttext.h
     src/matrix.h
-    src/metrics.h
+    src/meter.h
     src/model.h
     src/productquantizer.h
     src/qmatrix.h
@@ -37,7 +37,7 @@ set(SOURCE_FILES
     src/fasttext.cc
     src/main.cc
     src/matrix.cc
-    src/metrics.cc
+    src/meter.cc
     src/model.cc
     src/productquantizer.cc
     src/qmatrix.cc
