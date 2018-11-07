@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <iostream>
 #include <queue>
+#include <stdexcept>
 #include "args.h"
 #include "fasttext.h"
 

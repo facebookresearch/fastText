@@ -17,6 +17,7 @@
 #include <cmath>
 #include <iterator>
 #include <sstream>
+#include <stdexcept>
 
 using namespace pybind11::literals;
 
