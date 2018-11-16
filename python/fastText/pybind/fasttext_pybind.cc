@@ -273,7 +273,7 @@ PYBIND11_MODULE(fasttext_pybind, m) {
                 predictions.begin(),
                 predictions.end(),
                 std::back_inserter(all_predictions),
-                [&d](const auto& prediction) {
+                [&d](const std::pair<fasttext::real, int32_t>& prediction) {
                   return std::pair<fasttext::real, std::string>(
                       std::exp(prediction.first),
                       d->getLabel(prediction.second));
