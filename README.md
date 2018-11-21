@@ -1,6 +1,10 @@
+# fastText
+[fastText](https://fasttext.cc/) is a library for efficient learning of word representations and sentence classification.
+
+[![CircleCI](https://circleci.com/gh/facebookresearch/fastText/tree/master.svg?style=svg)](https://circleci.com/gh/facebookresearch/fastText/tree/master)
+
 ## Table of contents
 
-* [Introduction](#introduction)
 * [Resources](#resources)
    * [Models](#models)
    * [Supplementary data](#supplementary-data)
@@ -23,10 +27,6 @@
    * [FastText.zip: Compressing text classification models](#fasttextzip-compressing-text-classification-models)
 * [Join the fastText community](#join-the-fasttext-community)
 * [License](#license)
-
-## Introduction
-
-[fastText](https://fasttext.cc/) is a library for efficient learning of word representations and sentence classification.
 
 ## Resources
 
