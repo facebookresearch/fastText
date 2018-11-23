@@ -13,6 +13,7 @@
 
 #include <cmath>
 #include <iomanip>
+#include <utility>
 
 #include "matrix.h"
 #include "qmatrix.h"
@@ -20,6 +21,13 @@
 namespace fasttext {
 
 Vector::Vector(int64_t m) : data_(m) {}
+
+Vector::Vector(Vector&& other) noexcept : data_(std::move(other.data_)) {}
+
+Vector& Vector::operator=(Vector&& other) {
+  data_ = std::move(other.data_);
+  return *this;
+}
 
 void Vector::zero() {
   std::fill(data_.begin(), data_.end(), 0.0);

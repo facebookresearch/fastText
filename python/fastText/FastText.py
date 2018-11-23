@@ -130,12 +130,16 @@ class _FastText():
 
         if type(text) == list:
             text = [check(entry) for entry in text]
-            all_probs, all_labels = self.f.multilinePredict(text, k, threshold)
-            return all_labels, np.array(all_probs, copy=False)
+            predictions = self.f.multilinePredict(text, k, threshold)
+            dt = np.dtype([('probability', 'float64'), ('label', '<U32')])
+            result_as_pair = np.array(predictions, dtype=dt)
+
+            return result_as_pair['label'].tolist(), result_as_pair['probability']
         else:
             text = check(text)
-            pairs = self.f.predict(text, k, threshold)
-            probs, labels = zip(*pairs)
+            predictions = self.f.predict(text, k, threshold)
+            probs, labels = zip(*predictions)
+
             return labels, np.array(probs, copy=False)
 
     def get_input_matrix(self):

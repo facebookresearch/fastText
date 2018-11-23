@@ -27,7 +27,9 @@ class Vector {
  public:
   explicit Vector(int64_t);
   Vector(const Vector&) = delete;
+  Vector(Vector&&) noexcept;
   Vector& operator=(const Vector&) = delete;
+  Vector& operator=(Vector&&);
 
   inline real* data() {
     return data_.data();

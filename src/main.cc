@@ -102,7 +102,7 @@ void quantize(const std::vector<std::string>& args) {
   // parseArgs checks if a->output is given.
   fasttext.loadModel(a.output + ".bin");
   fasttext.quantize(a);
-  fasttext.saveModel();
+  fasttext.saveModel(a.output + ".ftz");
   exit(0);
 }
 
@@ -156,11 +156,51 @@ void test(const std::vector<std::string>& args) {
   }
 
   if (perLabel) {
-    fasttext.writePerLabelMetrics(std::cout, meter);
+    std::cout << std::fixed << std::setprecision(6);
+    auto writeMetric = [](const std::string& name, double value) {
+      std::cout << name << " : ";
+      if (std::isfinite(value)) {
+        std::cout << value;
+      } else {
+        std::cout << "--------";
+      }
+      std::cout << "  ";
+    };
+
+    std::shared_ptr<const Dictionary> dict = fasttext.getDictionary();
+    for (int32_t labelId = 0; labelId < dict->nlabels(); labelId++) {
+      writeMetric("F1-Score", meter.f1Score(labelId));
+      writeMetric("Precision", meter.precision(labelId));
+      writeMetric("Recall", meter.recall(labelId));
+      std::cout << " " << dict->getLabel(labelId) << std::endl;
+    }
   }
   meter.writeGeneralMetrics(std::cout, k);
 
   exit(0);
+}
+
+void printPredictions(
+    const std::vector<std::pair<real, std::string>>& predictions,
+    bool printProb,
+    bool multiline) {
+  bool first = true;
+  for (const auto& prediction : predictions) {
+    if (!first && !multiline) {
+      std::cout << " ";
+    }
+    first = false;
+    std::cout << prediction.second;
+    if (printProb) {
+      std::cout << " " << prediction.first;
+    }
+    if (multiline) {
+      std::cout << std::endl;
+    }
+  }
+  if (!multiline) {
+    std::cout << std::endl;
+  }
 }
 
 void predict(const std::vector<std::string>& args) {
@@ -177,20 +217,26 @@ void predict(const std::vector<std::string>& args) {
     }
   }
 
-  bool print_prob = args[1] == "predict-prob";
+  bool printProb = args[1] == "predict-prob";
   FastText fasttext;
   fasttext.loadModel(std::string(args[2]));
 
+  std::ifstream ifs;
   std::string infile(args[3]);
-  if (infile == "-") {
-    fasttext.predict(std::cin, k, print_prob, threshold);
-  } else {
-    std::ifstream ifs(infile);
-    if (!ifs.is_open()) {
+  bool inputIsStdIn = infile == "-";
+  if (!inputIsStdIn){
+    ifs.open(infile);
+    if (!inputIsStdIn && !ifs.is_open()) {
       std::cerr << "Input file cannot be opened!" << std::endl;
       exit(EXIT_FAILURE);
     }
-    fasttext.predict(ifs, k, print_prob, threshold);
+  }
+  std::istream& in = inputIsStdIn ? std::cin : ifs;
+  std::vector<std::pair<real, std::string>> predictions;
+  while (fasttext.predictLine(in, predictions, k, threshold)) {
+    printPredictions(predictions, printProb, false);
+  }
+  if (ifs.is_open()){
     ifs.close();
   }
 
@@ -236,7 +282,15 @@ void printNgrams(const std::vector<std::string> args) {
   }
   FastText fasttext;
   fasttext.loadModel(std::string(args[2]));
-  fasttext.ngramVectors(std::string(args[3]));
+
+  std::string word(args[3]);
+  std::vector<std::pair<std::string, Vector>> ngramVectors =
+      fasttext.getNgramVectors(word);
+
+  for (const auto& ngramVector : ngramVectors) {
+    std::cout << ngramVector.first << " " << ngramVector.second << std::endl;
+  }
+
   exit(0);
 }
 
@@ -252,25 +306,13 @@ void nn(const std::vector<std::string> args) {
   }
   FastText fasttext;
   fasttext.loadModel(std::string(args[2]));
+  std::string prompt("Query word? ");
+  std::cout << prompt;
+
   std::string queryWord;
-  std::shared_ptr<const Dictionary> dict = fasttext.getDictionary();
-  Vector queryVec(fasttext.getDimension());
-  Matrix wordVectors(dict->nwords(), fasttext.getDimension());
-  std::cerr << "Pre-computing word vectors...";
-  fasttext.precomputeWordVectors(wordVectors);
-  std::cerr << " done." << std::endl;
-  std::set<std::string> banSet;
-  std::cout << "Query word? ";
-  std::vector<std::pair<real, std::string>> results;
   while (std::cin >> queryWord) {
-    banSet.clear();
-    banSet.insert(queryWord);
-    fasttext.getWordVector(queryVec, queryWord);
-    fasttext.findNN(wordVectors, queryVec, k, banSet, results);
-    for (auto& pair : results) {
-      std::cout << pair.second << " " << pair.first << std::endl;
-    }
-    std::cout << "Query word? ";
+    printPredictions(fasttext.getNN(queryWord, k), true, true);
+    std::cout << prompt;
   }
   exit(0);
 }
@@ -285,9 +327,26 @@ void analogies(const std::vector<std::string> args) {
     printAnalogiesUsage();
     exit(EXIT_FAILURE);
   }
+  if (k <= 0) {
+    throw std::invalid_argument("k needs to be 1 or higher!");
+  }
   FastText fasttext;
-  fasttext.loadModel(std::string(args[2]));
-  fasttext.analogies(k);
+  std::string model(args[2]);
+  std::cout << "Loading model " << model << std::endl;
+  fasttext.loadModel(model);
+
+  std::string prompt("Query triplet (A - B + C)? ");
+  std::string wordA, wordB, wordC;
+  std::cout << prompt;
+  while (true) {
+    std::cin >> wordA;
+    std::cin >> wordB;
+    std::cin >> wordC;
+    printPredictions(
+        fasttext.getAnalogies(k, wordA, wordB, wordC), true, true);
+
+    std::cout << prompt;
+  }
   exit(0);
 }
 
@@ -295,16 +354,18 @@ void train(const std::vector<std::string> args) {
   Args a = Args();
   a.parseArgs(args);
   FastText fasttext;
-  std::ofstream ofs(a.output + ".bin");
+  std::string outputFileName(a.output + ".bin");
+  std::ofstream ofs(outputFileName);
   if (!ofs.is_open()) {
-    throw std::invalid_argument(a.output + ".bin cannot be opened for saving.");
+    throw std::invalid_argument(
+        outputFileName + " cannot be opened for saving.");
   }
   ofs.close();
   fasttext.train(a);
-  fasttext.saveModel();
-  fasttext.saveVectors();
+  fasttext.saveModel(outputFileName);
+  fasttext.saveVectors(a.output + ".vec");
   if (a.saveOutput) {
-    fasttext.saveOutput();
+    fasttext.saveOutput(a.output + ".output");
   }
 }
 
