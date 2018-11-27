@@ -58,8 +58,8 @@ int32_t FastText::getWordId(const std::string& word) const {
   return dict_->getId(word);
 }
 
-int32_t FastText::getSubwordId(const std::string& word) const {
-  int32_t h = dict_->hash(word) % args_->bucket;
+int32_t FastText::getSubwordId(const std::string& subword) const {
+  int32_t h = dict_->hash(subword) % args_->bucket;
   return dict_->nwords() + h;
 }
 
@@ -290,7 +290,7 @@ std::vector<int32_t> FastText::selectEmbeddings(int32_t cutoff) const {
   return idx;
 }
 
-void FastText::quantize(const Args qargs) {
+void FastText::quantize(const Args& qargs) {
   if (args_->model != model_name::sup) {
     throw std::invalid_argument(
         "For now we only support quantization of supervised models");
@@ -664,7 +664,7 @@ void FastText::trainThread(int32_t threadId) {
   ifs.close();
 }
 
-void FastText::loadVectors(std::string filename) {
+void FastText::loadVectors(const std::string& filename) {
   std::ifstream in(filename);
   std::vector<std::string> words;
   std::shared_ptr<Matrix> mat; // temp. matrix for pretrained vectors
@@ -707,7 +707,7 @@ void FastText::loadVectors(std::string filename) {
   }
 }
 
-void FastText::train(const Args args) {
+void FastText::train(const Args& args) {
   args_ = std::make_shared<Args>(args);
   dict_ = std::make_shared<Dictionary>(args_);
   if (args_->input == "-") {

@@ -68,13 +68,13 @@ class FastText {
  public:
   FastText();
 
-  int32_t getWordId(const std::string&) const;
+  int32_t getWordId(const std::string& word) const;
 
-  int32_t getSubwordId(const std::string&) const;
+  int32_t getSubwordId(const std::string& subword) const;
 
-  void getWordVector(Vector&, const std::string&) const;
+  void getWordVector(Vector& vec, const std::string& word) const;
 
-  void getSubwordVector(Vector&, const std::string&) const;
+  void getSubwordVector(Vector& vec, const std::string& subword) const;
 
   inline void getInputVector(Vector& vec, int32_t ind) {
     vec.zero();
@@ -89,50 +89,53 @@ class FastText {
 
   std::shared_ptr<const Matrix> getOutputMatrix() const;
 
-  void saveVectors(const std::string&);
+  void saveVectors(const std::string& filename);
 
-  void saveModel(const std::string&);
+  void saveModel(const std::string& filename);
 
-  void saveOutput(const std::string&);
+  void saveOutput(const std::string& filename);
 
-  void loadModel(std::istream&);
+  void loadModel(std::istream& in);
 
-  void loadModel(const std::string&);
+  void loadModel(const std::string& filename);
 
-  void getSentenceVector(std::istream&, Vector&);
+  void getSentenceVector(std::istream& in, Vector& vec);
 
-  void quantize(const Args);
+  void quantize(const Args& qargs);
 
-  std::tuple<int64_t, double, double> test(std::istream&, int32_t, real = 0.0);
+  std::tuple<int64_t, double, double>
+  test(std::istream& in, int32_t k, real threshold = 0.0);
 
-  void test(std::istream&, int32_t, real, Meter&) const;
+  void test(std::istream& in, int32_t k, real threshold, Meter& meter) const;
 
   void predict(
-      int32_t,
-      const std::vector<int32_t>&,
-      std::vector<std::pair<real, int32_t>>&,
-      real = 0.0) const;
+      int32_t k,
+      const std::vector<int32_t>& words,
+      std::vector<std::pair<real, int32_t>>& predictions,
+      real threshold = 0.0) const;
 
   bool predictLine(
-      std::istream&,
-      std::vector<std::pair<real, std::string>>&,
-      int32_t,
-      real) const;
+      std::istream& in,
+      std::vector<std::pair<real, std::string>>& predictions,
+      int32_t k,
+      real threshold) const;
 
   std::vector<std::pair<std::string, Vector>> getNgramVectors(
       const std::string& word) const;
 
-  std::vector<std::pair<real, std::string>> getNN(const std::string&, int32_t);
+  std::vector<std::pair<real, std::string>> getNN(
+      const std::string& word,
+      int32_t k);
 
   std::vector<std::pair<real, std::string>> getAnalogies(
-      int32_t,
-      const std::string&,
-      const std::string&,
-      const std::string&);
+      int32_t k,
+      const std::string& wordA,
+      const std::string& wordB,
+      const std::string& wordC);
 
-  void train(const Args);
+  void train(const Args& args);
 
-  void loadVectors(std::string);
+  void loadVectors(const std::string& filename);
 
   int getDimension() const;
 
@@ -140,31 +143,31 @@ class FastText {
 
   FASTTEXT_DEPRECATED(
       "getVector is being deprecated and replaced by getWordVector.")
-  void getVector(Vector&, const std::string&) const;
+  void getVector(Vector& vec, const std::string& word) const;
 
   FASTTEXT_DEPRECATED(
       "ngramVectors is being deprecated and replaced by getNgramVectors.")
-  void ngramVectors(std::string);
+  void ngramVectors(std::string word);
 
   FASTTEXT_DEPRECATED(
       "analogies is being deprecated and replaced by getAnalogies.")
-  void analogies(int32_t);
+  void analogies(int32_t k);
 
   FASTTEXT_DEPRECATED("supervised is being deprecated.")
   void supervised(
-      Model&,
-      real,
-      const std::vector<int32_t>&,
-      const std::vector<int32_t>&);
+      Model& model,
+      real lr,
+      const std::vector<int32_t>& line,
+      const std::vector<int32_t>& labels);
 
   FASTTEXT_DEPRECATED("cbow is being deprecated.")
-  void cbow(Model&, real, const std::vector<int32_t>&);
+  void cbow(Model& model, real lr, const std::vector<int32_t>& line);
 
   FASTTEXT_DEPRECATED("skipgram is being deprecated.")
-  void skipgram(Model&, real, const std::vector<int32_t>&);
+  void skipgram(Model& model, real lr, const std::vector<int32_t>& line);
 
   FASTTEXT_DEPRECATED("selectEmbeddings is being deprecated.")
-  std::vector<int32_t> selectEmbeddings(int32_t) const;
+  std::vector<int32_t> selectEmbeddings(int32_t cutoff) const;
 
   FASTTEXT_DEPRECATED(
       "saveVectors is being deprecated, please use the other signature.")
@@ -179,14 +182,14 @@ class FastText {
   void saveModel();
 
   FASTTEXT_DEPRECATED("precomputeWordVectors is being deprecated.")
-  void precomputeWordVectors(Matrix&);
+  void precomputeWordVectors(Matrix& wordVectors);
 
   FASTTEXT_DEPRECATED("findNN is being deprecated and replaced by getNN.")
   void findNN(
-      const Matrix&,
-      const Vector&,
-      int32_t,
-      const std::set<std::string>&,
+      const Matrix& wordVectors,
+      const Vector& query,
+      int32_t k,
+      const std::set<std::string>& banSet,
       std::vector<std::pair<real, std::string>>& results);
 };
 } // namespace fasttext

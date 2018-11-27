@@ -224,7 +224,7 @@ void predict(const std::vector<std::string>& args) {
   std::ifstream ifs;
   std::string infile(args[3]);
   bool inputIsStdIn = infile == "-";
-  if (!inputIsStdIn){
+  if (!inputIsStdIn) {
     ifs.open(infile);
     if (!inputIsStdIn && !ifs.is_open()) {
       std::cerr << "Input file cannot be opened!" << std::endl;
@@ -236,7 +236,7 @@ void predict(const std::vector<std::string>& args) {
   while (fasttext.predictLine(in, predictions, k, threshold)) {
     printPredictions(predictions, printProb, false);
   }
-  if (ifs.is_open()){
+  if (ifs.is_open()) {
     ifs.close();
   }
 
@@ -342,8 +342,7 @@ void analogies(const std::vector<std::string> args) {
     std::cin >> wordA;
     std::cin >> wordB;
     std::cin >> wordC;
-    printPredictions(
-        fasttext.getAnalogies(k, wordA, wordB, wordC), true, true);
+    printPredictions(fasttext.getAnalogies(k, wordA, wordB, wordC), true, true);
 
     std::cout << prompt;
   }
