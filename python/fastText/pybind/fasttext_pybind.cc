@@ -91,6 +91,7 @@ PYBIND11_MODULE(fasttext_pybind, m) {
       .value("hs", fasttext::loss_name::hs)
       .value("ns", fasttext::loss_name::ns)
       .value("softmax", fasttext::loss_name::softmax)
+      .value("ova", fasttext::loss_name::ova)
       .export_values();
 
   m.def(

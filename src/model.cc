@@ -8,6 +8,7 @@
  */
 
 #include "model.h"
+#include "utils.h"
 
 #include <assert.h>
 #include <algorithm>
@@ -90,12 +91,23 @@ real Model::hierarchicalSoftmax(int32_t target, real lr) {
   return loss;
 }
 
-void Model::computeOutputSoftmax(Vector& hidden, Vector& output) const {
+void Model::computeOutput(Vector& hidden, Vector& output) const {
   if (quant_ && args_->qout) {
     output.mul(*qwo_, hidden);
   } else {
     output.mul(*wo_, hidden);
   }
+}
+
+void Model::computeOutputSigmoid(Vector& hidden, Vector& output) const {
+  computeOutput(hidden, output);
+  for (int32_t i = 0; i < osz_; i++) {
+    output[i] = sigmoid(output[i]);
+  }
+}
+
+void Model::computeOutputSoftmax(Vector& hidden, Vector& output) const {
+  computeOutput(hidden, output);
   real max = output[0], z = 0.0;
   for (int32_t i = 0; i < osz_; i++) {
     max = std::max(output[i], max);
@@ -123,6 +135,16 @@ real Model::softmax(int32_t target, real lr) {
     wo_->addRow(hidden_, i, alpha);
   }
   return -log(output_[target]);
+}
+
+real Model::oneVsAll(const std::vector<int32_t>& targets, real lr) {
+  real loss = 0.0;
+  for (int32_t i = 0; i < osz_; i++) {
+    bool isMatch = utils::contains(targets, i);
+    loss += binaryLogistic(i, isMatch, lr);
+  }
+
+  return loss;
 }
 
 void Model::computeHidden(const std::vector<int32_t>& input, Vector& hidden)
@@ -184,7 +206,11 @@ void Model::findKBest(
     std::vector<std::pair<real, int32_t>>& heap,
     Vector& hidden,
     Vector& output) const {
-  computeOutputSoftmax(hidden, output);
+  if (args_->loss == loss_name::ova) {
+    computeOutputSigmoid(hidden, output);
+  } else {
+    computeOutputSoftmax(hidden, output);
+  }
   for (int32_t i = 0; i < osz_; i++) {
     if (output[i] < threshold) {
       continue;
@@ -237,20 +263,45 @@ void Model::dfs(
   dfs(k, threshold, tree[node].right, score + std_log(f), heap, hidden);
 }
 
-void Model::update(const std::vector<int32_t>& input, int32_t target, real lr) {
-  assert(target >= 0);
-  assert(target < osz_);
+real Model::computeLoss(
+    const std::vector<int32_t>& targets,
+    int32_t targetIndex,
+    real lr) {
+  real loss = 0.0;
+
+  if (args_->loss == loss_name::ns) {
+    loss = negativeSampling(targets[targetIndex], lr);
+  } else if (args_->loss == loss_name::hs) {
+    loss = hierarchicalSoftmax(targets[targetIndex], lr);
+  } else if (args_->loss == loss_name::softmax) {
+    loss = softmax(targets[targetIndex], lr);
+  } else if (args_->loss == loss_name::ova) {
+    loss = oneVsAll(targets, lr);
+  } else {
+    throw std::invalid_argument("Unhandled loss function for this model.");
+  }
+
+  return loss;
+}
+
+void Model::update(
+    const std::vector<int32_t>& input,
+    const std::vector<int32_t>& targets,
+    int32_t targetIndex,
+    real lr) {
   if (input.size() == 0) {
     return;
   }
   computeHidden(input, hidden_);
-  if (args_->loss == loss_name::ns) {
-    loss_ += negativeSampling(target, lr);
-  } else if (args_->loss == loss_name::hs) {
-    loss_ += hierarchicalSoftmax(target, lr);
+
+  if (targetIndex == kAllLabelsAsTarget) {
+    loss_ += computeLoss(targets, -1, lr);
   } else {
-    loss_ += softmax(target, lr);
+    assert(targetIndex >= 0);
+    assert(targetIndex < osz_);
+    loss_ += computeLoss(targets, targetIndex, lr);
   }
+
   nexamples_ += 1;
 
   if (args_->model == model_name::sup) {

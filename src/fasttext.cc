@@ -344,9 +344,13 @@ void FastText::supervised(
   if (labels.size() == 0 || line.size() == 0) {
     return;
   }
-  std::uniform_int_distribution<> uniform(0, labels.size() - 1);
-  int32_t i = uniform(model.rng);
-  model.update(line, labels[i], lr);
+  if (args_->loss == loss_name::ova) {
+    model.update(line, labels, Model::kAllLabelsAsTarget, lr);
+  } else {
+    std::uniform_int_distribution<> uniform(0, labels.size() - 1);
+    int32_t i = uniform(model.rng);
+    model.update(line, labels, i, lr);
+  }
 }
 
 void FastText::cbow(Model& model, real lr, const std::vector<int32_t>& line) {
@@ -361,7 +365,7 @@ void FastText::cbow(Model& model, real lr, const std::vector<int32_t>& line) {
         bow.insert(bow.end(), ngrams.cbegin(), ngrams.cend());
       }
     }
-    model.update(bow, line[w], lr);
+    model.update(bow, line, w, lr);
   }
 }
 
@@ -375,7 +379,7 @@ void FastText::skipgram(
     const std::vector<int32_t>& ngrams = dict_->getSubwords(line[w]);
     for (int32_t c = -boundary; c <= boundary; c++) {
       if (c != 0 && w + c >= 0 && w + c < line.size()) {
-        model.update(ngrams, line[w + c], lr);
+        model.update(ngrams, line, w + c, lr);
       }
     }
   }
