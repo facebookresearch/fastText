@@ -596,11 +596,11 @@ std::vector<std::pair<real, std::string>> FastText::getAnalogies(
 
   Vector buffer(args_->dim);
   getWordVector(buffer, wordA);
-  query.addVector(buffer, 1.0);
+  query.addVector(buffer, 1.0 / (buffer.norm() + 1e-8));
   getWordVector(buffer, wordB);
-  query.addVector(buffer, -1.0);
+  query.addVector(buffer, -1.0 / (buffer.norm() + 1e-8));
   getWordVector(buffer, wordC);
-  query.addVector(buffer, 1.0);
+  query.addVector(buffer, 1.0 / (buffer.norm() + 1e-8));
 
   lazyComputeWordVectors();
   assert(wordVectors_);
