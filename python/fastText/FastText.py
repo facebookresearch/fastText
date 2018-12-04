@@ -290,6 +290,8 @@ def _parse_loss_string(string):
         return loss_name.hs
     if string == "softmax":
         return loss_name.softmax
+    if string == "ova":
+        return loss_name.ova
     else:
         raise ValueError("Unrecognized loss name")
 
