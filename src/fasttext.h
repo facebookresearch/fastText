@@ -99,7 +99,7 @@ class FastText {
 
   void loadModel(const std::string& filename);
 
-  void getSentenceVector(std::istream& in, Vector& vec);
+  void getSentenceVector(std::istream& in, Vector& vec, const bool& normalise = false);
 
   void quantize(const Args& qargs);
 
