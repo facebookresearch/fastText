@@ -11,8 +11,9 @@
 
 #include <assert.h>
 
-#include <iomanip>
 #include <cmath>
+#include <iomanip>
+#include <utility>
 
 #include "matrix.h"
 #include "qmatrix.h"
@@ -20,6 +21,13 @@
 namespace fasttext {
 
 Vector::Vector(int64_t m) : data_(m) {}
+
+Vector::Vector(Vector&& other) noexcept : data_(std::move(other.data_)) {}
+
+Vector& Vector::operator=(Vector&& other) {
+  data_ = std::move(other.data_);
+  return *this;
+}
 
 void Vector::zero() {
   std::fill(data_.begin(), data_.end(), 0.0);
@@ -104,8 +112,7 @@ int64_t Vector::argmax() {
   return argmax;
 }
 
-std::ostream& operator<<(std::ostream& os, const Vector& v)
-{
+std::ostream& operator<<(std::ostream& os, const Vector& v) {
   os << std::setprecision(5);
   for (int64_t j = 0; j < v.size(); j++) {
     os << v[j] << ' ';
@@ -113,4 +120,4 @@ std::ostream& operator<<(std::ostream& os, const Vector& v)
   return os;
 }
 
-}
+} // namespace fasttext

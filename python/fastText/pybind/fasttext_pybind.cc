@@ -14,9 +14,12 @@
 #include <pybind11/stl.h>
 #include <real.h>
 #include <vector.h>
+#include <cmath>
 #include <iterator>
 #include <sstream>
-#include <cmath>
+#include <stdexcept>
+
+using namespace pybind11::literals;
 
 std::pair<std::vector<std::string>, std::vector<std::string>> getLineText(
     fasttext::FastText& m,
@@ -33,7 +36,7 @@ std::pair<std::vector<std::string>, std::vector<std::string>> getLineText(
 
     if (type == fasttext::entry_type::word) {
       words.push_back(token);
-    // Labels must not be OOV!
+      // Labels must not be OOV!
     } else if (type == fasttext::entry_type::label && wid >= 0) {
       labels.push_back(token);
     }
@@ -88,6 +91,7 @@ PYBIND11_MODULE(fasttext_pybind, m) {
       .value("hs", fasttext::loss_name::hs)
       .value("ns", fasttext::loss_name::ns)
       .value("softmax", fasttext::loss_name::softmax)
+      .value("ova", fasttext::loss_name::ova)
       .export_values();
 
   m.def(
@@ -150,9 +154,11 @@ PYBIND11_MODULE(fasttext_pybind, m) {
             if (!ifs.is_open()) {
               throw std::invalid_argument("Test file cannot be opened!");
             }
-            std::tuple<int64_t, double, double> result = m.test(ifs, k);
+            fasttext::Meter meter;
+            m.test(ifs, k, 0.0, meter);
             ifs.close();
-            return result;
+            return std::tuple<int64_t, double, double>(
+                meter.nexamples(), meter.precision(), meter.recall());
           })
       .def(
           "getSentenceVector",
@@ -257,12 +263,10 @@ PYBIND11_MODULE(fasttext_pybind, m) {
              const std::string text,
              int32_t k,
              fasttext::real threshold) {
-            std::vector<std::pair<fasttext::real, std::string>> predictions;
             std::stringstream ioss(text);
-            m.predict(ioss, k, predictions, threshold);
-            for (auto& pair : predictions) {
-              pair.first = std::exp(pair.first);
-            }
+            std::vector<std::pair<fasttext::real, std::string>> predictions;
+            m.predictLine(ioss, predictions, k, threshold);
+
             return predictions;
           })
       .def(
@@ -273,28 +277,40 @@ PYBIND11_MODULE(fasttext_pybind, m) {
              const std::vector<std::string>& lines,
              int32_t k,
              fasttext::real threshold) {
-            std::pair<
-                std::vector<std::vector<fasttext::real>>,
-                std::vector<std::vector<std::string>>>
-                all_predictions;
+            std::vector<std::vector<std::pair<fasttext::real, std::string>>>
+                allPredictions;
             std::vector<std::pair<fasttext::real, std::string>> predictions;
+
             for (const std::string& text : lines) {
               std::stringstream ioss(text);
-              predictions.clear();
-              m.predict(ioss, k, predictions, threshold);
-              all_predictions.first.push_back(std::vector<fasttext::real>());
-              all_predictions.second.push_back(std::vector<std::string>());
-              for (auto& pair : predictions) {
-                pair.first = std::exp(pair.first);
-                all_predictions.first[all_predictions.first.size() - 1]
-                    .push_back(pair.first);
-                all_predictions.second[all_predictions.second.size() - 1]
-                    .push_back(pair.second);
-              }
+              m.predictLine(ioss, predictions, k, threshold);
+              allPredictions.push_back(predictions);
             }
-            return all_predictions;
+            return allPredictions;
           })
-      .def("isQuant", [](fasttext::FastText& m) { return m.isQuant(); })
+      .def(
+          "testLabel",
+          [](fasttext::FastText& m,
+             const std::string filename,
+             int32_t k,
+             fasttext::real threshold) {
+            std::ifstream ifs(filename);
+            if (!ifs.is_open()) {
+              throw std::invalid_argument("Test file cannot be opened!");
+            }
+            fasttext::Meter meter;
+            m.test(ifs, k, threshold, meter);
+            std::shared_ptr<const fasttext::Dictionary> d = m.getDictionary();
+            std::unordered_map<std::string, py::dict> returnedValue;
+            for (int32_t i = 0; i < d->nlabels(); i++) {
+              returnedValue[d->getLabel(i)] = py::dict(
+                  "precision"_a = meter.precision(i),
+                  "recall"_a = meter.recall(i),
+                  "f1score"_a = meter.f1Score(i));
+            }
+
+            return returnedValue;
+          })
       .def(
           "getWordId",
           [](fasttext::FastText& m, const std::string word) {

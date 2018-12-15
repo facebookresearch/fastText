@@ -9,8 +9,8 @@
 
 #include "matrix.h"
 
-#include <random>
 #include <exception>
+#include <random>
 #include <stdexcept>
 
 #include "utils.h"
@@ -131,4 +131,4 @@ void Matrix::dump(std::ostream& out) const {
   }
 };
 
-}
+} // namespace fasttext

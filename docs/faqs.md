@@ -12,19 +12,19 @@ FastText is a library for text classification and representation. It transforms 
 fastText uses a hashtable for either word or character ngrams. The size of the hashtable directly impacts the size of a model. To reduce the size of the model, it is possible to reduce the size of this table with the option '-hash'. For example a good value is 20000. Another option that greatly impacts the size of a model is the size of the vectors (-dim). This dimension can be reduced to save space but this can significantly impact performance. If that still produce a model that is too big, one can further reduce the size of a trained model with the quantization option.
 ```bash
 ./fasttext quantize -output model
-``` 
+```
 
 ## What would be the best way to represent word phrases rather than words?
 
-Currently the best approach to represent word phrases or sentence is to take a bag of words of word vectors. Additionally, for phrases like “New York”, preprocessing the data so that it becomes a single token “New_York” can greatly help. 
+Currently the best approach to represent word phrases or sentence is to take a bag of words of word vectors. Additionally, for phrases like “New York”, preprocessing the data so that it becomes a single token “New_York” can greatly help.
 
 ## Why does fastText produce vectors even for unknown words?
 
-One of the key features of fastText word representation is its ability to produce vectors for any words, even made-up ones. 
-Indeed, fastText word vectors are built from vectors of substrings of characters contained in it. 
+One of the key features of fastText word representation is its ability to produce vectors for any words, even made-up ones.
+Indeed, fastText word vectors are built from vectors of substrings of characters contained in it.
 This allows to build vectors even for misspelled words or concatenation of words.
 
-## Why is the hierarchical softmax slightly worse in performance than the full softmax? 
+## Why is the hierarchical softmax slightly worse in performance than the full softmax?
 
 The hierarchical softmax is an approximation of the full softmax loss that allows to train on large number of class efficiently. This is often at the cost of a few percent of accuracy.
 Note also that this loss is thought for classes that are unbalanced, that is some classes are more frequent than others. If your dataset has a balanced number of examples per class, it is worth trying the negative sampling loss (-loss ns -neg 100).
@@ -32,7 +32,8 @@ However, negative sampling will still be very slow at test time, since the full 
 
 ## Can we run fastText program on a GPU?
 
-FastText only works on CPU for accessibility. That being said, fastText has been implemented in the caffe2 library which can be run on GPU.
+As of now, fastText only works on CPU.
+Please note that one of the goal of fastText is to be an efficient CPU tool, allowing to train models without requiring a GPU.
 
 ## Can I use fastText with python? Or other languages?
 
@@ -53,6 +54,5 @@ You'll likely see this behavior because your learning rate is too high. Try redu
 ## My compiler / architecture can't build fastText. What should I do?
 Try a newer version of your compiler. We try to maintain compatibility with older versions of gcc and many platforms, however sometimes maintaining backwards compatibility becomes very hard. In general, compilers and tool chains that ship with LTS versions of major linux distributions should be fair game. In any case, create an issue with your compiler version and architecture and we'll try to implement compatibility.
 
-
-
-
+## How do I run fastText in a fully reproducible way? Each time I run it I get different results.
+If you run fastText multiple times you'll obtain slightly different results each time due to the optimization algorithm (asynchronous stochastic gradient descent, or Hogwild). If you need to get the same results (e.g. to confront different input params set) you have to set the 'thread' parameter to 1. In this way you'll get exactly the same performances at each run (with the same input params).
