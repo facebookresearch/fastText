@@ -36,6 +36,7 @@ Args::Args() {
   verbose = 2;
   pretrainedVectors = "";
   saveOutput = false;
+  noSaveVectors = false;
 
   qout = false;
   retrain = false;
@@ -157,6 +158,9 @@ void Args::parseArgs(const std::vector<std::string>& args) {
       } else if (args[ai] == "-saveOutput") {
         saveOutput = true;
         ai--;
+      } else if (args[ai] == "-noSaveVectors") {
+        noSaveVectors = true;
+        ai--;
       } else if (args[ai] == "-qnorm") {
         qnorm = true;
         ai--;
@@ -239,7 +243,9 @@ void Args::printTrainingHelp() {
       << "  -pretrainedVectors  pretrained word vectors for supervised learning ["
       << pretrainedVectors << "]\n"
       << "  -saveOutput         whether output params should be saved ["
-      << boolToString(saveOutput) << "]\n";
+      << boolToString(saveOutput) << "]\n"
+      << "  -noSaveVectors      whether vectors should not be saved ["
+      << boolToString(noSaveVectors) << "]\n";
 }
 
 void Args::printQuantizationHelp() {

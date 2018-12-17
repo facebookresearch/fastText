@@ -93,6 +93,7 @@ PYBIND11_MODULE(fasttext_pybind, m) {
       .def_readwrite("verbose", &fasttext::Args::verbose)
       .def_readwrite("pretrainedVectors", &fasttext::Args::pretrainedVectors)
       .def_readwrite("saveOutput", &fasttext::Args::saveOutput)
+      .def_readwrite("noSaveVectors", &fasttext::Args::noSaveVectors)
 
       .def_readwrite("qout", &fasttext::Args::qout)
       .def_readwrite("retrain", &fasttext::Args::retrain)
