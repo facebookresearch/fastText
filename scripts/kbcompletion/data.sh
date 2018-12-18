@@ -3,9 +3,8 @@
 # Copyright (c) 2017-present, Facebook, Inc.
 # All rights reserved.
 #
-# This source code is licensed under the BSD-style license found in the
-# LICENSE file in the root directory of this source tree. An additional grant
-# of patent rights can be found in the PATENTS file in the same directory.
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
 #
 set -e
 DATADIR=data/
@@ -21,10 +20,10 @@ echo "preparing WN18"
 wget -P . https://github.com/mana-ysh/knowledge-graph-embeddings/raw/master/dat/wordnet-mlj12.tar.gz
 tar -xzvf wordnet-mlj12.tar.gz
 DIR=wordnet-mlj12
-for f in `ls ${DIR}/wordnet-ml*.txt` 
-do 
+for f in ${DIR}/wordnet-ml*.txt;
+do
   fn=${DIR}/ft_$(basename $f)
-  awk '{print "__label__"$1,"0_"$2, $3;print $1,"1_"$2," __label__"$3}' < ${f} > ${fn}; 
+  awk '{print "__label__"$1,"0_"$2, $3;print $1,"1_"$2," __label__"$3}' < ${f} > ${fn};
 done
 cat ${DIR}/ft_* > ${DIR}/ft_wordnet-mlj12-full.txt
 cat ${DIR}/ft_*train.txt ${DIR}/ft_*valid.txt > ${DIR}/ft_wordnet-mlj12-valid+train.txt
@@ -35,11 +34,11 @@ echo "preparing FB15K"
 wget https://github.com/mana-ysh/knowledge-graph-embeddings/raw/master/dat/fb15k.tgz
 tar -xzvf fb15k.tgz
 DIR=FB15k/
-for f in `ls ${DIR}/freebase*.txt`
-do 
+for f in ${DIR}/freebase*.txt;
+do
   fn=${DIR}/ft_$(basename $f)
   echo $f " --> " $fn
-  awk '{print "__label__"$1,"0_"$2, $3;print $1,"1_"$2," __label__"$3}' < ${f} > ${fn}; 
+  awk '{print "__label__"$1,"0_"$2, $3;print $1,"1_"$2," __label__"$3}' < ${f} > ${fn};
 done
 cat ${DIR}/ft_* > ${DIR}/ft_freebase_mtr100_mte100-full.txt
 cat ${DIR}/ft_*train.txt ${DIR}/ft_*valid.txt > ${DIR}/ft_freebase_mtr100_mte100-valid+train.txt
@@ -52,7 +51,7 @@ for f in train.txt test.txt valid.txt
 do
   fn=${DIR}/ft_$(basename $f)
   echo $f " --> " $fn
-  awk -F "\t" '{print "__label__"$1,"0_"$2, $3;print $1,"1_"$2," __label__"$3}' < ${DIR}/${f} > ${fn}; 
+  awk -F "\t" '{print "__label__"$1,"0_"$2, $3;print $1,"1_"$2," __label__"$3}' < ${DIR}/${f} > ${fn};
 done
 cat ${DIR}/ft_*.txt > ${DIR}/ft_full.txt
 cat ${DIR}/ft_train.txt ${DIR}/ft_valid.txt > ${DIR}/ft_valid+train.txt
@@ -62,9 +61,9 @@ wget . https://everest.hds.utc.fr/lib/exe/fetch.php?media=en:svo-tensor-dataset.
 mv fetch.php?media=en:svo-tensor-dataset.tar.gz svo-tensor-dataset.tar.gz
 tar -xzvf svo-tensor-dataset.tar.gz
 DIR=SVO-tensor-dataset
-for f in `ls ${DIR}/svo_data*.dat` 
-do 
+for f in ${DIR}/svo_data*.dat;
+do
   fn=${DIR}/ft_$(basename $f)
-  awk '{print "0_"$1,"1_"$3,"__label__"$2;}' < ${f} > ${fn}; 
+  awk '{print "0_"$1,"1_"$3,"__label__"$2;}' < ${f} > ${fn};
 done
 cat ${DIR}/ft_*train*.dat ${DIR}/ft_*valid*.dat > ${DIR}/ft_svo_data-valid+train.dat

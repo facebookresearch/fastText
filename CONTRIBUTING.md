@@ -29,4 +29,4 @@ to do this once to work on any of Facebook's open source projects.
 Complete your CLA here: <https://code.facebook.com/cla>
 
 ## License
-By contributing to fastText, you agree that your contributions will be licensed under its BSD license.
+By contributing to fastText, you agree that your contributions will be licensed under its MIT license.

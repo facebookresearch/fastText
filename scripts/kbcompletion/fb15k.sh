@@ -3,9 +3,8 @@
 # copyright (c) 2017-present, facebook, inc.
 # all rights reserved.
 #
-# this source code is licensed under the bsd-style license found in the
-# license file in the root directory of this source tree. an additional grant
-# of patent rights can be found in the patents file in the same directory.
+# this source code is licensed under the MIT license found in the
+# license file in the root directory of this source tree.
 #
 # script for FB15k
 DIR=data/FB15k/
@@ -14,14 +13,14 @@ FASTTEXTDIR=../../
 # compile
 pushd $FASTTEXTDIR
 make opt
-popd 
+popd
 ft=${FASTTEXTDIR}/fasttext
 
 g++ -std=c++0x eval.cpp -o eval
- 
+
 ## Train model and test it on validation:
-dim=100 
-epoch=100 
+dim=100
+epoch=100
 neg=100
 model=data/fb15
 pred=data/fbpred
