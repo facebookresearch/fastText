@@ -24,6 +24,7 @@ const githubButton = (
 
 class Footer extends React.Component {
   render() {
+    const language = this.props.language || "en";
     const currentYear = new Date().getFullYear();
     return (
       <footer className="nav-footer" id="footer">
@@ -38,7 +39,7 @@ class Footer extends React.Component {
             <h5>Support</h5>
             <a
               href={
-                this.props.config.baseUrl + "docs/" + this.props.language + "/support.html"
+                this.props.config.baseUrl + "docs/" + language + "/support.html"
               }
             >
               Getting Started
@@ -47,7 +48,7 @@ class Footer extends React.Component {
               href={
                 this.props.config.baseUrl +
                 "docs/" +
-                this.props.language +
+                language +
                 "/supervised-tutorial.html"
               }
             >
@@ -57,7 +58,7 @@ class Footer extends React.Component {
               href={
                 this.props.config.baseUrl +
                 "docs/" +
-                this.props.language +
+                language +
                 "/faqs.html"
               }
             >
@@ -67,7 +68,7 @@ class Footer extends React.Component {
               href={
                 this.props.config.baseUrl +
                 "docs/" +
-                this.props.language +
+                language +
                 "/api.html"
               }
             >
