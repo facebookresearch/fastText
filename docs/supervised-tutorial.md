@@ -150,6 +150,8 @@ When training the `supervised` model, a sentence/document vector is obtained by 
 
 For the classification task, [multinomial logistic regression](https://en.wikipedia.org/wiki/Multinomial_logistic_regression) is used, where the sentence/document vector corresponds to the features. When applying fastText on problems with a large number of classes, you can use the hierarchical softmax to speed-up the computation (with the command line option `-loss hs`, more on this below).
 
+Please note that the two weight matrices (corresponding to the word/n-gram embeddings and the classifiers) are learned jointly.
+
 ## Making the model better
 
 The model obtained by running fastText with the default arguments is pretty bad at classifying new questions. Let's try to improve the performance, by changing the default parameters.
