@@ -66,7 +66,7 @@ while (<>) {
     s/\[\[category:([^|\]]*)[^]]*\]\]/[[$1]]/ig;  # show categories without markup
     s/\[\[[a-z\-]*:[^\]]*\]\]//g;  # remove links to other languages
     s/\[\[[^\|\]]*\|/[[/g;  # remove wiki url, preserve visible text
-    s/[{][{][^}]*}}//g;         # remove {{icons}} and {tables}
+    s/[{][{][^}]*}}//g;     # remove {{icons}} and {tables}
     s/[{][^}]*}//g;
     s/\[//g;                # remove [ and ]
     s/\]//g;
