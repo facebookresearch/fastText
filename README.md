@@ -89,9 +89,9 @@ There is also the master branch that contains all of our most recent work, but c
 ### Building fastText using make (preferred)
 
 ```
-$ wget https://github.com/facebookresearch/fastText/archive/v0.1.0.zip
-$ unzip v0.1.0.zip
-$ cd fastText-0.1.0
+$ wget https://github.com/facebookresearch/fastText/archive/v0.2.0.zip
+$ unzip v0.2.0.zip
+$ cd fastText-0.2.0
 $ make
 ```
 
