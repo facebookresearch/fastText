@@ -259,7 +259,7 @@ With a few steps, we were able to go from a precision at one of 12.4% to 59.9%. 
 
 ## Advanced readers: What is a Bigram?
 
-A 'unigram' refers to a single undividing unit, or token,  usually used as an input to a model. For example a unigram can a word or a letter depending on the model. In fastText, we work at the word level and thus unigrams are words.
+A 'unigram' refers to a single undividing unit, or token,  usually used as an input to a model. For example a unigram can be a word or a letter depending on the model. In fastText, we work at the word level and thus unigrams are words.
 
 Similarly we denote by 'bigram' the concatenation of  2 consecutive tokens or words. Similarly we often talk about n-gram to refer to the concatenation any n consecutive tokens. 
 
