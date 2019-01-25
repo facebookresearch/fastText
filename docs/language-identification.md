@@ -9,8 +9,8 @@ We distribute two models for language identification, which can recognize 176 la
 
 We distribute two versions of the models:
 
-* [lid.176.bin](https://s3-us-west-1.amazonaws.com/fasttext-vectors/supervised_models/lid.176.bin), which is faster and slightly more accurate, but has a file size of 126MB ;
-* [lid.176.ftz](https://s3-us-west-1.amazonaws.com/fasttext-vectors/supervised_models/lid.176.ftz), which is the compressed version of the model, with a file size of 917kB.
+* [lid.176.bin](https://dl.fbaipublicfiles.com/fasttext/supervised-models/lid.176.bin), which is faster and slightly more accurate, but has a file size of 126MB ;
+* [lid.176.ftz](https://dl.fbaipublicfiles.com/fasttext/supervised-models/lid.176.ftz), which is the compressed version of the model, with a file size of 917kB.
 
 These models were trained on UTF-8 data, and therefore expect UTF-8 as input.
 

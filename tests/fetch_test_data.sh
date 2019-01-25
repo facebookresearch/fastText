@@ -113,7 +113,7 @@ data_result="${DATADIR}"/cooking/cooking.stackexchange.txt
 if [ ! -f "$data_result" ]
 then
   mkdir -p "${DATADIR}"/cooking/
-  wget https://s3-us-west-1.amazonaws.com/fasttext-vectors/cooking.stackexchange.tar.gz -O "${DATADIR}"/cooking/cooking.stackexchange.tar.gz
+  wget https://dl.fbaipublicfiles.com/fasttext/data/cooking.stackexchange.tar.gz -O "${DATADIR}"/cooking/cooking.stackexchange.tar.gz
   tar xvzf "${DATADIR}"/cooking/cooking.stackexchange.tar.gz --directory "${DATADIR}"/cooking || exit 1
   cat "${DATADIR}"/cooking/cooking.stackexchange.txt | sed -e "s/\([.\!?,'/()]\)/ \1 /g" | tr "[:upper:]" "[:lower:]" > "${DATADIR}"/cooking/cooking.preprocessed.txt
 fi

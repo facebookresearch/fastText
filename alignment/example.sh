@@ -32,14 +32,14 @@ fi
 
 src_emb=data/wiki.${s}.vec
 if [ ! -f "${src_emb}" ]; then
-  DICO=$(basename -- "${src_emb}")
-  wget -c "https://s3-us-west-1.amazonaws.com/fasttext-vectors/${DICO}" -P data/
+  EMB=$(basename -- "${src_emb}")
+  wget -c "https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/${EMB}" -P data/
 fi
 
 tgt_emb=data/wiki.${t}.vec
 if [ ! -f "${tgt_emb}" ]; then
-  DICO=$(basename -- "${tgt_emb}")
-  wget -c "https://s3-us-west-1.amazonaws.com/fasttext-vectors/${DICO}" -P data/
+  EMB=$(basename -- "${tgt_emb}")
+  wget -c "https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/${EMB}" -P data/
 fi
 
 output=res/wiki.${s}-${t}.vec
