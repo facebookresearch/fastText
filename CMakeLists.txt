@@ -13,8 +13,6 @@ project(fasttext)
 set (fasttext_VERSION_MAJOR 0)
 set (fasttext_VERSION_MINOR 1)
 
-include_directories(fasttext)
-
 set(CMAKE_CXX_FLAGS " -pthread -std=c++11 -funroll-loops -O3 -march=native")
 
 set(HEADER_FILES
@@ -34,7 +32,6 @@ set(SOURCE_FILES
     src/args.cc
     src/dictionary.cc
     src/fasttext.cc
-    src/main.cc
     src/matrix.cc
     src/meter.cc
     src/model.cc
