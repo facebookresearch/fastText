@@ -297,7 +297,7 @@ void Model::update(
     loss_ += computeLoss(targets, -1, lr);
   } else {
     assert(targetIndex >= 0);
-    assert(targetIndex < osz_);
+    assert(targetIndex < targets.size());
     loss_ += computeLoss(targets, targetIndex, lr);
   }
 
