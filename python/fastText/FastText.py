@@ -131,7 +131,7 @@ class _FastText():
         if type(text) == list:
             text = [check(entry) for entry in text]
             predictions = self.f.multilinePredict(text, k, threshold)
-            dt = np.dtype([('probability', 'float64'), ('label', '<U32')])
+            dt = np.dtype([('probability', 'float64'), ('label', 'object')])
             result_as_pair = np.array(predictions, dtype=dt)
 
             return result_as_pair['label'].tolist(), result_as_pair['probability']
