@@ -81,11 +81,11 @@ class _FastText():
         """
         return self.f.getSubwordId(subword)
 
-    def get_subwords(self, word):
+    def get_subwords(self, word, on_unicode_error='strict'):
         """
         Given a word, get the subwords and their indicies.
         """
-        pair = self.f.getSubwords(word)
+        pair = self.f.getSubwords(word, on_unicode_error)
         return pair[0], np.array(pair[1])
 
     def get_input_vector(self, ind):
@@ -97,7 +97,7 @@ class _FastText():
         self.f.getInputVector(b, ind)
         return np.array(b)
 
-    def predict(self, text, k=1, threshold=0.0):
+    def predict(self, text, k=1, threshold=0.0, on_unicode_error='strict'):
         """
         Given a string, get a list of labels and a list of
         corresponding probabilities. k controls the number
@@ -130,14 +130,14 @@ class _FastText():
 
         if type(text) == list:
             text = [check(entry) for entry in text]
-            predictions = self.f.multilinePredict(text, k, threshold)
+            predictions = self.f.multilinePredict(text, k, threshold, on_unicode_error)
             dt = np.dtype([('probability', 'float64'), ('label', 'object')])
             result_as_pair = np.array(predictions, dtype=dt)
 
             return result_as_pair['label'].tolist(), result_as_pair['probability']
         else:
             text = check(text)
-            predictions = self.f.predict(text, k, threshold)
+            predictions = self.f.predict(text, k, threshold, on_unicode_error)
             probs, labels = zip(*predictions)
 
             return labels, np.array(probs, copy=False)
@@ -160,20 +160,20 @@ class _FastText():
             raise ValueError("Can't get quantized Matrix")
         return np.array(self.f.getOutputMatrix())
 
-    def get_words(self, include_freq=False):
+    def get_words(self, include_freq=False, on_unicode_error='strict'):
         """
         Get the entire list of words of the dictionary optionally
         including the frequency of the individual words. This
         does not include any subwords. For that please consult
         the function get_subwords.
         """
-        pair = self.f.getVocab()
+        pair = self.f.getVocab(on_unicode_error)
         if include_freq:
             return (pair[0], np.array(pair[1]))
         else:
             return pair[0]
 
-    def get_labels(self, include_freq=False):
+    def get_labels(self, include_freq=False, on_unicode_error='strict'):
         """
         Get the entire list of labels of the dictionary optionally
         including the frequency of the individual labels. Unsupervised
@@ -183,7 +183,7 @@ class _FastText():
         """
         a = self.f.getArgs()
         if a.model == model_name.supervised:
-            pair = self.f.getLabels()
+            pair = self.f.getLabels(on_unicode_error)
             if include_freq:
                 return (pair[0], np.array(pair[1]))
             else:
@@ -191,7 +191,7 @@ class _FastText():
         else:
             return self.get_words(include_freq)
 
-    def get_line(self, text):
+    def get_line(self, text, on_unicode_error='strict'):
         """
         Split a line of text into words and labels. Labels must start with
         the prefix used to create the model (__label__ by default).
@@ -207,10 +207,10 @@ class _FastText():
 
         if type(text) == list:
             text = [check(entry) for entry in text]
-            return self.f.multilineGetLine(text)
+            return self.f.multilineGetLine(text, on_unicode_error)
         else:
             text = check(text)
-            return self.f.getLine(text)
+            return self.f.getLine(text, on_unicode_error)
 
     def save_model(self, path):
         """Save the model to the given path"""
