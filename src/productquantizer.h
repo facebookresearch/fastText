@@ -56,7 +56,7 @@ class ProductQuantizer {
   void compute_code(const real*, uint8_t*) const;
   void compute_codes(const real*, uint8_t*, int32_t) const;
 
-  void save(std::ostream&);
+  void save(std::ostream&) const;
   void load(std::istream&);
 };
 

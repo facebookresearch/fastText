@@ -19,11 +19,11 @@
 #include <tuple>
 
 #include "args.h"
+#include "densematrix.h"
 #include "dictionary.h"
 #include "matrix.h"
 #include "meter.h"
 #include "model.h"
-#include "qmatrix.h"
 #include "real.h"
 #include "utils.h"
 #include "vector.h"
@@ -38,9 +38,6 @@ class FastText {
   std::shared_ptr<Matrix> input_;
   std::shared_ptr<Matrix> output_;
 
-  std::shared_ptr<QMatrix> qinput_;
-  std::shared_ptr<QMatrix> qoutput_;
-
   std::shared_ptr<Model> model_;
 
   std::atomic<int64_t> tokenCount_{};
@@ -53,16 +50,20 @@ class FastText {
   void addInputVector(Vector&, int32_t) const;
   void trainThread(int32_t);
   std::vector<std::pair<real, std::string>> getNN(
-      const Matrix& wordVectors,
+      const DenseMatrix& wordVectors,
       const Vector& queryVec,
       int32_t k,
       const std::set<std::string>& banSet);
   void lazyComputeWordVectors();
   void printInfo(real, real, std::ostream&);
+  std::shared_ptr<Matrix> getInputMatrixFromFile(const std::string&) const;
+  std::shared_ptr<Matrix> createRandomMatrix() const;
+  std::shared_ptr<Matrix> createTrainOutputMatrix() const;
+  std::vector<int64_t> getTargetCounts() const;
 
   bool quant_;
   int32_t version;
-  std::unique_ptr<Matrix> wordVectors_;
+  std::unique_ptr<DenseMatrix> wordVectors_;
 
  public:
   FastText();
@@ -84,9 +85,9 @@ class FastText {
 
   std::shared_ptr<const Dictionary> getDictionary() const;
 
-  std::shared_ptr<const Matrix> getInputMatrix() const;
+  std::shared_ptr<const DenseMatrix> getInputMatrix() const;
 
-  std::shared_ptr<const Matrix> getOutputMatrix() const;
+  std::shared_ptr<const DenseMatrix> getOutputMatrix() const;
 
   void saveVectors(const std::string& filename);
 
@@ -134,11 +135,12 @@ class FastText {
 
   void train(const Args& args);
 
-  void loadVectors(const std::string& filename);
-
   int getDimension() const;
 
   bool isQuant() const;
+
+  FASTTEXT_DEPRECATED("loadVectors is being deprecated.")
+  void loadVectors(const std::string& filename);
 
   FASTTEXT_DEPRECATED(
       "getVector is being deprecated and replaced by getWordVector.")
@@ -181,11 +183,11 @@ class FastText {
   void saveModel();
 
   FASTTEXT_DEPRECATED("precomputeWordVectors is being deprecated.")
-  void precomputeWordVectors(Matrix& wordVectors);
+  void precomputeWordVectors(DenseMatrix& wordVectors);
 
   FASTTEXT_DEPRECATED("findNN is being deprecated and replaced by getNN.")
   void findNN(
-      const Matrix& wordVectors,
+      const DenseMatrix& wordVectors,
       const Vector& query,
       int32_t k,
       const std::set<std::string>& banSet,

@@ -6,30 +6,29 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "qmatrix.h"
+#include "quantmatrix.h"
 
 #include <assert.h>
 #include <iostream>
 
 namespace fasttext {
 
-QMatrix::QMatrix() : qnorm_(false), m_(0), n_(0), codesize_(0) {}
+QuantMatrix::QuantMatrix() : Matrix(), qnorm_(false), codesize_(0) {}
 
-QMatrix::QMatrix(const Matrix& mat, int32_t dsub, bool qnorm)
-    : qnorm_(qnorm),
-      m_(mat.size(0)),
-      n_(mat.size(1)),
-      codesize_(m_ * ((n_ + dsub - 1) / dsub)) {
+QuantMatrix::QuantMatrix(DenseMatrix&& mat, int32_t dsub, bool qnorm)
+    : Matrix(mat.size(0), mat.size(1)),
+      qnorm_(qnorm),
+      codesize_(mat.size(0) * ((mat.size(1) + dsub - 1) / dsub)) {
   codes_.resize(codesize_);
   pq_ = std::unique_ptr<ProductQuantizer>(new ProductQuantizer(n_, dsub));
   if (qnorm_) {
     norm_codes_.resize(m_);
     npq_ = std::unique_ptr<ProductQuantizer>(new ProductQuantizer(1, 1));
   }
-  quantize(mat);
+  quantize(std::forward<DenseMatrix>(mat));
 }
 
-void QMatrix::quantizeNorm(const Vector& norms) {
+void QuantMatrix::quantizeNorm(const Vector& norms) {
   assert(qnorm_);
   assert(norms.size() == m_);
   auto dataptr = norms.data();
@@ -37,30 +36,19 @@ void QMatrix::quantizeNorm(const Vector& norms) {
   npq_->compute_codes(dataptr, norm_codes_.data(), m_);
 }
 
-void QMatrix::quantize(const Matrix& matrix) {
-  assert(m_ == matrix.size(0));
-  assert(n_ == matrix.size(1));
-  Matrix temp(matrix);
+void QuantMatrix::quantize(DenseMatrix&& mat) {
   if (qnorm_) {
-    Vector norms(temp.size(0));
-    temp.l2NormRow(norms);
-    temp.divideRow(norms);
+    Vector norms(mat.size(0));
+    mat.l2NormRow(norms);
+    mat.divideRow(norms);
     quantizeNorm(norms);
   }
-  auto dataptr = temp.data();
+  auto dataptr = mat.data();
   pq_->train(m_, dataptr);
   pq_->compute_codes(dataptr, codes_.data(), m_);
 }
 
-void QMatrix::addToVector(Vector& x, int32_t t) const {
-  real norm = 1;
-  if (qnorm_) {
-    norm = npq_->get_centroids(0, norm_codes_[t])[0];
-  }
-  pq_->addcode(x, codes_.data(), t, norm);
-}
-
-real QMatrix::dotRow(const Vector& vec, int64_t i) const {
+real QuantMatrix::dotRow(const Vector& vec, int64_t i) const {
   assert(i >= 0);
   assert(i < m_);
   assert(vec.size() == n_);
@@ -71,15 +59,27 @@ real QMatrix::dotRow(const Vector& vec, int64_t i) const {
   return pq_->mulcode(vec, codes_.data(), i, norm);
 }
 
-int64_t QMatrix::getM() const {
-  return m_;
+void QuantMatrix::addVectorToRow(const Vector&, int64_t, real) {
+  throw std::runtime_error("Operation not permitted on quantized matrices.");
 }
 
-int64_t QMatrix::getN() const {
-  return n_;
+void QuantMatrix::addRowToVector(Vector& x, int32_t i, real a) const {
+  real norm = 1;
+  if (qnorm_) {
+    norm = npq_->get_centroids(0, norm_codes_[i])[0];
+  }
+  pq_->addcode(x, codes_.data(), i, a * norm);
 }
 
-void QMatrix::save(std::ostream& out) {
+void QuantMatrix::addRowToVector(Vector& x, int32_t i) const {
+  real norm = 1;
+  if (qnorm_) {
+    norm = npq_->get_centroids(0, norm_codes_[i])[0];
+  }
+  pq_->addcode(x, codes_.data(), i, norm);
+}
+
+void QuantMatrix::save(std::ostream& out) const {
   out.write((char*)&qnorm_, sizeof(qnorm_));
   out.write((char*)&m_, sizeof(m_));
   out.write((char*)&n_, sizeof(n_));
@@ -92,7 +92,7 @@ void QMatrix::save(std::ostream& out) {
   }
 }
 
-void QMatrix::load(std::istream& in) {
+void QuantMatrix::load(std::istream& in) {
   in.read((char*)&qnorm_, sizeof(qnorm_));
   in.read((char*)&m_, sizeof(m_));
   in.read((char*)&n_, sizeof(n_));
@@ -107,6 +107,10 @@ void QMatrix::load(std::istream& in) {
     npq_ = std::unique_ptr<ProductQuantizer>(new ProductQuantizer());
     npq_->load(in);
   }
+}
+
+void QuantMatrix::dump(std::ostream&) const {
+  throw std::runtime_error("Operation not permitted on quantized matrices.");
 }
 
 } // namespace fasttext

@@ -23,12 +23,9 @@ Model::Model(
     std::shared_ptr<Matrix> wi,
     std::shared_ptr<Matrix> wo,
     std::shared_ptr<Args> args,
+    const std::vector<int64_t>& targetCounts,
     int32_t seed)
-    : hidden_(args->dim),
-      output_(wo->size(0)),
-      grad_(args->dim),
-      rng(seed),
-      quant_(false) {
+    : hidden_(args->dim), output_(wo->size(0)), grad_(args->dim), rng(seed) {
   wi_ = wi;
   wo_ = wo;
   args_ = args;
@@ -41,24 +38,14 @@ Model::Model(
   t_log_.reserve(LOG_TABLE_SIZE + 1);
   initSigmoid();
   initLog();
-}
-
-void Model::setQuantizePointer(
-    std::shared_ptr<QMatrix> qwi,
-    std::shared_ptr<QMatrix> qwo,
-    bool qout) {
-  qwi_ = qwi;
-  qwo_ = qwo;
-  if (qout) {
-    osz_ = qwo_->getM();
-  }
+  setTargetCounts(targetCounts);
 }
 
 real Model::binaryLogistic(int32_t target, bool label, real lr) {
   real score = sigmoid(wo_->dotRow(hidden_, target));
   real alpha = lr * (real(label) - score);
   grad_.addRow(*wo_, target, alpha);
-  wo_->addRow(hidden_, target, alpha);
+  wo_->addVectorToRow(hidden_, target, alpha);
   if (label) {
     return -log(score);
   } else {
@@ -91,11 +78,7 @@ real Model::hierarchicalSoftmax(int32_t target, real lr) {
 }
 
 void Model::computeOutput(Vector& hidden, Vector& output) const {
-  if (quant_ && args_->qout) {
-    output.mul(*qwo_, hidden);
-  } else {
-    output.mul(*wo_, hidden);
-  }
+  output.mul(*wo_, hidden);
 }
 
 void Model::computeOutputSigmoid(Vector& hidden, Vector& output) const {
@@ -131,7 +114,7 @@ real Model::softmax(int32_t target, real lr) {
     real label = (i == target) ? 1.0 : 0.0;
     real alpha = lr * (label - output_[i]);
     grad_.addRow(*wo_, i, alpha);
-    wo_->addRow(hidden_, i, alpha);
+    wo_->addVectorToRow(hidden_, i, alpha);
   }
   return -log(output_[target]);
 }
@@ -151,11 +134,7 @@ void Model::computeHidden(const std::vector<int32_t>& input, Vector& hidden)
   assert(hidden.size() == hsz_);
   hidden.zero();
   for (auto it = input.cbegin(); it != input.cend(); ++it) {
-    if (quant_) {
-      hidden.addRow(*qwi_, *it);
-    } else {
-      hidden.addRow(*wi_, *it);
-    }
+    hidden.addRow(*wi_, *it);
   }
   hidden.mul(1.0 / input.size());
 }
@@ -250,12 +229,7 @@ void Model::dfs(
     return;
   }
 
-  real f;
-  if (quant_ && args_->qout) {
-    f = qwo_->dotRow(hidden, node - osz_);
-  } else {
-    f = wo_->dotRow(hidden, node - osz_);
-  }
+  real f = wo_->dotRow(hidden, node - osz_);
   f = 1. / (1 + std::exp(-f));
 
   dfs(k, threshold, tree[node].left, score + std_log(1.0 - f), heap, hidden);
@@ -307,7 +281,7 @@ void Model::update(
     grad_.mul(1.0 / input.size());
   }
   for (auto it = input.cbegin(); it != input.cend(); ++it) {
-    wi_->addRow(grad_, *it, 1.0);
+    wi_->addVectorToRow(grad_, *it, 1.0);
   }
 }
 

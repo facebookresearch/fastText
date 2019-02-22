@@ -15,7 +15,6 @@
 #include <utility>
 
 #include "matrix.h"
-#include "qmatrix.h"
 
 namespace fasttext {
 
@@ -60,40 +59,23 @@ void Vector::addVector(const Vector& source, real s) {
   }
 }
 
-void Vector::addRow(const Matrix& A, int64_t i) {
-  assert(i >= 0);
-  assert(i < A.size(0));
-  assert(size() == A.size(1));
-  for (int64_t j = 0; j < A.size(1); j++) {
-    data_[j] += A.at(i, j);
-  }
-}
-
 void Vector::addRow(const Matrix& A, int64_t i, real a) {
   assert(i >= 0);
   assert(i < A.size(0));
   assert(size() == A.size(1));
-  for (int64_t j = 0; j < A.size(1); j++) {
-    data_[j] += a * A.at(i, j);
-  }
+  A.addRowToVector(*this, i, a);
 }
 
-void Vector::addRow(const QMatrix& A, int64_t i) {
+void Vector::addRow(const Matrix& A, int64_t i) {
   assert(i >= 0);
-  A.addToVector(*this, i);
+  assert(i < A.size(0));
+  assert(size() == A.size(1));
+  A.addRowToVector(*this, i);
 }
 
 void Vector::mul(const Matrix& A, const Vector& vec) {
   assert(A.size(0) == size());
   assert(A.size(1) == vec.size());
-  for (int64_t i = 0; i < size(); i++) {
-    data_[i] = A.dotRow(vec, i);
-  }
-}
-
-void Vector::mul(const QMatrix& A, const Vector& vec) {
-  assert(A.getM() == size());
-  assert(A.getN() == vec.size());
   for (int64_t i = 0; i < size(); i++) {
     data_[i] = A.dotRow(vec, i);
   }

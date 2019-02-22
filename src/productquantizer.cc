@@ -229,7 +229,7 @@ void ProductQuantizer::compute_codes(const real* x, uint8_t* codes, int32_t n)
   }
 }
 
-void ProductQuantizer::save(std::ostream& out) {
+void ProductQuantizer::save(std::ostream& out) const {
   out.write((char*)&dim_, sizeof(dim_));
   out.write((char*)&nsubq_, sizeof(nsubq_));
   out.write((char*)&dsub_, sizeof(dsub_));

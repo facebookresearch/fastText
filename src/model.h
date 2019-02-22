@@ -15,7 +15,6 @@
 
 #include "args.h"
 #include "matrix.h"
-#include "qmatrix.h"
 #include "real.h"
 #include "vector.h"
 
@@ -33,8 +32,6 @@ class Model {
  protected:
   std::shared_ptr<Matrix> wi_;
   std::shared_ptr<Matrix> wo_;
-  std::shared_ptr<QMatrix> qwi_;
-  std::shared_ptr<QMatrix> qwo_;
   std::shared_ptr<Args> args_;
   Vector hidden_;
   Vector output_;
@@ -61,6 +58,7 @@ class Model {
   void initSigmoid();
   void initLog();
   void computeOutput(Vector&, Vector&) const;
+  void setTargetCounts(const std::vector<int64_t>&);
 
   static const int32_t NEGATIVE_TABLE_SIZE = 10000000;
 
@@ -69,6 +67,7 @@ class Model {
       std::shared_ptr<Matrix>,
       std::shared_ptr<Matrix>,
       std::shared_ptr<Args>,
+      const std::vector<int64_t>&,
       int32_t);
 
   real binaryLogistic(int32_t, bool, real);
@@ -113,7 +112,6 @@ class Model {
   void computeOutputSoftmax(Vector&, Vector&) const;
   void computeOutputSoftmax();
 
-  void setTargetCounts(const std::vector<int64_t>&);
   void initTableNegatives(const std::vector<int64_t>&);
   void buildTree(const std::vector<int64_t>&);
   real getLoss() const;
@@ -122,9 +120,6 @@ class Model {
   real std_log(real) const;
 
   std::minstd_rand rng;
-  bool quant_;
-  void
-  setQuantizePointer(std::shared_ptr<QMatrix>, std::shared_ptr<QMatrix>, bool);
 
   static const int32_t kUnlimitedPredictions = -1;
   static const int32_t kAllLabelsAsTarget = -1;

@@ -7,8 +7,8 @@
  */
 
 #include <args.h>
+#include <densematrix.h>
 #include <fasttext.h>
-#include <matrix.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <real.h>
@@ -117,11 +117,11 @@ PYBIND11_MODULE(fasttext_pybind, m) {
             {sizeof(fasttext::real)});
       });
 
-  py::class_<fasttext::Matrix>(
-      m, "Matrix", py::buffer_protocol(), py::module_local())
+  py::class_<fasttext::DenseMatrix>(
+      m, "DenseMatrix", py::buffer_protocol(), py::module_local())
       .def(py::init<>())
       .def(py::init<ssize_t, ssize_t>())
-      .def_buffer([](fasttext::Matrix& m) -> py::buffer_info {
+      .def_buffer([](fasttext::DenseMatrix& m) -> py::buffer_info {
         return py::buffer_info(
             m.data(),
             sizeof(fasttext::real),
@@ -138,13 +138,15 @@ PYBIND11_MODULE(fasttext_pybind, m) {
       .def(
           "getInputMatrix",
           [](fasttext::FastText& m) {
-            std::shared_ptr<const fasttext::Matrix> mm = m.getInputMatrix();
+            std::shared_ptr<const fasttext::DenseMatrix> mm =
+                m.getInputMatrix();
             return *mm.get();
           })
       .def(
           "getOutputMatrix",
           [](fasttext::FastText& m) {
-            std::shared_ptr<const fasttext::Matrix> mm = m.getOutputMatrix();
+            std::shared_ptr<const fasttext::DenseMatrix> mm =
+                m.getOutputMatrix();
             return *mm.get();
           })
       .def(

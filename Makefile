@@ -8,7 +8,7 @@
 
 CXX = c++
 CXXFLAGS = -pthread -std=c++0x -march=native
-OBJS = args.o dictionary.o productquantizer.o matrix.o qmatrix.o vector.o model.o utils.o meter.o fasttext.o
+OBJS = args.o matrix.o dictionary.o productquantizer.o densematrix.o quantmatrix.o vector.o model.o utils.o meter.o fasttext.o
 INCLUDES = -I.
 
 opt: CXXFLAGS += -O3 -funroll-loops
@@ -23,17 +23,20 @@ debug: fasttext
 args.o: src/args.cc src/args.h
 	$(CXX) $(CXXFLAGS) -c src/args.cc
 
+matrix.o: src/matrix.cc src/matrix.h
+	$(CXX) $(CXXFLAGS) -c src/matrix.cc
+
 dictionary.o: src/dictionary.cc src/dictionary.h src/args.h
 	$(CXX) $(CXXFLAGS) -c src/dictionary.cc
 
 productquantizer.o: src/productquantizer.cc src/productquantizer.h src/utils.h
 	$(CXX) $(CXXFLAGS) -c src/productquantizer.cc
 
-matrix.o: src/matrix.cc src/matrix.h src/utils.h
-	$(CXX) $(CXXFLAGS) -c src/matrix.cc
+densematrix.o: src/densematrix.cc src/densematrix.h src/utils.h src/matrix.h
+	$(CXX) $(CXXFLAGS) -c src/densematrix.cc
 
-qmatrix.o: src/qmatrix.cc src/qmatrix.h src/utils.h
-	$(CXX) $(CXXFLAGS) -c src/qmatrix.cc
+quantmatrix.o: src/quantmatrix.cc src/quantmatrix.h src/utils.h src/matrix.h
+	$(CXX) $(CXXFLAGS) -c src/quantmatrix.cc
 
 vector.o: src/vector.cc src/vector.h src/utils.h
 	$(CXX) $(CXXFLAGS) -c src/vector.cc
