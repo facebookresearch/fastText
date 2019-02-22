@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "matrix.h"
+#include "model.h"
 #include "real.h"
 #include "utils.h"
 #include "vector.h"
@@ -21,7 +22,11 @@ namespace fasttext {
 
 class Loss {
  private:
-  void findKBest(int32_t, real, Predictions&, Vector&) const;
+  void findKBest(
+      int32_t k,
+      real threshold,
+      Predictions& heap,
+      const Vector& output) const;
 
  protected:
   std::vector<real> t_sigmoid_;
@@ -38,36 +43,31 @@ class Loss {
   virtual real forward(
       const std::vector<int32_t>& targets,
       int32_t targetIndex,
-      const Vector& hidden,
-      Vector& output,
-      Vector& grad,
+      Model::State& state,
       real lr,
-      std::minstd_rand& rng,
       bool backprop) = 0;
-  virtual void computeOutput(const Vector& hidden, Vector& output) const = 0;
+  virtual void computeOutput(Model::State& state) const = 0;
 
   virtual void predict(
-      int32_t k,
-      real threshold,
-      Predictions& heap,
-      const Vector& hidden,
-      Vector& output) const;
+      int32_t /*k*/,
+      real /*threshold*/,
+      Predictions& /*heap*/,
+      Model::State& /*state*/) const;
 };
 
 class BinaryLogisticLoss : public Loss {
  protected:
   real binaryLogistic(
       int32_t target,
-      const Vector& hidden,
-      Vector& grad,
+      Model::State& state,
       bool labelIsPositive,
       real lr,
       bool backprop) const;
-  void computeOutput(const Vector& hidden, Vector& output) const override;
 
  public:
   explicit BinaryLogisticLoss(std::shared_ptr<Matrix>& wo);
   virtual ~BinaryLogisticLoss() override = default;
+  void computeOutput(Model::State& state) const override;
 };
 
 class OneVsAllLoss : public BinaryLogisticLoss {
@@ -77,11 +77,8 @@ class OneVsAllLoss : public BinaryLogisticLoss {
   real forward(
       const std::vector<int32_t>& targets,
       int32_t targetIndex,
-      const Vector& hidden,
-      Vector& output,
-      Vector& grad,
+      Model::State& state,
       real lr,
-      std::minstd_rand& rng,
       bool backprop) override;
 };
 
@@ -104,11 +101,8 @@ class NegativeSamplingLoss : public BinaryLogisticLoss {
   real forward(
       const std::vector<int32_t>& targets,
       int32_t targetIndex,
-      const Vector& hidden,
-      Vector& output,
-      Vector& grad,
+      Model::State& state,
       real lr,
-      std::minstd_rand& rng,
       bool backprop) override;
 };
 
@@ -143,18 +137,14 @@ class HierarchicalSoftmaxLoss : public BinaryLogisticLoss {
   real forward(
       const std::vector<int32_t>& targets,
       int32_t targetIndex,
-      const Vector& hidden,
-      Vector& output,
-      Vector& grad,
+      Model::State& state,
       real lr,
-      std::minstd_rand& rng,
       bool backprop) override;
   void predict(
       int32_t k,
       real threshold,
       Predictions& heap,
-      const Vector& hidden,
-      Vector& output) const override;
+      Model::State& state) const override;
 };
 
 class SoftmaxLoss : public Loss {
@@ -164,13 +154,10 @@ class SoftmaxLoss : public Loss {
   real forward(
       const std::vector<int32_t>& targets,
       int32_t targetIndex,
-      const Vector& hidden,
-      Vector& output,
-      Vector& grad,
+      Model::State& state,
       real lr,
-      std::minstd_rand& rng,
       bool backprop) override;
-  void computeOutput(const Vector& hidden, Vector& output) const override;
+  void computeOutput(Model::State& state) const override;
 };
 
 } // namespace fasttext

@@ -258,8 +258,7 @@ void FastText::loadModel(std::istream& in) {
 
   auto loss = createLoss(output_);
   bool normalizeGradient = (args_->model == model_name::sup);
-  model_ = std::make_shared<Model>(
-      input_, output_, loss, args_->dim, normalizeGradient, 0);
+  model_ = std::make_shared<Model>(input_, output_, loss, normalizeGradient);
 }
 
 void FastText::printInfo(real progress, real loss, std::ostream& log_stream) {
@@ -337,8 +336,7 @@ void FastText::quantize(const Args& qargs) {
       args_->thread = qargs.thread;
       args_->verbose = qargs.verbose;
       auto loss = createLoss(output_);
-      model_ = std::make_shared<Model>(
-          input, output, loss, args_->dim, normalizeGradient, 0);
+      model_ = std::make_shared<Model>(input, output, loss, normalizeGradient);
       startThreads();
     }
   }
@@ -353,12 +351,11 @@ void FastText::quantize(const Args& qargs) {
 
   quant_ = true;
   auto loss = createLoss(output_);
-  model_ = std::make_shared<Model>(
-      input_, output_, loss, args_->dim, normalizeGradient, 0);
+  model_ = std::make_shared<Model>(input_, output_, loss, normalizeGradient);
 }
 
 void FastText::supervised(
-    Model& model,
+    Model::State& state,
     real lr,
     const std::vector<int32_t>& line,
     const std::vector<int32_t>& labels) {
@@ -366,19 +363,22 @@ void FastText::supervised(
     return;
   }
   if (args_->loss == loss_name::ova) {
-    model.update(line, labels, Model::kAllLabelsAsTarget, lr);
+    model_->update(line, labels, Model::kAllLabelsAsTarget, lr, state);
   } else {
     std::uniform_int_distribution<> uniform(0, labels.size() - 1);
-    int32_t i = uniform(model.rng);
-    model.update(line, labels, i, lr);
+    int32_t i = uniform(state.rng);
+    model_->update(line, labels, i, lr, state);
   }
 }
 
-void FastText::cbow(Model& model, real lr, const std::vector<int32_t>& line) {
+void FastText::cbow(
+    Model::State& state,
+    real lr,
+    const std::vector<int32_t>& line) {
   std::vector<int32_t> bow;
   std::uniform_int_distribution<> uniform(1, args_->ws);
   for (int32_t w = 0; w < line.size(); w++) {
-    int32_t boundary = uniform(model.rng);
+    int32_t boundary = uniform(state.rng);
     bow.clear();
     for (int32_t c = -boundary; c <= boundary; c++) {
       if (c != 0 && w + c >= 0 && w + c < line.size()) {
@@ -386,21 +386,21 @@ void FastText::cbow(Model& model, real lr, const std::vector<int32_t>& line) {
         bow.insert(bow.end(), ngrams.cbegin(), ngrams.cend());
       }
     }
-    model.update(bow, line, w, lr);
+    model_->update(bow, line, w, lr, state);
   }
 }
 
 void FastText::skipgram(
-    Model& model,
+    Model::State& state,
     real lr,
     const std::vector<int32_t>& line) {
   std::uniform_int_distribution<> uniform(1, args_->ws);
   for (int32_t w = 0; w < line.size(); w++) {
-    int32_t boundary = uniform(model.rng);
+    int32_t boundary = uniform(state.rng);
     const std::vector<int32_t>& ngrams = dict_->getSubwords(line[w]);
     for (int32_t c = -boundary; c <= boundary; c++) {
       if (c != 0 && w + c >= 0 && w + c < line.size()) {
-        model.update(ngrams, line, w + c, lr);
+        model_->update(ngrams, line, w + c, lr, state);
       }
     }
   }
@@ -442,12 +442,11 @@ void FastText::predict(
   if (words.empty()) {
     return;
   }
-  Vector hidden(args_->dim);
-  Vector output(dict_->nlabels());
+  Model::State state(args_->dim, dict_->nlabels(), 0);
   if (args_->model != model_name::sup) {
     throw std::invalid_argument("Model needs to be supervised for prediction!");
   }
-  model_->predict(words, k, threshold, predictions, hidden, output);
+  model_->predict(words, k, threshold, predictions, state);
 }
 
 bool FastText::predictLine(
@@ -653,8 +652,7 @@ void FastText::trainThread(int32_t threadId) {
   std::ifstream ifs(args_->input);
   utils::seek(ifs, threadId * utils::size(ifs) / args_->thread);
 
-  assert(model_);
-  Model model(*model_, threadId);
+  Model::State state(args_->dim, output_->size(0), threadId);
 
   const int64_t ntokens = dict_->ntokens();
   int64_t localTokenCount = 0;
@@ -664,23 +662,23 @@ void FastText::trainThread(int32_t threadId) {
     real lr = args_->lr * (1.0 - progress);
     if (args_->model == model_name::sup) {
       localTokenCount += dict_->getLine(ifs, line, labels);
-      supervised(model, lr, line, labels);
+      supervised(state, lr, line, labels);
     } else if (args_->model == model_name::cbow) {
-      localTokenCount += dict_->getLine(ifs, line, model.rng);
-      cbow(model, lr, line);
+      localTokenCount += dict_->getLine(ifs, line, state.rng);
+      cbow(state, lr, line);
     } else if (args_->model == model_name::sg) {
-      localTokenCount += dict_->getLine(ifs, line, model.rng);
-      skipgram(model, lr, line);
+      localTokenCount += dict_->getLine(ifs, line, state.rng);
+      skipgram(state, lr, line);
     }
     if (localTokenCount > args_->lrUpdateRate) {
       tokenCount_ += localTokenCount;
       localTokenCount = 0;
       if (threadId == 0 && args_->verbose > 1)
-        loss_ = model.getLoss();
+        loss_ = state.getLoss();
     }
   }
   if (threadId == 0)
-    loss_ = model.getLoss();
+    loss_ = state.getLoss();
   ifs.close();
 }
 
@@ -774,8 +772,7 @@ void FastText::train(const Args& args) {
   output_ = createTrainOutputMatrix();
   auto loss = createLoss(output_);
   bool normalizeGradient = (args_->model == model_name::sup);
-  model_ = std::make_shared<Model>(
-      input_, output_, loss, args_->dim, normalizeGradient, 0);
+  model_ = std::make_shared<Model>(input_, output_, loss, normalizeGradient);
   startThreads();
 }
 

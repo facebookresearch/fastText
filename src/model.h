@@ -13,25 +13,20 @@
 #include <utility>
 #include <vector>
 
-#include "loss.h"
 #include "matrix.h"
 #include "real.h"
+#include "utils.h"
 #include "vector.h"
 
 namespace fasttext {
+
+class Loss;
 
 class Model {
  protected:
   std::shared_ptr<Matrix> wi_;
   std::shared_ptr<Matrix> wo_;
   std::shared_ptr<Loss> loss_;
-  Vector hidden_;
-  Vector output_;
-  Vector grad_;
-  int32_t hsz_;
-  int32_t osz_;
-  real lossValue_;
-  int64_t nexamples_;
   bool normalizeGradient_;
 
  public:
@@ -39,38 +34,43 @@ class Model {
       std::shared_ptr<Matrix> wi,
       std::shared_ptr<Matrix> wo,
       std::shared_ptr<Loss> loss,
-      int32_t hiddenSize,
-      bool normalizeGradient,
-      int32_t seed);
-  Model(const Model& model, int32_t seed);
+      bool normalizeGradient);
   Model(const Model& model) = delete;
   Model(Model&& model) = delete;
   Model& operator=(const Model& other) = delete;
   Model& operator=(Model&& other) = delete;
+
+  class State {
+   private:
+    real lossValue_;
+    int64_t nexamples_;
+
+   public:
+    Vector hidden;
+    Vector output;
+    Vector grad;
+    std::minstd_rand rng;
+
+    State(int32_t hiddenSize, int32_t outputSize, int32_t seed);
+    real getLoss() const;
+    void incrementNExamples(real loss);
+  };
 
   void predict(
       const std::vector<int32_t>& input,
       int32_t k,
       real threshold,
       Predictions& heap,
-      Vector& hidden,
-      Vector& output) const;
-  void predict(
-      const std::vector<int32_t>& input,
-      int32_t k,
-      real threshold,
-      Predictions& heap);
+      State& state) const;
   void update(
       const std::vector<int32_t>& input,
       const std::vector<int32_t>& targets,
       int32_t targetIndex,
-      real lr);
-  void computeHidden(const std::vector<int32_t>&, Vector&) const;
+      real lr,
+      State& state);
+  void computeHidden(const std::vector<int32_t>& input, State& state) const;
 
-  real getLoss() const;
   real std_log(real) const;
-
-  std::minstd_rand rng;
 
   static const int32_t kUnlimitedPredictions = -1;
   static const int32_t kAllLabelsAsTarget = -1;

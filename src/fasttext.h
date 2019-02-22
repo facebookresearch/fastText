@@ -61,6 +61,13 @@ class FastText {
   std::shared_ptr<Matrix> createTrainOutputMatrix() const;
   std::vector<int64_t> getTargetCounts() const;
   std::shared_ptr<Loss> createLoss(std::shared_ptr<Matrix>& output);
+  void supervised(
+      Model::State& state,
+      real lr,
+      const std::vector<int32_t>& line,
+      const std::vector<int32_t>& labels);
+  void cbow(Model::State& state, real lr, const std::vector<int32_t>& line);
+  void skipgram(Model::State& state, real lr, const std::vector<int32_t>& line);
 
   bool quant_;
   int32_t version;
@@ -154,19 +161,6 @@ class FastText {
   FASTTEXT_DEPRECATED(
       "analogies is being deprecated and replaced by getAnalogies.")
   void analogies(int32_t k);
-
-  FASTTEXT_DEPRECATED("supervised is being deprecated.")
-  void supervised(
-      Model& model,
-      real lr,
-      const std::vector<int32_t>& line,
-      const std::vector<int32_t>& labels);
-
-  FASTTEXT_DEPRECATED("cbow is being deprecated.")
-  void cbow(Model& model, real lr, const std::vector<int32_t>& line);
-
-  FASTTEXT_DEPRECATED("skipgram is being deprecated.")
-  void skipgram(Model& model, real lr, const std::vector<int32_t>& line);
 
   FASTTEXT_DEPRECATED("selectEmbeddings is being deprecated.")
   std::vector<int32_t> selectEmbeddings(int32_t cutoff) const;

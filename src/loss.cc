@@ -65,10 +65,9 @@ void Loss::predict(
     int32_t k,
     real threshold,
     Predictions& heap,
-    const Vector& hidden,
-    Vector& output) const {
-  computeOutput(hidden, output);
-  findKBest(k, threshold, heap, output);
+    Model::State& state) const {
+  computeOutput(state);
+  findKBest(k, threshold, heap, state.output);
   std::sort_heap(heap.begin(), heap.end(), comparePairs);
 }
 
@@ -76,7 +75,7 @@ void Loss::findKBest(
     int32_t k,
     real threshold,
     Predictions& heap,
-    Vector& output) const {
+    const Vector& output) const {
   for (int32_t i = 0; i < output.size(); i++) {
     if (output[i] < threshold) {
       continue;
@@ -98,16 +97,15 @@ BinaryLogisticLoss::BinaryLogisticLoss(std::shared_ptr<Matrix>& wo)
 
 real BinaryLogisticLoss::binaryLogistic(
     int32_t target,
-    const Vector& hidden,
-    Vector& grad,
+    Model::State& state,
     bool labelIsPositive,
     real lr,
     bool backprop) const {
-  real score = sigmoid(wo_->dotRow(hidden, target));
+  real score = sigmoid(wo_->dotRow(state.hidden, target));
   if (backprop) {
     real alpha = lr * (real(labelIsPositive) - score);
-    grad.addRow(*wo_, target, alpha);
-    wo_->addVectorToRow(hidden, target, alpha);
+    state.grad.addRow(*wo_, target, alpha);
+    wo_->addVectorToRow(state.hidden, target, alpha);
   }
   if (labelIsPositive) {
     return -log(score);
@@ -116,9 +114,9 @@ real BinaryLogisticLoss::binaryLogistic(
   }
 }
 
-void BinaryLogisticLoss::computeOutput(const Vector& hidden, Vector& output)
-    const {
-  output.mul(*wo_, hidden);
+void BinaryLogisticLoss::computeOutput(Model::State& state) const {
+  Vector& output = state.output;
+  output.mul(*wo_, state.hidden);
   int32_t osz = output.size();
   for (int32_t i = 0; i < osz; i++) {
     output[i] = sigmoid(output[i]);
@@ -131,17 +129,14 @@ OneVsAllLoss::OneVsAllLoss(std::shared_ptr<Matrix>& wo)
 real OneVsAllLoss::forward(
     const std::vector<int32_t>& targets,
     int32_t /* we take all targets here */,
-    const Vector& hidden,
-    Vector& output,
-    Vector& grad,
+    Model::State& state,
     real lr,
-    std::minstd_rand& /*rng*/,
     bool backprop) {
   real loss = 0.0;
-  int32_t osz = output.size();
+  int32_t osz = state.output.size();
   for (int32_t i = 0; i < osz; i++) {
     bool isMatch = utils::contains(targets, i);
-    loss += binaryLogistic(i, hidden, grad, isMatch, lr, backprop);
+    loss += binaryLogistic(i, state, isMatch, lr, backprop);
   }
 
   return loss;
@@ -169,20 +164,17 @@ NegativeSamplingLoss::NegativeSamplingLoss(
 real NegativeSamplingLoss::forward(
     const std::vector<int32_t>& targets,
     int32_t targetIndex,
-    const Vector& hidden,
-    Vector& /* output */,
-    Vector& grad,
+    Model::State& state,
     real lr,
-    std::minstd_rand& rng,
     bool backprop) {
   assert(targetIndex >= 0);
   assert(targetIndex < targets.size());
   int32_t target = targets[targetIndex];
-  real loss = binaryLogistic(target, hidden, grad, true, lr, backprop);
+  real loss = binaryLogistic(target, state, true, lr, backprop);
 
   for (int32_t n = 0; n < neg_; n++) {
-    auto negativeTarget = getNegative(target, rng);
-    loss += binaryLogistic(negativeTarget, hidden, grad, false, lr, backprop);
+    auto negativeTarget = getNegative(target, state.rng);
+    loss += binaryLogistic(negativeTarget, state, false, lr, backprop);
   }
   return loss;
 }
@@ -255,19 +247,15 @@ void HierarchicalSoftmaxLoss::buildTree(const std::vector<int64_t>& counts) {
 real HierarchicalSoftmaxLoss::forward(
     const std::vector<int32_t>& targets,
     int32_t targetIndex,
-    const Vector& hidden,
-    Vector& /* the output is not an explicit Vector here */,
-    Vector& grad,
+    Model::State& state,
     real lr,
-    std::minstd_rand& /*rng*/,
     bool backprop) {
   real loss = 0.0;
   int32_t target = targets[targetIndex];
   const std::vector<bool>& binaryCode = codes_[target];
   const std::vector<int32_t>& pathToRoot = paths_[target];
   for (int32_t i = 0; i < pathToRoot.size(); i++) {
-    loss += binaryLogistic(
-        pathToRoot[i], hidden, grad, binaryCode[i], lr, backprop);
+    loss += binaryLogistic(pathToRoot[i], state, binaryCode[i], lr, backprop);
   }
   return loss;
 }
@@ -276,9 +264,8 @@ void HierarchicalSoftmaxLoss::predict(
     int32_t k,
     real threshold,
     Predictions& heap,
-    const Vector& hidden,
-    Vector& /*output*/) const {
-  dfs(k, threshold, 2 * osz_ - 2, 0.0, heap, hidden);
+    Model::State& state) const {
+  dfs(k, threshold, 2 * osz_ - 2, 0.0, heap, state.hidden);
   std::sort_heap(heap.begin(), heap.end(), comparePairs);
 }
 
@@ -315,8 +302,9 @@ void HierarchicalSoftmaxLoss::dfs(
 
 SoftmaxLoss::SoftmaxLoss(std::shared_ptr<Matrix>& wo) : Loss(wo) {}
 
-void SoftmaxLoss::computeOutput(const Vector& hidden, Vector& output) const {
-  output.mul(*wo_, hidden);
+void SoftmaxLoss::computeOutput(Model::State& state) const {
+  Vector& output = state.output;
+  output.mul(*wo_, state.hidden);
   real max = output[0], z = 0.0;
   int32_t osz = output.size();
   for (int32_t i = 0; i < osz; i++) {
@@ -334,13 +322,10 @@ void SoftmaxLoss::computeOutput(const Vector& hidden, Vector& output) const {
 real SoftmaxLoss::forward(
     const std::vector<int32_t>& targets,
     int32_t targetIndex,
-    const Vector& hidden,
-    Vector& output,
-    Vector& grad,
+    Model::State& state,
     real lr,
-    std::minstd_rand& /*rng*/,
     bool backprop) {
-  computeOutput(hidden, output);
+  computeOutput(state);
 
   assert(targetIndex >= 0);
   assert(targetIndex < targets.size());
@@ -350,12 +335,12 @@ real SoftmaxLoss::forward(
     int32_t osz = wo_->size(0);
     for (int32_t i = 0; i < osz; i++) {
       real label = (i == target) ? 1.0 : 0.0;
-      real alpha = lr * (label - output[i]);
-      grad.addRow(*wo_, i, alpha);
-      wo_->addVectorToRow(hidden, i, alpha);
+      real alpha = lr * (label - state.output[i]);
+      state.grad.addRow(*wo_, i, alpha);
+      wo_->addVectorToRow(state.hidden, i, alpha);
     }
   }
-  return -log(output[target]);
+  return -log(state.output[target]);
 };
 
 } // namespace fasttext
