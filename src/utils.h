@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "real.h"
+
 #include <algorithm>
 #include <fstream>
 #include <vector>
@@ -21,6 +23,8 @@
 #endif
 
 namespace fasttext {
+
+using Predictions = std::vector<std::pair<real, int32_t>>;
 
 namespace utils {
 

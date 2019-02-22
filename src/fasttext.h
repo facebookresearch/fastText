@@ -60,6 +60,7 @@ class FastText {
   std::shared_ptr<Matrix> createRandomMatrix() const;
   std::shared_ptr<Matrix> createTrainOutputMatrix() const;
   std::vector<int64_t> getTargetCounts() const;
+  std::shared_ptr<Loss> createLoss(std::shared_ptr<Matrix>& output);
 
   bool quant_;
   int32_t version;
@@ -111,7 +112,7 @@ class FastText {
   void predict(
       int32_t k,
       const std::vector<int32_t>& words,
-      std::vector<std::pair<real, int32_t>>& predictions,
+      Predictions& predictions,
       real threshold = 0.0) const;
 
   bool predictLine(

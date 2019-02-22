@@ -7,6 +7,7 @@
  */
 
 #include "fasttext.h"
+#include "loss.h"
 #include "quantmatrix.h"
 
 #include <algorithm>
@@ -27,6 +28,24 @@ constexpr int32_t FASTTEXT_FILEFORMAT_MAGIC_INT32 = 793712314;
 bool comparePairs(
     const std::pair<real, std::string>& l,
     const std::pair<real, std::string>& r);
+
+std::shared_ptr<Loss> FastText::createLoss(std::shared_ptr<Matrix>& output) {
+  loss_name lossName = args_->loss;
+  switch (lossName) {
+    case loss_name::hs:
+      return std::make_shared<HierarchicalSoftmaxLoss>(
+          output, getTargetCounts());
+    case loss_name::ns:
+      return std::make_shared<NegativeSamplingLoss>(
+          output, args_->neg, getTargetCounts());
+    case loss_name::softmax:
+      return std::make_shared<SoftmaxLoss>(output);
+    case loss_name::ova:
+      return std::make_shared<OneVsAllLoss>(output);
+    default:
+      throw std::runtime_error("Unknown loss");
+  }
+}
 
 FastText::FastText() : quant_(false), wordVectors_(nullptr) {}
 
@@ -237,8 +256,8 @@ void FastText::loadModel(std::istream& in) {
   }
   output_->load(in);
 
-  model_ =
-      std::make_shared<Model>(input_, output_, args_, getTargetCounts(), 0);
+  auto loss = createLoss(output_);
+  model_ = std::make_shared<Model>(input_, output_, args_, loss, 0);
 }
 
 void FastText::printInfo(real progress, real loss, std::ostream& log_stream) {
@@ -297,7 +316,6 @@ void FastText::quantize(const Args& qargs) {
       std::dynamic_pointer_cast<DenseMatrix>(input_);
   std::shared_ptr<DenseMatrix> output =
       std::dynamic_pointer_cast<DenseMatrix>(output_);
-
   if (qargs.cutoff > 0 && qargs.cutoff < input->size(0)) {
     auto idx = selectEmbeddings(qargs.cutoff);
     dict_->prune(idx);
@@ -314,6 +332,8 @@ void FastText::quantize(const Args& qargs) {
       args_->lr = qargs.lr;
       args_->thread = qargs.thread;
       args_->verbose = qargs.verbose;
+      auto loss = createLoss(output_);
+      model_ = std::make_shared<Model>(input, output, args_, loss, 0);
       startThreads();
     }
   }
@@ -327,8 +347,8 @@ void FastText::quantize(const Args& qargs) {
   }
 
   quant_ = true;
-  model_ =
-      std::make_shared<Model>(input_, output_, args_, getTargetCounts(), 0);
+  auto loss = createLoss(output_);
+  model_ = std::make_shared<Model>(input_, output_, args_, loss, 0);
 }
 
 void FastText::supervised(
@@ -393,7 +413,7 @@ void FastText::test(std::istream& in, int32_t k, real threshold, Meter& meter)
     const {
   std::vector<int32_t> line;
   std::vector<int32_t> labels;
-  std::vector<std::pair<real, int32_t>> predictions;
+  Predictions predictions;
 
   while (in.peek() != EOF) {
     line.clear();
@@ -411,7 +431,7 @@ void FastText::test(std::istream& in, int32_t k, real threshold, Meter& meter)
 void FastText::predict(
     int32_t k,
     const std::vector<int32_t>& words,
-    std::vector<std::pair<real, int32_t>>& predictions,
+    Predictions& predictions,
     real threshold) const {
   if (words.empty()) {
     return;
@@ -433,7 +453,7 @@ bool FastText::predictLine(
 
   std::vector<int32_t> words, labels;
   dict_->getLine(in, words, labels);
-  std::vector<std::pair<real, int32_t>> linePredictions;
+  Predictions linePredictions;
   predict(k, words, linePredictions, threshold);
   for (const auto& p : linePredictions) {
     predictions.push_back(
@@ -624,7 +644,8 @@ void FastText::trainThread(int32_t threadId) {
   std::ifstream ifs(args_->input);
   utils::seek(ifs, threadId * utils::size(ifs) / args_->thread);
 
-  Model model(input_, output_, args_, getTargetCounts(), threadId);
+  assert(model_);
+  Model model(*model_, threadId);
 
   const int64_t ntokens = dict_->ntokens();
   int64_t localTokenCount = 0;
@@ -742,9 +763,9 @@ void FastText::train(const Args& args) {
     input_ = createRandomMatrix();
   }
   output_ = createTrainOutputMatrix();
+  auto loss = createLoss(output_);
+  model_ = std::make_shared<Model>(input_, output_, args_, loss, 0);
   startThreads();
-  model_ =
-      std::make_shared<Model>(input_, output_, args_, getTargetCounts(), 0);
 }
 
 void FastText::startThreads() {

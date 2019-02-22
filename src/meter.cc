@@ -18,7 +18,7 @@ namespace fasttext {
 
 void Meter::log(
     const std::vector<int32_t>& labels,
-    const std::vector<std::pair<real, int32_t>>& predictions) {
+    const Predictions& predictions) {
   nexamples_++;
   metrics_.gold += labels.size();
   metrics_.predicted += predictions.size();

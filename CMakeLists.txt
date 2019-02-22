@@ -22,6 +22,7 @@ set(HEADER_FILES
     src/densematrix.h
     src/dictionary.h
     src/fasttext.h
+    src/loss.h
     src/matrix.h
     src/meter.h
     src/model.h
@@ -36,6 +37,7 @@ set(SOURCE_FILES
     src/densematrix.cc
     src/dictionary.cc
     src/fasttext.cc
+    src/loss.cc
     src/main.cc
     src/matrix.cc
     src/meter.cc

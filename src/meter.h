@@ -13,6 +13,7 @@
 
 #include "dictionary.h"
 #include "real.h"
+#include "utils.h"
 
 namespace fasttext {
 
@@ -38,9 +39,7 @@ class Meter {
  public:
   Meter() : metrics_(), nexamples_(0), labelMetrics_() {}
 
-  void log(
-      const std::vector<int32_t>& labels,
-      const std::vector<std::pair<real, int32_t>>& predictions);
+  void log(const std::vector<int32_t>& labels, const Predictions& predictions);
 
   double precision(int32_t);
   double recall(int32_t);

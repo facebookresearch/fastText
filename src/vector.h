@@ -24,10 +24,10 @@ class Vector {
 
  public:
   explicit Vector(int64_t);
-  Vector(const Vector&) = delete;
-  Vector(Vector&&) noexcept;
-  Vector& operator=(const Vector&) = delete;
-  Vector& operator=(Vector&&);
+  Vector(const Vector&) = default;
+  Vector(Vector&&) noexcept = default;
+  Vector& operator=(const Vector&) = default;
+  Vector& operator=(Vector&&) = default;
 
   inline real* data() {
     return data_.data();
