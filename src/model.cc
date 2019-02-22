@@ -18,24 +18,26 @@ namespace fasttext {
 Model::Model(
     std::shared_ptr<Matrix> wi,
     std::shared_ptr<Matrix> wo,
-    std::shared_ptr<Args> args,
     std::shared_ptr<Loss> loss,
+    int32_t hiddenSize,
+    bool normalizeGradient,
     int32_t seed)
-    : hidden_(args->dim), output_(wo->size(0)), grad_(args->dim), rng(seed) {
-  wi_ = wi;
-  wo_ = wo;
-  args_ = args;
-  loss_ = loss;
-  osz_ = wo->size(0);
-  hsz_ = args->dim;
-  lossValue_ = 0.0;
-  nexamples_ = 1;
-}
+    : wi_(wi),
+      wo_(wo),
+      loss_(loss),
+      hidden_(hiddenSize),
+      output_(wo->size(0)),
+      grad_(hiddenSize),
+      hsz_(hiddenSize),
+      osz_(wo->size(0)),
+      lossValue_(0.0),
+      nexamples_(1),
+      normalizeGradient_(normalizeGradient),
+      rng(seed) {}
 
 Model::Model(const Model& other, int32_t seed)
     : wi_(other.wi_),
       wo_(other.wo_),
-      args_(other.args_),
       loss_(other.loss_),
       hidden_(other.hidden_),
       output_(other.output_),
@@ -44,6 +46,7 @@ Model::Model(const Model& other, int32_t seed)
       osz_(other.osz_),
       lossValue_(other.lossValue_),
       nexamples_(other.nexamples_),
+      normalizeGradient_(other.normalizeGradient_),
       rng(seed) {}
 
 void Model::computeHidden(const std::vector<int32_t>& input, Vector& hidden)
@@ -67,9 +70,6 @@ void Model::predict(
     k = osz_;
   } else if (k <= 0) {
     throw std::invalid_argument("k needs to be 1 or higher!");
-  }
-  if (args_->model != model_name::sup) {
-    throw std::invalid_argument("Model needs to be supervised for prediction!");
   }
   heap.reserve(k + 1);
   computeHidden(input, hidden);
@@ -101,7 +101,7 @@ void Model::update(
 
   nexamples_ += 1;
 
-  if (args_->model == model_name::sup) {
+  if (normalizeGradient_) {
     grad_.mul(1.0 / input.size());
   }
   for (auto it = input.cbegin(); it != input.cend(); ++it) {
