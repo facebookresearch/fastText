@@ -28,7 +28,7 @@ if [ ! -f fastText/fasttext ]; then
 fi
 
 if [ ! -f lid.176.bin ]; then
-    wget https://s3-us-west-1.amazonaws.com/fasttext-vectors/supervised_models/lid.176.bin
+    wget https://dl.fbaipublicfiles.com/fasttext/supervised-models/lid.176.bin
 fi
 
 if [ ! -d tmp ]; then
