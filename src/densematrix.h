@@ -32,7 +32,7 @@ class DenseMatrix : public Matrix {
   DenseMatrix(DenseMatrix&&) noexcept;
   DenseMatrix& operator=(const DenseMatrix&) = delete;
   DenseMatrix& operator=(DenseMatrix&&) = delete;
-  virtual ~DenseMatrix() = default;
+  virtual ~DenseMatrix() noexcept override = default;
 
   inline real* data() {
     return data_.data();

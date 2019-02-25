@@ -10,6 +10,7 @@
 
 #include <assert.h>
 #include <iostream>
+#include <stdexcept>
 
 namespace fasttext {
 
