@@ -787,10 +787,10 @@ void FastText::startThreads() {
   const int64_t ntokens = dict_->ntokens();
   // Same condition as trainThread
   while (tokenCount_ < args_->epoch * ntokens) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(30000));
     if (loss_ >= 0 && args_->verbose > 1) {
       real progress = real(tokenCount_) / (args_->epoch * ntokens);
-      std::cerr << "\r";
+      std::cerr << "\n";
       printInfo(progress, loss_, std::cerr);
     }
   }
@@ -798,7 +798,7 @@ void FastText::startThreads() {
     threads[i].join();
   }
   if (args_->verbose > 0) {
-    std::cerr << "\r";
+    std::cerr << "\n";
     printInfo(1.0, loss_, std::cerr);
     std::cerr << std::endl;
   }
