@@ -3,6 +3,5 @@
 *.bin
 *.vec
 data
-fasttext
 result
 /.vscode
