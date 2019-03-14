@@ -104,6 +104,14 @@ PYBIND11_MODULE(fasttext_pybind, m) {
       "train",
       [](fasttext::FastText& ft, fasttext::Args& a) { ft.train(a); },
       py::call_guard<py::gil_scoped_release>());
+  
+  m.def(
+      "fit",
+      [](fasttext::FastText& ft, 
+        std::vector<std::vector<std::string>> features, 
+        std::vector<std::string> labels,
+        fasttext::Args& a) { ft.fit(features,labels,a); },
+      py::call_guard<py::gil_scoped_release>());
 
   py::class_<fasttext::Vector>(m, "Vector", py::buffer_protocol())
       .def(py::init<ssize_t>())
@@ -165,6 +173,16 @@ PYBIND11_MODULE(fasttext_pybind, m) {
             fasttext::Meter meter;
             m.test(ifs, k, 0.0, meter);
             ifs.close();
+            return std::tuple<int64_t, double, double>(
+                meter.nexamples(), meter.precision(), meter.recall());
+          })
+      .def(
+          "predict_ndarray",
+          [](fasttext::FastText& m, 
+             const std::vector<std::vector<std::string>> features,
+             const std::vector<std::string> targets) {
+            fasttext::Meter meter;
+            m.predict(features, targets, 1, 0.0, meter);
             return std::tuple<int64_t, double, double>(
                 meter.nexamples(), meter.precision(), meter.recall());
           })

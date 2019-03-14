@@ -734,7 +734,7 @@ void FastText::loadVectors(const std::string& filename) {
 std::shared_ptr<Matrix> FastText::createRandomMatrix() const {
   std::shared_ptr<DenseMatrix> input = std::make_shared<DenseMatrix>(
       dict_->nwords() + args_->bucket, args_->dim);
-  input->uniform(1.0 / args_->dim);
+  input->uniform(1.0 / args_->dim);//归一化
 
   return input;
 }
@@ -775,6 +775,112 @@ void FastText::train(const Args& args) {
   model_ = std::make_shared<Model>(input_, output_, loss, normalizeGradient);
   startThreads();
 }
+
+//新增函数
+void FastText::fit(const std::vector<std::vector<std::string>> features,const std::vector<std::string> labels,const Args& args){
+  features_ = features;
+  labels_ = labels_;
+  args_ = std::make_shared<Args>(args);
+  dict_ = std::make_shared<Dictionary>(args_);
+  if (args_->input == "") {
+    std::cout<<"warnning:the function won't to read a input file";
+  }
+  dict_->readFromArray(features,labels);
+
+  if (!args_->pretrainedVectors.empty()) {
+    input_ = getInputMatrixFromFile(args_->pretrainedVectors);
+  } else {
+    input_ = createRandomMatrix();
+  }
+  output_ = createTrainOutputMatrix();
+  auto loss = createLoss(output_);
+  bool normalizeGradient = (args_->model == model_name::sup);
+  model_ = std::make_shared<Model>(input_, output_, loss, normalizeGradient);
+  startFitThreads();
+}
+
+void FastText::startFitThreads(){
+  start_ = std::chrono::steady_clock::now();
+  tokenCount_ = 0;
+  loss_ = -1;
+  std::vector<std::thread> threads;
+  for (int32_t i = 0; i < args_->thread; i++) {
+    threads.push_back(std::thread([=]() { trainFitThread(i); }));
+  }
+  const int64_t ntokens = dict_->ntokens();
+  // Same condition as trainThread
+  while (tokenCount_ < args_->epoch * ntokens) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    if (loss_ >= 0 && args_->verbose > 1) {
+      real progress = real(tokenCount_) / (args_->epoch * ntokens);
+      std::cerr << "\r";
+      printInfo(progress, loss_, std::cerr);
+    }
+  }
+  for (int32_t i = 0; i < args_->thread; i++) {
+    threads[i].join();
+  }
+  if (args_->verbose > 0) {
+    std::cerr << "\r";
+    printInfo(1.0, loss_, std::cerr);
+    std::cerr << std::endl;
+  }
+}
+
+void FastText::trainFitThread(int32_t threadId) {
+  int lineIndex = threadId * features_.size() / args_->thread;
+
+  Model::State state(args_->dim, output_->size(0), threadId);
+
+  const int64_t ntokens = dict_->ntokens();
+  int64_t localTokenCount = 0;
+  std::vector<int32_t> line, labels;
+  while (tokenCount_ < args_->epoch * ntokens) {
+    real progress = real(tokenCount_) / (args_->epoch * ntokens);
+    real lr = args_->lr * (1.0 - progress);
+    if (args_->model == model_name::sup) {
+      localTokenCount += dict_->getFitLine(features_[lineIndex],labels_[lineIndex], line, labels);
+      supervised(state, lr, line, labels);
+    } else if (args_->model == model_name::cbow) {
+      localTokenCount += dict_->getFitLine(features_[lineIndex],labels_[lineIndex], line, labels);
+      cbow(state, lr, line);
+    } else if (args_->model == model_name::sg) {
+      localTokenCount += dict_->getFitLine(features_[lineIndex],labels_[lineIndex], line, labels);
+      skipgram(state, lr, line);
+    }
+    if (localTokenCount > args_->lrUpdateRate) {
+      tokenCount_ += localTokenCount;
+      localTokenCount = 0;
+      if (threadId == 0 && args_->verbose > 1)
+        loss_ = state.getLoss();
+    }
+  }
+  if (threadId == 0)
+    loss_ = state.getLoss();
+}
+
+void FastText::predict(
+    const std::vector<std::vector<std::string>> features,
+    const std::vector<std::string> targets, 
+    int32_t k, 
+    real threshold, 
+    Meter& meter){
+  std::vector<int32_t> line;
+  std::vector<int32_t> labels;
+  Predictions predictions;
+
+  int xNumber = features.size();
+  for(int i=0; i<=xNumber; i++){
+    dict_->getFitLine(features[i],targets[i],line,labels);
+    if (!labels.empty() && !line.empty()) {
+      predictions.clear();
+      predict(k, line, predictions, threshold);
+      meter.log(labels, predictions);
+    }
+  }
+
+}
+//
 
 void FastText::startThreads() {
   start_ = std::chrono::steady_clock::now();

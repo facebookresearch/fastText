@@ -72,6 +72,10 @@ class FastText {
   bool quant_;
   int32_t version;
   std::unique_ptr<DenseMatrix> wordVectors_;
+  //新增成员
+  std::vector<std::vector<std::string>> features_;
+  std::vector<std::string> labels_;
+  //
 
  public:
   FastText();
@@ -142,6 +146,18 @@ class FastText {
       const std::string& wordC);
 
   void train(const Args& args);
+
+//新增函数  
+  void fit(const std::vector<std::vector<std::string>> features,const std::vector<std::string> labels,const Args& args);
+  void startFitThreads();
+  void trainFitThread(int32_t threadId);
+  void predict(
+    const std::vector<std::vector<std::string>> features,
+    const std::vector<std::string> targets, 
+    int32_t k, 
+    real threshold, 
+    Meter& meter);
+//
 
   int getDimension() const;
 

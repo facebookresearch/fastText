@@ -627,3 +627,6 @@ def gen_tests(data_dir, verbose=1):
         )
         i += 1
     return TestFastTextPy
+
+def my_test():
+    print('There is my test')

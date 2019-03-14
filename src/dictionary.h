@@ -47,12 +47,17 @@ class Dictionary {
   std::shared_ptr<Args> args_;
   std::vector<int32_t> word2int_;
   std::vector<entry> words_;
+  //新增成员
+  std::vector<entry> labels_;
+  std::vector<int32_t> label2int_;
+  //  
 
   std::vector<real> pdiscard_;
   int32_t size_;
   int32_t nwords_;
   int32_t nlabels_;
   int64_t ntokens_;
+
 
   int64_t pruneidx_size_;
   std::unordered_map<int32_t, int32_t> pruneidx_;
@@ -106,6 +111,13 @@ class Dictionary {
   }
   void dump(std::ostream&) const;
   void init();
+
+  //新增函数
+  void readFromArray(const std::vector<std::vector<std::string>> features,const std::vector<std::string> labels);
+  void add(const std::string& w,const entry_type type);
+  void fitThreshold(int64_t t, int64_t tl);
+  int32_t getFitLine(std::vector<std::string> x,std::string y,std::vector<int32_t>& words,std::vector<int32_t>& labels);
+  //
 };
 
 } // namespace fasttext

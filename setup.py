@@ -162,16 +162,16 @@ def _get_readme():
 
 
 setup(
-    name='fasttext',
-    version=__version__,
+    name='fasttext', #包名称
+    version=__version__, #包版本
     author='Christian Puhrsch',
     author_email='cpuhrsch@fb.com',
     description='fastText Python bindings',
-    long_description=_get_readme(),
+    long_description=_get_readme(), # 程序描述文件
     ext_modules=ext_modules,
-    url='https://github.com/facebookresearch/fastText',
+    url='https://github.com/facebookresearch/fastText', # 程序的官网地址
     license='MIT',
-    classifiers=[
+    classifiers=[ # 程序所属的分类列表
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
