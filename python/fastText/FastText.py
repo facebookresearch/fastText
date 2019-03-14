@@ -425,12 +425,24 @@ def fit(
     t=1e-4,
     label="__label__",
     verbose=2,
-    pretrainedVectors="",
-){
+    pretrainedVectors=""):
     model = "supervised"
 
     a = _bulid_fit_args(locals())
     ft = _FastText()
     fasttext.fit(x,y,a)
     return ft
-}
+
+
+def _bulid_fit_args(args):
+    args["model"] = _parse_model_string(args["model"])
+    args["loss"] = _parse_loss_string(args["loss"])
+    a = fasttext.args()
+    for (k, v) in args.items():
+        if k !='x' and k!='y':
+            setattr(a, k, v)
+    a.output = ""  # User should use save_model
+    a.saveOutput = 0  # Never use this
+    if a.wordNgrams <= 1 and a.maxn == 0:
+        a.bucket = 0
+    return a
