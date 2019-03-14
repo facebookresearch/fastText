@@ -96,7 +96,7 @@ class _FastText():
         b = fasttext.Vector(dim)
         self.f.getInputVector(b, ind)
         return np.array(b)
-
+    
     def predict(self, text, k=1, threshold=0.0, on_unicode_error='strict'):
         """
         Given a string, get a list of labels and a list of
@@ -219,6 +219,10 @@ class _FastText():
     def test(self, path, k=1):
         """Evaluate supervised model using file given by path"""
         return self.f.test(path, k)
+
+    def predict_ndarray(self, x,y):
+        """Evaluate supervised model using file given by path"""
+        return self.f.predict_ndarray(x,y)
 
     def test_label(self, path, k=1, threshold=0.0):
         """
@@ -399,3 +403,34 @@ def train_unsupervised(
     ft = _FastText()
     fasttext.train(ft.f, a)
     return ft
+
+
+def fit(
+    x,
+    y,
+    lr=0.1,
+    dim=100,
+    ws=5,
+    epoch=5,
+    minCount=1,
+    minCountLabel=0,
+    minn=0,
+    maxn=0,
+    neg=5,
+    wordNgrams=1,
+    loss="softmax",
+    bucket=2000000,
+    thread=multiprocessing.cpu_count() - 1,
+    lrUpdateRate=100,
+    t=1e-4,
+    label="__label__",
+    verbose=2,
+    pretrainedVectors="",
+){
+    model = "supervised"
+
+    a = _bulid_fit_args(locals())
+    ft = _FastText()
+    fasttext.fit(x,y,a)
+    return ft
+}
