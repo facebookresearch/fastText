@@ -779,10 +779,10 @@ void FastText::train(const Args& args) {
 //新增函数
 void FastText::fit(const std::vector<std::vector<std::string>> features,const std::vector<std::string> labels,const Args& args){
   features_ = features;
-  labels_ = labels_;
+  labels_ = labels;
   args_ = std::make_shared<Args>(args);
   dict_ = std::make_shared<Dictionary>(args_);
-  if (args_->input == "") {
+  if (args_->input != "") {
     std::cout<<"warnning:the function won't to read a input file";
   }
   dict_->readFromArray(features,labels);
@@ -804,6 +804,7 @@ void FastText::startFitThreads(){
   tokenCount_ = 0;
   loss_ = -1;
   std::vector<std::thread> threads;
+  std::cout<<"thread number:"<<args_->thread<<",epoch:"<<args_->epoch<<",featuresSize:"<<features_.size()<<std::endl;
   for (int32_t i = 0; i < args_->thread; i++) {
     threads.push_back(std::thread([=]() { trainFitThread(i); }));
   }
@@ -839,6 +840,8 @@ void FastText::trainFitThread(int32_t threadId) {
     real progress = real(tokenCount_) / (args_->epoch * ntokens);
     real lr = args_->lr * (1.0 - progress);
     if (args_->model == model_name::sup) {
+      // std::cout<< "startLineIndex:"<< startLineIndex<<",threadId:"<<threadId<<std::endl;
+      // std::cout<< "features_size:"<< features_.size()<<",labels_:"<<labels_.size()<<std::endl;
       localTokenCount += dict_->getFitLine(features_[lineIndex],labels_[lineIndex], line, labels);
       supervised(state, lr, line, labels);
     } else if (args_->model == model_name::cbow) {
@@ -849,14 +852,20 @@ void FastText::trainFitThread(int32_t threadId) {
       skipgram(state, lr, line);
     }
     if (localTokenCount > args_->lrUpdateRate) {
+      // std::cout<<"lr update"<<std::endl;
       tokenCount_ += localTokenCount;
       localTokenCount = 0;
-      if (threadId == 0 && args_->verbose > 1)
+      if (threadId == 0 && args_->verbose > 1){
+        // std::cout<<"compute loss"<<std::endl;
         loss_ = state.getLoss();
+      }
     }
+    lineIndex = (lineIndex + 1)%features_.size();
   }
-  if (threadId == 0)
+  if (threadId == 0){
+    // std::cout<<"compute loss"<<std::endl;
     loss_ = state.getLoss();
+  }
 }
 
 void FastText::predict(
@@ -868,17 +877,48 @@ void FastText::predict(
   std::vector<int32_t> line;
   std::vector<int32_t> labels;
   Predictions predictions;
-
+  // std::cout<<"--test--"<<"minn:"<<args_->minn<<"maxn:"<<args_->maxn<<std::endl;
   int xNumber = features.size();
-  for(int i=0; i<=xNumber; i++){
+  for(int i=0; i<xNumber; i++){
+    // std::cout<<features[i][0]<<std::endl;
     dict_->getFitLine(features[i],targets[i],line,labels);
+    // std::cout<<"lineSize:"<<line.size()<<",labels.size："<<labels.size()<<std::endl;
+    // std::cout<<"label:"<<labels[0]<<std::endl;
     if (!labels.empty() && !line.empty()) {
       predictions.clear();
       predict(k, line, predictions, threshold);
       meter.log(labels, predictions);
     }
   }
+}
 
+std::vector<std::vector<float>> FastText::predictProb(
+    const std::vector<std::vector<std::string>> features,
+    real threshold){
+  std::vector<int32_t> line;
+  std::vector<int32_t> labels;
+  Predictions predictions;
+  std::vector<std::vector<float>> res;
+
+  int xNumber = features.size();
+  for(int i=0; i<xNumber; i++){
+    dict_->getFitLine(features[i],"NONE",line,labels);
+    if (!labels.empty() && !line.empty()) {
+      predictions.clear();
+      predict(1, line, predictions, threshold);
+      Model::State state(args_->dim, dict_->nlabels(), 0);
+      if (args_->model != model_name::sup) {
+        throw std::invalid_argument("Model needs to be supervised for prediction!");
+      }
+      model_->predict(line, 1, threshold, predictions, state);
+      std::vector<float> out;
+      for(int k=0;k<state.output.size();k++){
+        out.push_back(state.output[k]);
+      }
+      res.push_back(out);
+    }
+  }
+  return res;
 }
 //
 

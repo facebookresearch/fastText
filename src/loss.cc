@@ -70,6 +70,7 @@ void Loss::predict(
   findKBest(k, threshold, heap, state.output);
   std::sort_heap(heap.begin(), heap.end(), comparePairs);
 }
+//新增函数
 
 void Loss::findKBest(
     int32_t k,

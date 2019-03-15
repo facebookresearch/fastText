@@ -224,6 +224,9 @@ class _FastText():
         """Evaluate supervised model using file given by path"""
         return self.f.predict_ndarray(x,y)
 
+    def predict_prob(self,x):
+        return self.f.predict_prob(x)
+        
     def test_label(self, path, k=1, threshold=0.0):
         """
         Return the precision and recall score for each label.
@@ -430,7 +433,7 @@ def fit(
 
     a = _bulid_fit_args(locals())
     ft = _FastText()
-    fasttext.fit(x,y,a)
+    fasttext.fit(ft.f,x,y,a)
     return ft
 
 

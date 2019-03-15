@@ -157,6 +157,9 @@ class FastText {
     int32_t k, 
     real threshold, 
     Meter& meter);
+  std::vector<std::vector<float>> predictProb(
+      const std::vector<std::vector<std::string>> features,
+      real threshold);
 //
 
   int getDimension() const;

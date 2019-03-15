@@ -26,6 +26,7 @@ const std::string Dictionary::EOW = ">";
 Dictionary::Dictionary(std::shared_ptr<Args> args)
     : args_(args),
       word2int_(MAX_VOCAB_SIZE, -1),
+      label2int_(MAX_VOCAB_SIZE, -1),
       size_(0),
       nwords_(0),
       nlabels_(0),
@@ -213,11 +214,15 @@ void Dictionary::computeSubwords(
     }
     for (size_t j = i, n = 1; j < word.size() && n <= args_->maxn; n++) {
       ngram.push_back(word[j++]);
+      // std::cout<<word[j];
       while (j < word.size() && (word[j] & 0xC0) == 0x80) {
         ngram.push_back(word[j++]);
+        // std::cout<<word[j];
       }
+      // std::cout<<",";
       if (n >= args_->minn && !(n == 1 && (i == 0 || j == word.size()))) {
         int32_t h = hash(ngram) % args_->bucket;
+        // std::cout<<"push subword:"<<ngram<<",subwordHash:"<<h<<std::endl;
         pushHash(ngrams, h);
         if (substrings) {
           substrings->push_back(ngram);
@@ -326,6 +331,7 @@ void Dictionary::fitThreshold(int64_t t, int64_t tl){
   words_.shrink_to_fit();
   labels_.shrink_to_fit();
   size_ = 0;
+  int lsize = 0;
   nwords_ = words_.size();
   nlabels_ = labels_.size();
   std::fill(word2int_.begin(), word2int_.end(), -1);
@@ -337,7 +343,7 @@ void Dictionary::fitThreshold(int64_t t, int64_t tl){
 
   for (auto it = labels_.begin(); it != labels_.end(); ++it) {
     int32_t h = find(it->word);
-    label2int_[h] = size_++;
+    label2int_[h] = lsize++;
   }  
 }
 int32_t Dictionary::getFitLine(
@@ -346,24 +352,29 @@ int32_t Dictionary::getFitLine(
     std::vector<int32_t>& words,
     std::vector<int32_t>& labels){
   std::vector<int32_t> word_hashes;
-  std::string token;
   int32_t ntokens = 0;
 
   words.clear();
   labels.clear();
-  int size = x.size();
+  int32_t size = x.size();
   
-  for(int i=0; i<size; i++){
+  for(int32_t i=0; i<size; i++){
       ntokens++;
       uint32_t h = hash(x[i]);
       int32_t wid = getId(x[i],h);
       addSubwords(words, x[i], wid);
       word_hashes.push_back(h);
+
+      // std::cout<<"word:"<<x[i]<<",wid:"<<wid<<std::endl;
+      // for(int k=0; k<words.size();k++){
+      //   std::cout<<"subword"<<k<<":"<<words[k]<<std::endl;
+      // }
   }
-  labels.push_back(hash(y));
+  labels.push_back(label2int_[find(y)]);
   addWordNgrams(words, word_hashes, args_->wordNgrams);
   return ntokens;  
 }
+
 //
 
 

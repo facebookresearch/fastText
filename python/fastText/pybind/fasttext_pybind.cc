@@ -187,6 +187,12 @@ PYBIND11_MODULE(fasttext_pybind, m) {
                 meter.nexamples(), meter.precision(), meter.recall());
           })
       .def(
+          "predict_prob",
+          [](fasttext::FastText& m, 
+             const std::vector<std::vector<std::string>> features){
+            return m.predictProb(features,0.0);
+          })
+      .def(
           "getSentenceVector",
           [](fasttext::FastText& m,
              fasttext::Vector& v,
