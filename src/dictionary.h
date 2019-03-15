@@ -50,6 +50,7 @@ class Dictionary {
   //新增成员
   std::vector<entry> labels_;
   std::vector<int32_t> label2int_;
+  int32_t labelSize_;
   //  
 
   std::vector<real> pdiscard_;

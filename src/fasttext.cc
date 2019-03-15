@@ -796,6 +796,7 @@ void FastText::fit(const std::vector<std::vector<std::string>> features,const st
   auto loss = createLoss(output_);
   bool normalizeGradient = (args_->model == model_name::sup);
   model_ = std::make_shared<Model>(input_, output_, loss, normalizeGradient);
+
   startFitThreads();
 }
 

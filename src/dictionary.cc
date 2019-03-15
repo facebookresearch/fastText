@@ -60,6 +60,7 @@ int32_t Dictionary::find(const std::string& w, uint32_t h) const {
 void Dictionary::add(const std::string& w,const entry_type type){
   int32_t h = find(w);
   ntokens_++;
+  // std::cout<<"ntokens:"<<ntokens_<<std::endl;
   if(type == entry_type::word){
     if (word2int_[h] == -1) {
       entry e;
@@ -74,13 +75,14 @@ void Dictionary::add(const std::string& w,const entry_type type){
   }
   else
   {
+    // std::cout<<"labelhash:"<<h<<",word2intSize:"<<word2int_.size()<<std::endl;
     if (label2int_[h] == -1) {
       entry e;
       e.word = w;
       e.count = 1;
       e.type = entry_type::label;
       labels_.push_back(e);
-      label2int_[h] = size_++;
+      label2int_[h] = labelSize_++;
     } else {
       labels_[label2int_[h]].count++;
     } 
@@ -280,6 +282,7 @@ void Dictionary::readFromArray(const std::vector<std::vector<std::string>> featu
   for(int i=0; i< x_size; i++){
     int feature_size = features[i].size();
     for(int j=0;j<feature_size;j++){
+      // std::cout<<"add the  word:"<<features[i][j]<<std::endl;
       add(features[i][j],entry_type::word);
       if (ntokens_ % 1000000 == 0 && args_->verbose > 1) {
         std::cerr << "\rRead " << ntokens_ / 1000000 << "M words" << std::flush;
@@ -289,7 +292,10 @@ void Dictionary::readFromArray(const std::vector<std::vector<std::string>> featu
         fitThreshold(minThreshold, minThreshold);
       }      
     }
+    // std::cout<<"add the  label:"<<labels[i]<<std::endl;
     add(labels[i],entry_type::label);
+    // std::cout<<"label was added:"<<labels[i]<<std::endl;
+
   }
   fitThreshold(args_->minCount, args_->minCountLabel);
   initTableDiscard();
@@ -331,7 +337,7 @@ void Dictionary::fitThreshold(int64_t t, int64_t tl){
   words_.shrink_to_fit();
   labels_.shrink_to_fit();
   size_ = 0;
-  int lsize = 0;
+  labelSize_ = 0;
   nwords_ = words_.size();
   nlabels_ = labels_.size();
   std::fill(word2int_.begin(), word2int_.end(), -1);
@@ -343,7 +349,7 @@ void Dictionary::fitThreshold(int64_t t, int64_t tl){
 
   for (auto it = labels_.begin(); it != labels_.end(); ++it) {
     int32_t h = find(it->word);
-    label2int_[h] = lsize++;
+    label2int_[h] = labelSize_++;
   }  
 }
 int32_t Dictionary::getFitLine(
@@ -577,6 +583,7 @@ std::string Dictionary::getLabel(int32_t lid) const {
 
 void Dictionary::save(std::ostream& out) const {
   out.write((char*)&size_, sizeof(int32_t));
+  out.write((char*)&labelSize_, sizeof(int32_t));
   out.write((char*)&nwords_, sizeof(int32_t));
   out.write((char*)&nlabels_, sizeof(int32_t));
   out.write((char*)&ntokens_, sizeof(int64_t));
@@ -588,6 +595,13 @@ void Dictionary::save(std::ostream& out) const {
     out.write((char*)&(e.count), sizeof(int64_t));
     out.write((char*)&(e.type), sizeof(entry_type));
   }
+  for(int32_t i = 0; i< labelSize_; i++){
+    entry e = labels_[i];
+    out.write(e.word.data(), e.word.size() * sizeof(char));
+    out.put(0);
+    out.write((char*)&(e.count), sizeof(int64_t));
+    out.write((char*)&(e.type), sizeof(entry_type));    
+  }
   for (const auto pair : pruneidx_) {
     out.write((char*)&(pair.first), sizeof(int32_t));
     out.write((char*)&(pair.second), sizeof(int32_t));
@@ -597,6 +611,7 @@ void Dictionary::save(std::ostream& out) const {
 void Dictionary::load(std::istream& in) {
   words_.clear();
   in.read((char*)&size_, sizeof(int32_t));
+  in.read((char*)&labelSize_, sizeof(int32_t));
   in.read((char*)&nwords_, sizeof(int32_t));
   in.read((char*)&nlabels_, sizeof(int32_t));
   in.read((char*)&ntokens_, sizeof(int64_t));
@@ -611,6 +626,16 @@ void Dictionary::load(std::istream& in) {
     in.read((char*)&e.type, sizeof(entry_type));
     words_.push_back(e);
   }
+  for(int32_t i = 0; i< labelSize_; i++){
+    char c;
+    entry e;
+    while ((c = in.get()) != 0) {
+      e.word.push_back(c);
+    }
+    in.read((char*)&e.count, sizeof(int64_t));
+    in.read((char*)&e.type, sizeof(entry_type));
+    labels_.push_back(e);
+  }
   pruneidx_.clear();
   for (int32_t i = 0; i < pruneidx_size_; i++) {
     int32_t first;
@@ -622,10 +647,15 @@ void Dictionary::load(std::istream& in) {
   initTableDiscard();
   initNgrams();
 
-  int32_t word2intsize = std::ceil(size_ / 0.7);
+  int32_t word2intsize = MAX_VOCAB_SIZE;
   word2int_.assign(word2intsize, -1);
+  int32_t label2intsize = MAX_VOCAB_SIZE;
+  label2int_.assign(label2intsize,-1);
   for (int32_t i = 0; i < size_; i++) {
     word2int_[find(words_[i].word)] = i;
+  }
+  for (int32_t i = 0; i < labelSize_; i++) {
+    label2int_[find(labels_[i].word)] = i;
   }
 }
 
