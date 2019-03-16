@@ -28,6 +28,7 @@ Dictionary::Dictionary(std::shared_ptr<Args> args)
       word2int_(MAX_VOCAB_SIZE, -1),
       label2int_(MAX_VOCAB_SIZE, -1),
       size_(0),
+      labelSize_(0),
       nwords_(0),
       nlabels_(0),
       ntokens_(0),
@@ -36,6 +37,7 @@ Dictionary::Dictionary(std::shared_ptr<Args> args)
 Dictionary::Dictionary(std::shared_ptr<Args> args, std::istream& in)
     : args_(args),
       size_(0),
+      labelSize_(0),
       nwords_(0),
       nlabels_(0),
       ntokens_(0),
