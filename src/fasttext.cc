@@ -906,7 +906,7 @@ std::vector<std::vector<float>> FastText::predictProb(
     dict_->getFitLine(features[i],"NONE",line,labels);
     if (!labels.empty() && !line.empty()) {
       predictions.clear();
-      predict(1, line, predictions, threshold);
+      // predict(1, line, predictions, threshold);
       Model::State state(args_->dim, dict_->nlabels(), 0);
       if (args_->model != model_name::sup) {
         throw std::invalid_argument("Model needs to be supervised for prediction!");

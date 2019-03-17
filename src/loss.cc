@@ -305,7 +305,7 @@ SoftmaxLoss::SoftmaxLoss(std::shared_ptr<Matrix>& wo) : Loss(wo) {}
 
 void SoftmaxLoss::computeOutput(Model::State& state) const {
   Vector& output = state.output;
-  output.mul(*wo_, state.hidden);
+  output.mul(*wo_, state.hidden);//将隐藏层乘上输出矩阵，得到output
   real max = output[0], z = 0.0;
   int32_t osz = output.size();
   for (int32_t i = 0; i < osz; i++) {
