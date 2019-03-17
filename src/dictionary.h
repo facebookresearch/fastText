@@ -34,6 +34,7 @@ struct entry {
 class Dictionary {
  protected:
   static const int32_t MAX_VOCAB_SIZE = 30000000;
+  static const int32_t MAX_LABEL_SIZE = 500000;
   static const int32_t MAX_LINE_SIZE = 1024;
 
   int32_t find(const std::string&) const;
@@ -119,6 +120,7 @@ class Dictionary {
   void fitThreshold(int64_t t, int64_t tl);
   int32_t getFitLine(std::vector<std::string> x,std::string y,std::vector<int32_t>& words,std::vector<int32_t>& labels);
   std::vector<std::string> getLabels();
+  int32_t findL(const std::string& w, uint32_t h);
   //
 };
 
