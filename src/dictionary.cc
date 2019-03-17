@@ -58,40 +58,7 @@ int32_t Dictionary::find(const std::string& w, uint32_t h) const {
   return id;
 }
 
-// 新增函数
-void Dictionary::add(const std::string& w,const entry_type type){
-  int32_t h = find(w);
-  ntokens_++;
-  // std::cout<<"ntokens:"<<ntokens_<<std::endl;
-  if(type == entry_type::word){
-    if (word2int_[h] == -1) {
-      entry e;
-      e.word = w;
-      e.count = 1;
-      e.type = entry_type::word;
-      words_.push_back(e);
-      word2int_[h] = size_++;
-    } else {
-      words_[word2int_[h]].count++;
-    } 
-  }
-  else
-  {
-    // std::cout<<"labelhash:"<<h<<",word2intSize:"<<word2int_.size()<<std::endl;
-    if (label2int_[h] == -1) {
-      entry e;
-      e.word = w;
-      e.count = 1;
-      e.type = entry_type::label;
-      labels_.push_back(e);
-      label2int_[h] = labelSize_++;
-    } else {
-      labels_[label2int_[h]].count++;
-    } 
-  }
- 
-}
-//
+
 
 void Dictionary::add(const std::string& w) {
   int32_t h = find(w);
@@ -382,7 +349,45 @@ int32_t Dictionary::getFitLine(
   addWordNgrams(words, word_hashes, args_->wordNgrams);
   return ntokens;  
 }
-
+void Dictionary::add(const std::string& w,const entry_type type){
+  int32_t h = find(w);
+  ntokens_++;
+  // std::cout<<"ntokens:"<<ntokens_<<std::endl;
+  if(type == entry_type::word){
+    if (word2int_[h] == -1) {
+      entry e;
+      e.word = w;
+      e.count = 1;
+      e.type = entry_type::word;
+      words_.push_back(e);
+      word2int_[h] = size_++;
+    } else {
+      words_[word2int_[h]].count++;
+    } 
+  }
+  else
+  {
+    // std::cout<<"labelhash:"<<h<<",word2intSize:"<<word2int_.size()<<std::endl;
+    if (label2int_[h] == -1) {
+      entry e;
+      e.word = w;
+      e.count = 1;
+      e.type = entry_type::label;
+      labels_.push_back(e);
+      label2int_[h] = labelSize_++;
+    } else {
+      labels_[label2int_[h]].count++;
+    } 
+  }
+ 
+}
+std::vector<std::string> Dictionary::getLabels(){
+  std::vector<std::string> labels;
+  for (auto it = labels_.begin(); it != labels_.end(); ++it) {
+    labels.push_back(it->word);
+  }
+  return labels;  
+}
 //
 
 

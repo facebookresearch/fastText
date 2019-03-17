@@ -118,6 +118,7 @@ class Dictionary {
   void add(const std::string& w,const entry_type type);
   void fitThreshold(int64_t t, int64_t tl);
   int32_t getFitLine(std::vector<std::string> x,std::string y,std::vector<int32_t>& words,std::vector<int32_t>& labels);
+  std::vector<std::string> getLabels();
   //
 };
 

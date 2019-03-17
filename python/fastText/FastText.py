@@ -173,23 +173,23 @@ class _FastText():
         else:
             return pair[0]
 
-    def get_labels(self, include_freq=False, on_unicode_error='strict'):
-        """
-        Get the entire list of labels of the dictionary optionally
-        including the frequency of the individual labels. Unsupervised
-        models use words as labels, which is why get_labels
-        will call and return get_words for this type of
-        model.
-        """
-        a = self.f.getArgs()
-        if a.model == model_name.supervised:
-            pair = self.f.getLabels(on_unicode_error)
-            if include_freq:
-                return (pair[0], np.array(pair[1]))
-            else:
-                return pair[0]
-        else:
-            return self.get_words(include_freq)
+    # def get_labels(self, include_freq=False, on_unicode_error='strict'):
+    #     """
+    #     Get the entire list of labels of the dictionary optionally
+    #     including the frequency of the individual labels. Unsupervised
+    #     models use words as labels, which is why get_labels
+    #     will call and return get_words for this type of
+    #     model.
+    #     """
+    #     a = self.f.getArgs()
+    #     if a.model == model_name.supervised:
+    #         pair = self.f.getLabels(on_unicode_error)
+    #         if include_freq:
+    #             return (pair[0], np.array(pair[1]))
+    #         else:
+    #             return pair[0]
+    #     else:
+    #         return self.get_words(include_freq)
 
     def get_line(self, text, on_unicode_error='strict'):
         """
@@ -226,6 +226,9 @@ class _FastText():
 
     def predict_prob(self,x):
         return self.f.predict_prob(x)
+    
+    def get_labels(self):
+        return self.f.get_labels()
         
     def test_label(self, path, k=1, threshold=0.0):
         """

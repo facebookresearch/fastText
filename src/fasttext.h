@@ -160,6 +160,7 @@ class FastText {
   std::vector<std::vector<float>> predictProb(
       const std::vector<std::vector<std::string>> features,
       real threshold);
+  std::vector<std::string> getLabels();
 //
 
   int getDimension() const;

@@ -844,6 +844,8 @@ void FastText::trainFitThread(int32_t threadId) {
       // std::cout<< "startLineIndex:"<< startLineIndex<<",threadId:"<<threadId<<std::endl;
       // std::cout<< "features_size:"<< features_.size()<<",labels_:"<<labels_.size()<<std::endl;
       localTokenCount += dict_->getFitLine(features_[lineIndex],labels_[lineIndex], line, labels);
+      // if(labels_[lineIndex] == "本地生活")
+        // std::cout<<"labelIndex:"<<labels[0]<<",word:"<<(dict_->getLabels())[labels[0]]<<std::endl;
       supervised(state, lr, line, labels);
     } else if (args_->model == model_name::cbow) {
       localTokenCount += dict_->getFitLine(features_[lineIndex],labels_[lineIndex], line, labels);
@@ -906,7 +908,7 @@ std::vector<std::vector<float>> FastText::predictProb(
     dict_->getFitLine(features[i],"NONE",line,labels);
     if (!labels.empty() && !line.empty()) {
       predictions.clear();
-      predict(1, line, predictions, threshold);
+      // predict(1, line, predictions, threshold);
       Model::State state(args_->dim, dict_->nlabels(), 0);
       if (args_->model != model_name::sup) {
         throw std::invalid_argument("Model needs to be supervised for prediction!");
@@ -915,11 +917,16 @@ std::vector<std::vector<float>> FastText::predictProb(
       std::vector<float> out;
       for(int k=0;k<state.output.size();k++){
         out.push_back(state.output[k]);
+        // std::cout<<(dict_->getLabels())[k]<<":"<<state.output[k]<<std::endl;
       }
       res.push_back(out);
     }
   }
   return res;
+}
+
+std::vector<std::string> FastText::getLabels(){
+  return dict_->getLabels();
 }
 //
 

@@ -193,6 +193,11 @@ PYBIND11_MODULE(fasttext_pybind, m) {
             return m.predictProb(features,0.0);
           })
       .def(
+          "get_labels",
+          [](fasttext::FastText& m){
+            return m.getLabels();
+          })          
+      .def(
           "getSentenceVector",
           [](fasttext::FastText& m,
              fasttext::Vector& v,
