@@ -56,6 +56,21 @@ std::pair<std::vector<py::str>, std::vector<py::str>> getLineText(
 }
 
 PYBIND11_MODULE(fasttext_pybind, m) {
+  py::class_<fasttext::TreeNode>(m, "TreeNode")
+    .def(py::init<std::string>())
+    .def("name", [](fasttext::TreeNode& m){
+      return m.name();
+    })
+    .def("add_child",[](fasttext::TreeNode& m,const std::string name){
+      return m.addChild(name);
+    })
+    .def("parent",[](fasttext::TreeNode& m){
+      return m.parent();
+    })
+    .def("get_child",[](fasttext::TreeNode& m,std::string name){
+      return m.getChild(name);
+    });
+    
   py::class_<fasttext::Args>(m, "args")
       .def(py::init<>())
       .def_readwrite("input", &fasttext::Args::input)

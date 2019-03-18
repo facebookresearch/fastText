@@ -29,7 +29,19 @@
 #include "vector.h"
 
 namespace fasttext {
+class TreeNode{
+ private:
+  std::string name_;
+  TreeNode* parent_;
+  std::vector<std::shared_ptr<TreeNode>> children_;
 
+ public:
+  std::shared_ptr<TreeNode> getChild(const std::string name);
+  std::shared_ptr<TreeNode> addChild(const std::string name);
+  TreeNode* parent();
+  std::string name();
+  TreeNode(const std::string name);
+};
 class FastText {
  protected:
   std::shared_ptr<Args> args_;

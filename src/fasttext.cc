@@ -972,4 +972,24 @@ bool comparePairs(
   return l.first > r.first;
 }
 
+TreeNode::TreeNode(std::string name)
+  :name_(name),
+  parent_(NULL){}
+
+TreeNode* TreeNode::parent(){ return parent_;}
+  std::string TreeNode::name(){ return name_;}
+  std::shared_ptr<TreeNode> TreeNode::getChild(const std::string name){
+    int size = children_.size();
+    for(int i=0; i<size; i++){
+      if(children_[i]->name() == name)
+        return children_[i];
+    }
+    return NULL;
+  }
+std::shared_ptr<TreeNode> TreeNode::addChild(const std::string name){
+    std::shared_ptr<TreeNode> newNode = std::make_shared<TreeNode>(name);
+    children_.push_back(newNode);
+    newNode->parent_ = this;
+    return newNode;
+  }
 } // namespace fasttext

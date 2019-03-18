@@ -313,6 +313,7 @@ void SoftmaxLoss::computeOutput(Model::State& state) const {
   }
   for (int32_t i = 0; i < osz; i++) {
     output[i] = exp(output[i] - max);
+    // output[i] = exp(output[i]);
     z += output[i];
   }
   for (int32_t i = 0; i < osz; i++) {
