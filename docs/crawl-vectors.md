@@ -62,7 +62,7 @@ E. Grave\*, P. Bojanowski\*, P. Gupta, A. Joulin, T. Mikolov, [*Learning Word Ve
 
 ### Evaluation datasets
 
-The analogy evaluation datasets described in the paper are available here: [French](https://dl.fbaipublicfiles.com/fasttext-vectors/word-analogies/questions-words-fr.txt), [Hindi](https://dl.fbaipublicfiles.com/fasttext-vectors/word-analogies/questions-words-hi.txt), [Polish](https://dl.fbaipublicfiles.com/fasttext-vectors/word-analogies/questions-words-pl.txt).
+The analogy evaluation datasets described in the paper are available here: [French](https://dl.fbaipublicfiles.com/fasttext/word-analogies/questions-words-fr.txt), [Hindi](https://dl.fbaipublicfiles.com/fasttext/word-analogies/questions-words-hi.txt), [Polish](https://dl.fbaipublicfiles.com/fasttext/word-analogies/questions-words-pl.txt).
 
 ### Models
 
