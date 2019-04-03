@@ -10,6 +10,7 @@
 import numpy as np
 import argparse
 from utils import *
+import sys
 
 parser = argparse.ArgumentParser(description='RCSLS for supervised word alignment')
 
