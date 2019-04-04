@@ -22,7 +22,7 @@ In addition to NumPy, the unsupervised method requires the [Python Optimal Trans
 
 ### Download
 
-Wikipedia fastText embeddings aligned with our method can be found [here](https://fasttext.cc/doc/en/aligned_vectors.html).
+Wikipedia fastText embeddings aligned with our method can be found [here](https://fasttext.cc/docs/en/aligned-vectors.html).
 
 ### References
 

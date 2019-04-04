@@ -21,13 +21,13 @@ fi
 dico_train=data/${s}-${t}.0-5000.txt
 if [ ! -f "${dico_train}" ]; then
   DICO=$(basename -- "${dico_train}")
-  wget -c "https://s3.amazonaws.com/arrival/dictionaries/${DICO}" -P data/
+  wget -c "https://dl.fbaipublicfiles.com/arrival/dictionaries/${DICO}" -P data/
 fi
 
 dico_test=data/${s}-${t}.5000-6500.txt
 if [ ! -f "${dico_test}" ]; then
   DICO=$(basename -- "${dico_test}")
-  wget -c "https://s3.amazonaws.com/arrival/dictionaries/${DICO}" -P data/
+  wget -c "https://dl.fbaipublicfiles.com/arrival/dictionaries/${DICO}" -P data/
 fi
 
 src_emb=data/wiki.${s}.vec
