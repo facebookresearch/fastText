@@ -18,6 +18,7 @@ import sys
 import setuptools
 import os
 import subprocess
+import platform
 
 __version__ = '0.8.22'
 FASTTEXT_SRC = "src"
@@ -118,6 +119,8 @@ class BuildExt(build_ext):
 
     def build_extensions(self):
         if sys.platform == 'darwin':
+            mac_osx_version = float('.'.join(platform.mac_ver()[0].split('.')[:2]))
+            os.environ['MACOSX_DEPLOYMENT_TARGET'] = str(mac_osx_version)
             all_flags = ['-stdlib=libc++', '-mmacosx-version-min=10.7']
             if has_flag(self.compiler, [all_flags[0]]):
                 self.c_opts['unix'] += [all_flags[0]]
