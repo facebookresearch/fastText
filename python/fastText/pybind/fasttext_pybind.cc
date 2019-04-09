@@ -198,7 +198,9 @@ PYBIND11_MODULE(fasttext_pybind, m) {
              const char* onUnicodeError) {
             std::shared_ptr<const fasttext::Dictionary> d = m.getDictionary();
             std::vector<std::vector<py::str>> all_words;
+            all_words.reserve(lines.size());
             std::vector<std::vector<py::str>> all_labels;
+            all_labels.reserve(lines.size());
             for (const auto& text : lines) {
               auto pair = getLineText(m, text, onUnicodeError);
               all_words.push_back(pair.first);
@@ -206,36 +208,40 @@ PYBIND11_MODULE(fasttext_pybind, m) {
             }
             return std::pair<
                 std::vector<std::vector<py::str>>,
-                std::vector<std::vector<py::str>>>(all_words, all_labels);
+                std::vector<std::vector<py::str>>>(std::move(all_words), std::move(all_labels));
           })
       .def(
           "getVocab",
           [](fasttext::FastText& m, const char* onUnicodeError) {
             py::str s;
             std::vector<py::str> vocab_list;
-            std::vector<int64_t> vocab_freq;
             std::shared_ptr<const fasttext::Dictionary> d = m.getDictionary();
-            vocab_freq = d->getCounts(fasttext::entry_type::word);
+            std::vector<int64_t> vocab_freq = d->getCounts(
+                fasttext::entry_type::word
+            );
+            vocab_list.reserve(vocab_freq.size());
             for (int32_t i = 0; i < vocab_freq.size(); i++) {
               vocab_list.push_back(
                   castToPythonString(d->getWord(i), onUnicodeError));
             }
             return std::pair<std::vector<py::str>, std::vector<int64_t>>(
-                vocab_list, vocab_freq);
+                std::move(vocab_list), std::move(vocab_freq));
           })
       .def(
           "getLabels",
           [](fasttext::FastText& m, const char* onUnicodeError) {
             std::vector<py::str> labels_list;
-            std::vector<int64_t> labels_freq;
             std::shared_ptr<const fasttext::Dictionary> d = m.getDictionary();
-            labels_freq = d->getCounts(fasttext::entry_type::label);
+            std::vector<int64_t> labels_freq = d->getCounts(
+                fasttext::entry_type::label
+            );
+            labels_list.reserve(labels_freq.size());
             for (int32_t i = 0; i < labels_freq.size(); i++) {
               labels_list.push_back(
                   castToPythonString(d->getLabel(i), onUnicodeError));
             }
             return std::pair<std::vector<py::str>, std::vector<int64_t>>(
-                labels_list, labels_freq);
+                std::move(labels_list), std::move(labels_freq));
           })
       .def(
           "quantize",
@@ -278,11 +284,11 @@ PYBIND11_MODULE(fasttext_pybind, m) {
 
             std::vector<std::pair<fasttext::real, py::str>>
                 transformedPredictions;
-
+            transformedPredictions.reserve(predictions.size());
             for (const auto& prediction : predictions) {
-              transformedPredictions.push_back(std::make_pair(
+              transformedPredictions.emplace_back(
                   prediction.first,
-                  castToPythonString(prediction.second, onUnicodeError)));
+                  castToPythonString(prediction.second, onUnicodeError));
             }
 
             return transformedPredictions;
@@ -305,12 +311,13 @@ PYBIND11_MODULE(fasttext_pybind, m) {
               m.predictLine(ioss, predictions, k, threshold);
               std::vector<std::pair<fasttext::real, py::str>>
                   transformedPredictions;
+              transformedPredictions.reserve(predictions.size());
               for (const auto& prediction : predictions) {
-                transformedPredictions.push_back(std::make_pair(
+                transformedPredictions.emplace_back(
                     prediction.first,
-                    castToPythonString(prediction.second, onUnicodeError)));
+                    castToPythonString(prediction.second, onUnicodeError));
               }
-              allPredictions.push_back(transformedPredictions);
+              allPredictions.push_back(std::move(transformedPredictions));
             }
             return allPredictions;
           })
@@ -367,14 +374,14 @@ PYBIND11_MODULE(fasttext_pybind, m) {
             std::shared_ptr<const fasttext::Dictionary> d = m.getDictionary();
             d->getSubwords(word, ngrams, subwords);
             std::vector<py::str> transformedSubwords;
-
+            transformedSubwords.reserve(subwords.size());
             for (const auto& subword : subwords) {
               transformedSubwords.push_back(
                   castToPythonString(subword, onUnicodeError));
             }
 
             return std::pair<std::vector<py::str>, std::vector<int32_t>>(
-                transformedSubwords, ngrams);
+                std::move(transformedSubwords), std::move(ngrams));
           })
       .def("isQuant", [](fasttext::FastText& m) { return m.isQuant(); });
 }

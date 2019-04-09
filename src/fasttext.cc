@@ -464,8 +464,7 @@ bool FastText::predictLine(
   Predictions linePredictions;
   predict(k, words, linePredictions, threshold);
   for (const auto& p : linePredictions) {
-    predictions.push_back(
-        std::make_pair(std::exp(p.first), dict_->getLabel(p.second)));
+    predictions.emplace_back(std::exp(p.first), dict_->getLabel(p.second));
   }
 
   return true;
@@ -511,12 +510,13 @@ std::vector<std::pair<std::string, Vector>> FastText::getNgramVectors(
   std::vector<std::string> substrings;
   dict_->getSubwords(word, ngrams, substrings);
   assert(ngrams.size() <= substrings.size());
+  result.reserve(ngrams.size());
   for (int32_t i = 0; i < ngrams.size(); i++) {
     Vector vec(args_->dim);
     if (ngrams[i] >= 0) {
       vec.addRow(*input_, ngrams[i]);
     }
-    result.push_back(std::make_pair(substrings[i], std::move(vec)));
+    result.emplace_back(substrings[i], std::move(vec));
   }
   return result;
 }
@@ -570,6 +570,7 @@ std::vector<std::pair<real, std::string>> FastText::getNN(
     int32_t k,
     const std::set<std::string>& banSet) {
   std::vector<std::pair<real, std::string>> heap;
+  heap.reserve(k + 1ul);
 
   real queryNorm = query.norm();
   if (std::abs(queryNorm) < 1e-8) {
@@ -585,7 +586,7 @@ std::vector<std::pair<real, std::string>> FastText::getNN(
       if (heap.size() == k && similarity < heap.front().first) {
         continue;
       }
-      heap.push_back(std::make_pair(similarity, word));
+      heap.emplace_back(similarity, word);
       std::push_heap(heap.begin(), heap.end(), comparePairs);
       if (heap.size() > k) {
         std::pop_heap(heap.begin(), heap.end(), comparePairs);
@@ -686,7 +687,6 @@ std::shared_ptr<Matrix> FastText::getInputMatrixFromFile(
     const std::string& filename) const {
   std::ifstream in(filename);
   std::vector<std::string> words;
-  std::shared_ptr<DenseMatrix> mat; // temp. matrix for pretrained vectors
   int64_t n, dim;
   if (!in.is_open()) {
     throw std::invalid_argument(filename + " cannot be opened for loading!");
@@ -697,14 +697,15 @@ std::shared_ptr<Matrix> FastText::getInputMatrixFromFile(
         "Dimension of pretrained vectors (" + std::to_string(dim) +
         ") does not match dimension (" + std::to_string(args_->dim) + ")!");
   }
-  mat = std::make_shared<DenseMatrix>(n, dim);
+  DenseMatrix mat(n, dim);
+  words.reserve(n);
   for (size_t i = 0; i < n; i++) {
     std::string word;
     in >> word;
     words.push_back(word);
     dict_->add(word);
     for (size_t j = 0; j < dim; j++) {
-      in >> mat->at(i, j);
+      in >> mat.at(i, j);
     }
   }
   in.close();
@@ -721,7 +722,7 @@ std::shared_ptr<Matrix> FastText::getInputMatrixFromFile(
       continue;
     }
     for (size_t j = 0; j < dim; j++) {
-      input->at(idx, j) = mat->at(i, j);
+      input->at(idx, j) = mat.at(i, j);
     }
   }
   return input;
@@ -781,6 +782,7 @@ void FastText::startThreads() {
   tokenCount_ = 0;
   loss_ = -1;
   std::vector<std::thread> threads;
+  threads.reserve(args_->thread);
   for (int32_t i = 0; i < args_->thread; i++) {
     threads.push_back(std::thread([=]() { trainThread(i); }));
   }

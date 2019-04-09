@@ -83,7 +83,7 @@ void Loss::findKBest(
     if (heap.size() == k && std_log(output[i]) < heap.front().first) {
       continue;
     }
-    heap.push_back(std::make_pair(std_log(output[i]), i));
+    heap.emplace_back(std_log(output[i]), i);
     std::push_heap(heap.begin(), heap.end(), comparePairs);
     if (heap.size() > k) {
       std::pop_heap(heap.begin(), heap.end(), comparePairs);
@@ -239,8 +239,8 @@ void HierarchicalSoftmaxLoss::buildTree(const std::vector<int64_t>& counts) {
       code.push_back(tree_[j].binary);
       j = tree_[j].parent;
     }
-    paths_.push_back(path);
-    codes_.push_back(code);
+    paths_.push_back(std::move(path));
+    codes_.push_back(std::move(code));
   }
 }
 
@@ -284,7 +284,7 @@ void HierarchicalSoftmaxLoss::dfs(
   }
 
   if (tree_[node].left == -1 && tree_[node].right == -1) {
-    heap.push_back(std::make_pair(score, node));
+    heap.emplace_back(score, node);
     std::push_heap(heap.begin(), heap.end(), comparePairs);
     if (heap.size() > k) {
       std::pop_heap(heap.begin(), heap.end(), comparePairs);
