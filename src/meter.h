@@ -26,12 +26,21 @@ class Meter {
     Metrics() : gold(0), predicted(0), predictedGold(0) {}
 
     double precision() const {
+      if (predicted == 0) {
+        return std::numeric_limits<double>::quiet_NaN();
+      }
       return predictedGold / double(predicted);
     }
     double recall() const {
+      if (gold == 0) {
+        return std::numeric_limits<double>::quiet_NaN();
+      }
       return predictedGold / double(gold);
     }
     double f1Score() const {
+      if (predicted + gold == 0) {
+        return std::numeric_limits<double>::quiet_NaN();
+      }
       return 2 * predictedGold / double(predicted + gold);
     }
   };
