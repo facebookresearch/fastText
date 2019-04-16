@@ -1,6 +1,7 @@
-# fastText
+# fastText python
 
 [fastText](https://fasttext.cc/) is a library for efficient learning of word representations and sentence classification.
+This folder contains python bindings of the fastText library.
 
 ## Requirements
 
@@ -16,7 +17,7 @@ You will need
 * [NumPy](http://www.numpy.org/) & [SciPy](https://www.scipy.org/)
 * [pybind11](https://github.com/pybind/pybind11)
 
-## Building fastText
+## Building fastText for python
 
 The easiest way to install fastText is to use [pip](https://pip.pypa.io/en/stable/).
 

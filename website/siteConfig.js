@@ -67,7 +67,7 @@ const siteConfig = {
   /* header links for links on this site */
   headerLinks: [
     { doc: "support", label: "Docs" },
-    { doc: "english-vectors", label: "Download" },
+    { doc: "english-vectors", label: "Resources" },
     { blog: true, label: "Blog" },
     {
       href: "https://github.com/facebookresearch/fastText/",
