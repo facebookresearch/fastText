@@ -36,25 +36,20 @@ def test(predictions, labels, k=1):
         nlabels += len(labels)
     return (precision / (k * nexamples), precision / nlabels)
 
-
-def find_nearest_neighbor(query, vectors, ban_set, cossims=None):
+def find_nearest_neighbor(query, vectors, n=10,  cossims=None):
     """
     query is a 1d numpy array corresponding to the vector to which you want to
     find the closest vector
     vectors is a 2d numpy array corresponding to the vectors you want to consider
-    ban_set is a set of indicies within vectors you want to ignore for nearest match
+    
     cossims is a 1d numpy array of size len(vectors), which can be passed for efficiency
-
-    returns the index of the closest match to query within vectors
-
+    returns the index of the closest n matches to query within vectors and the cosine similarity (cosine the angle between the vectors)
+    
     """
     if cossims is None:
         cossims = np.matmul(vectors, query, out=cossims)
-    else:
-        np.matmul(vectors, query, out=cossims)
-    rank = len(cossims) - 1
-    result_i = np.argpartition(cossims, rank)[rank]
-    while result_i in ban_set:
-        rank -= 1
-        result_i = np.argpartition(cossims, rank)[rank]
-    return result_i
+        
+    norms = np.sqrt((query**2).sum() * (vectors**2).sum(axis=1))
+    cossims = cossims/norms
+    result_i = np.argpartition(-cossims, range(n+1))[1:n+1]
+    return list(zip(result_i, cossims[result_i]))
