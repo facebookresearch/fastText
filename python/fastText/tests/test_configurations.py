@@ -19,7 +19,7 @@ import multiprocessing
 
 
 def max_thread():
-    return multiprocessing.cpu_count() - 1
+    return max(1, multiprocessing.cpu_count() - 1)
 
 
 def check_supervised_configuration(configuration, verbose=1):
