@@ -180,9 +180,10 @@ PYBIND11_MODULE(fasttext_pybind, m) {
           "getSentenceVector",
           [](fasttext::FastText& m,
              fasttext::Vector& v,
-             const std::string text) {
+             const std::string text,
+             const bool normalise) {
             std::stringstream ioss(text);
-            m.getSentenceVector(ioss, v);
+            m.getSentenceVector(ioss, v, normalise);
           })
       .def(
           "tokenize",
@@ -364,7 +365,10 @@ PYBIND11_MODULE(fasttext_pybind, m) {
           "getWordVector",
           [](fasttext::FastText& m,
              fasttext::Vector& vec,
-             const std::string word) { m.getWordVector(vec, word); })
+             const std::string word,
+             const bool normalise) {
+              m.getWordVector(vec, word, normalise); 
+            })
       .def(
           "getSubwords",
           [](fasttext::FastText& m,

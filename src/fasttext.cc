@@ -86,7 +86,7 @@ int32_t FastText::getSubwordId(const std::string& subword) const {
   return dict_->nwords() + h;
 }
 
-void FastText::getWordVector(Vector& vec, const std::string& word) const {
+void FastText::getWordVector(Vector& vec, const std::string& word, const bool& normalise) const {
   const std::vector<int32_t>& ngrams = dict_->getSubwords(word);
   vec.zero();
   for (int i = 0; i < ngrams.size(); i++) {
@@ -94,6 +94,13 @@ void FastText::getWordVector(Vector& vec, const std::string& word) const {
   }
   if (ngrams.size() > 0) {
     vec.mul(1.0 / ngrams.size());
+  }
+
+  if(normalise) {
+    real norm = vec.norm();
+    if (norm > 0.0) {
+      vec.mul(1.0 / norm);
+    }
   }
 }
 
@@ -471,7 +478,7 @@ bool FastText::predictLine(
   return true;
 }
 
-void FastText::getSentenceVector(std::istream& in, fasttext::Vector& svec) {
+void FastText::getSentenceVector(std::istream& in, fasttext::Vector& svec, const bool& normalise) {
   svec.zero();
   if (args_->model == model_name::sup) {
     std::vector<int32_t> line, labels;
@@ -500,6 +507,13 @@ void FastText::getSentenceVector(std::istream& in, fasttext::Vector& svec) {
     }
     if (count > 0) {
       svec.mul(1.0 / count);
+    }
+  }
+
+  if(normalise) {
+    real norm = svec.norm();
+    if (norm > 0.0) {
+      svec.mul(1.0 / norm);
     }
   }
 }

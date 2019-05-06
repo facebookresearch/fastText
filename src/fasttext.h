@@ -80,7 +80,7 @@ class FastText {
 
   int32_t getSubwordId(const std::string& subword) const;
 
-  void getWordVector(Vector& vec, const std::string& word) const;
+  void getWordVector(Vector& vec, const std::string& word, const bool& normalise = false) const;
 
   void getSubwordVector(Vector& vec, const std::string& subword) const;
 
@@ -107,7 +107,7 @@ class FastText {
 
   void loadModel(const std::string& filename);
 
-  void getSentenceVector(std::istream& in, Vector& vec);
+  void getSentenceVector(std::istream& in, Vector& vec, const bool& normalise = false);
 
   void quantize(const Args& qargs);
 
