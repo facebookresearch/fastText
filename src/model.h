@@ -39,7 +39,7 @@ class Model {
   Model(Model&& model) = delete;
   Model& operator=(const Model& other) = delete;
   Model& operator=(Model&& other) = delete;
-
+  inline std::shared_ptr<Loss>& getLoss() { return loss_; }
   class State {
    private:
     real lossValue_;

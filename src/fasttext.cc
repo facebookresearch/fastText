@@ -9,7 +9,9 @@
 #include "fasttext.h"
 #include "loss.h"
 #include "quantmatrix.h"
-
+#ifdef FASTTEXT_CUDA
+#include "cudaloss.h"
+#endif
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
@@ -19,6 +21,7 @@
 #include <string>
 #include <thread>
 #include <vector>
+//#include <memory>
 
 namespace fasttext {
 
@@ -30,6 +33,10 @@ bool comparePairs(
     const std::pair<real, std::string>& r);
 
 std::shared_ptr<Loss> FastText::createLoss(std::shared_ptr<Matrix>& output) {
+#ifdef FASTTEXT_CUDA_DEBUG
+  assert(args_->batchSize==1);
+  assert(args_->thread==1);
+#endif
   loss_name lossName = args_->loss;
   switch (lossName) {
     case loss_name::hs:
@@ -42,6 +49,14 @@ std::shared_ptr<Loss> FastText::createLoss(std::shared_ptr<Matrix>& output) {
       return std::make_shared<SoftmaxLoss>(output);
     case loss_name::ova:
       return std::make_shared<OneVsAllLoss>(output);
+#ifdef FASTTEXT_CUDA
+    case loss_name::cuda_softmax: {
+      std::shared_ptr<CudaSoftmaxLoss> ret = std::make_shared<CudaSoftmaxLoss>(input_, output);
+      if( !ret->init() )
+	throw std::runtime_error("init CudaSoftmaxLoss error");
+      return ret;
+    }
+#endif
     default:
       throw std::runtime_error("Unknown loss");
   }
@@ -198,6 +213,11 @@ void FastText::saveModel(const std::string& filename) {
   ofs.write((char*)&(quant_), sizeof(bool));
   input_->save(ofs);
 
+#ifdef FASTTEXT_CUDA
+  if( args_->loss==loss_name::cuda_softmax ) {
+    model_->getLoss()->shutdown();
+  }
+#endif
   ofs.write((char*)&(args_->qout), sizeof(bool));
   output_->save(ofs);
 
@@ -652,7 +672,14 @@ void FastText::trainThread(int32_t threadId) {
   std::ifstream ifs(args_->input);
   utils::seek(ifs, threadId * utils::size(ifs) / args_->thread);
 
-  Model::State state(args_->dim, output_->size(0), threadId);
+  std::unique_ptr<Model::State> pState(new Model::State(args_->dim, output_->size(0), threadId));
+#ifdef FASTTEXT_CUDA
+  int batchSize = 0;
+  if( args_->loss == loss_name::cuda_softmax ) {
+    batchSize = args_->batchSize;
+    pState.reset(new CudaState(args_->dim, output_->size(0), threadId, batchSize));
+  }
+#endif
 
   const int64_t ntokens = dict_->ntokens();
   int64_t localTokenCount = 0;
@@ -662,23 +689,23 @@ void FastText::trainThread(int32_t threadId) {
     real lr = args_->lr * (1.0 - progress);
     if (args_->model == model_name::sup) {
       localTokenCount += dict_->getLine(ifs, line, labels);
-      supervised(state, lr, line, labels);
+      supervised(*pState, lr, line, labels);
     } else if (args_->model == model_name::cbow) {
-      localTokenCount += dict_->getLine(ifs, line, state.rng);
-      cbow(state, lr, line);
+      localTokenCount += dict_->getLine(ifs, line, pState->rng);
+      cbow(*pState, lr, line);
     } else if (args_->model == model_name::sg) {
-      localTokenCount += dict_->getLine(ifs, line, state.rng);
-      skipgram(state, lr, line);
+      localTokenCount += dict_->getLine(ifs, line, pState->rng);
+      skipgram(*pState, lr, line);
     }
     if (localTokenCount > args_->lrUpdateRate) {
       tokenCount_ += localTokenCount;
       localTokenCount = 0;
       if (threadId == 0 && args_->verbose > 1)
-        loss_ = state.getLoss();
+        loss_ = pState->getLoss();
     }
   }
   if (threadId == 0)
-    loss_ = state.getLoss();
+    loss_ = pState->getLoss();
   ifs.close();
 }
 

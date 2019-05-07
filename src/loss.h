@@ -40,6 +40,12 @@ class Loss {
   explicit Loss(std::shared_ptr<Matrix>& wo);
   virtual ~Loss() = default;
 
+  virtual bool init() { return true; }
+  virtual void shutdown() {}
+  virtual bool batchforward_enabled() const { return false; }
+  virtual void forward2batch(int32_t target, Model::State& state, real lr, bool backprop, bool normalizeGradient, const std::vector<int32_t>& input) {
+	  throw std::runtime_error("forward2batch is not supported");
+  }
   virtual real forward(
       const std::vector<int32_t>& targets,
       int32_t targetIndex,

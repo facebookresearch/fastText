@@ -36,6 +36,7 @@ Args::Args() {
   verbose = 2;
   pretrainedVectors = "";
   saveOutput = false;
+  batchSize = 256;
 
   qout = false;
   retrain = false;
@@ -54,6 +55,8 @@ std::string Args::lossToString(loss_name ln) const {
       return "softmax";
     case loss_name::ova:
       return "one-vs-all";
+    case loss_name::cuda_softmax:
+      return "cuda_softmax";
   }
   return "Unknown loss!"; // should never happen
 }
@@ -133,6 +136,8 @@ void Args::parseArgs(const std::vector<std::string>& args) {
         } else if (
             args.at(ai + 1) == "one-vs-all" || args.at(ai + 1) == "ova") {
           loss = loss_name::ova;
+        } else if (args.at(ai + 1) == "cuda_softmax") {
+          loss = loss_name::cuda_softmax;
         } else {
           std::cerr << "Unknown loss: " << args.at(ai + 1) << std::endl;
           printHelp();
@@ -157,6 +162,8 @@ void Args::parseArgs(const std::vector<std::string>& args) {
       } else if (args[ai] == "-saveOutput") {
         saveOutput = true;
         ai--;
+      } else if (args[ai] == "-batchsize") {
+        batchSize = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-qnorm") {
         qnorm = true;
         ai--;
@@ -233,8 +240,9 @@ void Args::printTrainingHelp() {
       << "  -ws                 size of the context window [" << ws << "]\n"
       << "  -epoch              number of epochs [" << epoch << "]\n"
       << "  -neg                number of negatives sampled [" << neg << "]\n"
-      << "  -loss               loss function {ns, hs, softmax, one-vs-all} ["
+      << "  -loss               loss function {ns, hs, softmax, one-vs-all, cuda_softmax} ["
       << lossToString(loss) << "]\n"
+      << "  -batchsize          cuda batch size [" << batchSize << "]\n"
       << "  -thread             number of threads [" << thread << "]\n"
       << "  -pretrainedVectors  pretrained word vectors for supervised learning ["
       << pretrainedVectors << "]\n"
