@@ -8,6 +8,7 @@
 namespace fasttext {
 static const float one = 1.0;
 static const float zero = 0.0;
+static const real epsilon = 0.00001f;
 real* CudaSoftmaxLoss::d_wo_;
 
 #define CUDA_CHECK(error) { \
@@ -155,7 +156,7 @@ void CudacomputeDiff(real* softmax_output, size_t output_n, real* output_diff, r
   int output_idx = blockIdx.x*blockDim.x + threadIdx.x;
 
   if( threadIdx.x==0 && blockIdx.x==0 ) {
-    *loss = -std::log(softmax_output[target] + 1e-5);  // same as std_log() but not as Loss::log()
+    *loss = softmax_output[target];
   }
 
   if( output_idx < output_n ) {
@@ -200,15 +201,15 @@ void CudaSoftmaxLoss::forward2batch(int32_t target, Model::State& state, real lr
       }
       batchState.batchIndex = 0;
     }
-  }
-
 #ifdef FASTTEXT_CUDA_DEBUG
-  compare(CpuState, batchState, false, true);
-#endif  
+    compare(CpuState, batchState, false, true);
+    if( fabs(cpuloss-lossValues[0])>epsilon )
+      printf("\nloss not match %f %f\n", cpuloss, lossValues[0]);
+#endif
+  }
 }
 
 void CudaSoftmaxLoss::compare(const Model::State& CPUState, const CudaState& GPUState, bool CmpWo, bool CmpSoftmaxOutput) {
-  static const real epsilon = 0.00001f;
   if( CmpWo ) {
     int64_t m = wo_->size(0);
     int64_t n = wo_->size(1);
@@ -218,10 +219,9 @@ void CudaSoftmaxLoss::compare(const Model::State& CPUState, const CudaState& GPU
     for( int64_t i=0; i<m; i++ ) {
       for( int64_t j=0; j<n; j++ ) {
         if( fabs(tmpwo[i*n+j]-wo->at(i,j))>epsilon )
-          printf("wo[%ld,%ld] not match %f %f\n", i, j, tmpwo[i*n+j], wo->at(i,j));
+          printf("\nwo[%ld,%ld] not match %f %f\n", i, j, tmpwo[i*n+j], wo->at(i,j));
       }
     }
-    printf("wo cpu/gpu compare done\n");
   }
   if( CmpSoftmaxOutput ) {
     int64_t m = wo_->size(0);
@@ -229,9 +229,8 @@ void CudaSoftmaxLoss::compare(const Model::State& CPUState, const CudaState& GPU
     CUDA_CHECK(cudaMemcpy(tmpSoftMax.data(), GPUState.d_softmax_output_, m*sizeof(real), cudaMemcpyDeviceToHost));
     for( int64_t i=0; i<m; i++ ) {
       if( fabs(tmpSoftMax[i]-CPUState.output[i])>epsilon )
-	printf("softmax [%ld] not match %f %f\n", i, tmpSoftMax[i], CPUState.output[i]);
+	printf("\nsoftmax [%ld] not match %f %f\n", i, tmpSoftMax[i], CPUState.output[i]);
     }
-    printf("softmax cpu/gpu compare done\n");
   }
 }
 
@@ -302,7 +301,7 @@ void CudaSoftmaxLoss::batchforward(
   real* pGrad = h_grads_loss.data();
   for(uint32_t i=0; i<batchSize; i++ ) {
     memcpy(grads[i].data(), pGrad+i*N, N*sizeof(real));
-    lossValues[i] = h_grads_loss[batchSize*N+i];
+    lossValues[i] = -Loss::log(h_grads_loss[batchSize*N+i]);
   }
 }
 
