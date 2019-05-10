@@ -36,7 +36,7 @@ Args::Args() {
   verbose = 2;
   pretrainedVectors = "";
   saveOutput = false;
-  batchSize = 256;
+  batchSize = 1;
 
   qout = false;
   retrain = false;

@@ -56,7 +56,7 @@ static const char* cublasGetErrorEnum(cublasStatus_t error)
 }
 
 CudaState::CudaState(int32_t hiddenSize, int32_t outputSize, int32_t seed, uint32_t batchSize):Model::State(hiddenSize, outputSize, seed),
-	        targets(batchSize), lrs(batchSize), hiddens(batchSize, Vector(hiddenSize)), batchIndex(0), maxBatchSize(batchSize) {
+	        targets(batchSize), lrs(batchSize), hiddens(batchSize, Vector(hiddenSize)), inputs(batchSize), batchIndex(0), maxBatchSize(batchSize) {
   int64_t M = outputSize;
   int64_t N = hiddenSize;
   CUDA_CHECK(cudaMalloc((void**)&d_hidden_, batchSize*N*sizeof(real)));
@@ -86,14 +86,15 @@ CudaState::~CudaState() {
   CUBLAS_CHECK(cublasDestroy(cublas_));
 }
 
-void CudaState::addToBatch(int32_t target, real lr) {
+void CudaState::addToBatch(int32_t target, real lr, const std::vector<int32_t>& input) {
   targets[batchIndex] = target;
   lrs[batchIndex] = lr;
   hiddens[batchIndex] = hidden;
+  inputs[batchIndex] = input;
   batchIndex++;
 }
 
-CudaSoftmaxLoss::CudaSoftmaxLoss(std::shared_ptr<Matrix>& wi, std::shared_ptr<Matrix>& wo):SoftmaxLoss(wo), wi_(wi) {
+CudaSoftmaxLoss::CudaSoftmaxLoss(std::shared_ptr<Matrix>& wi, std::shared_ptr<Matrix>& wo, bool normalizeGradient):SoftmaxLoss(wo), wi_(wi), normalizeGradient_(normalizeGradient) {
 }
 
 CudaSoftmaxLoss::~CudaSoftmaxLoss() {
@@ -184,29 +185,36 @@ void CudaSoftmaxLoss::forward2batch(int32_t target, Model::State& state, real lr
   real cpuloss = -SoftmaxLoss::log(CpuState.output[target]);
 #endif
 
-  batchState.addToBatch(target, lr);
+  batchState.addToBatch(target, lr, input);
   if( batchState.batchIndex==batchState.maxBatchSize ) {
-    std::vector<real> lossValues(batchState.batchIndex);
-    std::vector<Vector> grads(batchState.batchIndex, Vector(batchState.grad.size()));
-    batchforward(batchState, batchState.batchIndex, true, lossValues, grads);
-    for (const auto& lossValue : lossValues) {
-      batchState.incrementNExamples(lossValue);
-    }
-    for (auto& grad : grads) {
-      if (normalizeGradient) {
-	grad.mul(1.0 / input.size());
-      }
-      for (auto it = input.cbegin(); it != input.cend(); ++it) {
-	wi_->addVectorToRow(grad, *it, 1.0);
-      }
-      batchState.batchIndex = 0;
-    }
-#ifdef FASTTEXT_CUDA_DEBUG
-    compare(CpuState, batchState, false, true);
-    if( fabs(cpuloss-lossValues[0])>epsilon )
-      printf("\nloss not match %f %f\n", cpuloss, lossValues[0]);
-#endif
+    flush(batchState, backprop);
   }
+
+#ifdef FASTTEXT_CUDA_DEBUG
+  if( backprop )
+    compare(CpuState, batchState, false, true);
+#endif  
+}
+
+void CudaSoftmaxLoss::flush(Model::State& state, bool backprop) {
+  CudaState& batchState = static_cast<CudaState&>(state);
+  std::vector<real> lossValues(batchState.batchIndex);
+  std::vector<Vector> grads(batchState.batchIndex, Vector(batchState.grad.size()));
+  batchforward(batchState, batchState.batchIndex, backprop, lossValues, grads);
+  for (const auto& lossValue : lossValues) {
+    batchState.incrementNExamples(lossValue);
+  }
+  int idx = 0;
+  for (auto& grad : grads) {
+    if (normalizeGradient_) {
+      grad.mul(1.0 / batchState.inputs[idx].size());
+    }
+    for (auto it = batchState.inputs[idx].cbegin(); it != batchState.inputs[idx].cend(); ++it) {
+      wi_->addVectorToRow(grad, *it, 1.0);
+    }
+    idx++;
+  }
+  batchState.batchIndex = 0;
 }
 
 void CudaSoftmaxLoss::compare(const Model::State& CPUState, const CudaState& GPUState, bool CmpWo, bool CmpSoftmaxOutput) {
@@ -275,22 +283,24 @@ void CudaSoftmaxLoss::batchforward(
       batchState.d_lossValues_ + i,
       batchState.targets[i], batchState.lrs[i]);
 
-    // compute grad
-    CUBLAS_CHECK(cublasSgemv(batchState.cublas_, CUBLAS_OP_T,
-      M, N,
-      &one,
-      d_wo_, M,
-      batchState.d_output_diff_, 1,
-      &zero,
-      batchState.d_grads_+N*i, 1));
+    if( backprop ) {
+      // compute grad
+      CUBLAS_CHECK(cublasSgemv(batchState.cublas_, CUBLAS_OP_T,
+        M, N,
+        &one,
+        d_wo_, M,
+        batchState.d_output_diff_, 1,
+        &zero,
+        batchState.d_grads_+N*i, 1));
 
-    // update wo
-    CUBLAS_CHECK(cublasSger(batchState.cublas_,
-      N, M,
-      &one,
-      batchState.d_hidden_, 1,
-      batchState.d_output_diff_, 1,
-      d_wo_, N));
+      // update wo
+      CUBLAS_CHECK(cublasSger(batchState.cublas_,
+        N, M,
+        &one,
+        batchState.d_hidden_, 1,
+        batchState.d_output_diff_, 1,
+        d_wo_, N));
+    }
   }
 
   cudaStreamSynchronize(batchState.stream_);

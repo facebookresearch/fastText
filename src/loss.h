@@ -43,6 +43,7 @@ class Loss {
   virtual bool init() { return true; }
   virtual void shutdown() {}
   virtual bool batchforward_enabled() const { return false; }
+  virtual void flush(Model::State& state, bool backprop = true) {}
   virtual void forward2batch(int32_t target, Model::State& state, real lr, bool backprop, bool normalizeGradient, const std::vector<int32_t>& input) {
 	  throw std::runtime_error("forward2batch is not supported");
   }
