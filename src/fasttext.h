@@ -14,6 +14,7 @@
 #include <chrono>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <queue>
 #include <set>
 #include <tuple>
@@ -46,6 +47,7 @@ class FastText {
   std::chrono::steady_clock::time_point start_;
   void signModel(std::ostream&);
   bool checkModel(std::istream&);
+  void streamVectorsParallelBatchLocked(int, int, std::ostream&, std::mutex&) const;
   void startThreads();
   void addInputVector(Vector&, int32_t) const;
   void trainThread(int32_t);
@@ -98,6 +100,7 @@ class FastText {
   std::shared_ptr<const DenseMatrix> getOutputMatrix() const;
 
   void saveVectors(const std::string& filename);
+  void saveVectorsParallel(const std::string& filename);
 
   void saveModel(const std::string& filename);
 
