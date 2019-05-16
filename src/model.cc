@@ -78,20 +78,16 @@ void Model::update(
   }
   computeHidden(input, state);
 
-  if( !loss_->batchforward_enabled() ) {
-    Vector& grad = state.grad;
-    grad.zero();
-    real lossValue = loss_->forward(targets, targetIndex, state, lr, true);
-    state.incrementNExamples(lossValue);
+  Vector& grad = state.grad;
+  grad.zero();
+  real lossValue = loss_->forward(targets, targetIndex, state, lr, true);
+  state.incrementNExamples(lossValue);
 
-    if (normalizeGradient_) {
-      grad.mul(1.0 / input.size());
-    }
-    for (auto it = input.cbegin(); it != input.cend(); ++it) {
-      wi_->addVectorToRow(grad, *it, 1.0);
-    }
-  } else {
-    loss_->forward2batch(targets[targetIndex], state, lr, true, normalizeGradient_, input);
+  if (normalizeGradient_) {
+    grad.mul(1.0 / input.size());
+  }
+  for (auto it = input.cbegin(); it != input.cend(); ++it) {
+    wi_->addVectorToRow(grad, *it, 1.0);
   }
 }
 

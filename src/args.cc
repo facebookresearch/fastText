@@ -36,7 +36,6 @@ Args::Args() {
   verbose = 2;
   pretrainedVectors = "";
   saveOutput = false;
-  batchSize = 1;
 
   qout = false;
   retrain = false;
@@ -162,8 +161,6 @@ void Args::parseArgs(const std::vector<std::string>& args) {
       } else if (args[ai] == "-saveOutput") {
         saveOutput = true;
         ai--;
-      } else if (args[ai] == "-batchsize") {
-        batchSize = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-qnorm") {
         qnorm = true;
         ai--;
@@ -242,7 +239,6 @@ void Args::printTrainingHelp() {
       << "  -neg                number of negatives sampled [" << neg << "]\n"
       << "  -loss               loss function {ns, hs, softmax, one-vs-all, cuda_softmax} ["
       << lossToString(loss) << "]\n"
-      << "  -batchsize          cuda batch size [" << batchSize << "]\n"
       << "  -thread             number of threads [" << thread << "]\n"
       << "  -pretrainedVectors  pretrained word vectors for supervised learning ["
       << pretrainedVectors << "]\n"

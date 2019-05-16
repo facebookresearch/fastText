@@ -32,9 +32,8 @@ bool comparePairs(
     const std::pair<real, std::string>& l,
     const std::pair<real, std::string>& r);
 
-std::shared_ptr<Loss> FastText::createLoss(std::shared_ptr<Matrix>& output, bool normalizeGradient) {
+std::shared_ptr<Loss> FastText::createLoss(std::shared_ptr<Matrix>& output) {
 #ifdef FASTTEXT_CUDA_DEBUG
-  assert(args_->batchSize==1);
   assert(args_->thread==1);
 #endif
   loss_name lossName = args_->loss;
@@ -51,7 +50,7 @@ std::shared_ptr<Loss> FastText::createLoss(std::shared_ptr<Matrix>& output, bool
       return std::make_shared<OneVsAllLoss>(output);
 #ifdef FASTTEXT_CUDA
     case loss_name::cuda_softmax: {
-      std::shared_ptr<CudaSoftmaxLoss> ret = std::make_shared<CudaSoftmaxLoss>(input_, output, normalizeGradient);
+      std::shared_ptr<CudaSoftmaxLoss> ret = std::make_shared<CudaSoftmaxLoss>(input_, output);
       if( !ret->init() )
 	throw std::runtime_error("init CudaSoftmaxLoss error");
       return ret;
@@ -213,11 +212,9 @@ void FastText::saveModel(const std::string& filename) {
   ofs.write((char*)&(quant_), sizeof(bool));
   input_->save(ofs);
 
-#ifdef FASTTEXT_CUDA
   if( args_->loss==loss_name::cuda_softmax ) {
     model_->getLoss()->shutdown();
   }
-#endif
   ofs.write((char*)&(args_->qout), sizeof(bool));
   output_->save(ofs);
 
@@ -276,8 +273,8 @@ void FastText::loadModel(std::istream& in) {
   }
   output_->load(in);
 
+  auto loss = createLoss(output_);
   bool normalizeGradient = (args_->model == model_name::sup);
-  auto loss = createLoss(output_, normalizeGradient);
   model_ = std::make_shared<Model>(input_, output_, loss, normalizeGradient);
 }
 
@@ -355,7 +352,7 @@ void FastText::quantize(const Args& qargs) {
       args_->lr = qargs.lr;
       args_->thread = qargs.thread;
       args_->verbose = qargs.verbose;
-      auto loss = createLoss(output_, normalizeGradient);
+      auto loss = createLoss(output_);
       model_ = std::make_shared<Model>(input, output, loss, normalizeGradient);
       startThreads();
     }
@@ -370,7 +367,7 @@ void FastText::quantize(const Args& qargs) {
   }
 
   quant_ = true;
-  auto loss = createLoss(output_, normalizeGradient);
+  auto loss = createLoss(output_);
   model_ = std::make_shared<Model>(input_, output_, loss, normalizeGradient);
 }
 
@@ -674,10 +671,8 @@ void FastText::trainThread(int32_t threadId) {
 
   std::unique_ptr<Model::State> pState(new Model::State(args_->dim, output_->size(0), threadId));
 #ifdef FASTTEXT_CUDA
-  int batchSize = 0;
   if( args_->loss == loss_name::cuda_softmax ) {
-    batchSize = args_->batchSize;
-    pState.reset(new CudaState(args_->dim, output_->size(0), threadId, batchSize));
+    pState.reset(new CudaState(args_->dim, output_->size(0), threadId));
   }
 #endif
 
@@ -704,7 +699,6 @@ void FastText::trainThread(int32_t threadId) {
         loss_ = pState->getLoss();
     }
   }
-  model_->getLoss()->flush(*pState);
   if (threadId == 0)
     loss_ = pState->getLoss();
   ifs.close();
@@ -798,8 +792,8 @@ void FastText::train(const Args& args) {
     input_ = createRandomMatrix();
   }
   output_ = createTrainOutputMatrix();
+  auto loss = createLoss(output_);
   bool normalizeGradient = (args_->model == model_name::sup);
-  auto loss = createLoss(output_, normalizeGradient);
   model_ = std::make_shared<Model>(input_, output_, loss, normalizeGradient);
   startThreads();
 }

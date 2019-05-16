@@ -60,7 +60,7 @@ class FastText {
   std::shared_ptr<Matrix> createRandomMatrix() const;
   std::shared_ptr<Matrix> createTrainOutputMatrix() const;
   std::vector<int64_t> getTargetCounts() const;
-  std::shared_ptr<Loss> createLoss(std::shared_ptr<Matrix>& output, bool normalizeGradient);
+  std::shared_ptr<Loss> createLoss(std::shared_ptr<Matrix>& output);
   void supervised(
       Model::State& state,
       real lr,

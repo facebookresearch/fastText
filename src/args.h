@@ -48,7 +48,6 @@ class Args {
   int verbose;
   std::string pretrainedVectors;
   bool saveOutput;
-  uint32_t batchSize;
 
   bool qout;
   bool retrain;

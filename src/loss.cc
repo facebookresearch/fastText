@@ -95,31 +95,6 @@ void Loss::findKBest(
 BinaryLogisticLoss::BinaryLogisticLoss(std::shared_ptr<Matrix>& wo)
     : Loss(wo) {}
 
-/*
-real SoftmaxLoss::forward(
-    const std::vector<int32_t>& targets,
-    int32_t targetIndex,
-    Model::State& state,
-    real lr,
-    bool backprop) {
-  computeOutput(state);
-
-  assert(targetIndex >= 0);
-  assert(targetIndex < targets.size());
-  int32_t target = targets[targetIndex];
-
-  if (backprop) {
-    int32_t osz = wo_->size(0);
-    for (int32_t i = 0; i < osz; i++) {
-      real label = (i == target) ? 1.0 : 0.0;
-      real alpha = lr * (label - state.output[i]);
-      state.grad.addRow(*wo_, i, alpha);
-      wo_->addVectorToRow(state.hidden, i, alpha);
-    }
-  }
-  return -log(state.output[target]);
-};
- */
 real BinaryLogisticLoss::binaryLogistic(
     int32_t target,
     Model::State& state,
