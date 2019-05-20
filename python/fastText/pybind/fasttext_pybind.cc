@@ -164,6 +164,9 @@ PYBIND11_MODULE(fasttext_pybind, m) {
           "saveModel",
           [](fasttext::FastText& m, std::string s) { m.saveModel(s); })
       .def(
+          "saveVectors",
+          [](fasttext::FastText& m, std::string s) { m.saveVectors(s); })
+      .def(
           "test",
           [](fasttext::FastText& m, const std::string filename, int32_t k) {
             std::ifstream ifs(filename);

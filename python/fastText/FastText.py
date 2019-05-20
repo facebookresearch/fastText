@@ -216,6 +216,10 @@ class _FastText():
         """Save the model to the given path"""
         self.f.saveModel(path)
 
+    def save_vectors(self, path):
+        """Save the model vectors to the given path"""
+        self.f.saveVectors(path)
+
     def test(self, path, k=1):
         """Evaluate supervised model using file given by path"""
         return self.f.test(path, k)
