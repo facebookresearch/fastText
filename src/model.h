@@ -17,6 +17,8 @@
 #include "real.h"
 #include "utils.h"
 #include "vector.h"
+#include "args.h"
+#include "dictionary.h"
 
 namespace fasttext {
 
@@ -46,14 +48,18 @@ class Model {
     int64_t nexamples_;
 
    public:
+    virtual ~State() {}
     Vector hidden;
     Vector output;
     Vector grad;
+    std::vector<int32_t> line;
+    std::vector<int32_t> labels;
     std::minstd_rand rng;
 
     State(int32_t hiddenSize, int32_t outputSize, int32_t seed);
     real getLoss() const;
     void incrementNExamples(real loss);
+    virtual int64_t getLine(std::ifstream& ifs, std::shared_ptr<Dictionary> dict, model_name modelname);
   };
 
   void predict(

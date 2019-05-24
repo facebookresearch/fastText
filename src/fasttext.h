@@ -61,13 +61,9 @@ class FastText {
   std::shared_ptr<Matrix> createTrainOutputMatrix() const;
   std::vector<int64_t> getTargetCounts() const;
   std::shared_ptr<Loss> createLoss(std::shared_ptr<Matrix>& output);
-  void supervised(
-      Model::State& state,
-      real lr,
-      const std::vector<int32_t>& line,
-      const std::vector<int32_t>& labels);
-  void cbow(Model::State& state, real lr, const std::vector<int32_t>& line);
-  void skipgram(Model::State& state, real lr, const std::vector<int32_t>& line);
+  void supervised(Model::State& state,real lr);
+  void cbow(Model::State& state, real lr);
+  void skipgram(Model::State& state, real lr);
 
   bool quant_;
   int32_t version;

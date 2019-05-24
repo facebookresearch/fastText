@@ -56,7 +56,7 @@ static const char* cublasGetErrorEnum(cublasStatus_t error)
 }
 
 CudaState::CudaState(int32_t hiddenSize, int32_t outputSize, int32_t seed)
-	:Model::State(hiddenSize, outputSize, seed) {
+	:Model::State(hiddenSize, outputSize, seed), ifs_(NULL) {
   int64_t M = outputSize;
   int64_t N = hiddenSize;
   CUDA_CHECK(cudaMalloc((void**)&d_hidden_, N*sizeof(real)));
@@ -81,9 +81,27 @@ CudaState::~CudaState() {
   CUDA_CHECK(cudaFree(d_softmax_output_));
   CUDA_CHECK(cudaFree(d_output_diff_));
   CUDA_CHECK(cudaFree(d_grad_));
+  CUDA_CHECK(cudaFree(d_lossValue_));
   cudnnDestroyTensorDescriptor(cudnn_output_desc_);
   cudnnDestroy(cudnn_);
   CUBLAS_CHECK(cublasDestroy(cublas_));
+}
+
+int64_t CudaState::getLine(std::ifstream& ifs, std::shared_ptr<fasttext::Dictionary> dict, model_name model) {
+  if( ifs_==NULL ) {
+    ifs_ = &ifs;
+    dict_ = dict;
+    model_ = model;
+    return State::getLine(ifs, dict, model);
+  } else if( preLoadResult_==0 || labels.size()==0 || line.size()==0 ) {
+    return State::getLine(ifs, dict, model);
+  } else {
+    return preLoadResult_;
+  }
+}
+
+void CudaState::preLoadLine() {
+  preLoadResult_ = State::getLine(*ifs_, dict_, model_);	
 }
 
 CudaSoftmaxLoss::CudaSoftmaxLoss(std::shared_ptr<Matrix>& wi, std::shared_ptr<Matrix>& wo):SoftmaxLoss(wo), wi_(wi) {
@@ -140,12 +158,12 @@ real CudaSoftmaxLoss::forward(
 #ifdef FASTTEXT_CUDA_DEBUG
   Model::State cpuState(state);
   compare(cpuState, gpuState, true, false);
+  real cpuLoss = SoftmaxLoss::forward(targets, targetIndex, cpuState, lr, backprop);  
 #endif
 
   cudaforward(gpuState, targets[targetIndex], lr, backprop, gpuLoss, gpuState.grad);
 #ifdef FASTTEXT_CUDA_DEBUG
-  real cpuLoss = SoftmaxLoss::forward(targets, targetIndex, cpuState, lr, backprop);	
-  compare(cpuState, gpuState, false, true);
+  compare(cpuState, gpuState, true, true);
   if( fabs(gpuLoss-cpuLoss)>epsilon )
     printf("Loss not match, cpu: %f, gpu: %f\n", cpuLoss, gpuLoss);
 #endif
@@ -158,7 +176,7 @@ void CudacomputeDiff(real* softmax_output, size_t output_n, real* output_diff, r
   int output_idx = blockIdx.x*blockDim.x + threadIdx.x;
 
   if( threadIdx.x==0 && blockIdx.x==0 ) {
-    *loss = softmax_output[target];
+    *loss = -std::log(softmax_output[target] + 1e-5);
   }
 
   if( output_idx < output_n ) {
@@ -203,7 +221,7 @@ void CudaSoftmaxLoss::cudaforward(
   int N = wo_->size(1);  // dims
 
   // Copy hidden from host to device
-  CUDA_CHECK(cudaMemcpy(batchState.d_hidden_, batchState.hidden.data(), N*sizeof(real), cudaMemcpyHostToDevice));
+  CUDA_CHECK(cudaMemcpyAsync(batchState.d_hidden_, batchState.hidden.data(), N*sizeof(real), cudaMemcpyHostToDevice, batchState.stream_));
 
   // compute output
   CUBLAS_CHECK(cublasSgemv(batchState.cublas_, CUBLAS_OP_T,
@@ -246,6 +264,9 @@ void CudaSoftmaxLoss::cudaforward(
       d_wo_, N));
   }
 
+  // Load data from dict while gpu is running async
+  batchState.preLoadLine();
+
   cudaStreamSynchronize(batchState.stream_);
 
   // Copy d_lossValue_ -> lossValue, d_grad_ -> grad
@@ -253,7 +274,6 @@ void CudaSoftmaxLoss::cudaforward(
     CUDA_CHECK(cudaMemcpy(grad.data(), batchState.d_grad_, N*sizeof(real), cudaMemcpyDeviceToHost));
   }
   CUDA_CHECK(cudaMemcpy(&lossValue, batchState.d_lossValue_, sizeof(real), cudaMemcpyDeviceToHost));
-  lossValue = -log(lossValue);
 }
 
 } // namespace fasttext

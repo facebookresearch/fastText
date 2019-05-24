@@ -9,8 +9,16 @@ namespace fasttext {
 class CudaState : public Model::State {
  public:
    CudaState(int32_t hiddenSize, int32_t outputSize, int32_t seed);
-   ~CudaState();
+   virtual ~CudaState();
+
+   virtual int64_t getLine(std::ifstream& ifs, std::shared_ptr<fasttext::Dictionary> dict, model_name model);
+   void preLoadLine();
   
+   std::ifstream* ifs_;
+   std::shared_ptr<fasttext::Dictionary> dict_;
+   model_name model_;
+   int64_t preLoadResult_;
+
    // CUDA vars
    real* d_hidden_;
    real* d_output_;

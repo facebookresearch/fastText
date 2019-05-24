@@ -67,7 +67,7 @@ fasttext: $(OBJS) src/fasttext.cc
 cudaloss.o: src/cudaloss.cu src/*.h
 	$(NVCC) $(NVCCFLAGS) $(INCLUDES) -c src/cudaloss.cu
 
-fasttext_cuda: CXXFLAGS += -O3 -funroll-loops -DFASTTEXT_CUDA
+fasttext_cuda: CXXFLAGS += -O3 -funroll-loops -fno-inline -DFASTTEXT_CUDA
 fasttext_cuda: $(OBJS) src/fasttext.cc cudaloss.o
 	$(NVCC) $(NVCCFLAGS) $(OBJS) cudaloss.o -lcudnn -lcublas src/main.cc -o fasttext_cuda
 
