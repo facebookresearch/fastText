@@ -2,11 +2,23 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://fasttext.cc/blog</id>
     <title>fastText Blog</title>
-    <updated>2017-10-02T06:00:00Z</updated>
+    <updated>2019-06-25T06:00:00Z</updated>
     <generator>Feed for Node.js</generator>
     <link rel="alternate" href="https://fasttext.cc/blog"/>
     <subtitle>The best place to stay up-to-date with the latest fastText news and events.</subtitle>
     <logo>https://fasttext.cc/img/fasttext-icon-white-web.png</logo>
+    <entry>
+        <title type="html"><![CDATA[New release of python module]]></title>
+        <id>https://fasttext.cc/blog/2019/06/25/blog-post.html</id>
+        <link href="https://fasttext.cc/blog/2019/06/25/blog-post.html">
+        </link>
+        <updated>2019-06-25T06:00:00Z</updated>
+        <summary type="html"><![CDATA[<p>Today, we are happy to release a new version of the fastText python library. The main goal of this release is to merge two existing python modules: the official <code>fastText</code> module which was available on our github repository and the unofficial <code>fasttext</code> ...</p>]]></summary>
+        <author>
+            <name>Onur Çelebi</name>
+            <uri>https://research.fb.com/people/celebi-onur/</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Language identification]]></title>
         <id>https://fasttext.cc/blog/2017/10/02/blog-post.html</id>

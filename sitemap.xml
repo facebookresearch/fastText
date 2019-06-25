@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
 <url> <loc>https://fasttext.cc/index.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fasttext.cc/en/index.html" /> </url>
+<url> <loc>https://fasttext.cc/blog/2019/06/25/blog-post.html</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
 <url> <loc>https://fasttext.cc/blog/2017/10/02/blog-post.html</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
 <url> <loc>https://fasttext.cc/blog/2017/05/02/blog-post.html</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
 <url> <loc>https://fasttext.cc/blog/2016/08/18/blog-post.html</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
@@ -14,6 +15,7 @@
 <url> <loc>https://fasttext.cc/docs/en/language-identification.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fasttext.cc/docs/en/language-identification.html" /> </url>
 <url> <loc>https://fasttext.cc/docs/en/options.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fasttext.cc/docs/en/options.html" /> </url>
 <url> <loc>https://fasttext.cc/docs/en/pretrained-vectors.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fasttext.cc/docs/en/pretrained-vectors.html" /> </url>
+<url> <loc>https://fasttext.cc/docs/en/python-module.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fasttext.cc/docs/en/python-module.html" /> </url>
 <url> <loc>https://fasttext.cc/docs/en/references.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fasttext.cc/docs/en/references.html" /> </url>
 <url> <loc>https://fasttext.cc/docs/en/supervised-models.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fasttext.cc/docs/en/supervised-models.html" /> </url>
 <url> <loc>https://fasttext.cc/docs/en/supervised-tutorial.html</loc> <changefreq>hourly</changefreq> <priority>1.0</priority> <xhtml:link rel="alternate" hreflang="en" href="https://fasttext.cc/docs/en/supervised-tutorial.html" /> </url>

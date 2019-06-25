@@ -1,0 +1,286 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Python module · fastText</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="&lt;p&gt;In this document we present how to use fastText in python.&lt;/p&gt;
+"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Python module · fastText"/><meta property="og:type" content="website"/><meta property="og:url" content="https://fasttext.cc/index.html"/><meta property="og:description" content="&lt;p&gt;In this document we present how to use fastText in python.&lt;/p&gt;
+"/><meta property="og:image" content="https://fasttext.cc/img/ogimage.png"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/img/fasttext-icon-bg-web.png"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><link rel="alternate" type="application/atom+xml" href="https://fasttext.cc/blog/atom.xml" title="fastText Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://fasttext.cc/blog/feed.xml" title="fastText Blog RSS Feed"/><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-44373548-30', 'auto');
+              ga('send', 'pageview');
+            </script><script src="/js/scrollSpy.js"></script><link rel="stylesheet" href="/css/main.css"/><script src="/js/codetabs.js"></script></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><img class="logo" src="/img/fasttext-icon-white-web.png" alt="fastText"/></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/docs/en/support.html" target="_self">Docs</a></li><li class=""><a href="/docs/en/english-vectors.html" target="_self">Resources</a></li><li class=""><a href="/blog/" target="_self">Blog</a></li><li class=""><a href="https://github.com/facebookresearch/fastText/" target="_blank">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Help</span></h2></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Introduction</h3><ul class=""><li class="navListItem"><a class="navItem" href="/docs/en/support.html">Get started</a></li><li class="navListItem"><a class="navItem" href="/docs/en/cheatsheet.html">Cheatsheet</a></li><li class="navListItem"><a class="navItem" href="/docs/en/options.html">List of options</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Tutorials</h3><ul class=""><li class="navListItem"><a class="navItem" href="/docs/en/supervised-tutorial.html">Text classification</a></li><li class="navListItem"><a class="navItem" href="/docs/en/unsupervised-tutorial.html">Word representations</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Help</h3><ul class=""><li class="navListItem navListItemActive"><a class="navItem" href="/docs/en/python-module.html">Python module</a></li><li class="navListItem"><a class="navItem" href="/docs/en/faqs.html">FAQ</a></li><li class="navListItem"><a class="navItem" href="/docs/en/api.html">API</a></li><li class="navListItem"><a class="navItem" href="/docs/en/references.html">References</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 class="postHeaderTitle">Python module</h1></header><article><div><span><p>In this document we present how to use fastText in python.</p>
+<h2><a class="anchor" aria-hidden="true" id="table-of-contents"></a><a href="#table-of-contents" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Table of contents</h2>
+<ul>
+<li><a href="#requirements">Requirements</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#usage-overview">Usage overview</a>
+<ul>
+<li><a href="#word-representation-model">Word representation model</a></li>
+<li><a href="#text-classification-model">Text classification model</a></li>
+<li><a href="#important-preprocessing-data-encoding-conventions">IMPORTANT: Preprocessing data / encoding conventions</a></li>
+<li><a href="#more-examples">More examples</a></li>
+</ul></li>
+<li><a href="#api">API</a>
+<ul>
+<li><a href="#train_unsupervised-parameters"><code>train_unsupervised</code> parameters</a></li>
+<li><a href="#train_supervised-parameters"><code>train_supervised</code> parameters</a></li>
+<li><a href="#model-object"><code>model</code> object</a></li>
+</ul></li>
+</ul>
+<h1><a class="anchor" aria-hidden="true" id="requirements"></a><a href="#requirements" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Requirements</h1>
+<p><a href="https://fasttext.cc/">fastText</a> builds on modern Mac OS and Linux distributions.
+Since it uses C++11 features, it requires a compiler with good C++11 support. You will need <a href="https://www.python.org/">Python</a> (version 2.7 or ≥ 3.4), <a href="http://www.numpy.org/">NumPy</a> &amp; <a href="https://www.scipy.org/">SciPy</a> and <a href="https://github.com/pybind/pybind11">pybind11</a>.</p>
+<h1><a class="anchor" aria-hidden="true" id="installation"></a><a href="#installation" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Installation</h1>
+<p>To install the latest release, you can do :</p>
+<pre><code class="hljs css language-bash">$ pip install fasttext
+</code></pre>
+<p>or, to get the latest development version of fasttext, you can install from our github repository :</p>
+<pre><code class="hljs css language-bash">$ git <span class="hljs-built_in">clone</span> https://github.com/facebookresearch/fastText.git
+$ <span class="hljs-built_in">cd</span> fastText
+$ sudo pip install .
+$ <span class="hljs-comment"># or :</span>
+$ sudo python setup.py install
+</code></pre>
+<h1><a class="anchor" aria-hidden="true" id="usage-overview"></a><a href="#usage-overview" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Usage overview</h1>
+<h2><a class="anchor" aria-hidden="true" id="word-representation-model"></a><a href="#word-representation-model" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Word representation model</h2>
+<p>In order to learn word vectors, as <a href="/docs/en/references.html#enriching-word-vectors-with-subword-information">described here</a>, we can use <code>fasttext.train_unsupervised</code> function like this:</p>
+<pre><code class="hljs css language-py"><span class="hljs-keyword">import</span> fasttext
+
+<span class="hljs-comment"># Skipgram model :</span>
+model = fasttext.train_unsupervised(<span class="hljs-string">'data.txt'</span>, model=<span class="hljs-string">'skipgram'</span>)
+
+<span class="hljs-comment"># or, cbow model :</span>
+model = fasttext.train_unsupervised(<span class="hljs-string">'data.txt'</span>, model=<span class="hljs-string">'cbow'</span>)
+
+</code></pre>
+<p>where <code>data.txt</code> is a training file containing utf-8 encoded text.</p>
+<p>The returned <code>model</code> object represents your learned model, and you can use it to retrieve information.</p>
+<pre><code class="hljs css language-py">print(model.words)   <span class="hljs-comment"># list of words in dictionary</span>
+print(model[<span class="hljs-string">'king'</span>]) <span class="hljs-comment"># get the vector of the word 'king'</span>
+</code></pre>
+<h3><a class="anchor" aria-hidden="true" id="saving-and-loading-a-model-object"></a><a href="#saving-and-loading-a-model-object" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Saving and loading a model object</h3>
+<p>You can save your trained model object by calling the function <code>save_model</code>.</p>
+<pre><code class="hljs css language-py">model.save_model(<span class="hljs-string">"model_filename.bin"</span>)
+</code></pre>
+<p>and retrieve it later thanks to the function <code>load_model</code> :</p>
+<pre><code class="hljs css language-py">model = fasttext.load_model(<span class="hljs-string">"model_filename.bin"</span>)
+</code></pre>
+<p>For more information about word representation usage of fasttext, you can refer to our <a href="/docs/en/unsupervised-tutorial.html">word representations tutorial</a>.</p>
+<h2><a class="anchor" aria-hidden="true" id="text-classification-model"></a><a href="#text-classification-model" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Text classification model</h2>
+<p>In order to train a text classifier using the method <a href="/docs/en/references.html#bag-of-tricks-for-efficient-text-classification">described here</a>, we can use <code>fasttext.train_supervised</code> function like this:</p>
+<pre><code class="hljs css language-py"><span class="hljs-keyword">import</span> fasttext
+
+model = fasttext.train_supervised(<span class="hljs-string">'data.train.txt'</span>)
+</code></pre>
+<p>where <code>data.train.txt</code> is a text file containing a training sentence per line along with the labels. By default, we assume that labels are words that are prefixed by the string <code>__label__</code></p>
+<p>Once the model is trained, we can retrieve the list of words and labels:</p>
+<pre><code class="hljs css language-py">print(model.words)
+print(model.labels)
+</code></pre>
+<p>To evaluate our model by computing the precision at 1 (P@1) and the recall on a test set, we use the <code>test</code> function:</p>
+<pre><code class="hljs css language-py"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">print_results</span><span class="hljs-params">(N, p, r)</span>:</span>
+    print(<span class="hljs-string">"N\t"</span> + str(N))
+    print(<span class="hljs-string">"P@{}\t{:.3f}"</span>.format(<span class="hljs-number">1</span>, p))
+    print(<span class="hljs-string">"R@{}\t{:.3f}"</span>.format(<span class="hljs-number">1</span>, r))
+
+print_results(*model.test(<span class="hljs-string">'test.txt'</span>))
+</code></pre>
+<p>We can also predict labels for a specific text :</p>
+<pre><code class="hljs css language-py">model.predict(<span class="hljs-string">"Which baking dish is best to bake a banana bread ?"</span>)
+</code></pre>
+<p>By default, <code>predict</code> returns only one label : the one with the highest probability. You can also predict more than one label by specifying the parameter <code>k</code>:</p>
+<pre><code class="hljs css language-py">model.predict(<span class="hljs-string">"Which baking dish is best to bake a banana bread ?"</span>, k=<span class="hljs-number">3</span>)
+</code></pre>
+<p>If you want to predict more than one sentence you can pass an array of strings :</p>
+<pre><code class="hljs css language-py">model.predict([<span class="hljs-string">"Which baking dish is best to bake a banana bread ?"</span>, <span class="hljs-string">"Why not put knives in the dishwasher?"</span>], k=<span class="hljs-number">3</span>)
+</code></pre>
+<p>Of course, you can also save and load a model to/from a file as <a href="#saving-and-loading-a-model-object">in the word representation usage</a>.</p>
+<p>For more information about text classification usage of fasttext, you can refer to our <a href="/docs/en/supervised-tutorial.html">text classification tutorial</a>.</p>
+<h3><a class="anchor" aria-hidden="true" id="compress-model-files-with-quantization"></a><a href="#compress-model-files-with-quantization" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Compress model files with quantization</h3>
+<p>When you want to save a supervised model file, fastText can compress it in order to have a much smaller model file by sacrificing only a little bit performance.</p>
+<pre><code class="hljs css language-py"><span class="hljs-comment"># with the previously trained `model` object, call :</span>
+model.quantize(input=<span class="hljs-string">'data.train.txt'</span>, retrain=<span class="hljs-literal">True</span>)
+
+<span class="hljs-comment"># then display results and save the new model :</span>
+print_results(*model.test(valid_data))
+model.save_model(<span class="hljs-string">"model_filename.ftz"</span>)
+</code></pre>
+<p><code>model_filename.ftz</code> will have a much smaller size than <code>model_filename.bin</code>.</p>
+<p>For further reading on quantization, you can refer to <a href="/blog/2017/10/02/blog-post.html#model-compression">this paragraph from our blog post</a>.</p>
+<h2><a class="anchor" aria-hidden="true" id="important-preprocessing-data-encoding-conventions"></a><a href="#important-preprocessing-data-encoding-conventions" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>IMPORTANT: Preprocessing data / encoding conventions</h2>
+<p>In general it is important to properly preprocess your data. In particular our example scripts in the <a href="https://github.com/facebookresearch/fastText">root folder</a> do this.</p>
+<p>fastText assumes UTF-8 encoded text. All text must be <a href="https://docs.python.org/2/library/functions.html#unicode">unicode for Python2</a> and <a href="https://docs.python.org/3.5/library/stdtypes.html#textseq">str for Python3</a>. The passed text will be <a href="https://pybind11.readthedocs.io/en/master/advanced/cast/strings.html?highlight=utf-8#strings-bytes-and-unicode-conversions">encoded as UTF-8 by pybind11</a> before passed to the fastText C++ library. This means it is important to use UTF-8 encoded text when building a model. On Unix-like systems you can convert text using <a href="https://en.wikipedia.org/wiki/Iconv">iconv</a>.</p>
+<p>fastText will tokenize (split text into pieces) based on the following ASCII characters (bytes). In particular, it is not aware of UTF-8 whitespace. We advice the user to convert UTF-8 whitespace / word boundaries into one of the following symbols as appropiate.</p>
+<ul>
+<li>space</li>
+<li>tab</li>
+<li>vertical tab</li>
+<li>carriage return</li>
+<li>formfeed</li>
+<li>the null character</li>
+</ul>
+<p>The newline character is used to delimit lines of text. In particular, the EOS token is appended to a line of text if a newline character is encountered. The only exception is if the number of tokens exceeds the MAX_LINE_SIZE constant as defined in the <a href="https://github.com/facebookresearch/fastText/blob/master/src/dictionary.h">Dictionary header</a>. This means if you have text that is not separate by newlines, such as the <a href="http://mattmahoney.net/dc/textdata">fil9 dataset</a>, it will be broken into chunks with MAX_LINE_SIZE of tokens and the EOS token is not appended.</p>
+<p>The length of a token is the number of UTF-8 characters by considering the <a href="https://en.wikipedia.org/wiki/UTF-8#Description">leading two bits of a byte</a> to identify <a href="https://github.com/facebookresearch/fastText/blob/master/src/dictionary.cc">subsequent bytes of a multi-byte sequence</a>. Knowing this is especially important when choosing the minimum and maximum length of subwords. Further, the EOS token (as specified in the <a href="https://github.com/facebookresearch/fastText/blob/master/src/dictionary.h">Dictionary header</a>) is considered a character and will not be broken into subwords.</p>
+<h2><a class="anchor" aria-hidden="true" id="more-examples"></a><a href="#more-examples" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>More examples</h2>
+<p>In order to have a better knowledge of fastText models, please consider the main <a href="https://github.com/facebookresearch/fastText/blob/master/README.md">README</a> and in particular <a href="https://fasttext.cc/docs/en/supervised-tutorial.html">the tutorials on our website</a>.</p>
+<p>You can find further python examples in <a href="https://github.com/facebookresearch/fastText/tree/master/python/doc/examples">the doc folder</a>.</p>
+<p>As with any package you can get help on any Python function using the help function.</p>
+<p>For example</p>
+<pre><code class="hljs">+&gt;&gt;&gt; import fasttext
++&gt;&gt;&gt; help(fasttext.FastText)
+
+Help <span class="hljs-keyword">on</span> module fasttext.FastText <span class="hljs-keyword">in</span> fasttext:
+
+NAME
+    fasttext.FastText
+
+DESCRIPTION
+    <span class="hljs-comment"># Copyright (c) 2017-present, Facebook, Inc.</span>
+    <span class="hljs-comment"># All rights reserved.</span>
+    <span class="hljs-comment">#</span>
+    <span class="hljs-comment"># This source code is licensed under the MIT license found in the</span>
+    <span class="hljs-comment"># LICENSE file in the root directory of this source tree.</span>
+
+FUNCTIONS
+    load_model(path)
+        Load a model <span class="hljs-keyword">given</span> a filepath <span class="hljs-keyword">and</span> <span class="hljs-literal">return</span> a model object.
+
+    tokenize(<span class="hljs-built_in">text</span>)
+        Given a <span class="hljs-built_in">string</span> <span class="hljs-keyword">of</span> <span class="hljs-built_in">text</span>, tokenize <span class="hljs-keyword">it</span> <span class="hljs-keyword">and</span> <span class="hljs-literal">return</span> a <span class="hljs-built_in">list</span> <span class="hljs-keyword">of</span> tokens
+[...]
+</code></pre>
+<h1><a class="anchor" aria-hidden="true" id="api"></a><a href="#api" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>API</h1>
+<h2><a class="anchor" aria-hidden="true" id="train_unsupervised-parameters"></a><a href="#train_unsupervised-parameters" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>train_unsupervised</code> parameters</h2>
+<pre><code class="hljs css language-python">    input             <span class="hljs-comment"># training file path (required)</span>
+    model             <span class="hljs-comment"># unsupervised fasttext model {cbow, skipgram} [skipgram]</span>
+    lr                <span class="hljs-comment"># learning rate [0.05]</span>
+    dim               <span class="hljs-comment"># size of word vectors [100]</span>
+    ws                <span class="hljs-comment"># size of the context window [5]</span>
+    epoch             <span class="hljs-comment"># number of epochs [5]</span>
+    minCount          <span class="hljs-comment"># minimal number of word occurences [5]</span>
+    minn              <span class="hljs-comment"># min length of char ngram [3]</span>
+    maxn              <span class="hljs-comment"># max length of char ngram [6]</span>
+    neg               <span class="hljs-comment"># number of negatives sampled [5]</span>
+    wordNgrams        <span class="hljs-comment"># max length of word ngram [1]</span>
+    loss              <span class="hljs-comment"># loss function {ns, hs, softmax, ova} [ns]</span>
+    bucket            <span class="hljs-comment"># number of buckets [2000000]</span>
+    thread            <span class="hljs-comment"># number of threads [number of cpus]</span>
+    lrUpdateRate      <span class="hljs-comment"># change the rate of updates for the learning rate [100]</span>
+    t                 <span class="hljs-comment"># sampling threshold [0.0001]</span>
+    verbose           <span class="hljs-comment"># verbose [2]</span>
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="train_supervised-parameters"></a><a href="#train_supervised-parameters" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>train_supervised</code> parameters</h2>
+<pre><code class="hljs css language-python">    input             <span class="hljs-comment"># training file path (required)</span>
+    lr                <span class="hljs-comment"># learning rate [0.1]</span>
+    dim               <span class="hljs-comment"># size of word vectors [100]</span>
+    ws                <span class="hljs-comment"># size of the context window [5]</span>
+    epoch             <span class="hljs-comment"># number of epochs [5]</span>
+    minCount          <span class="hljs-comment"># minimal number of word occurences [1]</span>
+    minCountLabel     <span class="hljs-comment"># minimal number of label occurences [1]</span>
+    minn              <span class="hljs-comment"># min length of char ngram [0]</span>
+    maxn              <span class="hljs-comment"># max length of char ngram [0]</span>
+    neg               <span class="hljs-comment"># number of negatives sampled [5]</span>
+    wordNgrams        <span class="hljs-comment"># max length of word ngram [1]</span>
+    loss              <span class="hljs-comment"># loss function {ns, hs, softmax, ova} [softmax]</span>
+    bucket            <span class="hljs-comment"># number of buckets [2000000]</span>
+    thread            <span class="hljs-comment"># number of threads [number of cpus]</span>
+    lrUpdateRate      <span class="hljs-comment"># change the rate of updates for the learning rate [100]</span>
+    t                 <span class="hljs-comment"># sampling threshold [0.0001]</span>
+    label             <span class="hljs-comment"># label prefix ['__label__']</span>
+    verbose           <span class="hljs-comment"># verbose [2]</span>
+    pretrainedVectors <span class="hljs-comment"># pretrained word vectors (.vec file) for supervised learning []</span>
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="model-object"></a><a href="#model-object" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>model</code> object</h2>
+<p><code>train_supervised</code>, <code>train_unsupervised</code> and <code>load_model</code> functions return an instance of <code>_FastText</code> class, that we generaly name <code>model</code> object.</p>
+<p>This object exposes those training arguments as properties : <code>lr</code>, <code>dim</code>, <code>ws</code>, <code>epoch</code>, <code>minCount</code>, <code>minCountLabel</code>, <code>minn</code>, <code>maxn</code>, <code>neg</code>, <code>wordNgrams</code>, <code>loss</code>, <code>bucket</code>, <code>thread</code>, <code>lrUpdateRate</code>, <code>t</code>, <code>label</code>, <code>verbose</code>, <code>pretrainedVectors</code>. So <code>model.wordNgrams</code> will give you the max length of word ngram used for training this model.</p>
+<p>In addition, the object exposes several functions :</p>
+<pre><code class="hljs css language-python">    get_dimension           <span class="hljs-comment"># Get the dimension (size) of a lookup vector (hidden layer).</span>
+                            <span class="hljs-comment"># This is equivalent to `dim` property.</span>
+    get_input_vector        <span class="hljs-comment"># Given an index, get the corresponding vector of the Input Matrix.</span>
+    get_input_matrix        <span class="hljs-comment"># Get a copy of the full input matrix of a Model.</span>
+    get_labels              <span class="hljs-comment"># Get the entire list of labels of the dictionary</span>
+                            <span class="hljs-comment"># This is equivalent to `labels` property.</span>
+    get_line                <span class="hljs-comment"># Split a line of text into words and labels.</span>
+    get_output_matrix       <span class="hljs-comment"># Get a copy of the full output matrix of a Model.</span>
+    get_sentence_vector     <span class="hljs-comment"># Given a string, get a single vector represenation. This function</span>
+                            <span class="hljs-comment"># assumes to be given a single line of text. We split words on</span>
+                            <span class="hljs-comment"># whitespace (space, newline, tab, vertical tab) and the control</span>
+                            <span class="hljs-comment"># characters carriage return, formfeed and the null character.</span>
+    get_subword_id          <span class="hljs-comment"># Given a subword, return the index (within input matrix) it hashes to.</span>
+    get_subwords            <span class="hljs-comment"># Given a word, get the subwords and their indicies.</span>
+    get_word_id             <span class="hljs-comment"># Given a word, get the word id within the dictionary.</span>
+    get_word_vector         <span class="hljs-comment"># Get the vector representation of word.</span>
+    get_words               <span class="hljs-comment"># Get the entire list of words of the dictionary</span>
+                            <span class="hljs-comment"># This is equivalent to `words` property.</span>
+    is_quantized            <span class="hljs-comment"># whether the model has been quantized</span>
+    predict                 <span class="hljs-comment"># Given a string, get a list of labels and a list of corresponding probabilities.</span>
+    quantize                <span class="hljs-comment"># Quantize the model reducing the size of the model and it's memory footprint.</span>
+    save_model              <span class="hljs-comment"># Save the model to the given path</span>
+    test                    <span class="hljs-comment"># Evaluate supervised model using file given by path</span>
+    test_label              <span class="hljs-comment"># Return the precision and recall score for each label.    </span>
+</code></pre>
+<p>The properties <code>words</code>, <code>labels</code> return the words and labels from the dictionary :</p>
+<pre><code class="hljs css language-py">model.words         <span class="hljs-comment"># equivalent to model.get_words()</span>
+model.labels        <span class="hljs-comment"># equivalent to model.get_labels()</span>
+</code></pre>
+<p>The object overrides <code>__getitem__</code> and <code>__contains__</code> functions in order to return the representation of a word and to check if a word is in the vocabulary.</p>
+<pre><code class="hljs css language-py">model[<span class="hljs-string">'king'</span>]       <span class="hljs-comment"># equivalent to model.get_word_vector('king')</span>
+<span class="hljs-string">'king'</span> <span class="hljs-keyword">in</span> model     <span class="hljs-comment"># equivalent to `'king' in model.get_words()`</span>
+</code></pre>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/en/unsupervised-tutorial.html"><span class="arrow-prev">← </span><span>Word representations</span></a><a class="docs-next button" href="/docs/en/faqs.html"><span>FAQ</span><span class="arrow-next"> →</span></a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/fasttext-icon-white-web.png" alt="fastText"/></a><div><h5>Support</h5><a href="/docs/en/support.html">Getting Started</a><a href="/docs/en/supervised-tutorial.html">Tutorials</a><a href="/docs/en/faqs.html">FAQs</a><a href="/docs/en/api.html">API</a></div><div><h5>Community</h5><a href="https://www.facebook.com/groups/1174547215919768/" target="_blank">Facebook Group</a><a href="http://stackoverflow.com/questions/tagged/fasttext" target="_blank">Stack Overflow</a><a href="https://groups.google.com/forum/#!forum/fasttext-library" target="_blank">Google Group</a></div><div><h5>More</h5><a href="/blog">Blog</a><a href="https://github.com/facebookresearch/fastText" target="_blank">GitHub</a><a class="github-button" href="https://github.com/facebookresearch/fastText/" data-icon="octicon-star" data-count-href="/fastText/stargazers" data-count-api="/repos/fastText#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2019 Facebook Inc.</section></footer></div></body></html>

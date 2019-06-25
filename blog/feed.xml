@@ -4,7 +4,7 @@
         <title>fastText Blog</title>
         <link>https://fasttext.cc/blog</link>
         <description>The best place to stay up-to-date with the latest fastText news and events.</description>
-        <lastBuildDate>Mon, 02 Oct 2017 06:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 25 Jun 2019 06:00:00 GMT</lastBuildDate>
         <docs>http://blogs.law.harvard.edu/tech/rss</docs>
         <generator>Feed for Node.js</generator>
         <image>
@@ -12,6 +12,13 @@
             <url>https://fasttext.cc/img/fasttext-icon-white-web.png</url>
             <link>https://fasttext.cc/blog</link>
         </image>
+        <item>
+            <title><![CDATA[New release of python module]]></title>
+            <link>https://fasttext.cc/blog/2019/06/25/blog-post.html</link>
+            <guid>https://fasttext.cc/blog/2019/06/25/blog-post.html</guid>
+            <pubDate>Tue, 25 Jun 2019 06:00:00 GMT</pubDate>
+            <description><![CDATA[<p>Today, we are happy to release a new version of the fastText python library. The main goal of this release is to merge two existing python modules: the official <code>fastText</code> module which was available on our github repository and the unofficial <code>fasttext</code> ...</p>]]></description>
+        </item>
         <item>
             <title><![CDATA[Language identification]]></title>
             <link>https://fasttext.cc/blog/2017/10/02/blog-post.html</link>
