@@ -12,7 +12,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import division, absolute_import, print_function
 
-from fastText import train_unsupervised
+from fasttext import train_unsupervised
 import numpy as np
 import os
 from scipy import stats

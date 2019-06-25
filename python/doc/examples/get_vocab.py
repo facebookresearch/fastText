@@ -12,7 +12,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import division, absolute_import, print_function
 
-from fastText import load_model
+from fasttext import load_model
 import argparse
 import errno
 

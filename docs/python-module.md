@@ -1,6 +1,7 @@
-# fastText [![CircleCI](https://circleci.com/gh/facebookresearch/fastText/tree/master.svg?style=svg)](https://circleci.com/gh/facebookresearch/fastText/tree/master)
-
-[fastText](https://fasttext.cc/) is a library for efficient learning of word representations and sentence classification.
+---
+id: python-module
+title: Python module
+---
 
 In this document we present how to use fastText in python.
 
@@ -46,7 +47,7 @@ $ sudo python setup.py install
 
 ## Word representation model
 
-In order to learn word vectors, as [described here](https://fasttext.cc/docs/en/references.html#enriching-word-vectors-with-subword-information), we can use `fasttext.train_unsupervised` function like this:
+In order to learn word vectors, as [described here](/docs/en/references.html#enriching-word-vectors-with-subword-information), we can use `fasttext.train_unsupervised` function like this:
 
 
 ```py
@@ -83,12 +84,12 @@ and retrieve it later thanks to the function `load_model` :
 model = fasttext.load_model("model_filename.bin")
 ```
 
-For more information about word representation usage of fasttext, you can refer to our [word representations tutorial](https://fasttext.cc/docs/en/unsupervised-tutorial.html).
+For more information about word representation usage of fasttext, you can refer to our [word representations tutorial](/docs/en/unsupervised-tutorial.html).
 
 
 ## Text classification model
 
-In order to train a text classifier using the method [described here](https://fasttext.cc/docs/en/references.html#bag-of-tricks-for-efficient-text-classification), we can use `fasttext.train_supervised` function like this:
+In order to train a text classifier using the method [described here](/docs/en/references.html#bag-of-tricks-for-efficient-text-classification), we can use `fasttext.train_supervised` function like this:
 
 
 ```py
@@ -137,7 +138,7 @@ model.predict(["Which baking dish is best to bake a banana bread ?", "Why not pu
 
 Of course, you can also save and load a model to/from a file as [in the word representation usage](#saving-and-loading-a-model-object).
 
-For more information about text classification usage of fasttext, you can refer to our [text classification tutorial](https://fasttext.cc/docs/en/supervised-tutorial.html).
+For more information about text classification usage of fasttext, you can refer to our [text classification tutorial](/docs/en/supervised-tutorial.html).
 
 
 
@@ -157,7 +158,7 @@ model.save_model("model_filename.ftz")
 
 `model_filename.ftz` will have a much smaller size than `model_filename.bin`.
 
-For further reading on quantization, you can refer to [this paragraph from our blog post](https://fasttext.cc/blog/2017/10/02/blog-post.html#model-compression).
+For further reading on quantization, you can refer to [this paragraph from our blog post](/blog/2017/10/02/blog-post.html#model-compression).
 
 
 ## IMPORTANT: Preprocessing data / encoding conventions
@@ -311,12 +312,3 @@ The object overrides `__getitem__` and `__contains__` functions in order to retu
 model['king']       # equivalent to model.get_word_vector('king')
 'king' in model     # equivalent to `'king' in model.get_words()`
 ```
-
-
-Join the fastText community
----------------------------
-
-- [Facebook page](https://www.facebook.com/groups/1174547215919768)
-- [Stack overflow](https://stackoverflow.com/questions/tagged/fasttext)
-- [Google group](https://groups.google.com/forum/#!forum/fasttext-library)
-- [GitHub](https://github.com/facebookresearch/fastText)

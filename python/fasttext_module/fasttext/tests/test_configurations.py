@@ -14,7 +14,7 @@ import multiprocessing
 # This script represents a collection of integration tests
 # Each integration test comes with a full set of parameters,
 # a dataset, and expected metrics.
-# These configurations can be used by various fastText apis
+# These configurations can be used by various fastText APIs
 # to confirm some level of correctness.
 
 

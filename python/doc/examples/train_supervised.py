@@ -12,7 +12,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
-from fastText import train_supervised
+from fasttext import train_supervised
 
 
 def print_results(N, p, r):

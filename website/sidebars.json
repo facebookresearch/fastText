@@ -2,10 +2,10 @@
   "docs": {
     "Introduction": ["support", "cheatsheet", "options"],
     "Tutorials": ["supervised-tutorial", "unsupervised-tutorial"],
-    "Help": ["faqs", "api", "references"]
+    "Help": ["python-module", "faqs", "api", "references"]
   },
   "download": {
-    "Download": [
+    "Resources": [
       "english-vectors",
       "crawl-vectors",
       "pretrained-vectors",

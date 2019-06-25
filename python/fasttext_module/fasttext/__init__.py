@@ -16,3 +16,7 @@ from .FastText import tokenize
 from .FastText import EOS
 from .FastText import BOW
 from .FastText import EOW
+
+from .FastText import cbow
+from .FastText import skipgram
+from .FastText import supervised

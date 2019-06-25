@@ -21,7 +21,7 @@ For the word-similarity evaluation script you will need:
 * python 2.6 or newer
 * numpy & scipy
 
-## Building fastText
+## Building fastText as a command line tool
 
 In order to build `fastText`, use the following:
 
@@ -34,3 +34,25 @@ $ make
 This will produce object files for all the classes as well as the main binary `fasttext`.
 If you do not plan on using the default system-wide compiler, update the two macros defined at the beginning of the Makefile (CC and INCLUDES).
 
+
+## Building `fasttext` python module
+
+In order to build `fasttext` module for python, use the following:
+
+```bash
+$ git clone https://github.com/facebookresearch/fastText.git
+$ cd fastText
+$ sudo pip install .
+$ # or :
+$ sudo python setup.py install
+```
+
+Then verify the installation went well :
+```bash
+$ python
+Python 2.7.15 |(default, May  1 2018, 18:37:05)
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import fasttext
+>>>
+```
+If you don't see any error message, the installation was successful.

@@ -20,7 +20,7 @@ import torch
 import random
 import string
 import time
-from fastText import load_model
+from fasttext import load_model
 from torch.autograd import Variable
 
 

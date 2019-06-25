@@ -9,10 +9,10 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from fastText import train_supervised
-from fastText import train_unsupervised
-from fastText import util
-import fastText
+from fasttext import train_supervised
+from fasttext import train_unsupervised
+from fasttext import util
+import fasttext
 import os
 import subprocess
 import unittest
@@ -25,7 +25,7 @@ try:
     import unicode
 except ImportError:
     pass
-from fastText.tests.test_configurations import get_supervised_models
+from fasttext.tests.test_configurations import get_supervised_models
 
 
 def eprint(cls, *args, **kwargs):
@@ -290,11 +290,11 @@ class TestFastTextUnitPy(unittest.TestCase):
         words, freqs = f.get_words(include_freq=True)
         foundEOS = False
         for word, freq in zip(words, freqs):
-            if word == fastText.EOS:
+            if word == fasttext.EOS:
                 foundEOS = True
             else:
                 self.assertEqual(words_python[word], freq)
-        # EOS is special to fastText, but still part of the vocab
+        # EOS is special to fasttext, but still part of the vocab
         self.assertEqual(len(words_python), len(words) - 1)
         self.assertTrue(foundEOS)
 
@@ -316,16 +316,16 @@ class TestFastTextUnitPy(unittest.TestCase):
             f.get_subwords(w)
 
     def gen_test_tokenize(self, kwargs):
-        self.assertEqual(["asdf", "asdb"], fastText.tokenize("asdf asdb"))
-        self.assertEqual(["asdf"], fastText.tokenize("asdf"))
-        self.assertEqual([fastText.EOS], fastText.tokenize("\n"))
-        self.assertEqual(["asdf", fastText.EOS], fastText.tokenize("asdf\n"))
-        self.assertEqual([], fastText.tokenize(""))
-        self.assertEqual([], fastText.tokenize(" "))
+        self.assertEqual(["asdf", "asdb"], fasttext.tokenize("asdf asdb"))
+        self.assertEqual(["asdf"], fasttext.tokenize("asdf"))
+        self.assertEqual([fasttext.EOS], fasttext.tokenize("\n"))
+        self.assertEqual(["asdf", fasttext.EOS], fasttext.tokenize("asdf\n"))
+        self.assertEqual([], fasttext.tokenize(""))
+        self.assertEqual([], fasttext.tokenize(" "))
         # An empty string is not a token (it's just whitespace)
         # So the minimum length must be 1
         words = get_random_words(100, 1, 20)
-        self.assertEqual(words, fastText.tokenize(" ".join(words)))
+        self.assertEqual(words, fasttext.tokenize(" ".join(words)))
 
     def gen_test_unsupervised_dimension(self, kwargs):
         if "dim" in kwargs:
@@ -343,7 +343,7 @@ class TestFastTextUnitPy(unittest.TestCase):
         words += get_random_words(100, 1, 20)
         input_matrix = f.get_input_matrix()
         for word in words:
-            # Universal api to get word vector
+            # Universal API to get word vector
             vec1 = f.get_word_vector(word)
 
             # Build word vector from subwords
