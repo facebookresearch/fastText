@@ -112,7 +112,7 @@ void DenseMatrix::addRowToVector(Vector& x, int32_t i) const {
   assert(i >= 0);
   assert(i < this->size(0));
   assert(x.size() == this->size(1));
-  for (int64_t j = 0; j < this->size(1); j++) {
+  for (int64_t j = 0; j < n_; j++) {
     x[j] += at(i, j);
   }
 }
@@ -121,7 +121,7 @@ void DenseMatrix::addRowToVector(Vector& x, int32_t i, real a) const {
   assert(i >= 0);
   assert(i < this->size(0));
   assert(x.size() == this->size(1));
-  for (int64_t j = 0; j < this->size(1); j++) {
+  for (int64_t j = 0; j < n_; j++) {
     x[j] += a * at(i, j);
   }
 }
