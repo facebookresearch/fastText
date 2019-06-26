@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <thread>
 
 namespace fasttext {
 
@@ -29,7 +30,7 @@ Args::Args() {
   bucket = 2000000;
   minn = 3;
   maxn = 6;
-  thread = 12;
+  thread = (std::thread::hardware_concurrency() - 1 > 0) ? (std::thread::hardware_concurrency() - 1) : 12 ;
   lrUpdateRate = 100;
   t = 1e-4;
   label = "__label__";
