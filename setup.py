@@ -19,6 +19,7 @@ import setuptools
 import os
 import subprocess
 import platform
+import io
 
 __version__ = '0.9'
 FASTTEXT_SRC = "src"
@@ -160,7 +161,7 @@ def _get_readme():
     Use pandoc to generate rst from md.
     pandoc --from=markdown --to=rst --output=python/README.rst python/README.md
     """
-    with open("python/README.rst", encoding='utf-8') as fid:
+    with io.open("python/README.rst", encoding='utf-8') as fid:
         return fid.read()
 
 
