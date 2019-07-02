@@ -76,7 +76,7 @@ ext_modules = [
         ],
         language='c++',
         extra_compile_args=["-O0 -fno-inline -fprofile-arcs -pthread -march=native" if coverage else
-                            "-O3 -funroll-loops -pthread -march=native"],
+                            "-O3 -funroll-loops -march=native"],
     ),
 ]
 
