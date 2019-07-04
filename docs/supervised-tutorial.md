@@ -3,7 +3,7 @@ id: supervised-tutorial
 title: Text classification
 ---
 
-Text classification is a core problem to many applications, like spam detection, sentiment analysis or smart replies. In this tutorial, we describe how to build a text classifier with the fastText tool. 
+Text classification is a core problem to many applications, like spam detection, sentiment analysis or smart replies. In this tutorial, we describe how to build a text classifier with the fastText tool.
 
 ## What is text classification?
 
@@ -18,14 +18,14 @@ The first step of this tutorial is to install and build fastText. It only requir
 Let us start by downloading the [most recent release](https://github.com/facebookresearch/fastText/releases):
 
 ```bash
-$ wget https://github.com/facebookresearch/fastText/archive/v0.2.0.zip
-$ unzip v0.2.0.zip
+$ wget https://github.com/facebookresearch/fastText/archive/v0.9.1.zip
+$ unzip v0.9.1.zip
 ```
 
 Move to the fastText directory and build it:
 
 ```bash
-$ cd fastText-0.2.0
+$ cd fastText-0.9.1
 $ make
 ```
 
@@ -87,7 +87,7 @@ We are now ready to train our first classifier:
 Read 0M words
 Number of words:  14598
 Number of labels: 734
-Progress: 100.0%  words/sec/thread: 75109  lr: 0.000000  loss: 5.708354  eta: 0h0m 
+Progress: 100.0%  words/sec/thread: 75109  lr: 0.000000  loss: 5.708354  eta: 0h0m
 ```
 
 The `-input` command line option indicates the file containing the training examples, while the `-output` option indicates where to save the model. At the end of training, a file `model_cooking.bin`, containing the trained classifier, is created in the current directory.
@@ -155,7 +155,7 @@ Looking at the data, we observe that some words contain uppercase letter or punc
 ```bash
 >> cat cooking.stackexchange.txt | sed -e "s/\([.\!?,'/()]\)/ \1 /g" | tr "[:upper:]" "[:lower:]" > cooking.preprocessed.txt
 >> head -n 12404 cooking.preprocessed.txt > cooking.train
->> tail -n 3000 cooking.preprocessed.txt > cooking.valid 
+>> tail -n 3000 cooking.preprocessed.txt > cooking.valid
 ```
 
 Let's train a new model on the pre-processed data:
@@ -165,9 +165,9 @@ Let's train a new model on the pre-processed data:
 Read 0M words
 Number of words:  9012
 Number of labels: 734
-Progress: 100.0%  words/sec/thread: 82041  lr: 0.000000  loss: 5.671649  eta: 0h0m h-14m 
+Progress: 100.0%  words/sec/thread: 82041  lr: 0.000000  loss: 5.671649  eta: 0h0m h-14m
 
->> ./fasttext test model_cooking.bin cooking.valid 
+>> ./fasttext test model_cooking.bin cooking.valid
 N  3000
 P@1  0.164
 R@1  0.0717
@@ -181,7 +181,7 @@ We observe that thanks to the pre-processing, the vocabulary is smaller (from 14
 By default, fastText sees each training example only five times during training, which is pretty small, given that our training set only have 12k training examples. The number of times each examples is seen (also known as the number of epochs), can be increased using the `-epoch` option:
 
 ```bash
->> ./fasttext supervised -input cooking.train -output model_cooking -epoch 25 
+>> ./fasttext supervised -input cooking.train -output model_cooking -epoch 25
 Read 0M words
 Number of words:  9012
 Number of labels: 734
@@ -241,7 +241,7 @@ Finally, we can improve the performance of a model by using word bigrams, instea
 Read 0M words
 Number of words:  9012
 Number of labels: 734
-Progress: 100.0%  words/sec/thread: 75366  lr: 0.000000  loss: 3.226064  eta: 0h0m 
+Progress: 100.0%  words/sec/thread: 75366  lr: 0.000000  loss: 3.226064  eta: 0h0m
 
 >> ./fasttext test model_cooking.bin cooking.valid
 N  3000
@@ -261,14 +261,14 @@ With a few steps, we were able to go from a precision at one of 12.4% to 59.9%. 
 
 A 'unigram' refers to a single undividing unit, or token,  usually used as an input to a model. For example a unigram can be a word or a letter depending on the model. In fastText, we work at the word level and thus unigrams are words.
 
-Similarly we denote by 'bigram' the concatenation of  2 consecutive tokens or words. Similarly we often talk about n-gram to refer to the concatenation any n consecutive tokens. 
+Similarly we denote by 'bigram' the concatenation of  2 consecutive tokens or words. Similarly we often talk about n-gram to refer to the concatenation any n consecutive tokens.
 
 For example, in the sentence, 'Last donut of the night', the unigrams are  'last', 'donut', 'of', 'the' and 'night'. The bigrams are: 'Last donut', 'donut of', 'of the' and 'the night'.
 
-Bigrams are particularly interesting because, for most sentences, you can reconstruct the order of the words just by looking at a bag of n-grams. 
+Bigrams are particularly interesting because, for most sentences, you can reconstruct the order of the words just by looking at a bag of n-grams.
 
 Let us illustrate this by a simple exercise, given the following bigrams, try to reconstruct the original sentence: 'all out',  'I am', 'of bubblegum', 'out of' and 'am all'.
-It is common to refer to a word as a unigram. 
+It is common to refer to a word as a unigram.
 
 ## Scaling things up
 
@@ -279,7 +279,7 @@ Since we are training our model on a few thousands of examples, the training onl
 Read 0M words
 Number of words:  9012
 Number of labels: 734
-Progress: 100.0%  words/sec/thread: 2199406  lr: 0.000000  loss: 1.718807  eta: 0h0m 
+Progress: 100.0%  words/sec/thread: 2199406  lr: 0.000000  loss: 1.718807  eta: 0h0m
 ```
 
 Training should now take less than a second.
