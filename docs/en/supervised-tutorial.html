@@ -71,11 +71,11 @@
 <h2><a class="anchor" aria-hidden="true" id="installing-fasttext"></a><a href="#installing-fasttext" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Installing fastText</h2>
 <p>The first step of this tutorial is to install and build fastText. It only requires a c++ compiler with good support of c++11.</p>
 <p>Let us start by downloading the <a href="https://github.com/facebookresearch/fastText/releases">most recent release</a>:</p>
-<pre><code class="hljs css language-bash">$ wget https://github.com/facebookresearch/fastText/archive/v0.2.0.zip
-$ unzip v0.2.0.zip
+<pre><code class="hljs css language-bash">$ wget https://github.com/facebookresearch/fastText/archive/v0.9.1.zip
+$ unzip v0.9.1.zip
 </code></pre>
 <p>Move to the fastText directory and build it:</p>
-<pre><code class="hljs css language-bash">$ <span class="hljs-built_in">cd</span> fastText-0.2.0
+<pre><code class="hljs css language-bash">$ <span class="hljs-built_in">cd</span> fastText-0.9.1
 $ make
 </code></pre>
 <p>Running the binary without any argument will print the high level documentation, showing the different use cases supported by fastText:</p>
@@ -118,7 +118,7 @@ The commands supported by fasttext are:
 Read 0M words
 Number of words:  14598
 Number of labels: 734
-Progress: 100.0%  words/sec/thread: 75109  lr: 0.000000  loss: 5.708354  eta: 0h0m 
+Progress: 100.0%  words/sec/thread: 75109  lr: 0.000000  loss: 5.708354  eta: 0h0m
 </code></pre>
 <p>The <code>-input</code> command line option indicates the file containing the training examples, while the <code>-output</code> option indicates where to save the model. At the end of training, a file <code>model_cooking.bin</code>, containing the trained classifier, is created in the current directory.</p>
 <p>It is possible to directly test our classifier interactively, by running the command:</p>
@@ -157,16 +157,16 @@ Number of examples: 3000
 <p>Looking at the data, we observe that some words contain uppercase letter or punctuation. One of the first step to improve the performance of our model is to apply some simple pre-processing. A crude normalization can be obtained using command line tools such as <code>sed</code> and <code>tr</code>:</p>
 <pre><code class="hljs css language-bash">&gt;&gt; cat cooking.stackexchange.txt | sed -e <span class="hljs-string">"s/\([.\!?,'/()]\)/ \1 /g"</span> | tr <span class="hljs-string">"[:upper:]"</span> <span class="hljs-string">"[:lower:]"</span> &gt; cooking.preprocessed.txt
 &gt;&gt; head -n 12404 cooking.preprocessed.txt &gt; cooking.train
-&gt;&gt; tail -n 3000 cooking.preprocessed.txt &gt; cooking.valid 
+&gt;&gt; tail -n 3000 cooking.preprocessed.txt &gt; cooking.valid
 </code></pre>
 <p>Let's train a new model on the pre-processed data:</p>
 <pre><code class="hljs css language-bash">&gt;&gt; ./fasttext supervised -input cooking.train -output model_cooking
 Read 0M words
 Number of words:  9012
 Number of labels: 734
-Progress: 100.0%  words/sec/thread: 82041  lr: 0.000000  loss: 5.671649  eta: 0h0m h-14m 
+Progress: 100.0%  words/sec/thread: 82041  lr: 0.000000  loss: 5.671649  eta: 0h0m h-14m
 
-&gt;&gt; ./fasttext <span class="hljs-built_in">test</span> model_cooking.bin cooking.valid 
+&gt;&gt; ./fasttext <span class="hljs-built_in">test</span> model_cooking.bin cooking.valid
 N  3000
 P@1  0.164
 R@1  0.0717
@@ -175,7 +175,7 @@ Number of examples: 3000
 <p>We observe that thanks to the pre-processing, the vocabulary is smaller (from 14k words to 9k). The precision is also starting to go up by 4%!</p>
 <h3><a class="anchor" aria-hidden="true" id="more-epochs-and-larger-learning-rate"></a><a href="#more-epochs-and-larger-learning-rate" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>more epochs and larger learning rate</h3>
 <p>By default, fastText sees each training example only five times during training, which is pretty small, given that our training set only have 12k training examples. The number of times each examples is seen (also known as the number of epochs), can be increased using the <code>-epoch</code> option:</p>
-<pre><code class="hljs css language-bash">&gt;&gt; ./fasttext supervised -input cooking.train -output model_cooking -epoch 25 
+<pre><code class="hljs css language-bash">&gt;&gt; ./fasttext supervised -input cooking.train -output model_cooking -epoch 25
 Read 0M words
 Number of words:  9012
 Number of labels: 734
@@ -221,7 +221,7 @@ Number of examples: 3000
 Read 0M words
 Number of words:  9012
 Number of labels: 734
-Progress: 100.0%  words/sec/thread: 75366  lr: 0.000000  loss: 3.226064  eta: 0h0m 
+Progress: 100.0%  words/sec/thread: 75366  lr: 0.000000  loss: 3.226064  eta: 0h0m
 
 &gt;&gt; ./fasttext <span class="hljs-built_in">test</span> model_cooking.bin cooking.valid
 N  3000
@@ -249,7 +249,7 @@ It is common to refer to a word as a unigram.</p>
 Read 0M words
 Number of words:  9012
 Number of labels: 734
-Progress: 100.0%  words/sec/thread: 2199406  lr: 0.000000  loss: 1.718807  eta: 0h0m 
+Progress: 100.0%  words/sec/thread: 2199406  lr: 0.000000  loss: 1.718807  eta: 0h0m
 </code></pre>
 <p>Training should now take less than a second.</p>
 <h2><a class="anchor" aria-hidden="true" id="advanced-readers-hierarchical-softmax"></a><a href="#advanced-readers-hierarchical-softmax" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Advanced readers: hierarchical softmax</h2>
