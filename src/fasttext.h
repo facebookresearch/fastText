@@ -14,6 +14,7 @@
 #include <chrono>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <queue>
 #include <set>
 #include <tuple>
@@ -47,6 +48,7 @@ class FastText {
 
   void signModel(std::ostream&);
   bool checkModel(std::istream&);
+  void streamVectorsParallelBatchLocked(int, int, std::ostream&, std::mutex&) const;
   void startThreads();
   void addInputVector(Vector&, int32_t) const;
   void trainThread(int32_t);

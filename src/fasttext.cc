@@ -11,6 +11,7 @@
 #include "quantmatrix.h"
 
 #include <algorithm>
+#include <future>
 #include <iomanip>
 #include <iostream>
 #include <numeric>
@@ -105,6 +106,16 @@ void FastText::getSubwordVector(Vector& vec, const std::string& subword) const {
   addInputVector(vec, h);
 }
 
+/**
+* Use multiple threads to write vectors. The output order is not
+* guaranteed to be stable.
+*
+* The approach is to create one long-lived thread per core. Each receives
+* a start and end index for words to process from dict_; Each thread will
+* process its full section, writing to newline-separated results to the
+* output stream. A locking mechanism is used when writing to the stream
+* in order to avoid conflicts within a single line.
+*/
 void FastText::saveVectors(const std::string& filename) {
   if (!input_ || !output_) {
     throw std::runtime_error("Model never trained");
@@ -115,13 +126,75 @@ void FastText::saveVectors(const std::string& filename) {
         filename + " cannot be opened for saving vectors!");
   }
   ofs << dict_->nwords() << " " << args_->dim << std::endl;
-  Vector vec(args_->dim);
-  for (int32_t i = 0; i < dict_->nwords(); i++) {
-    std::string word = dict_->getWord(i);
-    getWordVector(vec, word);
-    ofs << word << " " << vec << std::endl;
+
+  std::vector<std::future<void>> futures;
+  int num_words = dict_->nwords();
+  int num_threads = std::thread::hardware_concurrency();
+  std::mutex ofs_mutex;
+
+  for (int i = 0; i < num_threads; i++) {
+    int batch_size = (num_words / num_threads) + 1;
+    int start_n = std::min(i * batch_size, num_words);
+    int end_n = std::min(start_n + batch_size, num_words);
+
+    // start one thread for each batch
+    futures.push_back(std::async(
+      // start running asynchronously in a new thread right away
+      std::launch::async,
+      &FastText::streamVectorsParallelBatchLocked,
+      this,
+      start_n,
+      end_n,
+      std::ref(ofs),
+      std::ref(ofs_mutex)));
   }
+
+  for (int i = 0; i < num_threads; i++) {
+    futures[i].wait();
+  }
+
   ofs.close();
+}
+
+/**
+ * Helper method to stream words from start_n to end_n to an output stream. This
+ * method is run by multiple threads.
+ *
+ * Locking is used to prevent conflicts with other threads writing to the stream.
+ *
+ * As a performance optimization, this method buffers a number of serialized vectors
+ * before acquiring the lock and writing to the output stream. This reduces thread lock contention.
+ **/
+void FastText::streamVectorsParallelBatchLocked(int start_n, int end_n, std::ostream& ofs, std::mutex& ofs_mutex) const {
+  Vector vec(args_->dim);
+
+  int num_docs_to_buffer = 150;
+
+  int i = start_n;
+  while (i < end_n) {
+    std::ostringstream out_buffer;
+
+    // do the vector retrieval and float serialization in batches
+    // to reduce thread lock contention
+    for (int j = 0; j < num_docs_to_buffer && i < end_n; j++, i++) {
+      std::string word = dict_->getWord(i);
+      FastText::getWordVector(vec, word);
+      out_buffer << word << " " << vec << std::endl;
+    }
+
+    std::string out_string = out_buffer.str();
+
+    // lock around writing to the output stream to ensure only one
+    // vector is printed per line
+    //
+    // `lock_guard` acquires the lock when instantiated, and releases
+    // it automatically at the end of the block scope. This is why
+    // we wrap this section in `{}`
+    {
+      std::lock_guard<std::mutex> lock(ofs_mutex);
+      ofs << out_string;
+    }
+  }
 }
 
 void FastText::saveOutput(const std::string& filename) {
