@@ -34,7 +34,10 @@ py::str castToPythonString(const std::string& s, const char* onUnicodeError) {
   handle = PyUnicode_AsEncodedString(handle, "utf-8", onUnicodeError);
 #endif
 
-  return py::str(handle);
+  py::str handle_str = py::str(handle);
+  Py_DECREF(handle);
+      
+  return handle_str;
 }
 
 std::pair<std::vector<py::str>, std::vector<py::str>> getLineText(
