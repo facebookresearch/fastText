@@ -31,10 +31,15 @@ py::str castToPythonString(const std::string& s, const char* onUnicodeError) {
   // for python 2 and not encoded for python 3 :
   // https://github.com/pybind/pybind11/blob/ccbe68b084806dece5863437a7dc93de20bd9b15/include/pybind11/pytypes.h#L930
 #if PY_MAJOR_VERSION < 3
-  handle = PyUnicode_AsEncodedString(handle, "utf-8", onUnicodeError);
+  PyObject* handle_encoded =
+      PyUnicode_AsEncodedString(handle, "utf-8", onUnicodeError);
+  Py_DECREF(handle);
+  handle = handle_encoded;
 #endif
 
-  return py::str(handle);
+  py::str handle_str = py::str(handle);
+  Py_DECREF(handle);
+  return handle_str;
 }
 
 std::pair<std::vector<py::str>, std::vector<py::str>> getLineText(
