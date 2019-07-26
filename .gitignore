@@ -5,3 +5,6 @@
 data
 fasttext
 result
+build/
+bin/
+i18n/
