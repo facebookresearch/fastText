@@ -33,6 +33,17 @@ void Model::State::incrementNExamples(real loss) {
   nexamples_++;
 }
 
+int64_t Model::State::getLine(std::ifstream& ifs, std::shared_ptr<Dictionary> dict, model_name model) {
+  if (model == model_name::sup) {
+    return dict->getLine(ifs, line, labels);
+  } else if (model == model_name::cbow) {
+    return dict->getLine(ifs, line, rng);
+  } else if (model == model_name::sg) {
+    return dict->getLine(ifs, line, rng);
+  } else
+    throw std::invalid_argument("invalid model in Model::State::getLine");
+}
+
 Model::Model(
     std::shared_ptr<Matrix> wi,
     std::shared_ptr<Matrix> wo,

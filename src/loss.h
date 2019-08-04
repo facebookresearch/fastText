@@ -40,6 +40,9 @@ class Loss {
   explicit Loss(std::shared_ptr<Matrix>& wo);
   virtual ~Loss() = default;
 
+  virtual bool init() { return true; }
+  virtual void shutdown() {}
+
   virtual real forward(
       const std::vector<int32_t>& targets,
       int32_t targetIndex,

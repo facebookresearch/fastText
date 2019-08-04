@@ -1,3 +1,10 @@
+# How to build
+make fasttext_cuda
+
+# How to run
+fasttext_cuda [supervised|skipgram|cbow] -loss cuda_softmax ...(other args same as fasttext)
+
+
 # fastText
 [fastText](https://fasttext.cc/) is a library for efficient learning of word representations and sentence classification.
 

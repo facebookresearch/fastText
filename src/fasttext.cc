@@ -9,7 +9,9 @@
 #include "fasttext.h"
 #include "loss.h"
 #include "quantmatrix.h"
-
+#ifdef FASTTEXT_CUDA
+#include "cudaloss.h"
+#endif
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
@@ -19,6 +21,7 @@
 #include <string>
 #include <thread>
 #include <vector>
+//#include <memory>
 
 namespace fasttext {
 
@@ -30,6 +33,9 @@ bool comparePairs(
     const std::pair<real, std::string>& r);
 
 std::shared_ptr<Loss> FastText::createLoss(std::shared_ptr<Matrix>& output) {
+#ifdef FASTTEXT_CUDA_DEBUG
+  assert(args_->thread==1);
+#endif
   loss_name lossName = args_->loss;
   switch (lossName) {
     case loss_name::hs:
@@ -42,6 +48,14 @@ std::shared_ptr<Loss> FastText::createLoss(std::shared_ptr<Matrix>& output) {
       return std::make_shared<SoftmaxLoss>(output);
     case loss_name::ova:
       return std::make_shared<OneVsAllLoss>(output);
+#ifdef FASTTEXT_CUDA
+    case loss_name::cuda_softmax: {
+      std::shared_ptr<CudaSoftmaxLoss> ret = std::make_shared<CudaSoftmaxLoss>(input_, output);
+      if( !ret->init() )
+	throw std::runtime_error("init CudaSoftmaxLoss error");
+      return ret;
+    }
+#endif
     default:
       throw std::runtime_error("Unknown loss");
   }
@@ -198,6 +212,9 @@ void FastText::saveModel(const std::string& filename) {
   ofs.write((char*)&(quant_), sizeof(bool));
   input_->save(ofs);
 
+  if( args_->loss==loss_name::cuda_softmax ) {
+    model_->getLoss()->shutdown();
+  }
   ofs.write((char*)&(args_->qout), sizeof(bool));
   output_->save(ofs);
 
@@ -356,51 +373,47 @@ void FastText::quantize(const Args& qargs) {
 
 void FastText::supervised(
     Model::State& state,
-    real lr,
-    const std::vector<int32_t>& line,
-    const std::vector<int32_t>& labels) {
-  if (labels.size() == 0 || line.size() == 0) {
+    real lr) {
+  if (state.labels.size() == 0 || state.line.size() == 0) {
     return;
   }
   if (args_->loss == loss_name::ova) {
-    model_->update(line, labels, Model::kAllLabelsAsTarget, lr, state);
+    model_->update(state.line, state.labels, Model::kAllLabelsAsTarget, lr, state);
   } else {
-    std::uniform_int_distribution<> uniform(0, labels.size() - 1);
+    std::uniform_int_distribution<> uniform(0, state.labels.size() - 1);
     int32_t i = uniform(state.rng);
-    model_->update(line, labels, i, lr, state);
+    model_->update(state.line, state.labels, i, lr, state);
   }
 }
 
 void FastText::cbow(
     Model::State& state,
-    real lr,
-    const std::vector<int32_t>& line) {
+    real lr) {
   std::vector<int32_t> bow;
   std::uniform_int_distribution<> uniform(1, args_->ws);
-  for (int32_t w = 0; w < line.size(); w++) {
+  for (int32_t w = 0; w < state.line.size(); w++) {
     int32_t boundary = uniform(state.rng);
     bow.clear();
     for (int32_t c = -boundary; c <= boundary; c++) {
-      if (c != 0 && w + c >= 0 && w + c < line.size()) {
-        const std::vector<int32_t>& ngrams = dict_->getSubwords(line[w + c]);
+      if (c != 0 && w + c >= 0 && w + c < state.line.size()) {
+        const std::vector<int32_t>& ngrams = dict_->getSubwords(state.line[w + c]);
         bow.insert(bow.end(), ngrams.cbegin(), ngrams.cend());
       }
     }
-    model_->update(bow, line, w, lr, state);
+    model_->update(bow, state.line, w, lr, state);
   }
 }
 
 void FastText::skipgram(
     Model::State& state,
-    real lr,
-    const std::vector<int32_t>& line) {
+    real lr) {
   std::uniform_int_distribution<> uniform(1, args_->ws);
-  for (int32_t w = 0; w < line.size(); w++) {
+  for (int32_t w = 0; w < state.line.size(); w++) {
     int32_t boundary = uniform(state.rng);
-    const std::vector<int32_t>& ngrams = dict_->getSubwords(line[w]);
+    const std::vector<int32_t>& ngrams = dict_->getSubwords(state.line[w]);
     for (int32_t c = -boundary; c <= boundary; c++) {
-      if (c != 0 && w + c >= 0 && w + c < line.size()) {
-        model_->update(ngrams, line, w + c, lr, state);
+      if (c != 0 && w + c >= 0 && w + c < state.line.size()) {
+        model_->update(ngrams, state.line, w + c, lr, state);
       }
     }
   }
@@ -652,33 +665,34 @@ void FastText::trainThread(int32_t threadId) {
   std::ifstream ifs(args_->input);
   utils::seek(ifs, threadId * utils::size(ifs) / args_->thread);
 
-  Model::State state(args_->dim, output_->size(0), threadId);
-
+  std::unique_ptr<Model::State> pState(new Model::State(args_->dim, output_->size(0), threadId));
+#ifdef FASTTEXT_CUDA
+  if( args_->loss == loss_name::cuda_softmax ) {
+    pState.reset(new CudaState(args_->dim, output_->size(0), threadId));
+  }
+#endif
   const int64_t ntokens = dict_->ntokens();
   int64_t localTokenCount = 0;
-  std::vector<int32_t> line, labels;
   while (tokenCount_ < args_->epoch * ntokens) {
     real progress = real(tokenCount_) / (args_->epoch * ntokens);
     real lr = args_->lr * (1.0 - progress);
+    localTokenCount += pState->getLine(ifs, dict_, args_->model);
     if (args_->model == model_name::sup) {
-      localTokenCount += dict_->getLine(ifs, line, labels);
-      supervised(state, lr, line, labels);
+      supervised(*pState, lr);
     } else if (args_->model == model_name::cbow) {
-      localTokenCount += dict_->getLine(ifs, line, state.rng);
-      cbow(state, lr, line);
+      cbow(*pState, lr);
     } else if (args_->model == model_name::sg) {
-      localTokenCount += dict_->getLine(ifs, line, state.rng);
-      skipgram(state, lr, line);
+      skipgram(*pState, lr);
     }
     if (localTokenCount > args_->lrUpdateRate) {
       tokenCount_ += localTokenCount;
       localTokenCount = 0;
       if (threadId == 0 && args_->verbose > 1)
-        loss_ = state.getLoss();
+        loss_ = pState->getLoss();
     }
   }
   if (threadId == 0)
-    loss_ = state.getLoss();
+    loss_ = pState->getLoss();
   ifs.close();
 }
 

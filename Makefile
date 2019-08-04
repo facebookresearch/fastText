@@ -5,11 +5,12 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 #
-
+NVCC = nvcc --default-stream per-thread
+NVCCFLAGS = --compiler-options -pthread -std=c++11
 CXX = c++
 CXXFLAGS = -pthread -std=c++0x -march=native
 OBJS = args.o matrix.o dictionary.o loss.o productquantizer.o densematrix.o quantmatrix.o vector.o model.o utils.o meter.o fasttext.o
-INCLUDES = -I.
+INCLUDES = -I. -I/usr/local/cuda/include/
 
 opt: CXXFLAGS += -O3 -funroll-loops -DNDEBUG
 opt: fasttext
@@ -19,6 +20,10 @@ coverage: fasttext
 
 debug: CXXFLAGS += -g -O0 -fno-inline
 debug: fasttext
+
+cudadebug: NVCCFLAGS = -DFASTTEXT_CUDA_DEBUG --compiler-options -pthread -std=c++11 -G -g
+cudadebug: CXXFLAGS += -DFASTTEXT_CUDA -DFASTTEXT_CUDA_DEBUG -g -O0 -fno-inline
+cudadebug: fasttext_cuda
 
 args.o: src/args.cc src/args.h
 	$(CXX) $(CXXFLAGS) -c src/args.cc
@@ -54,10 +59,17 @@ meter.o: src/meter.cc src/meter.h
 	$(CXX) $(CXXFLAGS) -c src/meter.cc
 
 fasttext.o: src/fasttext.cc src/*.h
-	$(CXX) $(CXXFLAGS) -c src/fasttext.cc
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c src/fasttext.cc
 
 fasttext: $(OBJS) src/fasttext.cc
 	$(CXX) $(CXXFLAGS) $(OBJS) src/main.cc -o fasttext
 
+cudaloss.o: src/cudaloss.cu src/*.h
+	$(NVCC) $(NVCCFLAGS) $(INCLUDES) -c src/cudaloss.cu
+
+fasttext_cuda: CXXFLAGS += -O3 -funroll-loops -fno-inline -DFASTTEXT_CUDA
+fasttext_cuda: $(OBJS) src/fasttext.cc cudaloss.o
+	$(NVCC) $(NVCCFLAGS) $(OBJS) cudaloss.o -lcudnn -lcublas src/main.cc -o fasttext_cuda
+
 clean:
-	rm -rf *.o *.gcno *.gcda fasttext
+	rm -rf *.o *.gcno *.gcda fasttext fasttext_cuda

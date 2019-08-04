@@ -54,6 +54,8 @@ std::string Args::lossToString(loss_name ln) const {
       return "softmax";
     case loss_name::ova:
       return "one-vs-all";
+    case loss_name::cuda_softmax:
+      return "cuda_softmax";
   }
   return "Unknown loss!"; // should never happen
 }
@@ -133,6 +135,8 @@ void Args::parseArgs(const std::vector<std::string>& args) {
         } else if (
             args.at(ai + 1) == "one-vs-all" || args.at(ai + 1) == "ova") {
           loss = loss_name::ova;
+        } else if (args.at(ai + 1) == "cuda_softmax") {
+          loss = loss_name::cuda_softmax;
         } else {
           std::cerr << "Unknown loss: " << args.at(ai + 1) << std::endl;
           printHelp();
@@ -233,7 +237,7 @@ void Args::printTrainingHelp() {
       << "  -ws                 size of the context window [" << ws << "]\n"
       << "  -epoch              number of epochs [" << epoch << "]\n"
       << "  -neg                number of negatives sampled [" << neg << "]\n"
-      << "  -loss               loss function {ns, hs, softmax, one-vs-all} ["
+      << "  -loss               loss function {ns, hs, softmax, one-vs-all, cuda_softmax} ["
       << lossToString(loss) << "]\n"
       << "  -thread             number of threads [" << thread << "]\n"
       << "  -pretrainedVectors  pretrained word vectors for supervised learning ["
@@ -263,7 +267,10 @@ void Args::save(std::ostream& out) {
   out.write((char*)&(minCount), sizeof(int));
   out.write((char*)&(neg), sizeof(int));
   out.write((char*)&(wordNgrams), sizeof(int));
-  out.write((char*)&(loss), sizeof(loss_name));
+  loss_name write_loss = loss;
+  if( loss==loss_name::cuda_softmax )
+    write_loss = loss_name::softmax;
+  out.write((char*)&(write_loss), sizeof(loss_name));
   out.write((char*)&(model), sizeof(model_name));
   out.write((char*)&(bucket), sizeof(int));
   out.write((char*)&(minn), sizeof(int));
