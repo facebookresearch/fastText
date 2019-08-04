@@ -267,7 +267,10 @@ void Args::save(std::ostream& out) {
   out.write((char*)&(minCount), sizeof(int));
   out.write((char*)&(neg), sizeof(int));
   out.write((char*)&(wordNgrams), sizeof(int));
-  out.write((char*)&(loss), sizeof(loss_name));
+  loss_name write_loss = loss;
+  if( loss==loss_name::cuda_softmax )
+    write_loss = loss_name::softmax;
+  out.write((char*)&(write_loss), sizeof(loss_name));
   out.write((char*)&(model), sizeof(model_name));
   out.write((char*)&(bucket), sizeof(int));
   out.write((char*)&(minn), sizeof(int));
