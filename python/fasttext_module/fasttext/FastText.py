@@ -232,9 +232,9 @@ class _FastText(object):
         """Save the model to the given path"""
         self.f.saveModel(path)
 
-    def test(self, path, k=1):
+    def test(self, path, k=1, threshold=0.0):
         """Evaluate supervised model using file given by path"""
-        return self.f.test(path, k)
+        return self.f.test(path, k, threshold)
 
     def test_label(self, path, k=1, threshold=0.0):
         """

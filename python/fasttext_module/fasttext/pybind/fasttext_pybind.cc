@@ -170,13 +170,16 @@ PYBIND11_MODULE(fasttext_pybind, m) {
           [](fasttext::FastText& m, std::string s) { m.saveModel(s); })
       .def(
           "test",
-          [](fasttext::FastText& m, const std::string filename, int32_t k) {
+          [](fasttext::FastText& m, 
+            const std::string filename, 
+            int32_t k,
+            fasttext::real threshold) {
             std::ifstream ifs(filename);
             if (!ifs.is_open()) {
               throw std::invalid_argument("Test file cannot be opened!");
             }
             fasttext::Meter meter;
-            m.test(ifs, k, 0.0, meter);
+            m.test(ifs, k, threshold, meter);
             ifs.close();
             return std::tuple<int64_t, double, double>(
                 meter.nexamples(), meter.precision(), meter.recall());
