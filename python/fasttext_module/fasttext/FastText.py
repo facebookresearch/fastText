@@ -154,7 +154,11 @@ class _FastText(object):
         else:
             text = check(text)
             predictions = self.f.predict(text, k, threshold, on_unicode_error)
-            probs, labels = zip(*predictions)
+            if len(predictions) != 0:
+                probs, labels = zip(*predictions)
+            else:
+                probs = tuple()
+                labels = tuple()
 
             return labels, np.array(probs, copy=False)
 
