@@ -8,12 +8,13 @@
 
 #pragma once
 
+#include <assert.h>
 #include <cstdint>
 #include <istream>
 #include <ostream>
+#include <stdexcept>
 #include <vector>
 
-#include <assert.h>
 #include "matrix.h"
 #include "real.h"
 
