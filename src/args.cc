@@ -235,7 +235,7 @@ void Args::printTrainingHelp() {
       << "  -neg                number of negatives sampled [" << neg << "]\n"
       << "  -loss               loss function {ns, hs, softmax, one-vs-all} ["
       << lossToString(loss) << "]\n"
-      << "  -thread             number of threads [" << thread << "]\n"
+      << "  -thread             number of threads (set to 1 to ensure reproducible results) [" << thread << "]\n"
       << "  -pretrainedVectors  pretrained word vectors for supervised learning ["
       << pretrainedVectors << "]\n"
       << "  -saveOutput         whether output params should be saved ["
