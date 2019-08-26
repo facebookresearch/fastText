@@ -26,10 +26,14 @@ void Meter::log(
   for (const auto& prediction : predictions) {
     labelMetrics_[prediction.second].predicted++;
 
+    real score = std::exp(prediction.first);
+    real gold = 0.0;
     if (utils::contains(labels, prediction.second)) {
       labelMetrics_[prediction.second].predictedGold++;
       metrics_.predictedGold++;
+      gold = 1.0;
     }
+    labelMetrics_[prediction.second].scoreVsTrue.emplace_back(score, gold);
   }
 
   for (const auto& label : labels) {
@@ -55,6 +59,15 @@ double Meter::precision() const {
 
 double Meter::recall() const {
   return metrics_.recall();
+}
+
+double Meter::f1Score() const {
+  const double precision = this->precision();
+  const double recall = this->recall();
+  if (precision + recall != 0) {
+    return 2 * precision * recall / (precision + recall);
+  }
+  return std::numeric_limits<double>::quiet_NaN();
 }
 
 void Meter::writeGeneralMetrics(std::ostream& out, int32_t k) const {

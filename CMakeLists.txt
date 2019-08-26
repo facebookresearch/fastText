@@ -19,6 +19,7 @@ set(CMAKE_CXX_FLAGS " -pthread -std=c++11 -funroll-loops -O3 -march=native")
 
 set(HEADER_FILES
     src/args.h
+    src/autotune.h
     src/densematrix.h
     src/dictionary.h
     src/fasttext.h
@@ -34,6 +35,7 @@ set(HEADER_FILES
 
 set(SOURCE_FILES
     src/args.cc
+    src/autotune.cc
     src/densematrix.cc
     src/dictionary.cc
     src/fasttext.cc

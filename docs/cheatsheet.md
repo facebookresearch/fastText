@@ -64,3 +64,26 @@ All other commands such as test also work with this model
 ```bash
 $ ./fasttext test model.ftz test.txt
 ```
+
+## Autotune
+
+Activate hyperparameter optimization with `-autotune-validation` argument:
+
+```bash
+$ ./fasttext supervised -input train.txt -output model -autotune-validation valid.txt
+```
+
+Set timeout (in seconds):
+```bash
+$ ./fasttext supervised -input train.txt -output model -autotune-validation valid.txt -autotune-duration 600
+```
+
+Constrain the final model size:
+```bash
+$ ./fasttext supervised -input train.txt -output model -autotune-validation valid.txt -autotune-modelsize 2M
+```
+
+
+
+
+

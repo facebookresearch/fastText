@@ -143,9 +143,15 @@ class FastText {
 
   void train(const Args& args);
 
+  void abort();
+
   int getDimension() const;
 
   bool isQuant() const;
 
+  class AbortError : public std::runtime_error {
+   public:
+    AbortError() : std::runtime_error("Aborted.") {}
+  };
 };
 } // namespace fasttext

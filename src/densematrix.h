@@ -24,6 +24,7 @@ class Vector;
 class DenseMatrix : public Matrix {
  protected:
   std::vector<real> data_;
+  void uniformThread(real, int, int32_t);
 
  public:
   DenseMatrix();
@@ -56,7 +57,7 @@ class DenseMatrix : public Matrix {
     return n_;
   }
   void zero();
-  void uniform(real);
+  void uniform(real, unsigned int, int32_t);
 
   void multiplyRow(const Vector& nums, int64_t ib = 0, int64_t ie = -1);
   void divideRow(const Vector& denoms, int64_t ib = 0, int64_t ie = -1);

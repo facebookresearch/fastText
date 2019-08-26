@@ -22,6 +22,7 @@ class Meter {
     uint64_t gold;
     uint64_t predicted;
     uint64_t predictedGold;
+    mutable std::vector<std::pair<real, real>> scoreVsTrue;
 
     Metrics() : gold(0), predicted(0), predictedGold(0) {}
 
@@ -55,6 +56,7 @@ class Meter {
   double f1Score(int32_t);
   double precision() const;
   double recall() const;
+  double f1Score() const;
   uint64_t nexamples() const {
     return nexamples_;
   }

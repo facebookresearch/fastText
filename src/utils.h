@@ -11,7 +11,9 @@
 #include "real.h"
 
 #include <algorithm>
+#include <chrono>
 #include <fstream>
+#include <ostream>
 #include <vector>
 
 #if defined(__clang__) || defined(__GNUC__)
@@ -37,6 +39,19 @@ bool contains(const std::vector<T>& container, const T& value) {
   return std::find(container.begin(), container.end(), value) !=
       container.end();
 }
+
+double getDuration(
+    const std::chrono::steady_clock::time_point& start,
+    const std::chrono::steady_clock::time_point& end);
+
+class ClockPrint {
+ public:
+  explicit ClockPrint(int32_t duration);
+  friend std::ostream& operator<<(std::ostream& out, const ClockPrint& me);
+
+ private:
+  int32_t duration_;
+};
 
 } // namespace utils
 

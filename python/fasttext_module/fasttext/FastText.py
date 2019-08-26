@@ -325,12 +325,17 @@ def _parse_loss_string(string):
         raise ValueError("Unrecognized loss name")
 
 
-def _build_args(args):
+def _build_args(args, manually_set_args):
     args["model"] = _parse_model_string(args["model"])
     args["loss"] = _parse_loss_string(args["loss"])
+    if type(args["autotuneModelSize"]) == int:
+        args["autotuneModelSize"] = str(args["autotuneModelSize"])
+
     a = fasttext.args()
     for (k, v) in args.items():
         setattr(a, k, v)
+        if k in manually_set_args:
+            a.setManual(k)
     a.output = ""  # User should use save_model
     a.saveOutput = 0  # Never use this
     if a.wordNgrams <= 1 and a.maxn == 0:
@@ -370,6 +375,12 @@ unsupervised_default = {
     'label' : "__label__",
     'verbose' : 2,
     'pretrainedVectors' : "",
+    'seed' : 0,
+    'autotuneValidationFile' : "",
+    'autotuneMetric' : "f1",
+    'autotunePredictions' : 1,
+    'autotuneDuration' : 60 * 5,  # 5 minutes
+    'autotuneModelSize' : ""
 }
 
 
@@ -383,6 +394,7 @@ def read_args(arg_list, arg_dict, arg_names, default_values):
     }
 
     ret = {}
+    manually_set_args = set()
     for (arg_name, arg_value) in chain(zip(arg_names, arg_list), arg_dict.items()):
         if arg_name in param_map:
             arg_name = param_map[arg_name]
@@ -391,12 +403,13 @@ def read_args(arg_list, arg_dict, arg_names, default_values):
         if arg_name in ret:
             raise TypeError("multiple values for argument '%s'" % arg_name)
         ret[arg_name] = arg_value
+        manually_set_args.add(arg_name)
 
     for (arg_name, arg_value) in default_values.items():
         if arg_name not in ret:
             ret[arg_name] = arg_value
 
-    return ret
+    return (ret, manually_set_args)
 
 
 def train_supervised(*kargs, **kwargs):
@@ -424,9 +437,12 @@ def train_supervised(*kargs, **kwargs):
 
     arg_names = ['input', 'lr', 'dim', 'ws', 'epoch', 'minCount',
         'minCountLabel', 'minn', 'maxn', 'neg', 'wordNgrams', 'loss', 'bucket',
-        'thread', 'lrUpdateRate', 't', 'label', 'verbose', 'pretrainedVectors']
-    params = read_args(kargs, kwargs, arg_names, supervised_default)
-    a = _build_args(params)
+        'thread', 'lrUpdateRate', 't', 'label', 'verbose', 'pretrainedVectors',
+        'seed', 'autotuneValidationFile', 'autotuneMetric',
+        'autotunePredictions', 'autotuneDuration', 'autotuneModelSize']
+    args, manually_set_args = read_args(kargs, kwargs, arg_names,
+                                        supervised_default)
+    a = _build_args(args, manually_set_args)
     ft = _FastText(args=a)
     fasttext.train(ft.f, a)
     return ft
@@ -449,8 +465,9 @@ def train_unsupervised(*kargs, **kwargs):
     arg_names = ['input', 'model', 'lr', 'dim', 'ws', 'epoch', 'minCount',
         'minCountLabel', 'minn', 'maxn', 'neg', 'wordNgrams', 'loss', 'bucket',
         'thread', 'lrUpdateRate', 't', 'label', 'verbose', 'pretrainedVectors']
-    params = read_args(kargs, kwargs, arg_names, unsupervised_default)
-    a = _build_args(params)
+    args, manually_set_args = read_args(kargs, kwargs, arg_names,
+                                        unsupervised_default)
+    a = _build_args(args, manually_set_args)
     ft = _FastText(args=a)
     fasttext.train(ft.f, a)
     return ft

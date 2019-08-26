@@ -11,6 +11,7 @@
 #include <queue>
 #include <stdexcept>
 #include "args.h"
+#include "autotune.h"
 #include "fasttext.h"
 
 using namespace fasttext;
@@ -351,19 +352,31 @@ void analogies(const std::vector<std::string> args) {
 void train(const std::vector<std::string> args) {
   Args a = Args();
   a.parseArgs(args);
-  FastText fasttext;
-  std::string outputFileName(a.output + ".bin");
+  std::shared_ptr<FastText> fasttext = std::make_shared<FastText>();
+  std::string outputFileName;
+
+  if (a.hasAutotune() &&
+      a.getAutotuneModelSize() != Args::kUnlimitedModelSize) {
+    outputFileName = a.output + ".ftz";
+  } else {
+    outputFileName = a.output + ".bin";
+  }
   std::ofstream ofs(outputFileName);
   if (!ofs.is_open()) {
     throw std::invalid_argument(
         outputFileName + " cannot be opened for saving.");
   }
   ofs.close();
-  fasttext.train(a);
-  fasttext.saveModel(outputFileName);
-  fasttext.saveVectors(a.output + ".vec");
+  if (a.hasAutotune()) {
+    Autotune autotune(fasttext);
+    autotune.train(a);
+  } else {
+    fasttext->train(a);
+  }
+  fasttext->saveModel(outputFileName);
+  fasttext->saveVectors(a.output + ".vec");
   if (a.saveOutput) {
-    fasttext.saveOutput(a.output + ".output");
+    fasttext->saveOutput(a.output + ".output");
   }
 }
 

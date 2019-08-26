@@ -48,3 +48,13 @@ The following arguments are mandatory:
 
 Defaults may vary by mode. (Word-representation modes `skipgram` and `cbow` use a default `-minCount` of 5.)
 
+
+Hyperparameter optimization (autotune) is activated when you provide a validation file with `-autotune-validation` argument.
+```text
+The following arguments are for autotune:
+  -autotune-validation            validation file to be used for evaluation
+  -autotune-metric                metric objective {f1, f1:labelname} [f1]
+  -autotune-predictions           number of predictions used for evaluation  [1]
+  -autotune-duration              maximum duration in seconds [300]
+  -autotune-modelsize             constraint model file size [] (empty = do not quantize)
+```
