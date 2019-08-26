@@ -97,10 +97,6 @@ void FastText::getWordVector(Vector& vec, const std::string& word) const {
   }
 }
 
-void FastText::getVector(Vector& vec, const std::string& word) const {
-  getWordVector(vec, word);
-}
-
 void FastText::getSubwordVector(Vector& vec, const std::string& subword) const {
   vec.zero();
   int32_t h = dict_->hash(subword) % args_->bucket;
@@ -122,10 +118,6 @@ void FastText::saveVectors(const std::string& filename) {
     ofs << word << " " << vec << std::endl;
   }
   ofs.close();
-}
-
-void FastText::saveVectors() {
-  saveVectors(args_->output + ".vec");
 }
 
 void FastText::saveOutput(const std::string& filename) {
@@ -152,10 +144,6 @@ void FastText::saveOutput(const std::string& filename) {
   ofs.close();
 }
 
-void FastText::saveOutput() {
-  saveOutput(args_->output + ".output");
-}
-
 bool FastText::checkModel(std::istream& in) {
   int32_t magic;
   in.read((char*)&(magic), sizeof(int32_t));
@@ -174,16 +162,6 @@ void FastText::signModel(std::ostream& out) {
   const int32_t version = FASTTEXT_VERSION;
   out.write((char*)&(magic), sizeof(int32_t));
   out.write((char*)&(version), sizeof(int32_t));
-}
-
-void FastText::saveModel() {
-  std::string fn(args_->output);
-  if (quant_) {
-    fn += ".ftz";
-  } else {
-    fn += ".bin";
-  }
-  saveModel(fn);
 }
 
 void FastText::saveModel(const std::string& filename) {
@@ -521,16 +499,6 @@ std::vector<std::pair<std::string, Vector>> FastText::getNgramVectors(
   return result;
 }
 
-// deprecated. use getNgramVectors instead
-void FastText::ngramVectors(std::string word) {
-  std::vector<std::pair<std::string, Vector>> ngramVectors =
-      getNgramVectors(word);
-
-  for (const auto& ngramVector : ngramVectors) {
-    std::cout << ngramVector.first << " " << ngramVector.second << std::endl;
-  }
-}
-
 void FastText::precomputeWordVectors(DenseMatrix& wordVectors) {
   Vector vec(args_->dim);
   wordVectors.zero();
@@ -598,17 +566,6 @@ std::vector<std::pair<real, std::string>> FastText::getNN(
   return heap;
 }
 
-// depracted. use getNN instead
-void FastText::findNN(
-    const DenseMatrix& wordVectors,
-    const Vector& query,
-    int32_t k,
-    const std::set<std::string>& banSet,
-    std::vector<std::pair<real, std::string>>& results) {
-  results.clear();
-  results = getNN(wordVectors, query, k, banSet);
-}
-
 std::vector<std::pair<real, std::string>> FastText::getAnalogies(
     int32_t k,
     const std::string& wordA,
@@ -628,24 +585,6 @@ std::vector<std::pair<real, std::string>> FastText::getAnalogies(
   lazyComputeWordVectors();
   assert(wordVectors_);
   return getNN(*wordVectors_, query, k, {wordA, wordB, wordC});
-}
-
-// depreacted, use getAnalogies instead
-void FastText::analogies(int32_t k) {
-  std::string prompt("Query triplet (A - B + C)? ");
-  std::string wordA, wordB, wordC;
-  std::cout << prompt;
-  while (true) {
-    std::cin >> wordA;
-    std::cin >> wordB;
-    std::cin >> wordC;
-    auto results = getAnalogies(k, wordA, wordB, wordC);
-
-    for (auto& pair : results) {
-      std::cout << pair.second << " " << pair.first << std::endl;
-    }
-    std::cout << prompt;
-  }
 }
 
 void FastText::trainThread(int32_t threadId) {
@@ -725,10 +664,6 @@ std::shared_ptr<Matrix> FastText::getInputMatrixFromFile(
     }
   }
   return input;
-}
-
-void FastText::loadVectors(const std::string& filename) {
-  input_ = getInputMatrixFromFile(filename);
 }
 
 std::shared_ptr<Matrix> FastText::createRandomMatrix() const {
