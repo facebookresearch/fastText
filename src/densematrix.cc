@@ -73,7 +73,7 @@ real DenseMatrix::l2NormRow(int64_t i) const {
     norm += at(i, j) * at(i, j);
   }
   if (std::isnan(norm)) {
-    throw std::runtime_error("Encountered NaN.");
+    throw EncounteredNaNError();
   }
   return std::sqrt(norm);
 }
@@ -94,7 +94,7 @@ real DenseMatrix::dotRow(const Vector& vec, int64_t i) const {
     d += at(i, j) * vec[j];
   }
   if (std::isnan(d)) {
-    throw std::runtime_error("Encountered NaN.");
+    throw EncounteredNaNError();
   }
   return d;
 }

@@ -43,6 +43,7 @@ class FastText {
   bool quant_;
   int32_t version;
   std::unique_ptr<DenseMatrix> wordVectors_;
+  std::exception_ptr trainException_;
 
   void signModel(std::ostream&);
   bool checkModel(std::istream&);
@@ -70,6 +71,7 @@ class FastText {
   void skipgram(Model::State& state, real lr, const std::vector<int32_t>& line);
   std::vector<int32_t> selectEmbeddings(int32_t cutoff) const;
   void precomputeWordVectors(DenseMatrix& wordVectors);
+  bool keepTraining(const int64_t ntokens) const;
 
  public:
   FastText();
@@ -144,5 +146,6 @@ class FastText {
   int getDimension() const;
 
   bool isQuant() const;
+
 };
 } // namespace fasttext

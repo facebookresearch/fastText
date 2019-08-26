@@ -47,7 +47,8 @@ std::shared_ptr<Loss> FastText::createLoss(std::shared_ptr<Matrix>& output) {
   }
 }
 
-FastText::FastText() : quant_(false), wordVectors_(nullptr) {}
+FastText::FastText()
+    : quant_(false), wordVectors_(nullptr), trainException_(nullptr) {}
 
 void FastText::addInputVector(Vector& vec, int32_t ind) const {
   vec.addRow(*input_, ind);
@@ -587,6 +588,10 @@ std::vector<std::pair<real, std::string>> FastText::getAnalogies(
   return getNN(*wordVectors_, query, k, {wordA, wordB, wordC});
 }
 
+bool FastText::keepTraining(const int64_t ntokens) const {
+  return tokenCount_ < args_->epoch * ntokens && !trainException_;
+}
+
 void FastText::trainThread(int32_t threadId) {
   std::ifstream ifs(args_->input);
   utils::seek(ifs, threadId * utils::size(ifs) / args_->thread);
@@ -596,25 +601,30 @@ void FastText::trainThread(int32_t threadId) {
   const int64_t ntokens = dict_->ntokens();
   int64_t localTokenCount = 0;
   std::vector<int32_t> line, labels;
-  while (tokenCount_ < args_->epoch * ntokens) {
-    real progress = real(tokenCount_) / (args_->epoch * ntokens);
-    real lr = args_->lr * (1.0 - progress);
-    if (args_->model == model_name::sup) {
-      localTokenCount += dict_->getLine(ifs, line, labels);
-      supervised(state, lr, line, labels);
-    } else if (args_->model == model_name::cbow) {
-      localTokenCount += dict_->getLine(ifs, line, state.rng);
-      cbow(state, lr, line);
-    } else if (args_->model == model_name::sg) {
-      localTokenCount += dict_->getLine(ifs, line, state.rng);
-      skipgram(state, lr, line);
+  try {
+    while (keepTraining(ntokens)) {
+      real progress = real(tokenCount_) / (args_->epoch * ntokens);
+      real lr = args_->lr * (1.0 - progress);
+      if (args_->model == model_name::sup) {
+        localTokenCount += dict_->getLine(ifs, line, labels);
+        supervised(state, lr, line, labels);
+      } else if (args_->model == model_name::cbow) {
+        localTokenCount += dict_->getLine(ifs, line, state.rng);
+        cbow(state, lr, line);
+      } else if (args_->model == model_name::sg) {
+        localTokenCount += dict_->getLine(ifs, line, state.rng);
+        skipgram(state, lr, line);
+      }
+      if (localTokenCount > args_->lrUpdateRate) {
+        tokenCount_ += localTokenCount;
+        localTokenCount = 0;
+        if (threadId == 0 && args_->verbose > 1) {
+          loss_ = state.getLoss();
+        }
+      }
     }
-    if (localTokenCount > args_->lrUpdateRate) {
-      tokenCount_ += localTokenCount;
-      localTokenCount = 0;
-      if (threadId == 0 && args_->verbose > 1)
-        loss_ = state.getLoss();
-    }
+  } catch (DenseMatrix::EncounteredNaNError &) {
+    trainException_ = std::current_exception();
   }
   if (threadId == 0)
     loss_ = state.getLoss();
@@ -715,13 +725,14 @@ void FastText::startThreads() {
   start_ = std::chrono::steady_clock::now();
   tokenCount_ = 0;
   loss_ = -1;
+  trainException_ = nullptr;
   std::vector<std::thread> threads;
   for (int32_t i = 0; i < args_->thread; i++) {
     threads.push_back(std::thread([=]() { trainThread(i); }));
   }
   const int64_t ntokens = dict_->ntokens();
   // Same condition as trainThread
-  while (tokenCount_ < args_->epoch * ntokens) {
+  while (keepTraining(ntokens)) {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     if (loss_ >= 0 && args_->verbose > 1) {
       real progress = real(tokenCount_) / (args_->epoch * ntokens);
@@ -731,6 +742,9 @@ void FastText::startThreads() {
   }
   for (int32_t i = 0; i < args_->thread; i++) {
     threads[i].join();
+  }
+  if (trainException_) {
+    std::rethrow_exception(trainException_);
   }
   if (args_->verbose > 0) {
     std::cerr << "\r";

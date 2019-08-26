@@ -71,5 +71,10 @@ class DenseMatrix : public Matrix {
   void save(std::ostream&) const override;
   void load(std::istream&) override;
   void dump(std::ostream&) const override;
+
+  class EncounteredNaNError : public std::runtime_error {
+   public:
+    EncounteredNaNError() : std::runtime_error("Encountered NaN.") {}
+  };
 };
 } // namespace fasttext
