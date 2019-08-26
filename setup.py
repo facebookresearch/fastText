@@ -98,15 +98,15 @@ def has_flag(compiler, flags):
 
 
 def cpp_flag(compiler):
-    """Return the -std=c++[0x/11/14] compiler flag.
-    The c++14 is preferred over c++0x/11 (when it is available).
+    """Return the -std=c++[11/14] compiler flag.
+    The c++14 is preferred over c++11 (when it is available).
     """
-    standards = ['-std=c++14', '-std=c++11', '-std=c++0x']
+    standards = ['-std=c++14', '-std=c++11']
     for standard in standards:
         if has_flag(compiler, [standard]):
             return standard
     raise RuntimeError(
-        'Unsupported compiler -- at least C++0x support '
+        'Unsupported compiler -- at least C++11 support '
         'is needed!'
     )
 
