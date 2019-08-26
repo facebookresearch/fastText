@@ -191,6 +191,6 @@ workflows:
       - "website-build"
       - "debian-stretch-gcc"
       - "debian-stretch-cmake"
+      - "debian-stretch-python"
       - "debian-jessie-gcc"
       - "debian-jessie-cmake"
-      - "debian-jessie-python"
