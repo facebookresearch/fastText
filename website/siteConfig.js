@@ -96,7 +96,10 @@ const siteConfig = {
   /* remove this to disable google analytics tracking */
   gaTrackingId: "UA-44373548-30",
   ogImage: "img/ogimage.png",
-  useEnglishUrl: true
+  useEnglishUrl: true,
+  scripts: [
+    '/tabber.js',
+  ],
 };
 
 module.exports = siteConfig;

@@ -26,9 +26,15 @@ Move to the fastText directory and build it:
 
 ```bash
 $ cd fastText-0.9.1
+# for command line tool :
 $ make
+# for python bindings :
+$ pip install .
 ```
 
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Command line-->
+<br />
 Running the binary without any argument will print the high level documentation, showing the different use cases supported by fastText:
 
 ```bash
@@ -52,6 +58,62 @@ The commands supported by fasttext are:
 ```
 
 In this tutorial, we mainly use the `supervised`, `test` and `predict` subcommands, which corresponds to learning (and using) text classifier. For an introduction to the other functionalities of fastText, please see the [tutorial about learning word vectors](https://fasttext.cc/docs/en/unsupervised-tutorial.html).
+
+<!--Python-->
+<br />
+Calling the help function will show high level documentation of the library:
+```py
+>>> import fasttext
+>>> help(fasttext.FastText)
+Help on module fasttext.FastText in fasttext:
+
+NAME
+    fasttext.FastText
+
+DESCRIPTION
+    # Copyright (c) 2017-present, Facebook, Inc.
+    # All rights reserved.
+    #
+    # This source code is licensed under the MIT license found in the
+    # LICENSE file in the root directory of this source tree.
+
+FUNCTIONS
+    load_model(path)
+        Load a model given a filepath and return a model object.
+    
+    read_args(arg_list, arg_dict, arg_names, default_values)
+    
+    tokenize(text)
+        Given a string of text, tokenize it and return a list of tokens
+    
+    train_supervised(*kargs, **kwargs)
+        Train a supervised model and return a model object.
+        
+        input must be a filepath. The input text does not need to be tokenized
+        as per the tokenize function, but it must be preprocessed and encoded
+        as UTF-8. You might want to consult standard preprocessing scripts such
+        as tokenizer.perl mentioned here: http://www.statmt.org/wmt07/baseline.html
+        
+        The input file must must contain at least one label per line. For an
+        example consult the example datasets which are part of the fastText
+        repository such as the dataset pulled by classification-example.sh.
+    
+    train_unsupervised(*kargs, **kwargs)
+        Train an unsupervised model and return a model object.
+        
+        input must be a filepath. The input text does not need to be tokenized
+        as per the tokenize function, but it must be preprocessed and encoded
+        as UTF-8. You might want to consult standard preprocessing scripts such
+        as tokenizer.perl mentioned here: http://www.statmt.org/wmt07/baseline.html
+        
+        The input field must not contain any labels or use the specified label prefix
+        unless it is ok for those words to be ignored. For an example consult the
+        dataset pulled by the example script word-vector-example.sh, which is
+        part of the fastText repository.
+```
+
+In this tutorial, we mainly use the `train_supervised`, which returns a model object, and call `test` and `predict` on this object. That corresponds to learning (and using) text classifier. For an introduction to the other functionalities of fastText, please see the [tutorial about learning word vectors](https://fasttext.cc/docs/en/unsupervised-tutorial.html).
+<!--END_DOCUSAURUS_CODE_TABS-->
 
 ## Getting and preparing the data
 
@@ -82,6 +144,8 @@ Our full dataset contains 15404 examples. Let's split it into a training set of 
 
 We are now ready to train our first classifier:
 
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Command line-->
 ```bash
 >> ./fasttext supervised -input cooking.train -output model_cooking
 Read 0M words
@@ -92,8 +156,27 @@ Progress: 100.0%  words/sec/thread: 75109  lr: 0.000000  loss: 5.708354  eta: 0h
 
 The `-input` command line option indicates the file containing the training examples, while the `-output` option indicates where to save the model. At the end of training, a file `model_cooking.bin`, containing the trained classifier, is created in the current directory.
 
-It is possible to directly test our classifier interactively, by running the command:
+<!--Python-->
+```py
+>>> import fasttext
+>>> model = fasttext.train_supervised(input="cooking.train")
+Read 0M words
+Number of words:  14598
+Number of labels: 734
+Progress: 100.0%  words/sec/thread: 75109  lr: 0.000000  loss: 5.708354  eta: 0h0m
+```
+The `input` argument indicates the file containing the training examples. We can now use the `model` variable to access information on the trained model.
 
+We can also call `save_model` to save it as a file and load it later with `load_model` function.
+```py
+>>> model.save_model("model_cooking.bin")
+```
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+
+Now, we can test our classifier, by :
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Command line-->
 ```bash
 >> ./fasttext predict model_cooking.bin -
 ```
@@ -106,8 +189,27 @@ The predicted tag is `baking`  which fits well to this question. Let us now try 
 
 *Why not put knives in the dishwasher?*
 
-The label predicted by the model is `food-safety`, which is not relevant. Somehow, the model seems to fail on simple examples. To get a better sense of its quality, let's test it on the validation data by running:
+<!--Python-->
+```py
+>>> model.predict("Which baking dish is best to bake a banana bread ?")
+((u'__label__baking',), array([0.15613931]))
+```
+The predicted tag is `baking`  which fits well to this question. Let us now try a second example:
 
+```py
+>>> model.predict("Why not put knives in the dishwasher?")
+((u'__label__food-safety',), array([0.08686075]))
+```
+
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+
+The label predicted by the model is `food-safety`, which is not relevant. Somehow, the model seems to fail on simple examples.
+
+To get a better sense of its quality, let's test it on the validation data by running:
+
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Command line-->
 ```bash
 >> ./fasttext test model_cooking.bin cooking.valid
 N  3000
@@ -115,9 +217,20 @@ P@1  0.124
 R@1  0.0541
 Number of examples: 3000
 ```
+The output of fastText are the precision at one (`P@1`) and the recall at one (`R@1`).
 
-The output of fastText are the precision at one (`P@1`) and the recall at one (`R@1`). We can also compute the precision at five and recall at five with:
+<!--Python-->
+```py
+>>> model.test("cooking.valid")
+(3000L, 0.124, 0.0541)
+```
+The output are the number of samples (here `3000`), the precision at one (`0.124`) and the recall at one (`0.0541`).
+<!--END_DOCUSAURUS_CODE_TABS-->
 
+We can also compute the precision at five and recall at five with:
+
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Command line-->
 ```bash
 >> ./fasttext test model_cooking.bin cooking.valid 5
 N  3000
@@ -125,6 +238,13 @@ P@5  0.0668
 R@5  0.146
 Number of examples: 3000
 ```
+<!--Python-->
+```py
+>>> model.test("cooking.valid", k=5)
+(3000L, 0.0668, 0.146)
+```
+<!--END_DOCUSAURUS_CODE_TABS-->
+
 
 ## Advanced readers: precision and recall
 
@@ -134,9 +254,17 @@ The precision is the number of correct labels among the labels predicted by fast
 
 On Stack Exchange, this sentence is labeled with three tags: `equipment`, `cleaning` and `knives`. The top five labels predicted by the model can be obtained with:
 
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Command line-->
 ```bash
 >> ./fasttext predict model_cooking.bin - 5
 ```
+<!--Python-->
+```py
+>>> model.predict("Why not put knives in the dishwasher?", k=5)
+((u'__label__food-safety', u'__label__baking', u'__label__equipment', u'__label__substitutions', u'__label__bread'), array([0.0857 , 0.0657, 0.0454, 0.0333, 0.0333]))
+```
+<!--END_DOCUSAURUS_CODE_TABS-->
 
 are `food-safety`, `baking`, `equipment`, `substitutions` and `bread`.
 
@@ -160,12 +288,14 @@ Looking at the data, we observe that some words contain uppercase letter or punc
 
 Let's train a new model on the pre-processed data:
 
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Command line-->
 ```bash
 >> ./fasttext supervised -input cooking.train -output model_cooking
 Read 0M words
 Number of words:  9012
 Number of labels: 734
-Progress: 100.0%  words/sec/thread: 82041  lr: 0.000000  loss: 5.671649  eta: 0h0m h-14m
+Progress: 100.0%  words/sec/thread: 82041  lr: 0.000000  loss: 5.671649  eta: 0h0m
 
 >> ./fasttext test model_cooking.bin cooking.valid
 N  3000
@@ -173,6 +303,19 @@ P@1  0.164
 R@1  0.0717
 Number of examples: 3000
 ```
+<!--Python-->
+```py
+>>> import fasttext
+>>> model = fasttext.train_supervised(input="cooking.train")
+Read 0M words
+Number of words:  9012
+Number of labels: 734
+Progress: 100.0%  words/sec/thread: 82041  lr: 0.000000  loss: 5.671649  eta: 0h0m
+
+>>> model.test("cooking.valid")
+(3000L, 0.164, 0.0717)
+```
+<!--END_DOCUSAURUS_CODE_TABS-->
 
 We observe that thanks to the pre-processing, the vocabulary is smaller (from 14k words to 9k). The precision is also starting to go up by 4%!
 
@@ -180,6 +323,8 @@ We observe that thanks to the pre-processing, the vocabulary is smaller (from 14
 
 By default, fastText sees each training example only five times during training, which is pretty small, given that our training set only have 12k training examples. The number of times each examples is seen (also known as the number of epochs), can be increased using the `-epoch` option:
 
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Command line-->
 ```bash
 >> ./fasttext supervised -input cooking.train -output model_cooking -epoch 25
 Read 0M words
@@ -187,9 +332,21 @@ Number of words:  9012
 Number of labels: 734
 Progress: 100.0%  words/sec/thread: 77633  lr: 0.000000  loss: 7.147976  eta: 0h0m
 ```
+<!--Python-->
+```py
+>>> import fasttext
+>>> model = fasttext.train_supervised(input="cooking.train", epoch=25)
+Read 0M words
+Number of words:  9012
+Number of labels: 734
+Progress: 100.0%  words/sec/thread: 77633  lr: 0.000000  loss: 7.147976  eta: 0h0m
+```
+<!--END_DOCUSAURUS_CODE_TABS-->
 
 Let's test the new model:
 
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Command line-->
 ```bash
 >> ./fasttext test model_cooking.bin cooking.valid
 N  3000
@@ -197,9 +354,17 @@ P@1  0.501
 R@1  0.218
 Number of examples: 3000
 ```
+<!--Python-->
+```py
+>>> model.test("cooking.valid")
+(3000L, 0.501, 0.218)
+```
+<!--END_DOCUSAURUS_CODE_TABS-->
 
 This is much better! Another way to change the learning speed of our model is to increase (or decrease) the learning rate of the algorithm. This corresponds to how much the model changes after processing each example. A learning rate of 0 would mean that the model does not change at all, and thus, does not learn anything. Good values of the learning rate are in the range `0.1 - 1.0`.
 
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Command line-->
 ```bash
 >> ./fasttext supervised -input cooking.train -output model_cooking -lr 1.0  
 Read 0M words
@@ -213,9 +378,23 @@ P@1  0.563
 R@1  0.245
 Number of examples: 3000
 ```
+<!--Python-->
+```py
+>>> model = fasttext.train_supervised(input="cooking.train", lr=1.0)
+Read 0M words
+Number of words:  9012
+Number of labels: 734
+Progress: 100.0%  words/sec/thread: 81469  lr: 0.000000  loss: 6.405640  eta: 0h0m
+
+>>> model.test("cooking.valid")
+(3000L, 0.563, 0.245)
+```
+<!--END_DOCUSAURUS_CODE_TABS-->
 
 Even better! Let's try both together:
 
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Command line-->
 ```bash
 >> ./fasttext supervised -input cooking.train -output model_cooking -lr 1.0 -epoch 25
 Read 0M words
@@ -229,6 +408,18 @@ P@1  0.585
 R@1  0.255
 Number of examples: 3000
 ```
+<!--Python-->
+```py
+>>> model = fasttext.train_supervised(input="cooking.train", lr=1.0, epoch=25)
+Read 0M words
+Number of words:  9012
+Number of labels: 734
+Progress: 100.0%  words/sec/thread: 76394  lr: 0.000000  loss: 4.350277  eta: 0h0m
+
+>>> model.test("cooking.valid")
+(3000L, 0.585, 0.255)
+```
+<!--END_DOCUSAURUS_CODE_TABS-->
 
 Let us now add a few more features to improve even further our performance!
 
@@ -236,6 +427,8 @@ Let us now add a few more features to improve even further our performance!
 
 Finally, we can improve the performance of a model by using word bigrams, instead of just unigrams. This is especially important for classification problems where word order is important, such as sentiment analysis.
 
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Command line-->
 ```bash
 >> ./fasttext supervised -input cooking.train -output model_cooking -lr 1.0 -epoch 25 -wordNgrams 2
 Read 0M words
@@ -249,6 +442,18 @@ P@1  0.599
 R@1  0.261
 Number of examples: 3000
 ```
+<!--Python-->
+```py
+>>> model = fasttext.train_supervised(input="cooking.train", lr=1.0, epoch=25, wordNgrams=2)
+Read 0M words
+Number of words:  9012
+Number of labels: 734
+Progress: 100.0%  words/sec/thread: 75366  lr: 0.000000  loss: 3.226064  eta: 0h0m
+
+>>> model.test("cooking.valid")
+(3000L, 0.599, 0.261)
+```
+<!--END_DOCUSAURUS_CODE_TABS-->
 
 With a few steps, we were able to go from a precision at one of 12.4% to 59.9%. Important steps included:
 
@@ -274,6 +479,8 @@ It is common to refer to a word as a unigram.
 
 Since we are training our model on a few thousands of examples, the training only takes a few seconds. But training models on larger datasets, with more labels can start to be too slow. A potential solution to make the training faster is to use the [hierarchical softmax](#advanced-readers-hierarchical-softmax), instead of the regular softmax. This can be done with the option `-loss hs`:
 
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Command line-->
 ```bash
 >> ./fasttext supervised -input cooking.train -output model_cooking -lr 1.0 -epoch 25 -wordNgrams 2 -bucket 200000 -dim 50 -loss hs
 Read 0M words
@@ -281,6 +488,15 @@ Number of words:  9012
 Number of labels: 734
 Progress: 100.0%  words/sec/thread: 2199406  lr: 0.000000  loss: 1.718807  eta: 0h0m
 ```
+<!--Python-->
+```py
+>>> model = fasttext.train_supervised(input="cooking.train", lr=1.0, epoch=25, wordNgrams=2, bucket=200000, dim=50, loss='hs')
+Read 0M words
+Number of words:  9012
+Number of labels: 734
+Progress: 100.0%  words/sec/thread: 2199406  lr: 0.000000  loss: 1.718807  eta: 0h0m
+```
+<!--END_DOCUSAURUS_CODE_TABS-->
 
 Training should now take less than a second.
 
@@ -301,6 +517,8 @@ When we want to assign a document to multiple labels, we can still use the softm
 
 A convenient way to handle multiple labels is to use independent binary classifiers for each label. This can be done with `-loss one-vs-all` or `-loss ova`.
 
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Command line-->
 ```bash
 >> ./fasttext supervised -input cooking.train -output model_cooking -lr 0.5 -epoch 25 -wordNgrams 2 -bucket 200000 -dim 50 -loss one-vs-all
 Read 0M words
@@ -308,10 +526,22 @@ Number of words:  14543
 Number of labels: 735
 Progress: 100.0% words/sec/thread:   72104 lr:  0.000000 loss:  4.340807 ETA:   0h 0m
 ```
+<!--Python-->
+```py
+>>> import fasttext
+>>> model = fasttext.train_supervised(input="cooking.train", lr=0.5, epoch=25, wordNgrams=2, bucket=200000, dim=50, loss='ova')
+Read 0M words
+Number of words:  14543
+Number of labels: 735
+Progress: 100.0% words/sec/thread:   72104 lr:  0.000000 loss:  4.340807 ETA:   0h 0m
+```
+<!--END_DOCUSAURUS_CODE_TABS-->
 
 It is a good idea to decrease the learning rate compared to other loss functions.
 
 Now let's have a look on our predictions, we want as many prediction as possible (argument `-1`) and we want only labels with probability higher or equal to `0.5` :
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Command line-->
 ```bash
 >> ./fasttext predict-prob model_cooking.bin - -1 0.5
 ```
@@ -323,9 +553,19 @@ we get:
 ```
 __label__baking 1.00000 __label__bananas 0.939923 __label__bread 0.592677
 ```
+<!--Python-->
+```py
+>>> model.predict("Which baking dish is best to bake a banana bread ?", k=-1, threshold=0.5)
+((u''__label__baking, u'__label__bananas', u'__label__bread'), array([1.00000, 0.939923, 0.592677]))
+```
+<!--END_DOCUSAURUS_CODE_TABS-->
 
+
+
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Command line-->
+<br />
 We can also evaluate our results with the `test` command :
-
 ```bash
 >> ./fasttext test model_cooking.bin cooking.valid -1 0.5
 N 3000
@@ -333,7 +573,6 @@ P@-1  0.702
 R@-1  0.2
 Number of examples: 3000
 ```
-
 and play with the threshold to obtain desired precision/recall metrics :
 
 ```bash
@@ -343,6 +582,15 @@ P@-1  0.591
 R@-1  0.272
 Number of examples: 3000
 ```
+<!--Python-->
+<br />
+We can also evaluate our results with the `test` function:
+```py
+>>> model.test("cooking.valid", k=-1)
+(3000L, 0.702, 0.2)
+```
+<!--END_DOCUSAURUS_CODE_TABS-->
+
 
 ## Conclusion
 
