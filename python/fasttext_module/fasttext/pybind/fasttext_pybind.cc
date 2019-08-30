@@ -397,6 +397,18 @@ PYBIND11_MODULE(fasttext_pybind, m) {
              fasttext::Vector& vec,
              const std::string word) { m.getWordVector(vec, word); })
       .def(
+          "getNN",
+          [](fasttext::FastText& m, const std::string& word, int32_t k) {
+            return m.getNN(word, k);
+          })
+      .def(
+          "getAnalogies",
+          [](fasttext::FastText& m,
+             const std::string& wordA,
+             const std::string& wordB,
+             const std::string& wordC,
+             int32_t k) { return m.getAnalogies(k, wordA, wordB, wordC); })
+      .def(
           "getSubwords",
           [](fasttext::FastText& m,
              const std::string word,
