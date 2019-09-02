@@ -55,6 +55,10 @@ class FastText {
       const Vector& queryVec,
       int32_t k,
       const std::set<std::string>& banSet);
+  real getSimilarity(
+      const DenseMatrix& wordVectors,
+      const Vector& queryVec1,
+      const Vector& queryVec2);
   void lazyComputeWordVectors();
   void printInfo(real, real, std::ostream&);
   std::shared_ptr<Matrix> getInputMatrixFromFile(const std::string&) const;
@@ -134,6 +138,10 @@ class FastText {
   std::vector<std::pair<real, std::string>> getNN(
       const std::string& word,
       int32_t k);
+
+  real getSimilarity(
+      const std::string& word1,
+      const std::string& word2);
 
   std::vector<std::pair<real, std::string>> getAnalogies(
       int32_t k,
