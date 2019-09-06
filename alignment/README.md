@@ -16,9 +16,10 @@ The details of this approach can be found in [1].
 ### Unsupervised alignment
 
 The script `unsup_align.py` aligns word embeddings from two languages without requiring any supervision.
-The details of this approach can be found in [2].
+Additionally, the script `unsup_multialign.py` aligns multiple languages to a common space with no supervision.
+The details of these approaches can be found in [2] and [3] respectively.
 
-In addition to NumPy, the unsupervised method requires the [Python Optimal Transport](https://pot.readthedocs.io/en/stable/) toolbox.
+In addition to NumPy, the unsupervised methods require the [Python Optimal Transport](https://pot.readthedocs.io/en/stable/) toolbox.
 
 ### Download
 
@@ -39,7 +40,7 @@ If you use the supervised alignment method, please cite:
 }
 ```
 
-If you use the unsupervised alignment method, please cite:
+If you use the unsupervised bilingual alignment method, please cite:
 
 [2] E. Grave, A. Joulin, Q. Berthet, [*Unsupervised Alignment of Embeddings with Wasserstein Procrustes*](https://arxiv.org/abs/1805.11222)
 
@@ -49,5 +50,18 @@ If you use the unsupervised alignment method, please cite:
     author={Grave, Edouard and Joulin, Armand and Berthet, Quentin},
     journal={arXiv preprint arXiv:1805.11222},
     year={2018}
+}
+```
+
+If you use the unsupervised alignment script `unsup_multialign.py`, please cite:
+
+[3] J. Alaux, E. Grave, M. Cuturi, A. Joulin, [*Unsupervised Hyperalignment for Multilingual Word Embeddings*](https://arxiv.org/abs/1811.01124)
+
+```
+@article{alaux2018unsupervised,
+  title={Unsupervised hyperalignment for multilingual word embeddings},
+  author={Alaux, Jean and Grave, Edouard and Cuturi, Marco and Joulin, Armand},
+  journal={arXiv preprint arXiv:1811.01124},
+  year={2018}
 }
 ```
