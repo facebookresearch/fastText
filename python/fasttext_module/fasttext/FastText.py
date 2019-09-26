@@ -152,12 +152,10 @@ class _FastText(object):
 
         if type(text) == list:
             text = [check(entry) for entry in text]
-            predictions = self.f.multilinePredict(
+            all_labels, all_probs = self.f.multilinePredict(
                 text, k, threshold, on_unicode_error)
-            dt = np.dtype([('probability', 'float64'), ('label', 'object')])
-            result_as_pair = np.array(predictions, dtype=dt)
 
-            return result_as_pair['label'].tolist(), result_as_pair['probability']
+            return all_labels, all_probs
         else:
             text = check(text)
             predictions = self.f.predict(text, k, threshold, on_unicode_error)

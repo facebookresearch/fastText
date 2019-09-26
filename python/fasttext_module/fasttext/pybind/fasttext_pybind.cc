@@ -10,6 +10,7 @@
 #include <autotune.h>
 #include <densematrix.h>
 #include <fasttext.h>
+#include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <real.h>
@@ -335,23 +336,28 @@ PYBIND11_MODULE(fasttext_pybind, m) {
              int32_t k,
              fasttext::real threshold,
              const char* onUnicodeError) {
-            std::vector<std::vector<std::pair<fasttext::real, py::str>>>
-                allPredictions;
+            std::vector<py::array_t<fasttext::real>> allProbabilities;
+            std::vector<std::vector<py::str>> allLabels;
             std::vector<std::pair<fasttext::real, std::string>> predictions;
 
             for (const std::string& text : lines) {
               std::stringstream ioss(text);
               m.predictLine(ioss, predictions, k, threshold);
-              std::vector<std::pair<fasttext::real, py::str>>
-                  transformedPredictions;
+              std::vector<fasttext::real> probabilities;
+              std::vector<py::str> labels;
+
               for (const auto& prediction : predictions) {
-                transformedPredictions.push_back(std::make_pair(
-                    prediction.first,
-                    castToPythonString(prediction.second, onUnicodeError)));
+                probabilities.push_back(prediction.first);
+                labels.push_back(
+                    castToPythonString(prediction.second, onUnicodeError));
               }
-              allPredictions.push_back(transformedPredictions);
+
+              allProbabilities.emplace_back(
+                  probabilities.size(), probabilities.data());
+              allLabels.push_back(labels);
             }
-            return allPredictions;
+
+            return make_pair(allLabels, allProbabilities);
           })
       .def(
           "testLabel",
