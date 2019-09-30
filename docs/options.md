@@ -17,23 +17,23 @@ The following arguments are mandatory:
   -verbose            verbosity level [2]
 
   The following arguments for the dictionary are optional:
-  -minCount           minimal number of word occurrences [5]
+  -minCount           minimal number of word occurrences [1]
   -minCountLabel      minimal number of label occurrences [0]
   -wordNgrams         max length of word ngram [1]
   -bucket             number of buckets [2000000]
-  -minn               min length of char ngram [3]
-  -maxn               max length of char ngram [6]
+  -minn               min length of char ngram [0]
+  -maxn               max length of char ngram [0]
   -t                  sampling threshold [0.0001]
   -label              labels prefix [__label__]
 
   The following arguments for training are optional:
-  -lr                 learning rate [0.05]
+  -lr                 learning rate [0.1]
   -lrUpdateRate       change the rate of updates for the learning rate [100]
   -dim                size of word vectors [100]
   -ws                 size of the context window [5]
   -epoch              number of epochs [5]
   -neg                number of negatives sampled [5]
-  -loss               loss function {ns, hs, softmax} [ns]
+  -loss               loss function {ns, hs, softmax} [softmax]
   -thread             number of threads [12]
   -pretrainedVectors  pretrained word vectors for supervised learning []
   -saveOutput         whether output params should be saved [0]
