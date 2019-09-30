@@ -420,6 +420,8 @@ void Autotune::train(const Args& autotuneArgs) {
       }
     } catch (DenseMatrix::EncounteredNaNError&) {
       // ignore diverging loss and go on
+    } catch (std::bad_alloc&) {
+      // ignore parameter samples asking too much memory
     } catch (TimeoutError&) {
       break;
     } catch (FastText::AbortError&) {
