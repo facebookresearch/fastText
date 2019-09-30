@@ -159,7 +159,10 @@ class _FastText(object):
         else:
             text = check(text)
             predictions = self.f.predict(text, k, threshold, on_unicode_error)
-            probs, labels = zip(*predictions)
+            if predictions:
+                probs, labels = zip(*predictions)
+            else:
+                probs, labels = ([], ())
 
             return labels, np.array(probs, copy=False)
 
