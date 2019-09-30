@@ -386,6 +386,8 @@ void Autotune::train(const Args& autotuneArgs) {
     trials_++;
 
     trainArgs = strategy_->ask(elapsed_);
+    LOG_VAL(Trial, trials_)
+    printArgs(trainArgs, autotuneArgs);
     ElapsedTimeMarker elapsedTimeMarker;
     double currentScore = std::numeric_limits<double>::quiet_NaN();
     try {
@@ -427,8 +429,6 @@ void Autotune::train(const Args& autotuneArgs) {
     } catch (FastText::AbortError&) {
       break;
     }
-    LOG_VAL(Trial, trials_)
-    printArgs(trainArgs, autotuneArgs);
     LOG_VAL_NAN(currentScore, currentScore)
     LOG_VAL(train took, elapsedTimeMarker.getElapsed())
   }
