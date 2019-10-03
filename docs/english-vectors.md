@@ -22,6 +22,7 @@ Each value is space separated. Words are ordered by descending frequency.
 These text models can easily be loaded in Python using the following code:
 ```python
 import io
+import numpy as np
 
 def load_vectors(fname):
     fin = io.open(fname, 'r', encoding='utf-8', newline='\n', errors='ignore')
