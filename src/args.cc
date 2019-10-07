@@ -10,9 +10,10 @@
 
 #include <stdlib.h>
 
+#include <cassert>
 #include <iostream>
 #include <stdexcept>
-#include <thread>
+#include <unordered_map>
 
 namespace fasttext {
 
@@ -37,12 +38,19 @@ Args::Args() {
   verbose = 2;
   pretrainedVectors = "";
   saveOutput = false;
+  seed = 0;
 
   qout = false;
   retrain = false;
   qnorm = false;
   cutoff = 0;
   dsub = 2;
+
+  autotuneValidationFile = "";
+  autotuneMetric = "f1";
+  autotunePredictions = 1;
+  autotuneDuration = 60 * 5; // 5 minutes
+  autotuneModelSize = "";
 }
 
 std::string Args::lossToString(loss_name ln) const {
@@ -79,6 +87,16 @@ std::string Args::modelToString(model_name mn) const {
   return "Unknown model name!"; // should never happen
 }
 
+std::string Args::metricToString(metric_name mn) const {
+  switch (mn) {
+    case metric_name::f1score:
+      return "f1score";
+    case metric_name::labelf1score:
+      return "labelf1score";
+  }
+  return "Unknown metric name!"; // should never happen
+}
+
 void Args::parseArgs(const std::vector<std::string>& args) {
   std::string command(args[1]);
   if (command == "supervised") {
@@ -98,6 +116,8 @@ void Args::parseArgs(const std::vector<std::string>& args) {
       exit(EXIT_FAILURE);
     }
     try {
+      setManual(args[ai].substr(1));
+
       if (args[ai] == "-h") {
         std::cerr << "Here is the help! Usage:" << std::endl;
         printHelp();
@@ -158,6 +178,8 @@ void Args::parseArgs(const std::vector<std::string>& args) {
       } else if (args[ai] == "-saveOutput") {
         saveOutput = true;
         ai--;
+      } else if (args[ai] == "-seed") {
+        seed = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-qnorm") {
         qnorm = true;
         ai--;
@@ -171,6 +193,18 @@ void Args::parseArgs(const std::vector<std::string>& args) {
         cutoff = std::stoi(args.at(ai + 1));
       } else if (args[ai] == "-dsub") {
         dsub = std::stoi(args.at(ai + 1));
+      } else if (args[ai] == "-autotune-validation") {
+        autotuneValidationFile = std::string(args.at(ai + 1));
+      } else if (args[ai] == "-autotune-metric") {
+        autotuneMetric = std::string(args.at(ai + 1));
+        getAutotuneMetric(); // throws exception if not able to parse
+        getAutotuneMetricLabel(); // throws exception if not able to parse
+      } else if (args[ai] == "-autotune-predictions") {
+        autotunePredictions = std::stoi(args.at(ai + 1));
+      } else if (args[ai] == "-autotune-duration") {
+        autotuneDuration = std::stoi(args.at(ai + 1));
+      } else if (args[ai] == "-autotune-modelsize") {
+        autotuneModelSize = std::string(args.at(ai + 1));
       } else {
         std::cerr << "Unknown argument: " << args[ai] << std::endl;
         printHelp();
@@ -196,6 +230,7 @@ void Args::printHelp() {
   printBasicHelp();
   printDictionaryHelp();
   printTrainingHelp();
+  printAutotuneHelp();
   printQuantizationHelp();
 }
 
@@ -236,11 +271,27 @@ void Args::printTrainingHelp() {
       << "  -neg                number of negatives sampled [" << neg << "]\n"
       << "  -loss               loss function {ns, hs, softmax, one-vs-all} ["
       << lossToString(loss) << "]\n"
-      << "  -thread             number of threads [" << thread << "]\n"
+      << "  -thread             number of threads (set to 1 to ensure reproducible results) ["
+      << thread << "]\n"
       << "  -pretrainedVectors  pretrained word vectors for supervised learning ["
       << pretrainedVectors << "]\n"
       << "  -saveOutput         whether output params should be saved ["
-      << boolToString(saveOutput) << "]\n";
+      << boolToString(saveOutput) << "]\n"
+      << "  -seed               random generator seed  [" << seed << "]\n";
+}
+
+void Args::printAutotuneHelp() {
+  std::cerr
+      << "\nThe following arguments are for autotune:\n"
+      << "  -autotune-validation            validation file to be used for evaluation\n"
+      << "  -autotune-metric                metric objective {f1, f1:labelname} ["
+      << autotuneMetric << "]\n"
+      << "  -autotune-predictions           number of predictions used for evaluation  ["
+      << autotunePredictions << "]\n"
+      << "  -autotune-duration              maximum duration in seconds ["
+      << autotuneDuration << "]\n"
+      << "  -autotune-modelsize             constraint model file size ["
+      << autotuneModelSize << "] (empty = do not quantize)\n";
 }
 
 void Args::printQuantizationHelp() {
@@ -316,6 +367,76 @@ void Args::dump(std::ostream& out) const {
       << " " << lrUpdateRate << std::endl;
   out << "t"
       << " " << t << std::endl;
+}
+
+bool Args::hasAutotune() const {
+  return !autotuneValidationFile.empty();
+}
+
+bool Args::isManual(const std::string& argName) const {
+  return (manualArgs_.count(argName) != 0);
+}
+
+void Args::setManual(const std::string& argName) {
+  manualArgs_.emplace(argName);
+}
+
+metric_name Args::getAutotuneMetric() const {
+  if (autotuneMetric.substr(0, 3) == "f1:") {
+    return metric_name::labelf1score;
+  } else if (autotuneMetric == "f1") {
+    return metric_name::f1score;
+  }
+  throw std::runtime_error("Unknown metric : " + autotuneMetric);
+}
+
+std::string Args::getAutotuneMetricLabel() const {
+  if (getAutotuneMetric() == metric_name::labelf1score) {
+    std::string label = autotuneMetric.substr(3);
+    if (label.empty()) {
+      throw std::runtime_error("Empty metric label : " + autotuneMetric);
+    }
+    return label;
+  }
+  return std::string();
+}
+
+int64_t Args::getAutotuneModelSize() const {
+  std::string modelSize = autotuneModelSize;
+  if (modelSize.empty()) {
+    return Args::kUnlimitedModelSize;
+  }
+  std::unordered_map<char, int> units = {
+      {'k', 1000},
+      {'K', 1000},
+      {'m', 1000000},
+      {'M', 1000000},
+      {'g', 1000000000},
+      {'G', 1000000000},
+  };
+  uint64_t multiplier = 1;
+  char lastCharacter = modelSize.back();
+  if (units.count(lastCharacter)) {
+    multiplier = units[lastCharacter];
+    modelSize = modelSize.substr(0, modelSize.size() - 1);
+  }
+  uint64_t size = 0;
+  size_t nonNumericCharacter = 0;
+  bool parseError = false;
+  try {
+    size = std::stol(modelSize, &nonNumericCharacter);
+  } catch (std::invalid_argument&) {
+    parseError = true;
+  }
+  if (!parseError && nonNumericCharacter != modelSize.size()) {
+    parseError = true;
+  }
+  if (parseError) {
+    throw std::invalid_argument(
+        "Unable to parse model size " + autotuneModelSize);
+  }
+
+  return size * multiplier;
 }
 
 } // namespace fasttext

@@ -2,7 +2,7 @@
   "docs": {
     "Introduction": ["support", "cheatsheet", "options"],
     "Tutorials": ["supervised-tutorial", "unsupervised-tutorial"],
-    "Help": ["python-module", "faqs", "api", "references"]
+    "Help": ["autotune", "python-module", "faqs", "api", "references"]
   },
   "download": {
     "Resources": [

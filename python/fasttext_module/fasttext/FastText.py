@@ -84,6 +84,12 @@ class _FastText(object):
         self.f.getSentenceVector(b, text)
         return np.array(b)
 
+    def get_nearest_neighbors(self, word, k=10):
+        return self.f.getNN(word, k)
+
+    def get_analogies(self, wordA, wordB, wordC, k=10):
+        return self.f.getAnalogies(wordA, wordB, wordC, k)
+
     def get_word_id(self, word):
         """
         Given a word, get the word id within the dictionary.
@@ -146,15 +152,17 @@ class _FastText(object):
 
         if type(text) == list:
             text = [check(entry) for entry in text]
-            predictions = self.f.multilinePredict(text, k, threshold, on_unicode_error)
-            dt = np.dtype([('probability', 'float64'), ('label', 'object')])
-            result_as_pair = np.array(predictions, dtype=dt)
+            all_labels, all_probs = self.f.multilinePredict(
+                text, k, threshold, on_unicode_error)
 
-            return result_as_pair['label'].tolist(), result_as_pair['probability']
+            return all_labels, all_probs
         else:
             text = check(text)
             predictions = self.f.predict(text, k, threshold, on_unicode_error)
-            probs, labels = zip(*predictions)
+            if predictions:
+                probs, labels = zip(*predictions)
+            else:
+                probs, labels = ([], ())
 
             return labels, np.array(probs, copy=False)
 
@@ -325,12 +333,17 @@ def _parse_loss_string(string):
         raise ValueError("Unrecognized loss name")
 
 
-def _build_args(args):
+def _build_args(args, manually_set_args):
     args["model"] = _parse_model_string(args["model"])
     args["loss"] = _parse_loss_string(args["loss"])
+    if type(args["autotuneModelSize"]) == int:
+        args["autotuneModelSize"] = str(args["autotuneModelSize"])
+
     a = fasttext.args()
     for (k, v) in args.items():
         setattr(a, k, v)
+        if k in manually_set_args:
+            a.setManual(k)
     a.output = ""  # User should use save_model
     a.saveOutput = 0  # Never use this
     if a.wordNgrams <= 1 and a.maxn == 0:
@@ -351,38 +364,45 @@ def load_model(path):
 
 
 unsupervised_default = {
-    'model' : "skipgram",
-    'lr' : 0.05,
-    'dim' : 100,
-    'ws' : 5,
-    'epoch' : 5,
-    'minCount' : 5,
-    'minCountLabel' : 0,
-    'minn' : 3,
-    'maxn' : 6,
-    'neg' : 5,
-    'wordNgrams' : 1,
-    'loss' : "ns",
-    'bucket' : 2000000,
-    'thread' : multiprocessing.cpu_count() - 1,
-    'lrUpdateRate' : 100,
-    't' : 1e-4,
-    'label' : "__label__",
-    'verbose' : 2,
-    'pretrainedVectors' : "",
+    'model': "skipgram",
+    'lr': 0.05,
+    'dim': 100,
+    'ws': 5,
+    'epoch': 5,
+    'minCount': 5,
+    'minCountLabel': 0,
+    'minn': 3,
+    'maxn': 6,
+    'neg': 5,
+    'wordNgrams': 1,
+    'loss': "ns",
+    'bucket': 2000000,
+    'thread': multiprocessing.cpu_count() - 1,
+    'lrUpdateRate': 100,
+    't': 1e-4,
+    'label': "__label__",
+    'verbose': 2,
+    'pretrainedVectors': "",
+    'seed': 0,
+    'autotuneValidationFile': "",
+    'autotuneMetric': "f1",
+    'autotunePredictions': 1,
+    'autotuneDuration': 60 * 5,  # 5 minutes
+    'autotuneModelSize': ""
 }
 
 
 def read_args(arg_list, arg_dict, arg_names, default_values):
     param_map = {
-        'min_count' : 'minCount',
-        'word_ngrams' : 'wordNgrams',
-        'lr_update_rate' : 'lrUpdateRate',
-        'label_prefix' : 'label',
-        'pretrained_vectors' : 'pretrainedVectors'
+        'min_count': 'minCount',
+        'word_ngrams': 'wordNgrams',
+        'lr_update_rate': 'lrUpdateRate',
+        'label_prefix': 'label',
+        'pretrained_vectors': 'pretrainedVectors'
     }
 
     ret = {}
+    manually_set_args = set()
     for (arg_name, arg_value) in chain(zip(arg_names, arg_list), arg_dict.items()):
         if arg_name in param_map:
             arg_name = param_map[arg_name]
@@ -391,12 +411,13 @@ def read_args(arg_list, arg_dict, arg_names, default_values):
         if arg_name in ret:
             raise TypeError("multiple values for argument '%s'" % arg_name)
         ret[arg_name] = arg_value
+        manually_set_args.add(arg_name)
 
     for (arg_name, arg_value) in default_values.items():
         if arg_name not in ret:
             ret[arg_name] = arg_value
 
-    return ret
+    return (ret, manually_set_args)
 
 
 def train_supervised(*kargs, **kwargs):
@@ -414,19 +435,22 @@ def train_supervised(*kargs, **kwargs):
     """
     supervised_default = unsupervised_default.copy()
     supervised_default.update({
-        'lr' : 0.1,
-        'minCount' : 1,
-        'minn' : 0,
-        'maxn' : 0,
-        'loss' : "softmax",
-        'model' : "supervised"
+        'lr': 0.1,
+        'minCount': 1,
+        'minn': 0,
+        'maxn': 0,
+        'loss': "softmax",
+        'model': "supervised"
     })
 
     arg_names = ['input', 'lr', 'dim', 'ws', 'epoch', 'minCount',
-        'minCountLabel', 'minn', 'maxn', 'neg', 'wordNgrams', 'loss', 'bucket',
-        'thread', 'lrUpdateRate', 't', 'label', 'verbose', 'pretrainedVectors']
-    params = read_args(kargs, kwargs, arg_names, supervised_default)
-    a = _build_args(params)
+                 'minCountLabel', 'minn', 'maxn', 'neg', 'wordNgrams', 'loss', 'bucket',
+                 'thread', 'lrUpdateRate', 't', 'label', 'verbose', 'pretrainedVectors',
+                 'seed', 'autotuneValidationFile', 'autotuneMetric',
+                 'autotunePredictions', 'autotuneDuration', 'autotuneModelSize']
+    args, manually_set_args = read_args(kargs, kwargs, arg_names,
+                                        supervised_default)
+    a = _build_args(args, manually_set_args)
     ft = _FastText(args=a)
     fasttext.train(ft.f, a)
     return ft
@@ -447,10 +471,11 @@ def train_unsupervised(*kargs, **kwargs):
     part of the fastText repository.
     """
     arg_names = ['input', 'model', 'lr', 'dim', 'ws', 'epoch', 'minCount',
-        'minCountLabel', 'minn', 'maxn', 'neg', 'wordNgrams', 'loss', 'bucket',
-        'thread', 'lrUpdateRate', 't', 'label', 'verbose', 'pretrainedVectors']
-    params = read_args(kargs, kwargs, arg_names, unsupervised_default)
-    a = _build_args(params)
+                 'minCountLabel', 'minn', 'maxn', 'neg', 'wordNgrams', 'loss', 'bucket',
+                 'thread', 'lrUpdateRate', 't', 'label', 'verbose', 'pretrainedVectors']
+    args, manually_set_args = read_args(kargs, kwargs, arg_names,
+                                        unsupervised_default)
+    a = _build_args(args, manually_set_args)
     ft = _FastText(args=a)
     fasttext.train(ft.f, a)
     return ft

@@ -11,8 +11,8 @@
 #include <exception>
 #include <random>
 #include <stdexcept>
+#include <thread>
 #include <utility>
-
 #include "utils.h"
 #include "vector.h"
 
@@ -29,11 +29,24 @@ void DenseMatrix::zero() {
   std::fill(data_.begin(), data_.end(), 0.0);
 }
 
-void DenseMatrix::uniform(real a) {
-  std::minstd_rand rng(1);
+void DenseMatrix::uniformThread(real a, int block, int32_t seed) {
+  std::minstd_rand rng(block + seed);
   std::uniform_real_distribution<> uniform(-a, a);
-  for (int64_t i = 0; i < (m_ * n_); i++) {
+  int64_t blockSize = (m_ * n_) / 10;
+  for (int64_t i = blockSize * block;
+       i < (m_ * n_) && i < blockSize * (block + 1);
+       i++) {
     data_[i] = uniform(rng);
+  }
+}
+
+void DenseMatrix::uniform(real a, unsigned int thread, int32_t seed) {
+  std::vector<std::thread> threads;
+  for (int i = 0; i < thread; i++) {
+    threads.push_back(std::thread([=]() { uniformThread(a, i, seed); }));
+  }
+  for (int32_t i = 0; i < threads.size(); i++) {
+    threads[i].join();
   }
 }
 
@@ -73,7 +86,7 @@ real DenseMatrix::l2NormRow(int64_t i) const {
     norm += at(i, j) * at(i, j);
   }
   if (std::isnan(norm)) {
-    throw std::runtime_error("Encountered NaN.");
+    throw EncounteredNaNError();
   }
   return std::sqrt(norm);
 }
@@ -94,7 +107,7 @@ real DenseMatrix::dotRow(const Vector& vec, int64_t i) const {
     d += at(i, j) * vec[j];
   }
   if (std::isnan(d)) {
-    throw std::runtime_error("Encountered NaN.");
+    throw EncounteredNaNError();
   }
   return d;
 }

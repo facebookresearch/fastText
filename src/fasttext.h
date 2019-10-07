@@ -34,16 +34,17 @@ class FastText {
  protected:
   std::shared_ptr<Args> args_;
   std::shared_ptr<Dictionary> dict_;
-
   std::shared_ptr<Matrix> input_;
   std::shared_ptr<Matrix> output_;
-
   std::shared_ptr<Model> model_;
-
   std::atomic<int64_t> tokenCount_{};
   std::atomic<real> loss_{};
-
   std::chrono::steady_clock::time_point start_;
+  bool quant_;
+  int32_t version;
+  std::unique_ptr<DenseMatrix> wordVectors_;
+  std::exception_ptr trainException_;
+
   void signModel(std::ostream&);
   bool checkModel(std::istream&);
   void startThreads();
@@ -68,10 +69,9 @@ class FastText {
       const std::vector<int32_t>& labels);
   void cbow(Model::State& state, real lr, const std::vector<int32_t>& line);
   void skipgram(Model::State& state, real lr, const std::vector<int32_t>& line);
-
-  bool quant_;
-  int32_t version;
-  std::unique_ptr<DenseMatrix> wordVectors_;
+  std::vector<int32_t> selectEmbeddings(int32_t cutoff) const;
+  void precomputeWordVectors(DenseMatrix& wordVectors);
+  bool keepTraining(const int64_t ntokens) const;
 
  public:
   FastText();
@@ -143,49 +143,15 @@ class FastText {
 
   void train(const Args& args);
 
+  void abort();
+
   int getDimension() const;
 
   bool isQuant() const;
 
-  FASTTEXT_DEPRECATED("loadVectors is being deprecated.")
-  void loadVectors(const std::string& filename);
-
-  FASTTEXT_DEPRECATED(
-      "getVector is being deprecated and replaced by getWordVector.")
-  void getVector(Vector& vec, const std::string& word) const;
-
-  FASTTEXT_DEPRECATED(
-      "ngramVectors is being deprecated and replaced by getNgramVectors.")
-  void ngramVectors(std::string word);
-
-  FASTTEXT_DEPRECATED(
-      "analogies is being deprecated and replaced by getAnalogies.")
-  void analogies(int32_t k);
-
-  FASTTEXT_DEPRECATED("selectEmbeddings is being deprecated.")
-  std::vector<int32_t> selectEmbeddings(int32_t cutoff) const;
-
-  FASTTEXT_DEPRECATED(
-      "saveVectors is being deprecated, please use the other signature.")
-  void saveVectors();
-
-  FASTTEXT_DEPRECATED(
-      "saveOutput is being deprecated, please use the other signature.")
-  void saveOutput();
-
-  FASTTEXT_DEPRECATED(
-      "saveModel is being deprecated, please use the other signature.")
-  void saveModel();
-
-  FASTTEXT_DEPRECATED("precomputeWordVectors is being deprecated.")
-  void precomputeWordVectors(DenseMatrix& wordVectors);
-
-  FASTTEXT_DEPRECATED("findNN is being deprecated and replaced by getNN.")
-  void findNN(
-      const DenseMatrix& wordVectors,
-      const Vector& query,
-      int32_t k,
-      const std::set<std::string>& banSet,
-      std::vector<std::pair<real, std::string>>& results);
+  class AbortError : public std::runtime_error {
+   public:
+    AbortError() : std::runtime_error("Aborted.") {}
+  };
 };
 } // namespace fasttext
