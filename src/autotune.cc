@@ -9,12 +9,10 @@
 #include "autotune.h"
 
 #include <algorithm>
-#include <cassert>
 #include <csignal>
 #include <functional>
 #include <iomanip>
 #include <iostream>
-#include <numeric>
 #include <random>
 #include <thread>
 

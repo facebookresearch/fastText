@@ -10,7 +10,6 @@
 #include "loss.h"
 #include "utils.h"
 
-#include <assert.h>
 #include <algorithm>
 #include <stdexcept>
 

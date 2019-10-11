@@ -10,7 +10,6 @@
 
 #include <stdlib.h>
 
-#include <cassert>
 #include <iostream>
 #include <stdexcept>
 #include <unordered_map>

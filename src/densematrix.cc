@@ -8,7 +8,6 @@
 
 #include "densematrix.h"
 
-#include <exception>
 #include <random>
 #include <stdexcept>
 #include <thread>
