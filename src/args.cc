@@ -220,7 +220,7 @@ void Args::parseArgs(const std::vector<std::string>& args) {
     printHelp();
     exit(EXIT_FAILURE);
   }
-  if (wordNgrams <= 1 && maxn == 0) {
+  if (wordNgrams <= 1 && maxn == 0 && !hasAutotune()) {
     bucket = 0;
   }
 }

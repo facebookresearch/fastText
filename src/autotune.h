@@ -28,6 +28,7 @@ class AutotuneStrategy {
   int bestMinnIndex_;
   int bestDsubExponent_;
   int bestNonzeroBucket_;
+  int originalBucket_;
   std::vector<int> minnChoices_;
   int getIndex(int val, const std::vector<int>& choices);
 
