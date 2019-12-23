@@ -43,7 +43,9 @@ class _FastText(object):
             self.f.loadModel(model_path)
         self._words = None
         self._labels = None
+        self.set_args(args)
 
+    def set_args(self, args=None):
         if args:
             arg_names = ['lr', 'dim', 'ws', 'epoch', 'minCount',
                          'minCountLabel', 'minn', 'maxn', 'neg', 'wordNgrams',
@@ -453,6 +455,7 @@ def train_supervised(*kargs, **kwargs):
     a = _build_args(args, manually_set_args)
     ft = _FastText(args=a)
     fasttext.train(ft.f, a)
+    ft.set_args(ft.f.getArgs())
     return ft
 
 
@@ -478,6 +481,7 @@ def train_unsupervised(*kargs, **kwargs):
     a = _build_args(args, manually_set_args)
     ft = _FastText(args=a)
     fasttext.train(ft.f, a)
+    ft.set_args(ft.f.getArgs())
     return ft
 
 
