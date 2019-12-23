@@ -56,6 +56,9 @@ class ElapsedTimeMarker {
 
 namespace fasttext {
 
+constexpr double Autotune::kUnknownBestScore = -1.0;
+constexpr int Autotune::kCutoffLimit = 256;
+
 template <typename T>
 T getArgGauss(
     T val,
@@ -324,7 +327,7 @@ int Autotune::getCutoffForFileSize(
   int target = (fileSize - (107) - 4 * (1 << 8) * dim - outModelSize);
   int cutoff = target / ((dim + dsub - 1) / dsub + (qnorm ? 1 : 0) + 10);
 
-  return std::max(cutoff, kCutoffLimit);
+  return std::max(cutoff, Autotune::kCutoffLimit);
 }
 
 bool Autotune::quantize(Args& args, const Args& autotuneArgs) {
@@ -334,12 +337,12 @@ bool Autotune::quantize(Args& args, const Args& autotuneArgs) {
   auto outputSize = fastText_->getOutputMatrix()->size(0);
 
   args.qnorm = true;
-  args.qout = (outputSize >= kCutoffLimit);
+  args.qout = (outputSize >= Autotune::kCutoffLimit);
   args.retrain = true;
   args.cutoff = getCutoffForFileSize(
       args.qout, args.qnorm, args.dsub, autotuneArgs.getAutotuneModelSize());
   LOG_VAL(cutoff, args.cutoff);
-  if (args.cutoff == kCutoffLimit) {
+  if (args.cutoff == Autotune::kCutoffLimit) {
     return false;
   }
   fastText_->quantize(args);
