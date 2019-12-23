@@ -22,7 +22,7 @@ BOW = "<"
 EOW = ">"
 
 
-def eprint(cls, *args, **kwargs):
+def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
 
