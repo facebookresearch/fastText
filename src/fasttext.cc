@@ -70,6 +70,19 @@ std::shared_ptr<const DenseMatrix> FastText::getInputMatrix() const {
   return std::dynamic_pointer_cast<DenseMatrix>(input_);
 }
 
+void FastText::setMatrices(
+    const std::shared_ptr<DenseMatrix>& inputMatrix,
+    const std::shared_ptr<DenseMatrix>& outputMatrix) {
+  assert(input_->size(1) == output_->size(1));
+
+  input_ = std::dynamic_pointer_cast<Matrix>(inputMatrix);
+  output_ = std::dynamic_pointer_cast<Matrix>(outputMatrix);
+  wordVectors_.reset();
+  args_->dim = input_->size(1);
+
+  buildModel();
+}
+
 std::shared_ptr<const DenseMatrix> FastText::getOutputMatrix() const {
   if (quant_ && args_->qout) {
     throw std::runtime_error("Can't export quantized matrix");
@@ -209,6 +222,12 @@ std::vector<int64_t> FastText::getTargetCounts() const {
   }
 }
 
+void FastText::buildModel() {
+  auto loss = createLoss(output_);
+  bool normalizeGradient = (args_->model == model_name::sup);
+  model_ = std::make_shared<Model>(input_, output_, loss, normalizeGradient);
+}
+
 void FastText::loadModel(std::istream& in) {
   args_ = std::make_shared<Args>();
   input_ = std::make_shared<DenseMatrix>();
@@ -241,9 +260,7 @@ void FastText::loadModel(std::istream& in) {
   }
   output_->load(in);
 
-  auto loss = createLoss(output_);
-  bool normalizeGradient = (args_->model == model_name::sup);
-  model_ = std::make_shared<Model>(input_, output_, loss, normalizeGradient);
+  buildModel();
 }
 
 void FastText::printInfo(real progress, real loss, std::ostream& log_stream) {

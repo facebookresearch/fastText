@@ -30,6 +30,7 @@ class DenseMatrix : public Matrix {
  public:
   DenseMatrix();
   explicit DenseMatrix(int64_t, int64_t);
+  explicit DenseMatrix(int64_t m, int64_t n, real* dataPtr);
   DenseMatrix(const DenseMatrix&) = default;
   DenseMatrix(DenseMatrix&&) noexcept;
   DenseMatrix& operator=(const DenseMatrix&) = delete;

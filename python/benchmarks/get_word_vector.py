@@ -42,7 +42,8 @@ def get_word_vector(data, model):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Simple benchmark for get_word_vector.')
+    parser = argparse.ArgumentParser(
+        description='Simple benchmark for get_word_vector.')
     parser.add_argument('model', help='A model file to use for benchmarking.')
     parser.add_argument('data', help='A data file to use for benchmarking.')
     args = parser.parse_args()

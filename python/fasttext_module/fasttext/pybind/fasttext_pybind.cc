@@ -180,14 +180,34 @@ PYBIND11_MODULE(fasttext_pybind, m) {
           [](fasttext::FastText& m) {
             std::shared_ptr<const fasttext::DenseMatrix> mm =
                 m.getInputMatrix();
-            return *mm.get();
-          })
+            return mm.get();
+          },
+          pybind11::return_value_policy::reference)
       .def(
           "getOutputMatrix",
           [](fasttext::FastText& m) {
             std::shared_ptr<const fasttext::DenseMatrix> mm =
                 m.getOutputMatrix();
-            return *mm.get();
+            return mm.get();
+          },
+          pybind11::return_value_policy::reference)
+      .def(
+          "setMatrices",
+          [](fasttext::FastText& m,
+             py::buffer inputMatrixBuffer,
+             py::buffer outputMatrixBuffer) {
+            py::buffer_info inputMatrixInfo = inputMatrixBuffer.request();
+            py::buffer_info outputMatrixInfo = outputMatrixBuffer.request();
+
+            m.setMatrices(
+                std::make_shared<fasttext::DenseMatrix>(
+                    inputMatrixInfo.shape[0],
+                    inputMatrixInfo.shape[1],
+                    static_cast<float*>(inputMatrixInfo.ptr)),
+                std::make_shared<fasttext::DenseMatrix>(
+                    outputMatrixInfo.shape[0],
+                    outputMatrixInfo.shape[1],
+                    static_cast<float*>(outputMatrixInfo.ptr)));
           })
       .def(
           "loadModel",

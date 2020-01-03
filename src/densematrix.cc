@@ -24,6 +24,9 @@ DenseMatrix::DenseMatrix(int64_t m, int64_t n) : Matrix(m, n), data_(m * n) {}
 DenseMatrix::DenseMatrix(DenseMatrix&& other) noexcept
     : Matrix(other.m_, other.n_), data_(std::move(other.data_)) {}
 
+DenseMatrix::DenseMatrix(int64_t m, int64_t n, real* dataPtr)
+    : Matrix(m, n), data_(dataPtr, dataPtr + (m * n)) {}
+
 void DenseMatrix::zero() {
   std::fill(data_.begin(), data_.end(), 0.0);
 }

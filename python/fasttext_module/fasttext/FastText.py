@@ -170,7 +170,7 @@ class _FastText(object):
 
     def get_input_matrix(self):
         """
-        Get a copy of the full input matrix of a Model. This only
+        Get a reference to the full input matrix of a Model. This only
         works if the model is not quantized.
         """
         if self.f.isQuant():
@@ -179,7 +179,7 @@ class _FastText(object):
 
     def get_output_matrix(self):
         """
-        Get a copy of the full output matrix of a Model. This only
+        Get a reference to the full output matrix of a Model. This only
         works if the model is not quantized.
         """
         if self.f.isQuant():
@@ -291,6 +291,14 @@ class _FastText(object):
             input, qout, cutoff, retrain, epoch, lr, thread, verbose, dsub,
             qnorm
         )
+
+    def set_matrices(self, input_matrix, output_matrix):
+        """
+        Set input and output matrices. This function assumes you know what you
+        are doing.
+        """
+        self.f.setMatrices(input_matrix.astype(np.float32),
+                           output_matrix.astype(np.float32))
 
     @property
     def words(self):

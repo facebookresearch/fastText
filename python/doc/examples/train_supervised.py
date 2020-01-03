@@ -20,6 +20,7 @@ def print_results(N, p, r):
     print("P@{}\t{:.3f}".format(1, p))
     print("R@{}\t{:.3f}".format(1, r))
 
+
 if __name__ == "__main__":
     train_data = os.path.join(os.getenv("DATADIR", ''), 'cooking.train')
     valid_data = os.path.join(os.getenv("DATADIR", ''), 'cooking.valid')

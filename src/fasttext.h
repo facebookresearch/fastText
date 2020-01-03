@@ -72,6 +72,7 @@ class FastText {
   std::vector<int32_t> selectEmbeddings(int32_t cutoff) const;
   void precomputeWordVectors(DenseMatrix& wordVectors);
   bool keepTraining(const int64_t ntokens) const;
+  void buildModel();
 
  public:
   FastText();
@@ -94,6 +95,10 @@ class FastText {
   std::shared_ptr<const Dictionary> getDictionary() const;
 
   std::shared_ptr<const DenseMatrix> getInputMatrix() const;
+
+  void setMatrices(
+      const std::shared_ptr<DenseMatrix>& inputMatrix,
+      const std::shared_ptr<DenseMatrix>& outputMatrix);
 
   std::shared_ptr<const DenseMatrix> getOutputMatrix() const;
 
