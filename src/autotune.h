@@ -73,8 +73,6 @@ class Autotune {
     TimeoutError() : std::runtime_error("Autotune timed out.") {}
   };
 
-  static const double kUnknownBestScore;
-  static const int kCutoffLimit;
 
  public:
   Autotune() = delete;
