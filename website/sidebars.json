@@ -1,4 +1,4 @@
-{
+module.exports = {
   "docs": {
     "Introduction": ["support", "cheatsheet", "options"],
     "Tutorials": ["supervised-tutorial", "unsupervised-tutorial"],
@@ -15,4 +15,4 @@
       "dataset"
     ]
   }
-}
+};

@@ -6,14 +6,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-const React = require("react");
+import React from 'react';
 
 const CompLibrary = require("../../core/CompLibrary.js");
 const Marked = CompLibrary.Marked; /* Used to read markdown */
 const Container = CompLibrary.Container;
 const GridBlock = CompLibrary.GridBlock;
 
-const siteConfig = require(process.cwd() + "/siteConfig.js");
+const siteConfig = require(process.cwd() + "/docusaurus.config.js");
 
 class Button extends React.Component {
   render() {
