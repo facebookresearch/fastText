@@ -9,7 +9,7 @@
 module.exports = {
   title: 'fastText',
   tagline: 'Library for efficient text classification and representation learning',
-  favicon: 'fasttext-icon-bg-web.png',
+  favicon: 'img/fasttext-icon-bg-web.png',
   url: 'https://fasttext.cc',
   baseUrl: '/',
   organizationName: 'facebook',
@@ -19,7 +19,7 @@ module.exports = {
       title: 'FastText',
       logo: {
         alt: 'fastText',
-        src: 'img/fasttext-icon-white-web.png',
+        src: 'img/fasttext-icon-color-web.png',
       },
       links: [
         { to: 'docs/support', label: 'Docs', position: 'right' },
@@ -36,7 +36,7 @@ module.exports = {
       style: "dark",
       logo: {
         alt: "fastText",
-        src: "img/fasttext-icon-white-web.png"
+        src: "img/oss_logo.png"
       },
       links: [
         {
@@ -93,7 +93,7 @@ module.exports = {
       ],
       copyright: `Copyright © ${new Date().getFullYear()} Facebook Inc.`
     },
-    image: 'img/ogimage.png',
+    image: 'img/fasttext-icon-white-web.png',
     googleAnalytics: {
       trackingID: 'UA-44373548-30',
     },
