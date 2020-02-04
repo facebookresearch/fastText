@@ -259,7 +259,7 @@ The following arguments for training are optional:
   -ws                 size of the context window [5]
   -epoch              number of epochs [5]
   -neg                number of negatives sampled [5]
-  -loss               loss function {ns, hs, softmax} [softmax]
+  -loss               loss function {ns, hs, softmax} [ns]
   -thread             number of threads [12]
   -pretrainedVectors  pretrained word vectors for supervised learning []
   -saveOutput         whether output params should be saved [0]
