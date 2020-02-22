@@ -6,17 +6,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import React from "react";
-import classnames from "classnames";
-import Layout from "@theme/Layout";
-import Link from "@docusaurus/Link";
-import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
-import useBaseUrl from "@docusaurus/useBaseUrl";
-import styles from "./styles.module.css";
+import React from 'react';
+import classnames from 'classnames';
+import Layout from '@theme/Layout';
+import Link from '@docusaurus/Link';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import styles from './styles.module.css';
 
 const download = [
   {
-    image: <img className={styles.itemImage} src='img/model-blue.png' alt='English word vectors' />,
+    image: <img className={styles.itemImage} src="img/model-blue.png" alt="English word vectors" />,
     title: <>English word vectors</>,
     description: (
       <>
@@ -26,7 +26,7 @@ const download = [
     link: "docs/english-vectors"
   },
   {
-    image: <img className={styles.itemImage} src='img/model-red.png' alt='Multi-lingual word vectors' />,
+    image: <img className={styles.itemImage} src="img/model-red.png" alt="Multi-lingual word vectors" />,
     title: <>Multi-lingual word vectors</>,
     description: (
       <>
@@ -39,19 +39,19 @@ const download = [
 
 const help = [
   {
-    image: <img className={styles.itemImage} src='img/fasttext-icon-tutorial.png' alt='Tutorials' />,
+    image: <img className={styles.itemImage} src="img/fasttext-icon-tutorial.png" alt="Tutorials" />,
     title: 'Tutorials',
     description: 'Learn how to use fastText',
     link: 'docs/supervised-tutorial'
   },
   {
-    image: <img className={styles.itemImage} src='img/fasttext-icon-faq.png' alt='Frequently asked questions' />,
+    image: <img className={styles.itemImage} src="img/fasttext-icon-faq.png" alt="Frequently asked questions" />,
     title: 'Frequently Asked Questions',
     description: 'Questions gathered from the community',
     link: 'docs/faqs'
   },
   {
-    image: <img className={styles.itemImage} src='img/fasttext-icon-api.png' alt='API' />,
+    image: <img className={styles.itemImage} src="img/fasttext-icon-api.png" alt="API" />,
     title: 'API',
     description: 'In depth review of fastText commands',
     link: 'docs/api'
@@ -92,14 +92,14 @@ function Home() {
           <div className={styles.buttons}>
             <Link
               className="button button--lg button--outline button--primary"
-              to={useBaseUrl("docs/support")}
+              to={useBaseUrl('docs/support')}
             >
               Get Started
             </Link>
             &nbsp;
             <Link
               className="button button--lg button--outline button--primary"
-              to={useBaseUrl("docs/english-vectors")}
+              to={useBaseUrl('docs/english-vectors')}
             >
               Download Models
             </Link>
@@ -108,7 +108,7 @@ function Home() {
       </header>
 
       <main>
-        <section className={classnames("hero hero--dark", styles.items)}>
+        <section className={classnames('hero hero--dark', styles.items)}>
           <div className="container">
             <div className="row">
               <div className="col col--6 col--offset-3 padding-vert--lg">
@@ -125,17 +125,17 @@ function Home() {
         {download && download.length && (
           <section className={styles.items}>
             <div className="container">
-              <h2 className={`text--center padding-vert--md`}>Download pre-trained models</h2>
+              <h2 className="text--center padding-vert--md">Download pre-trained models</h2>
               <div className="row">
                 {download.map(({ image, title, description, link }, idx) => (
                   <div key={idx} className={'col col--6'}>
                     {image && (
-                      <div className={`text--center padding-vert--md`}>
+                      <div className="text--center padding-vert--md">
                         {image}
                       </div>
                     )}
-                    <h3 className={`text--center`}><Link to={useBaseUrl(link)}>{title}</Link></h3>
-                    <p className={`text--center`}>{description}</p>
+                    <h3 className="text--center"><Link to={useBaseUrl(link)}>{title}</Link></h3>
+                    <p className="text--center">{description}</p>
                   </div>
                 ))}
               </div>
@@ -144,19 +144,19 @@ function Home() {
         )}
 
         {help && help.length && (
-          <section className={classnames("hero hero--dark", styles.items)}>
+          <section className={classnames('hero hero--dark', styles.items)}>
             <div className="container">
-              <h2 className={`text--center padding-vert--md`}>Help and references</h2>
+              <h2 className="text--center padding-vert--md">Help and references</h2>
               <div className="row">
                 {help.map(({ image, title, description, link }, idx) => (
-                  <div key={idx} className={'col col--4'}>
+                  <div key={idx} className="col col--4">
                     {image && (
-                      <div className={`text--center padding-vert--md`}>
+                      <div className="text--center padding-vert--md">
                         {image}
                       </div>
                     )}
-                    <h3 className={`text--center`}><Link to={useBaseUrl(link)}>{title}</Link></h3>
-                    <p className={`text--center`}>{description}</p>
+                    <h3 className="text--center"><Link to={useBaseUrl(link)}>{title}</Link></h3>
+                    <p className="text--center">{description}</p>
                   </div>
                 ))}
               </div>
@@ -167,12 +167,12 @@ function Home() {
         {references && references.length && (
           <section className={styles.items}>
             <div className="container">
-              <h2 className={`text--center padding-vert--lg`}>References</h2>
+              <h2 className="text--center padding-vert--lg">References</h2>
               <div className="row">
                 {references.map(({ title, description, link }, idx) => (
-                  <div key={idx} className={'col col--4'}>
-                    <h3 className={`text--center`}><Link to={useBaseUrl(link)}>{title}</Link></h3>
-                    <p className={`text--center`}>{description}</p>
+                  <div key={idx} className="col col--4">
+                    <h3 className="text--center"><Link to={useBaseUrl(link)}>{title}</Link></h3>
+                    <p className="text--center">{description}</p>
                   </div>
                 ))}
               </div>

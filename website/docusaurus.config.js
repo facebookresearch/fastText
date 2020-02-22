@@ -33,60 +33,60 @@ module.exports = {
       ],
     },
     footer: {
-      style: "dark",
+      style: 'dark',
       logo: {
-        alt: "fastText",
-        src: "img/oss_logo.png"
+        alt: 'fastText',
+        src: 'img/oss_logo.png'
       },
       links: [
         {
-          title: "Support",
+          title: 'Support',
           items: [
             {
-              label: "Getting Started",
-              to: "docs/support"
+              label: 'Getting Started',
+              to: 'docs/support'
             },
             {
-              label: "Tutorials",
-              to: "docs/supervised-tutorial"
+              label: 'Tutorials',
+              to: 'docs/supervised-tutorial'
             },
             {
-              label: "FAQs",
-              to: "docs/faqs"
+              label: 'FAQs',
+              to: 'docs/faqs'
             },
             {
-              label: "API",
-              to: "docs/api"
+              label: 'API',
+              to: 'docs/api'
             }
           ]
         },
         {
-          title: "Community",
+          title: 'Community',
           items: [
             {
-              label: "Facebook Group",
-              href: "https://www.facebook.com/groups/1174547215919768/"
+              label: 'Facebook Group',
+              href: 'https://www.facebook.com/groups/1174547215919768/'
             },
             {
-              label: "Stack Overflow",
-              href: "https://stackoverflow.com/questions/tagged/fasttext"
+              label: 'Stack Overflow',
+              href: 'https://stackoverflow.com/questions/tagged/fasttext'
             },
             {
-              label: "Google Group",
-              href: "https://groups.google.com/forum/#!forum/fasttext-library"
+              label: 'Google Group',
+              href: 'https://groups.google.com/forum/#!forum/fasttext-library'
             }
           ]
         },
         {
-          title: "More",
+          title: 'More',
           items: [
             {
-              label: "Blog",
-              href: "https://fasttext.cc/blog"
+              label: 'Blog',
+              href: 'https://fasttext.cc/blog'
             },
             {
-              label: "Github",
-              href: "https://github.com/facebookresearch/fastText"
+              label: 'Github',
+              href: 'https://github.com/facebookresearch/fastText'
             }
           ]
         }
