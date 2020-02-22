@@ -22,7 +22,7 @@ $ wget -c http://mattmahoney.net/dc/enwik9.zip -P data
 $ unzip data/enwik9.zip -d data
 ```
 
-A raw Wikipedia dump contains a lot of HTML / XML data. We pre-process it with the wikifil.pl script bundled with fastText (this script was originally developed by Matt Mahoney, and can be found on his [website](http://mattmahoney.net/) )
+A raw Wikipedia dump contains a lot of HTML / XML data. We pre-process it with the wikifil.pl script bundled with fastText (this script was originally developed by Matt Mahoney, and can be found on his [website](http://mattmahoney.net/))
 
 ```bash
 $ perl wikifil.pl data/enwik9 > data/fil9

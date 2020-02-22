@@ -62,6 +62,7 @@ In this tutorial, we mainly use the `supervised`, `test` and `predict` subcomman
 <!--Python-->
 <br />
 Calling the help function will show high level documentation of the library:
+
 ```py
 >>> import fasttext
 >>> help(fasttext.FastText)

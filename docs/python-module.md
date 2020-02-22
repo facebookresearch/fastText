@@ -3,37 +3,23 @@ id: python-module
 title: Python module
 ---
 
-In this document we present how to use fastText in python.
+In this document we present how to use fastText in Python.
 
-## Table of contents
-
-* [Requirements](#requirements)
-* [Installation](#installation)
-* [Usage overview](#usage-overview)
-   * [Word representation model](#word-representation-model)
-   * [Text classification model](#text-classification-model)
-   * [IMPORTANT: Preprocessing data / encoding conventions](#important-preprocessing-data-encoding-conventions)
-   * [More examples](#more-examples)
-* [API](#api)
-   * [`train_unsupervised` parameters](#train_unsupervised-parameters)
-   * [`train_supervised` parameters](#train_supervised-parameters)
-   * [`model` object](#model-object)
-
-
-# Requirements
+## Requirements
 
 [fastText](https://fasttext.cc/) builds on modern Mac OS and Linux distributions.
 Since it uses C\++11 features, it requires a compiler with good C++11 support. You will need [Python](https://www.python.org/) (version 2.7 or ≥ 3.4), [NumPy](http://www.numpy.org/) & [SciPy](https://www.scipy.org/) and [pybind11](https://github.com/pybind/pybind11).
 
+## Installation
 
-# Installation
+To install the latest release, you can do:
 
-To install the latest release, you can do :
 ```bash
 $ pip install fasttext
 ```
 
-or, to get the latest development version of fasttext, you can install from our github repository :
+or, to get the latest development version of fasttext, you can install from our Github repository:
+
 ```bash
 $ git clone https://github.com/facebookresearch/fastText.git
 $ cd fastText
@@ -42,13 +28,11 @@ $ # or :
 $ sudo python setup.py install
 ```
 
-# Usage overview
+## Usage overview
 
-
-## Word representation model
+### Word representation model
 
 In order to learn word vectors, as [described here](/docs/en/references.html#enriching-word-vectors-with-subword-information), we can use `fasttext.train_unsupervised` function like this:
-
 
 ```py
 import fasttext
@@ -58,11 +42,9 @@ model = fasttext.train_unsupervised('data.txt', model='skipgram')
 
 # or, cbow model :
 model = fasttext.train_unsupervised('data.txt', model='cbow')
-
 ```
 
 where `data.txt` is a training file containing utf-8 encoded text.
-
 
 The returned `model` object represents your learned model, and you can use it to retrieve information.
 
@@ -71,8 +53,7 @@ print(model.words)   # list of words in dictionary
 print(model['king']) # get the vector of the word 'king'
 ```
 
-
-### Saving and loading a model object
+#### Saving and loading a model object
 
 You can save your trained model object by calling the function `save_model`.
 ```py
@@ -87,7 +68,7 @@ model = fasttext.load_model("model_filename.bin")
 For more information about word representation usage of fasttext, you can refer to our [word representations tutorial](/docs/en/unsupervised-tutorial.html).
 
 
-## Text classification model
+### Text classification model
 
 In order to train a text classifier using the method [described here](/docs/en/references.html#bag-of-tricks-for-efficient-text-classification), we can use `fasttext.train_supervised` function like this:
 
@@ -125,6 +106,7 @@ model.predict("Which baking dish is best to bake a banana bread ?")
 ```
 
 By default, `predict` returns only one label : the one with the highest probability. You can also predict more than one label by specifying the parameter `k`:
+
 ```py
 model.predict("Which baking dish is best to bake a banana bread ?", k=3)
 ```
@@ -135,15 +117,11 @@ If you want to predict more than one sentence you can pass an array of strings :
 model.predict(["Which baking dish is best to bake a banana bread ?", "Why not put knives in the dishwasher?"], k=3)
 ```
 
-
 Of course, you can also save and load a model to/from a file as [in the word representation usage](#saving-and-loading-a-model-object).
 
 For more information about text classification usage of fasttext, you can refer to our [text classification tutorial](/docs/en/supervised-tutorial.html).
 
-
-
-
-### Compress model files with quantization
+#### Compress model files with quantization
 
 When you want to save a supervised model file, fastText can compress it in order to have a much smaller model file by sacrificing only a little bit performance.
 
@@ -161,7 +139,7 @@ model.save_model("model_filename.ftz")
 For further reading on quantization, you can refer to [this paragraph from our blog post](/blog/2017/10/02/blog-post.html#model-compression).
 
 
-## IMPORTANT: Preprocessing data / encoding conventions
+### IMPORTANT: Preprocessing data / encoding conventions
 
 In general it is important to properly preprocess your data. In particular our example scripts in the [root folder](https://github.com/facebookresearch/fastText) do this.
 
@@ -180,7 +158,7 @@ The newline character is used to delimit lines of text. In particular, the EOS t
 
 The length of a token is the number of UTF-8 characters by considering the [leading two bits of a byte](https://en.wikipedia.org/wiki/UTF-8#Description) to identify [subsequent bytes of a multi-byte sequence](https://github.com/facebookresearch/fastText/blob/master/src/dictionary.cc). Knowing this is especially important when choosing the minimum and maximum length of subwords. Further, the EOS token (as specified in the [Dictionary header](https://github.com/facebookresearch/fastText/blob/master/src/dictionary.h)) is considered a character and will not be broken into subwords.
 
-## More examples
+### More examples
 
 In order to have a better knowledge of fastText models, please consider the main [README](https://github.com/facebookresearch/fastText/blob/master/README.md) and in particular [the tutorials on our website](https://fasttext.cc/docs/en/supervised-tutorial.html).
 
@@ -188,9 +166,9 @@ You can find further python examples in [the doc folder](https://github.com/face
 
 As with any package you can get help on any Python function using the help function.
 
-For example
+For example:
 
-```
+```py
 +>>> import fasttext
 +>>> help(fasttext.FastText)
 
@@ -215,89 +193,87 @@ FUNCTIONS
 [...]
 ```
 
+## API
 
-# API
+### `train_unsupervised` parameters
 
-
-## `train_unsupervised` parameters
-
-```python
-    input             # training file path (required)
-    model             # unsupervised fasttext model {cbow, skipgram} [skipgram]
-    lr                # learning rate [0.05]
-    dim               # size of word vectors [100]
-    ws                # size of the context window [5]
-    epoch             # number of epochs [5]
-    minCount          # minimal number of word occurences [5]
-    minn              # min length of char ngram [3]
-    maxn              # max length of char ngram [6]
-    neg               # number of negatives sampled [5]
-    wordNgrams        # max length of word ngram [1]
-    loss              # loss function {ns, hs, softmax, ova} [ns]
-    bucket            # number of buckets [2000000]
-    thread            # number of threads [number of cpus]
-    lrUpdateRate      # change the rate of updates for the learning rate [100]
-    t                 # sampling threshold [0.0001]
-    verbose           # verbose [2]
+```
+input             # training file path (required)
+model             # unsupervised fasttext model {cbow, skipgram} [skipgram]
+lr                # learning rate [0.05]
+dim               # size of word vectors [100]
+ws                # size of the context window [5]
+epoch             # number of epochs [5]
+minCount          # minimal number of word occurences [5]
+minn              # min length of char ngram [3]
+maxn              # max length of char ngram [6]
+neg               # number of negatives sampled [5]
+wordNgrams        # max length of word ngram [1]
+loss              # loss function {ns, hs, softmax, ova} [ns]
+bucket            # number of buckets [2000000]
+thread            # number of threads [number of cpus]
+lrUpdateRate      # change the rate of updates for the learning rate [100]
+t                 # sampling threshold [0.0001]
+verbose           # verbose [2]
 ```
 
-## `train_supervised` parameters
+### `train_supervised` parameters
 
-```python
-    input             # training file path (required)
-    lr                # learning rate [0.1]
-    dim               # size of word vectors [100]
-    ws                # size of the context window [5]
-    epoch             # number of epochs [5]
-    minCount          # minimal number of word occurences [1]
-    minCountLabel     # minimal number of label occurences [1]
-    minn              # min length of char ngram [0]
-    maxn              # max length of char ngram [0]
-    neg               # number of negatives sampled [5]
-    wordNgrams        # max length of word ngram [1]
-    loss              # loss function {ns, hs, softmax, ova} [softmax]
-    bucket            # number of buckets [2000000]
-    thread            # number of threads [number of cpus]
-    lrUpdateRate      # change the rate of updates for the learning rate [100]
-    t                 # sampling threshold [0.0001]
-    label             # label prefix ['__label__']
-    verbose           # verbose [2]
-    pretrainedVectors # pretrained word vectors (.vec file) for supervised learning []
+```
+input             # training file path (required)
+lr                # learning rate [0.1]
+dim               # size of word vectors [100]
+ws                # size of the context window [5]
+epoch             # number of epochs [5]
+minCount          # minimal number of word occurences [1]
+minCountLabel     # minimal number of label occurences [1]
+minn              # min length of char ngram [0]
+maxn              # max length of char ngram [0]
+neg               # number of negatives sampled [5]
+wordNgrams        # max length of word ngram [1]
+loss              # loss function {ns, hs, softmax, ova} [softmax]
+bucket            # number of buckets [2000000]
+thread            # number of threads [number of cpus]
+lrUpdateRate      # change the rate of updates for the learning rate [100]
+t                 # sampling threshold [0.0001]
+label             # label prefix ['__label__']
+verbose           # verbose [2]
+pretrainedVectors # pretrained word vectors (.vec file) for supervised learning []
 ```
 
-## `model` object
+### `model` object
 
 `train_supervised`, `train_unsupervised` and `load_model` functions return an instance of `_FastText` class, that we generaly name `model` object.
 
 This object exposes those training arguments as properties : `lr`, `dim`, `ws`, `epoch`, `minCount`, `minCountLabel`, `minn`, `maxn`, `neg`, `wordNgrams`, `loss`, `bucket`, `thread`, `lrUpdateRate`, `t`, `label`, `verbose`, `pretrainedVectors`. So `model.wordNgrams` will give you the max length of word ngram used for training this model.
 
-In addition, the object exposes several functions :
+In addition, the object exposes several functions:
 
-```python
-    get_dimension           # Get the dimension (size) of a lookup vector (hidden layer).
-                            # This is equivalent to `dim` property.
-    get_input_vector        # Given an index, get the corresponding vector of the Input Matrix.
-    get_input_matrix        # Get a copy of the full input matrix of a Model.
-    get_labels              # Get the entire list of labels of the dictionary
-                            # This is equivalent to `labels` property.
-    get_line                # Split a line of text into words and labels.
-    get_output_matrix       # Get a copy of the full output matrix of a Model.
-    get_sentence_vector     # Given a string, get a single vector represenation. This function
-                            # assumes to be given a single line of text. We split words on
-                            # whitespace (space, newline, tab, vertical tab) and the control
-                            # characters carriage return, formfeed and the null character.
-    get_subword_id          # Given a subword, return the index (within input matrix) it hashes to.
-    get_subwords            # Given a word, get the subwords and their indicies.
-    get_word_id             # Given a word, get the word id within the dictionary.
-    get_word_vector         # Get the vector representation of word.
-    get_words               # Get the entire list of words of the dictionary
-                            # This is equivalent to `words` property.
-    is_quantized            # whether the model has been quantized
-    predict                 # Given a string, get a list of labels and a list of corresponding probabilities.
-    quantize                # Quantize the model reducing the size of the model and it's memory footprint.
-    save_model              # Save the model to the given path
-    test                    # Evaluate supervised model using file given by path
-    test_label              # Return the precision and recall score for each label.    
+```
+get_dimension           # Get the dimension (size) of a lookup vector (hidden layer).
+                        # This is equivalent to `dim` property.
+get_input_vector        # Given an index, get the corresponding vector of the Input Matrix.
+get_input_matrix        # Get a copy of the full input matrix of a Model.
+get_labels              # Get the entire list of labels of the dictionary
+                        # This is equivalent to `labels` property.
+get_line                # Split a line of text into words and labels.
+get_output_matrix       # Get a copy of the full output matrix of a Model.
+get_sentence_vector     # Given a string, get a single vector represenation. This function
+                        # assumes to be given a single line of text. We split words on
+                        # whitespace (space, newline, tab, vertical tab) and the control
+                        # characters carriage return, formfeed and the null character.
+get_subword_id          # Given a subword, return the index (within input matrix) it hashes to.
+get_subwords            # Given a word, get the subwords and their indicies.
+get_word_id             # Given a word, get the word id within the dictionary.
+get_word_vector         # Get the vector representation of word.
+get_words               # Get the entire list of words of the dictionary
+                        # This is equivalent to `words` property.
+is_quantized            # whether the model has been quantized
+predict                 # Given a string, get a list of labels and a list of corresponding probabilities.
+quantize                # Quantize the model reducing the size of the model and it's memory footprint.
+save_model              # Save the model to the given path
+test                    # Evaluate supervised model using file given by path
+test_label              # Return the precision and recall score for each label.    
 ```
 
 The properties `words`, `labels` return the words and labels from the dictionary :
