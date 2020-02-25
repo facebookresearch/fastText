@@ -2,6 +2,10 @@
 id: unsupervised-tutorial
 title: Word representations
 ---
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+
 A popular idea in modern machine learning is to represent words by vectors. These vectors capture hidden information about a language, like word analogies or semantic. It is also used to improve performance of text classifiers.
 
 In this tutorial, we show how to build these word vectors with the fastText tool. To download and install fastText, follow the first steps of [the tutorial on text classification](https://fasttext.cc/docs/en/supervised-tutorial.html).
@@ -112,7 +116,8 @@ The skipgram model learns to predict a target word thanks to a nearby word. On t
 
 Let us illustrate this difference with an example:  given the sentence *'Poets have been mysteriously silent on the subject of cheese'* and the target word '*silent*', a skipgram model tries to predict the target using a random close-by word, like '*subject' *or* '*mysteriously*'**. *The cbow model takes all the words in a surrounding window, like {*been, *mysteriously*, on, the*}, and uses the sum of their vectors to predict the target. The figure below summarizes this difference with another example.
 
-![cbow vs skipgram](https://fasttext.cc/img/cbo_vs_skipgram.png)
+<img alt="cbow vs skipgram" src={useBaseUrl('img/cbo_vs_skipgram.png')} />
+
 To train a cbow model with fastText, you run the following command:
 
 <!--DOCUSAURUS_CODE_TABS-->
