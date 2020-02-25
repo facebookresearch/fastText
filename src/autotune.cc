@@ -56,8 +56,8 @@ class ElapsedTimeMarker {
 
 namespace fasttext {
 
-constexpr double Autotune::kUnknownBestScore = -1.0;
-constexpr int Autotune::kCutoffLimit = 256;
+constexpr double kUnknownBestScore = -1.0;
+constexpr int kCutoffLimit = 256;
 
 template <typename T>
 T getArgGauss(
@@ -225,7 +225,7 @@ void Autotune::printInfo(double maxDuration) {
   std::cerr << std::setprecision(1) << std::setw(5) << progress << "%";
   std::cerr << " Trials: " << std::setw(4) << trials_;
   std::cerr << " Best score: " << std::setw(9) << std::setprecision(6);
-  if (bestScore_ == Autotune::kUnknownBestScore) {
+  if (bestScore_ == kUnknownBestScore) {
     std::cerr << "unknown";
   } else {
     std::cerr << bestScore_;
@@ -262,7 +262,7 @@ void Autotune::startTimer(const Args& args) {
   std::chrono::steady_clock::time_point start =
       std::chrono::steady_clock::now();
   timer_ = std::thread([=]() { timer(start, args.autotuneDuration); });
-  bestScore_ = Autotune::kUnknownBestScore;
+  bestScore_ = kUnknownBestScore;
   trials_ = 0;
   continueTraining_ = true;
 
@@ -327,7 +327,7 @@ int Autotune::getCutoffForFileSize(
   int target = (fileSize - (107) - 4 * (1 << 8) * dim - outModelSize);
   int cutoff = target / ((dim + dsub - 1) / dsub + (qnorm ? 1 : 0) + 10);
 
-  return std::max(cutoff, Autotune::kCutoffLimit);
+  return std::max(cutoff, kCutoffLimit);
 }
 
 bool Autotune::quantize(Args& args, const Args& autotuneArgs) {
@@ -337,12 +337,12 @@ bool Autotune::quantize(Args& args, const Args& autotuneArgs) {
   auto outputSize = fastText_->getOutputMatrix()->size(0);
 
   args.qnorm = true;
-  args.qout = (outputSize >= Autotune::kCutoffLimit);
+  args.qout = (outputSize >= kCutoffLimit);
   args.retrain = true;
   args.cutoff = getCutoffForFileSize(
       args.qout, args.qnorm, args.dsub, autotuneArgs.getAutotuneModelSize());
   LOG_VAL(cutoff, args.cutoff);
-  if (args.cutoff == Autotune::kCutoffLimit) {
+  if (args.cutoff == kCutoffLimit) {
     return false;
   }
   fastText_->quantize(args);
@@ -406,7 +406,7 @@ void Autotune::train(const Args& autotuneArgs) {
             autotuneArgs.getAutotuneMetric(),
             autotuneArgs.getAutotuneMetricLabel());
 
-        if (bestScore_ == Autotune::kUnknownBestScore ||
+        if (bestScore_ == kUnknownBestScore ||
             (currentScore > bestScore_)) {
           bestTrainArgs = trainArgs;
           bestScore_ = currentScore;
@@ -439,7 +439,7 @@ void Autotune::train(const Args& autotuneArgs) {
     timer_.join();
   }
 
-  if (bestScore_ == Autotune::kUnknownBestScore) {
+  if (bestScore_ == kUnknownBestScore) {
     std::string errorMessage;
     if (sizeConstraintWarning) {
       errorMessage =
