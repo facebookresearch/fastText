@@ -1,7 +1,16 @@
-.*.swp
+*.swp
+*.swo
 *.o
+*.a
+*.dSYM
+*.so
+*.dylib
+*.pyc
 *.bin
 *.vec
+
 data
 fasttext
 result
+build/
+build_*/
