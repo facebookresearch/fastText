@@ -22,7 +22,6 @@ parser.add_argument('--bsz', default=500, type=int, help='Initial batch size')
 parser.add_argument('--lr', default=500., type=float, help='Learning rate')
 parser.add_argument('--nmax', default=20000, type=int, help='Vocabulary size for learning the alignment')
 parser.add_argument('--maxload', default=200000, type=int, help='Maximal number of words to load from source and target embeddings (-1 for whole vocabulary)')
-
 parser.add_argument('--reg', default=0.05, type=float, help='Regularization parameter for sinkhorn')
 args = parser.parse_args()
 
@@ -112,4 +111,3 @@ if args.output_src != '':
 if args.output_tgt != '':
     x_tgt = x_tgt / np.linalg.norm(x_tgt, 2, 1).reshape([-1, 1])
     save_vectors(args.output_tgt, np.dot(x_tgt, R.T), w_tgt)
-    
