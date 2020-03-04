@@ -7,7 +7,7 @@ As we saw in [the tutorial](/docs/en/supervised-tutorial.html#more-epochs-and-la
 
 FastText's autotune feature allows you to find automatically the best hyperparameters for your dataset.
 
-# How to use it
+## How to use it
 
 In order to activate hyperparameter optimization, we must provide a validation file with the `-autotune-validation` argument.
 
@@ -62,12 +62,9 @@ By default, the search will take 5 minutes. You can set the timeout in seconds w
 ```
 <!--END_DOCUSAURUS_CODE_TABS-->
 
-
 While autotuning, fastText displays the best f1-score found so far. If we decide to stop the tuning before the time limit, we can send one `SIGINT` signal (via `CTLR-C` for example). FastText will then finish the current training, and retrain with the best parameters found so far.
 
-
-
-# Constrain model size
+## Constrain model size
 
 As you may know, fastText can compress the model with [quantization](/docs/en/cheatsheet.html#quantization). However, this compression task comes with its own [hyperparameters](/docs/en/options.html) (`-cutoff`, `-retrain`, `-qnorm`, `-qout`, `-dsub`) that have a consequence on the accuracy and the size of the final model.
 
@@ -78,7 +75,9 @@ Fortunately, autotune can also find the hyperparameters for this compression tas
 ```sh
 >> ./fasttext supervised -input cooking.train -output model_cooking -autotune-validation cooking.valid -autotune-modelsize 2M
 ```
+
 This will produce a `.ftz` file with the best accuracy having the desired size:
+
 ```sh
 >> ls -la model_cooking.ftz
 -rw-r--r--. 1 celebio users 1990862 Aug 25 05:39 model_cooking.ftz
@@ -87,12 +86,15 @@ N       3000
 P@1     0.57
 R@1     0.246
 ```
+
 <!--Python-->
 ```py
 >>> import fasttext
 >>> model = fasttext.train_supervised(input='cooking.train', autotuneValidationFile='cooking.valid', autotuneModelSize="2M")
 ```
+
 If you save the model, you will obtain a model file with the desired size:
+
 ```py
 >>> model.save_model("model_cooking.ftz")
 >>> import os
@@ -103,8 +105,7 @@ If you save the model, you will obtain a model file with the desired size:
 ```
 <!--END_DOCUSAURUS_CODE_TABS-->
 
-
-# How to set the optimization metric?
+## How to set the optimization metric?
 
 <!--DOCUSAURUS_CODE_TABS-->
 <!--Command line-->
@@ -135,4 +136,3 @@ This is equivalent to manually optimize the f1-score we get when we test with `m
 
 Sometimes, you may be interested in predicting more than one label. For example, if you were optimizing the hyperparameters manually to get the best score to predict two labels, you would test with `model.test("cooking.valid", k=2)`. You can also tell autotune to optimize the parameters by testing two labels with the `autotunePredictions` argument.
 <!--END_DOCUSAURUS_CODE_TABS-->
-

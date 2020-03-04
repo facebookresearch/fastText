@@ -1,0 +1,16 @@
+/**
+ * Copyright (c) 2017-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+ 
+:root {
+  --ifm-color-primary: #075581;
+  --ifm-color-primary-dark: #064d74;
+  --ifm-color-primary-darker: #06486e;
+  --ifm-color-primary-darkest: #053c5a;
+  --ifm-color-primary-light: #085e8e;
+  --ifm-color-primary-lighter: #086294;
+  --ifm-color-primary-lightest: #096fa8;
+}
