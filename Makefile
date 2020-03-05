@@ -7,7 +7,13 @@
 #
 
 CXX = c++
-CXXFLAGS = -pthread -std=c++11 -march=native
+TARGET_MACHINE ?= $(shell uname -m)
+CXXFLAGS = -pthread -std=c++11
+ifneq (,$(findstring ppc64,$(TARGET_MACHINE)))
+	CXXFLAGS += -mcpu=native -mtune=native
+else
+	CXXFLAGS += -march=native
+endif
 OBJS = args.o autotune.o matrix.o dictionary.o loss.o productquantizer.o densematrix.o quantmatrix.o vector.o model.o utils.o meter.o fasttext.o
 INCLUDES = -I.
 
