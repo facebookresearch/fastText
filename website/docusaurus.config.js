@@ -7,24 +7,22 @@
  */
 
 const siteConfig = {
-  title: "fastText" /* title for your website */,
-  url: "https://fasttext.cc" /* your site url */,
-  baseUrl: "/" /* base url for your project */, 
+  title: "fastText",
+  url: "https://fasttext.cc",
+  baseUrl: "/",
   organizationName: 'facebookresearch',
-  projectName: 'fastText'
+  projectName: 'fastText',
   favicon: "img/fasttext-icon-bg-web.png",
-  projectName: "fastText",
   tagline: "Library for efficient text classification and representation learning",
   scripts: [
     '/tabber.js',
   ],
-  // to change
-  separateCss: ["static/docs/en/html"],
   themeConfig: {
     prism: {
       theme: require('prism-react-renderer/themes/github'),
       darkTheme: require('prism-react-renderer/themes/dracula'),
     },
+    separateCss: require.resolve('static/docs/en/html'),
     footer: {
       logo: {
         alt: 'Fast Text Logo',
