@@ -1,0 +1,7 @@
+  /* colors for website */
+  colors: {
+    primaryColor: "rgb(0,85,129)",
+    secondaryColor: "rgb(227,24,35)",
+    prismColor:
+      "rgba(155,155,155, 0.13)" /* primaryColor in rgba form, with 0.03 alpha */
+  },
