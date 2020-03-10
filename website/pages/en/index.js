@@ -13,7 +13,8 @@ const Marked = CompLibrary.Marked; /* Used to read markdown */
 const Container = CompLibrary.Container;
 const GridBlock = CompLibrary.GridBlock;
 
-const siteConfig = require(process.cwd() + "/siteConfig.js");
+// use context
+const siteConfig = require(process.cwd() + "/docusaurus.config.js");
 
 class Button extends React.Component {
   render() {

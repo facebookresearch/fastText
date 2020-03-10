@@ -1,7 +1,9 @@
-  /* colors for website */
-  colors: {
-    primaryColor: "rgb(0,85,129)",
-    secondaryColor: "rgb(227,24,35)",
-    prismColor:
-      "rgba(155,155,155, 0.13)" /* primaryColor in rgba form, with 0.03 alpha */
-  },
+:root {
+  --ifm-color-primary: #005681;
+  --ifm-color-primary-dark: #004d74;
+  --ifm-color-primary-darker: #00496e;
+  --ifm-color-primary-darkest: #003c5a;
+  --ifm-color-primary-light: #005f8e;
+  --ifm-color-primary-lighter: #006394;
+  --ifm-color-primary-lightest: #0070a8;
+}

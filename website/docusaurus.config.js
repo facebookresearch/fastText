@@ -7,22 +7,32 @@
  */
 
 const siteConfig = {
-  title: "fastText" /* title for your website */, //ok
-  url: "https://fasttext.cc" /* your site url */, //ok
-  baseUrl: "/" /* base url for your project */, //ok
+  title: "fastText" /* title for your website */,
+  url: "https://fasttext.cc" /* your site url */,
+  baseUrl: "/" /* base url for your project */, 
   organizationName: 'facebookresearch',
   projectName: 'fastText'
-  favicon: "img/fasttext-icon-bg-web.png", //ok
-  mainImg: "img/fasttext-logo-color-web.png",
-  /* path to images for header/footer */
+  favicon: "img/fasttext-icon-bg-web.png",
+  projectName: "fastText",
+  tagline: "Library for efficient text classification and representation learning",
+  scripts: [
+    '/tabber.js',
+  ],
+  // to change
+  separateCss: ["static/docs/en/html"],
   themeConfig: {
+    prism: {
+      theme: require('prism-react-renderer/themes/github'),
+      darkTheme: require('prism-react-renderer/themes/dracula'),
+    },
     footer: {
       logo: {
         alt: 'Fast Text Logo',
         src: 'img/fasttext-icon-white-web.png'
       }
+      // add footer links 
     },
-    image: 'img/ogimage.png',
+    image: 'img/fasttext-logo-color-web.png',
     navbar: {
       title: 'Fast Text',
       logo: {
@@ -57,16 +67,6 @@ const siteConfig = {
       }
     ]
   ]
-  
-  
-  // to change
-  separateCss: ["static/docs/en/html"],
-  projectName: "fastText", //ok
-  tagline:
-    "Library for efficient text classification and representation learning", // ok
-  scripts: [ //ok
-    '/tabber.js',
-  ],
 };
 
 module.exports = siteConfig;
