@@ -8,7 +8,7 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 #
-
+#
 # Maybe one day this will work
 #   "mac":
 #     macos:
@@ -29,9 +29,9 @@ jobs:
     steps:
       - checkout
       - run:
-          command: |
-            . .circleci/setup_circleimg.sh
-            . .circleci/python_test.sh
+        command: |
+          . .circleci/setup_circleimg.sh
+          . .circleci/python_test.sh
 
 
   "py357":
@@ -41,9 +41,9 @@ jobs:
     steps:
       - checkout
       - run:
-          command: |
-            . .circleci/setup_circleimg.sh
-            . .circleci/python_test.sh
+        command: |
+          . .circleci/setup_circleimg.sh
+          . .circleci/python_test.sh
 
   "py3410":
     docker:
@@ -52,9 +52,9 @@ jobs:
     steps:
       - checkout
       - run:
-          command: |
-            . .circleci/setup_circleimg.sh
-            . .circleci/python_test.sh
+        command: |
+          . .circleci/setup_circleimg.sh
+          . .circleci/python_test.sh
 
   "py2715":
     docker:
@@ -63,9 +63,9 @@ jobs:
     steps:
       - checkout
       - run:
-          command: |
-            . .circleci/setup_circleimg.sh
-            . .circleci/python_test.sh
+        command: |
+          . .circleci/setup_circleimg.sh
+          . .circleci/python_test.sh
 
   "gcc5":
     docker:
@@ -74,8 +74,8 @@ jobs:
     steps:
       - checkout
       - run:
-          command: |
-            . .circleci/gcc_test.sh
+        command: |
+          . .circleci/gcc_test.sh
 
   "gcc6":
     docker:
@@ -84,8 +84,8 @@ jobs:
     steps:
       - checkout
       - run:
-          command: |
-            . .circleci/gcc_test.sh
+        command: |
+          . .circleci/gcc_test.sh
 
   "gcc7":
     docker:
@@ -94,8 +94,8 @@ jobs:
     steps:
       - checkout
       - run:
-          command: |
-            . .circleci/gcc_test.sh
+        command: |
+          . .circleci/gcc_test.sh
 
   "gcclatest":
     docker:
@@ -104,8 +104,8 @@ jobs:
     steps:
       - checkout
       - run:
-          command: |
-            . .circleci/gcc_test.sh
+        command: |
+          . .circleci/gcc_test.sh
 
   "debian-stretch-gcc":
     docker:
@@ -114,9 +114,9 @@ jobs:
     steps:
       - checkout
       - run:
-          command: |
-            . .circleci/setup_debian.sh
-            . .circleci/gcc_test.sh
+        command: |
+          . .circleci/setup_debian.sh
+          . .circleci/gcc_test.sh
 
   "debian-stretch-cmake":
     docker:
@@ -125,9 +125,9 @@ jobs:
     steps:
       - checkout
       - run:
-          command: |
-            . .circleci/setup_debian.sh
-            . .circleci/cmake_test.sh
+        command: |
+          . .circleci/setup_debian.sh
+          . .circleci/cmake_test.sh
 
   "debian-stretch-python":
     docker:
@@ -136,10 +136,10 @@ jobs:
     steps:
       - checkout
       - run:
-          command: |
-            . .circleci/setup_debian.sh
-            pip install .
-            python runtests.py -u
+        command: |
+          . .circleci/setup_debian.sh
+          pip install .
+          python runtests.py -u
 
   "debian-jessie-gcc":
     docker:
@@ -148,9 +148,9 @@ jobs:
     steps:
       - checkout
       - run:
-          command: |
-            . .circleci/setup_debian.sh
-            . .circleci/gcc_test.sh
+        command: |
+          . .circleci/setup_debian.sh
+          . .circleci/gcc_test.sh
 
   "debian-jessie-cmake":
     docker:
@@ -159,9 +159,9 @@ jobs:
     steps:
       - checkout
       - run:
-          command: |
-            . .circleci/setup_debian.sh
-            . .circleci/cmake_test.sh
+        command: |
+          . .circleci/setup_debian.sh
+          . .circleci/cmake_test.sh
 
   "website-build":
     docker:
@@ -170,11 +170,11 @@ jobs:
     steps:
       - checkout
       - run:
-          command: |
-            git config --global user.email "docusaurus-bot@users.noreply.github.com"
-            git config --global user.name "Website Deployment Script"
-            echo "machine github.com login docusaurus-bot password $GITHUB_TOKEN_DOCUSAURUS_BOT" > ~/.netrc
-            cd website && npm install && GIT_USER=docusaurus-bot npm run publish-gh-pages
+        command: |
+          git config --global user.email "docusaurus-bot@users.noreply.github.com"
+          git config --global user.name "Website Deployment Script"
+          echo "machine github.com login docusaurus-bot password $GITHUB_TOKEN_DOCUSAURUS_BOT" > ~/.netrc
+          cd website && npm install && GIT_USER=docusaurus-bot npm run deploy
 
 workflows:
   version: 2
