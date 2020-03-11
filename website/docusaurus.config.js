@@ -23,11 +23,71 @@ module.exports = {
       darkTheme: require('prism-react-renderer/themes/dracula'),
     },
     footer: {
+      style: 'dark',
       logo: {
-        alt: 'Fast Text Logo',
-        src: 'img/fasttext-icon-white-web.png'
-      }
-      // add footer links 
+        alt: 'Facebook Open Source Logo',
+        src: 'https://docusaurus.io/img/oss_logo.png',
+        href: 'https://opensource.facebook.com/',
+      },
+      copyright: `Copyright © ${new Date().getFullYear()} Facebook, Inc.`,
+      links: [
+        {
+          title: 'Support',
+          items: [
+            {
+              label: 'Getting Started',
+              to: 'docs/support'
+            },
+            {
+              label: 'Tutorials',
+              to: 'docs/supervised-tutorial'
+            },
+            {
+              label: 'FAQs',
+              to: 'docs/faqs'
+            },
+            {
+              label: 'API',
+              to: 'docs/api'
+            }
+          ]
+        },
+        {
+          title: 'Community',
+          items: [
+            {
+              label: 'Facebook Group',
+              href: 'https://www.facebook.com/groups/1174547215919768/',
+            },
+            {
+              label: 'Stack Overflow',
+              href: 'https://stackoverflow.com/questions/tagged/fasttext',
+            },
+            {
+              label: 'Google Group',
+              href: 'https://groups.google.com/forum/#!forum/fasttext-library',
+            }
+          ]
+        },
+        {
+          title: 'More',
+          items: [
+            {
+              label: 'Blog',
+              href: 'blog',
+            },
+            {
+              label: 'Github',
+              href: 'https://github.com/facebookresearch/fastText'
+            },
+            {
+              label: 'Star',
+              href: 'https://github.com/facebookresearch/fastText/'
+            }
+          ]
+        }
+      ]
+      
     },
     image: 'img/fasttext-logo-color-web.png',
     navbar: {
@@ -36,9 +96,6 @@ module.exports = {
         alt: 'Fast Text Logo',
         src: 'img/fasttext-icon-white-web.png'
       },
-      /* base url for editing docs, usage example: editUrl + 'en/doc1.md' */
-      /* editUrl: "https://github.com/facebookresearch/fastText/website/edit/master/docs/", */
-      /* header links for links on this site */
       links: [
         { to: 'docs/support', label: 'Docs' },
         { to: 'docs/english-vectors', label: 'Resources' },
