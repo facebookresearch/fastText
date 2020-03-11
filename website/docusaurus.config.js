@@ -17,6 +17,9 @@ module.exports = {
   scripts: [
     '/tabber.js',
   ],
+  customFields: {
+    mainImg: 'img/fasttext-logo-color-web.png'
+  },
   themeConfig: {
     prism: {
       theme: require('prism-react-renderer/themes/github'),
@@ -97,12 +100,13 @@ module.exports = {
         src: 'img/fasttext-icon-white-web.png'
       },
       links: [
-        { to: 'docs/support', label: 'Docs' },
-        { to: 'docs/english-vectors', label: 'Resources' },
-        { to: 'blog', label: 'Blog' },
+        { to: 'docs/support', label: 'Docs', position: 'right' },
+        { to: 'docs/english-vectors', label: 'Resources', position: 'right' },
+        { to: 'blog', label: 'Blog', position: 'right' },
         {
-          href: "https://github.com/facebookresearch/fastText/",
-          label: "GitHub",
+          href: 'https://github.com/facebookresearch/fastText/',
+          label: 'GitHub',
+          position: 'right',
         }
       ]
     },
