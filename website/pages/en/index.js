@@ -16,6 +16,9 @@ const GridBlock = CompLibrary.GridBlock;
 // use context
 const siteConfig = require(process.cwd() + "/docusaurus.config.js");
 
+console.log(siteConfig);
+
+
 class Button extends React.Component {
   render() {
     return (

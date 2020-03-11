@@ -6,14 +6,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-const siteConfig = {
-  title: "fastText",
-  url: "https://fasttext.cc",
-  baseUrl: "/",
+module.exports = {
+  title: 'fastText',
+  url: 'https://fasttext.cc',
+  baseUrl: '/',
   organizationName: 'facebookresearch',
   projectName: 'fastText',
-  favicon: "img/fasttext-icon-bg-web.png",
-  tagline: "Library for efficient text classification and representation learning",
+  favicon: 'img/fasttext-icon-bg-web.png',
+  tagline: 'Library for efficient text classification and representation learning',
   scripts: [
     '/tabber.js',
   ],
@@ -22,7 +22,6 @@ const siteConfig = {
       theme: require('prism-react-renderer/themes/github'),
       darkTheme: require('prism-react-renderer/themes/dracula'),
     },
-    separateCss: require.resolve('static/docs/en/html'),
     footer: {
       logo: {
         alt: 'Fast Text Logo',
@@ -41,8 +40,8 @@ const siteConfig = {
       /* editUrl: "https://github.com/facebookresearch/fastText/website/edit/master/docs/", */
       /* header links for links on this site */
       links: [
-        { to: 'support', label: 'Docs' },
-        { to: 'english-vectors', label: 'Resources' },
+        { to: 'docs/support', label: 'Docs' },
+        { to: 'docs/english-vectors', label: 'Resources' },
         { to: 'blog', label: 'Blog' },
         {
           href: "https://github.com/facebookresearch/fastText/",
@@ -50,15 +49,18 @@ const siteConfig = {
         }
       ]
     },
-    /* remove this to disable google analytics tracking */
     gtag: {
       trackingID: 'UA-44373548-30',
     }
-  }
+  },
   presets: [
     [
       '@docusaurus/preset-classic',
       {
+        docs: {
+          path: './docs',
+          sidebarPath: require.resolve('./sidebars.json'),
+        },
         theme: {
           customCss: require.resolve('./src/css/custom.css')
         }
@@ -66,5 +68,3 @@ const siteConfig = {
     ]
   ]
 };
-
-module.exports = siteConfig;

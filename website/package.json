@@ -2,12 +2,14 @@
   "scripts": {
     "start": "docusaurus start",
     "build": "docusaurus build",
-    "publish-gh-pages": "docusaurus publish",
+    "deploy": "docusaurus deploy",
     "examples": "docusaurus examples"
   },
   "devDependencies": {
-    "@docusaurus/core": "^2.0.0-alpha.44",
-    "@docusaurus/preset-classic": "^2.0.0-alpha.44",
+    "@docusaurus/core": "^2.0.0-alpha.43",
+    "@docusaurus/preset-classic": "^2.0.0-alpha.43",
+    "react": "16.13.0",
+    "react-dom": "16.13.0",
     "babel-preset-react": "^6.24.1"
   }
 }
