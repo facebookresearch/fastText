@@ -137,8 +137,9 @@ const Index = () => {
           {firstContent.map(({ content, title }) => {
             return (
               <div 
-                className="descriptionSection light"
+                className="descriptionSection"
                 id="fast-download"
+                style={{textAlign: 'center'}}
               >
               <div className='col'>
                 <h1>{title}</h1>
@@ -168,7 +169,8 @@ const Index = () => {
                   <div className="padding-horiz--md" style={{
                       display: 'flex',
                       flexDirection: 'column',
-                      alignItems: 'center'
+                      alignItems: 'center',
+                      textAlign: 'center'
                      }}>
                     <Link to={path}><img src={image} /></Link>
                     <Link to={path}><h1>{title}</h1></Link>
