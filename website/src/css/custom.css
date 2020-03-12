@@ -7,3 +7,59 @@
   --ifm-color-primary-lighter: #006394;
   --ifm-color-primary-lightest: #0070a8;
 }
+
+img {
+  max-width: 80px;
+  margin-bottom: 20px;
+}
+
+.mainContainer .wrapper a {
+  text-decoration: initial;
+}
+
+div.productShowcaseSection {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.productShowcaseSection .indexUsers a {
+    max-width: 300px;
+    padding: 0 15 0 15;
+}
+
+.productShowcaseSection h2 {
+  margin-bottom: 10px;
+}
+
+.light {
+  background-image: #e8e8e8;
+}
+
+.productShowcaseSection div.container {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.productShowcaseSection div.blockElement {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+div.descriptionSection {
+  padding-top: 20px;
+  padding-bottom: 40px;
+  background-color: #f2f2f2;
+}
+
+.descriptionSection p {
+  margin-left: 21.5%;
+  margin-right: 21.5%;
+}
+
+.descriptionSection .container h2 {
+  font-size: 30px;
+}
+
+.descriptionSection .blockImage {
+	  margin-top: 7%;
+}

@@ -31,7 +31,7 @@ div.descriptionSection {
   padding-bottom: 40px;
 }
 
-.descriptionSection p {
+.descriptionSection h2 {
   text-align: left;
   margin-left: 21.5%;
   margin-right: 21.5%;
@@ -44,5 +44,3 @@ div.descriptionSection {
 .descriptionSection .blockImage {
 	  margin-top: 7%;
 }
-
-

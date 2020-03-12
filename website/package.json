@@ -10,6 +10,7 @@
     "@docusaurus/preset-classic": "^2.0.0-alpha.43",
     "react": "16.13.0",
     "react-dom": "16.13.0",
+    "classnames": "^2.2.6",
     "babel-preset-react": "^6.24.1"
   }
 }
