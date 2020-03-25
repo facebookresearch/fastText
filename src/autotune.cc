@@ -406,8 +406,7 @@ void Autotune::train(const Args& autotuneArgs) {
             autotuneArgs.getAutotuneMetric(),
             autotuneArgs.getAutotuneMetricLabel());
 
-        if (bestScore_ == kUnknownBestScore ||
-            (currentScore > bestScore_)) {
+        if (bestScore_ == kUnknownBestScore || (currentScore > bestScore_)) {
           bestTrainArgs = trainArgs;
           bestScore_ = currentScore;
           strategy_->updateBest(bestTrainArgs);

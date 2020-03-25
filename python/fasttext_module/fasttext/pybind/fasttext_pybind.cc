@@ -44,6 +44,20 @@ py::str castToPythonString(const std::string& s, const char* onUnicodeError) {
   return handle_str;
 }
 
+std::vector<std::pair<fasttext::real, py::str>> castToPythonString(
+    const std::vector<std::pair<fasttext::real, std::string>>& predictions,
+    const char* onUnicodeError) {
+  std::vector<std::pair<fasttext::real, py::str>> transformedPredictions;
+
+  for (const auto& prediction : predictions) {
+    transformedPredictions.emplace_back(
+        prediction.first,
+        castToPythonString(prediction.second, onUnicodeError));
+  }
+
+  return transformedPredictions;
+}
+
 std::pair<std::vector<py::str>, std::vector<py::str>> getLineText(
     fasttext::FastText& m,
     const std::string text,
@@ -339,16 +353,7 @@ PYBIND11_MODULE(fasttext_pybind, m) {
             std::vector<std::pair<fasttext::real, std::string>> predictions;
             m.predictLine(ioss, predictions, k, threshold);
 
-            std::vector<std::pair<fasttext::real, py::str>>
-                transformedPredictions;
-
-            for (const auto& prediction : predictions) {
-              transformedPredictions.push_back(std::make_pair(
-                  prediction.first,
-                  castToPythonString(prediction.second, onUnicodeError)));
-            }
-
-            return transformedPredictions;
+            return castToPythonString(predictions, onUnicodeError);
           })
       .def(
           "multilinePredict",
@@ -427,20 +432,11 @@ PYBIND11_MODULE(fasttext_pybind, m) {
              const std::string word) { m.getWordVector(vec, word); })
       .def(
           "getNN",
-          [](fasttext::FastText& m, const std::string& word, int32_t k,
+          [](fasttext::FastText& m,
+             const std::string& word,
+             int32_t k,
              const char* onUnicodeError) {
-            std::vector<std::pair<float, std::string>> score_words = m.getNN(
-                word, k);
-            std::vector<std::pair<float, py::str>> output_list;
-            for (uint32_t i = 0; i < score_words.size(); i++) {
-               float score = score_words[i].first;
-               py::str word = castToPythonString(
-                   score_words[i].second, onUnicodeError);
-               std::pair<float, py::str> sw_pair = std::make_pair(score, word);
-               output_list.push_back(sw_pair);
-            }
-
-            return output_list;
+            return castToPythonString(m.getNN(word, k), onUnicodeError);
           })
       .def(
           "getAnalogies",
@@ -448,7 +444,11 @@ PYBIND11_MODULE(fasttext_pybind, m) {
              const std::string& wordA,
              const std::string& wordB,
              const std::string& wordC,
-             int32_t k) { return m.getAnalogies(k, wordA, wordB, wordC); })
+             int32_t k,
+             const char* onUnicodeError) {
+            return castToPythonString(
+                m.getAnalogies(k, wordA, wordB, wordC), onUnicodeError);
+          })
       .def(
           "getSubwords",
           [](fasttext::FastText& m,

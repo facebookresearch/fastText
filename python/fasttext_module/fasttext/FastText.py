@@ -86,11 +86,12 @@ class _FastText(object):
         self.f.getSentenceVector(b, text)
         return np.array(b)
 
-    def get_nearest_neighbors(self, word, k=10):
-        return self.f.getNN(word, k)
+    def get_nearest_neighbors(self, word, k=10, on_unicode_error='strict'):
+        return self.f.getNN(word, k, on_unicode_error)
 
-    def get_analogies(self, wordA, wordB, wordC, k=10):
-        return self.f.getAnalogies(wordA, wordB, wordC, k)
+    def get_analogies(self, wordA, wordB, wordC, k=10,
+                      on_unicode_error='strict'):
+        return self.f.getAnalogies(wordA, wordB, wordC, k, on_unicode_error)
 
     def get_word_id(self, word):
         """

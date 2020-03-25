@@ -73,7 +73,6 @@ class Autotune {
     TimeoutError() : std::runtime_error("Autotune timed out.") {}
   };
 
-
  public:
   Autotune() = delete;
   explicit Autotune(const std::shared_ptr<FastText>& fastText);
