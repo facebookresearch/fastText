@@ -22,7 +22,7 @@ $ wget -c http://mattmahoney.net/dc/enwik9.zip -P data
 $ unzip data/enwik9.zip -d data
 ```
 
-A raw Wikipedia dump contains a lot of HTML / XML data. We pre-process it with the wikifil.pl script bundled with fastText (this script was originally developed by Matt Mahoney, and can be found on his [website](http://mattmahoney.net/) )
+A raw Wikipedia dump contains a lot of HTML / XML data. We pre-process it with the wikifil.pl script bundled with fastText (this script was originally developed by Matt Mahoney, and can be found on his [website](http://mattmahoney.net/)).
 
 ```bash
 $ perl wikifil.pl data/enwik9 > data/fil9
@@ -147,7 +147,7 @@ $ ./fasttext skipgram -input data/fil9 -output result/fil9 -minn 2 -maxn 5 -dim 
 ```
 <!--END_DOCUSAURUS_CODE_TABS-->
 
-Depending on the quantity of data you have, you may want to change the parameters of the training.  The *epoch* parameter controls how many time will loop over your data. By default, we loop over the dataset 5 times.  If you dataset is extremely massive, you may want to loop over it less often. Another important parameter is the learning rate -*lr*). The higher the learning rate is, the faster the model converge to a solution but at the risk of overfitting to the dataset. The default value is 0.05 which is a good compromise. If you want to play with it we suggest to stay in the range of [0.01, 1]:
+Depending on the quantity of data you have, you may want to change the parameters of the training.  The *epoch* parameter controls how many times the model will loop over your data. By default, we loop over the dataset 5 times.  If you dataset is extremely massive, you may want to loop over it less often. Another important parameter is the learning rate -*lr*. The higher the learning rate is, the faster the model converge to a solution but at the risk of overfitting to the dataset. The default value is 0.05 which is a good compromise. If you want to play with it we suggest to stay in the range of [0.01, 1]:
 
 <!--DOCUSAURUS_CODE_TABS-->
 <!--Command line-->
@@ -180,7 +180,7 @@ $ ./fasttext skipgram -input data/fil9 -output result/fil9 -thread 4
 
 Searching and printing word vectors directly from  the `fil9.vec`  file  is cumbersome. Fortunately, there is a `print-word-vectors` functionality in fastText.
 
-For examples, we can print the word vectors of words *asparagus,* *pidgey* and *yellow* with the following command:
+For example, we can print the word vectors of words *asparagus,* *pidgey* and *yellow* with the following command:
 <!--DOCUSAURUS_CODE_TABS-->
 <!--Command line-->
 ```bash
@@ -226,7 +226,7 @@ $ echo "enviroment" | ./fasttext print-word-vectors result/fil9.bin
 ```
 <!--END_DOCUSAURUS_CODE_TABS-->
 
-You still get a word vector for it! But how good it is? Let s find out in the next sections!
+You still get a word vector for it! But how good it is? Let's find out in the next sections!
 
 
 ## Nearest neighbor queries
@@ -322,7 +322,11 @@ In order to find nearest neighbors, we need to compute a similarity score betwee
 
 ## Word analogies
 
-In a similar spirit, one can play around with word analogies. For example, we can see if our model can guess what is to France, what Berlin is to Germany.
+In a similar spirit, one can play around with word analogies. For example, we can see if our model can guess what is to France, and what Berlin is to Germany.
+
+
+
+
 
 This can be done with the *analogies* functionality. It takes a word triplet (like *Germany Berlin France*) and outputs  the analogy:
 
@@ -350,7 +354,7 @@ pigneaux 0.736122
 ```
 <!--END_DOCUSAURUS_CODE_TABS-->
 
-The answer provides by our model is *Paris*, which is correct. Let's have a look at a less obvious example:
+The answer provided by our model is *Paris*, which is correct. Let's have a look at a less obvious example:
 
 <!--DOCUSAURUS_CODE_TABS-->
 <!--Command line-->
@@ -408,7 +412,7 @@ gearboxes 0.73986
 
 Most of the retrieved words share substantial substrings but a few are actually quite different, like *cogwheel*. You can try other words like *sunbathe* or *grandnieces*.
 
-Now that we have seen the interest of subword information for unknown words, let s check how it compares to a model that do not use subword information. To train a model without subwords, just run the following command:
+Now that we have seen the interest of subword information for unknown words, let's check how it compares to a model that does not use subword information. To train a model without subwords, just run the following command:
 
 <!--DOCUSAURUS_CODE_TABS-->
 <!--Command line-->
@@ -423,7 +427,7 @@ The results are saved in result/fil9-non.vec and result/fil9-non.bin.
 <!--END_DOCUSAURUS_CODE_TABS-->
 
 
-To illustrate the difference, let us take an uncommon word in Wikipedia, like *accomodation* which is a misspelling of *accommodation*. Here is the nearest neighbors obtained without subwords:
+To illustrate the difference, let us take an uncommon word in Wikipedia, like *accomodation* which is a misspelling of *accommodation**.* Here is the nearest neighbors obtained without subwords:
 
 <!--DOCUSAURUS_CODE_TABS-->
 <!--Command line-->
@@ -476,4 +480,4 @@ The nearest neighbors capture different variation around the word *accommodation
 
 ## Conclusion
 
-In this tutorial, we show how to obtain word vectors from Wikipedia. This can be done for any language and you we provide [pre-trained models](https://fasttext.cc/docs/en/pretrained-vectors.html) with the default setting for 294 of them.
+In this tutorial, we show how to obtain word vectors from Wikipedia. This can be done for any language and we provide [pre-trained models](https://fasttext.cc/docs/en/pretrained-vectors.html) with the default setting for 294 of them.
