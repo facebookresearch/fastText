@@ -427,8 +427,20 @@ PYBIND11_MODULE(fasttext_pybind, m) {
              const std::string word) { m.getWordVector(vec, word); })
       .def(
           "getNN",
-          [](fasttext::FastText& m, const std::string& word, int32_t k) {
-            return m.getNN(word, k);
+          [](fasttext::FastText& m, const std::string& word, int32_t k,
+             const char* onUnicodeError) {
+            std::vector<std::pair<float, std::string>> score_words = m.getNN(
+                word, k);
+            std::vector<std::pair<float, py::str>> output_list;
+            for (uint32_t i = 0; i < score_words.size(); i++) {
+               float score = score_words[i].first;
+               py::str word = castToPythonString(
+                   score_words[i].second, onUnicodeError);
+               std::pair<float, py::str> sw_pair = std::make_pair(score, word);
+               output_list.push_back(sw_pair);
+            }
+
+            return output_list;
           })
       .def(
           "getAnalogies",
