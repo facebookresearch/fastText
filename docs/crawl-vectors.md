@@ -9,7 +9,7 @@ We also distribute three new word analogy datasets, for French, Hindi and Polish
 
 ### Download directly with command line or from python
 
-In order to download with command line or from python code, you must have installed the python package as [described here](http://localhost:3000/docs/en/support.html#building-fasttext-python-module).
+In order to download with command line or from python code, you must have installed the python package as [described here](/docs/en/support.html#building-fasttext-python-module).
 
 <!--DOCUSAURUS_CODE_TABS-->
 <!--Command line-->
@@ -34,7 +34,7 @@ Query word?
 ### Adapt the dimension
 
 The pre-trained word vectors we distribute have dimension 300. If you need a smaller size, you can use our dimension reducer.
-In order to use that feature, you must have installed the python package as [described here](http://localhost:3000/docs/en/support.html#building-fasttext-python-module).
+In order to use that feature, you must have installed the python package as [described here](/docs/en/support.html#building-fasttext-python-module).
 
 For example, in order to get vectors of dimension 100:
 <!--DOCUSAURUS_CODE_TABS-->
