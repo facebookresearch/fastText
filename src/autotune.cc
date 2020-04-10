@@ -416,10 +416,10 @@ void Autotune::train(const Args& autotuneArgs) {
         if (!sizeConstraintWarning && trials_ > 10 &&
             sizeConstraintFailed_ > (trials_ / 2)) {
           sizeConstraintWarning = true;
-          std::cerr
-              << std::endl
-              << "Warning : requested model size is probably too small. You may want to increase `autotune-modelsize`."
-              << std::endl;
+          std::cerr << std::endl
+                    << "Warning : requested model size is probably too small. "
+                       "You may want to increase `autotune-modelsize`."
+                    << std::endl;
         }
       }
     } catch (DenseMatrix::EncounteredNaNError&) {
@@ -442,10 +442,12 @@ void Autotune::train(const Args& autotuneArgs) {
     std::string errorMessage;
     if (sizeConstraintWarning) {
       errorMessage =
-          "Couldn't fulfil model size constraint: please increase `autotune-modelsize`.";
+          "Couldn't fulfil model size constraint: please increase "
+          "`autotune-modelsize`.";
     } else {
       errorMessage =
-          "Didn't have enough time to train once: please increase `autotune-duration`.";
+          "Didn't have enough time to train once: please increase "
+          "`autotune-duration`.";
     }
     throw std::runtime_error(errorMessage);
   } else {

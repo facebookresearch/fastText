@@ -262,7 +262,8 @@ void Args::printTrainingHelp() {
   std::cerr
       << "\nThe following arguments for training are optional:\n"
       << "  -lr                 learning rate [" << lr << "]\n"
-      << "  -lrUpdateRate       change the rate of updates for the learning rate ["
+      << "  -lrUpdateRate       change the rate of updates for the learning "
+         "rate ["
       << lrUpdateRate << "]\n"
       << "  -dim                size of word vectors [" << dim << "]\n"
       << "  -ws                 size of the context window [" << ws << "]\n"
@@ -270,9 +271,11 @@ void Args::printTrainingHelp() {
       << "  -neg                number of negatives sampled [" << neg << "]\n"
       << "  -loss               loss function {ns, hs, softmax, one-vs-all} ["
       << lossToString(loss) << "]\n"
-      << "  -thread             number of threads (set to 1 to ensure reproducible results) ["
+      << "  -thread             number of threads (set to 1 to ensure "
+         "reproducible results) ["
       << thread << "]\n"
-      << "  -pretrainedVectors  pretrained word vectors for supervised learning ["
+      << "  -pretrainedVectors  pretrained word vectors for supervised "
+         "learning ["
       << pretrainedVectors << "]\n"
       << "  -saveOutput         whether output params should be saved ["
       << boolToString(saveOutput) << "]\n"
@@ -280,17 +283,19 @@ void Args::printTrainingHelp() {
 }
 
 void Args::printAutotuneHelp() {
-  std::cerr
-      << "\nThe following arguments are for autotune:\n"
-      << "  -autotune-validation            validation file to be used for evaluation\n"
-      << "  -autotune-metric                metric objective {f1, f1:labelname} ["
-      << autotuneMetric << "]\n"
-      << "  -autotune-predictions           number of predictions used for evaluation  ["
-      << autotunePredictions << "]\n"
-      << "  -autotune-duration              maximum duration in seconds ["
-      << autotuneDuration << "]\n"
-      << "  -autotune-modelsize             constraint model file size ["
-      << autotuneModelSize << "] (empty = do not quantize)\n";
+  std::cerr << "\nThe following arguments are for autotune:\n"
+            << "  -autotune-validation            validation file to be used "
+               "for evaluation\n"
+            << "  -autotune-metric                metric objective {f1, "
+               "f1:labelname} ["
+            << autotuneMetric << "]\n"
+            << "  -autotune-predictions           number of predictions used "
+               "for evaluation  ["
+            << autotunePredictions << "]\n"
+            << "  -autotune-duration              maximum duration in seconds ["
+            << autotuneDuration << "]\n"
+            << "  -autotune-modelsize             constraint model file size ["
+            << autotuneModelSize << "] (empty = do not quantize)\n";
 }
 
 void Args::printQuantizationHelp() {
@@ -298,7 +303,8 @@ void Args::printQuantizationHelp() {
       << "\nThe following arguments for quantization are optional:\n"
       << "  -cutoff             number of words and ngrams to retain ["
       << cutoff << "]\n"
-      << "  -retrain            whether embeddings are finetuned if a cutoff is applied ["
+      << "  -retrain            whether embeddings are finetuned if a cutoff "
+         "is applied ["
       << boolToString(retrain) << "]\n"
       << "  -qnorm              whether the norm is quantized separately ["
       << boolToString(qnorm) << "]\n"
