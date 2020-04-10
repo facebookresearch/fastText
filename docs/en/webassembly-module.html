@@ -1,0 +1,327 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>WebAssembly module · fastText</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="In this document we present how to use fastText in javascript with WebAssembly."/><meta name="docsearch:language" content="en"/><meta property="og:title" content="WebAssembly module · fastText"/><meta property="og:type" content="website"/><meta property="og:url" content="https://fasttext.cc/index.html"/><meta property="og:description" content="In this document we present how to use fastText in javascript with WebAssembly."/><meta property="og:image" content="https://fasttext.cc/img/ogimage.png"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/img/fasttext-icon-bg-web.png"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><link rel="alternate" type="application/atom+xml" href="https://fasttext.cc/blog/atom.xml" title="fastText Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://fasttext.cc/blog/feed.xml" title="fastText Blog RSS Feed"/><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-44373548-30', 'auto');
+              ga('send', 'pageview');
+            </script><script type="text/javascript" src="/tabber.js"></script><script src="/js/scrollSpy.js"></script><link rel="stylesheet" href="/css/main.css"/><script src="/js/codetabs.js"></script></head><body class="sideNavVisible"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><img class="logo" src="/img/fasttext-icon-white-web.png" alt="fastText"/></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/docs/en/support.html" target="_self">Docs</a></li><li class=""><a href="/docs/en/english-vectors.html" target="_self">Resources</a></li><li class=""><a href="/blog/" target="_self">Blog</a></li><li class=""><a href="https://github.com/facebookresearch/fastText/" target="_blank">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Help</span></h2></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Introduction</h3><ul class=""><li class="navListItem"><a class="navItem" href="/docs/en/support.html">Get started</a></li><li class="navListItem"><a class="navItem" href="/docs/en/cheatsheet.html">Cheatsheet</a></li><li class="navListItem"><a class="navItem" href="/docs/en/options.html">List of options</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Tutorials</h3><ul class=""><li class="navListItem"><a class="navItem" href="/docs/en/supervised-tutorial.html">Text classification</a></li><li class="navListItem"><a class="navItem" href="/docs/en/unsupervised-tutorial.html">Word representations</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Help</h3><ul class=""><li class="navListItem"><a class="navItem" href="/docs/en/autotune.html">Automatic hyperparameter optimization</a></li><li class="navListItem"><a class="navItem" href="/docs/en/python-module.html">Python module</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/docs/en/webassembly-module.html">WebAssembly module</a></li><li class="navListItem"><a class="navItem" href="/docs/en/faqs.html">FAQ</a></li><li class="navListItem"><a class="navItem" href="/docs/en/api.html">API</a></li><li class="navListItem"><a class="navItem" href="/docs/en/references.html">References</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 id="__docusaurus" class="postHeaderTitle">WebAssembly module</h1></header><article><div><span><p>In this document we present how to use fastText in javascript with WebAssembly.</p>
+<h2><a class="anchor" aria-hidden="true" id="table-of-contents"></a><a href="#table-of-contents" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Table of contents</h2>
+<ul>
+<li><a href="#requirements">Requirements</a></li>
+<li><a href="#building-webassembly-binaries">Building WebAssembly binaries</a></li>
+<li><a href="#build-a-webpage-that-uses-fasttext">Build a webpage that uses fastText</a></li>
+<li><a href="#load-a-model">Load a model</a></li>
+<li><a href="#train-a-model">Train a model</a>
+<ul>
+<li><a href="#disclaimer">Disclaimer</a></li>
+<li><a href="#text-classification">Text classification</a></li>
+<li><a href="#word-representations">Word representations</a></li>
+</ul></li>
+<li><a href="#quantized-models">Quantized models</a></li>
+<li><a href="#api">API</a>
+<ul>
+<li><a href="#model-object"><code>model</code> object</a></li>
+<li><a href="#loadmodel"><code>loadModel</code></a></li>
+<li><a href="#trainsupervised"><code>trainSupervised</code></a></li>
+<li><a href="#trainunsupervised"><code>trainUnsupervised</code></a></li>
+</ul></li>
+</ul>
+<h1><a class="anchor" aria-hidden="true" id="requirements"></a><a href="#requirements" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Requirements</h1>
+<p>For building <a href="https://fasttext.cc/">fastText</a> with WebAssembly bindings, we will need:</p>
+<ul>
+<li>a compiler with good C++11 support, since it uses C++11 features,</li>
+<li><a href="https://emscripten.org/">emscripten</a>,</li>
+<li>a <a href="https://caniuse.com/#feat=wasm">browser that supports WebAssembly</a>.</li>
+</ul>
+<h1><a class="anchor" aria-hidden="true" id="building-webassembly-binaries"></a><a href="#building-webassembly-binaries" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Building WebAssembly binaries</h1>
+<p>First, download and install emscripten sdk as <a href="https://emscripten.org/docs/getting_started/downloads.html#installation-instructions">described here</a>.</p>
+<p>We need to make sure we activated the PATH for emscripten:</p>
+<pre><code class="hljs css language-bash">$ <span class="hljs-built_in">source</span> /path/to/emsdk/emsdk_env.sh
+</code></pre>
+<p>Clone <a href="https://github.com/facebookresearch/fastText/">fastText repository</a>:</p>
+<pre><code class="hljs css language-bash">$ git <span class="hljs-built_in">clone</span> git@github.com:facebookresearch/fastText.git
+</code></pre>
+<p>Build WebAssembly binaries:</p>
+<pre><code class="hljs css language-bash">$ <span class="hljs-built_in">cd</span> fastText
+$ make wasm
+</code></pre>
+<p>This will create <code>fasttext_wasm.wasm</code> and <code>fasttext_wasm.js</code> in the <code>webassembly</code> folder.</p>
+<ul>
+<li><code>fasttext_wasm.wasm</code> is the binary file that will be loaded in the webassembly's virtual machine.</li>
+<li><code>fasttext_wasm.js</code> is a javascript file built by emscripten, that helps to load <code>fasttext_wasm.wasm</code> file in the virtual machine and provides some helper functions.</li>
+<li><code>fasttext.js</code> is the wrapper that provides a nice API for fastText.</li>
+</ul>
+<p>As the user of the library, we will interact with classes and methods defined in <code>fasttext.js</code>. We won't deal with <code>fasttext_wasm.*</code> files, but they are necessary to run fastText in the javascript's VM.</p>
+<h1><a class="anchor" aria-hidden="true" id="build-a-webpage-that-uses-fasttext"></a><a href="#build-a-webpage-that-uses-fasttext" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Build a webpage that uses fastText</h1>
+<p>In this section we are going to build a minimal HTML page that loads fastText WebAssembly module.</p>
+<p>At the root of the repository, create a folder <code>webassembly-test</code>, and copy the files mentioned in the previous section:</p>
+<pre><code class="hljs css language-bash">$ mkdir webassembly-test
+$ cp webassembly/fasttext_wasm.wasm webassembly-test/
+$ cp webassembly/fasttext_wasm.js webassembly-test/
+$ cp webassembly/fasttext.js webassembly-test/
+</code></pre>
+<p>Inside that folder, create <code>test.html</code> file containing:</p>
+<pre><code class="hljs css language-html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">html</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">"UTF-8"</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"viewport"</span> <span class="hljs-attr">content</span>=<span class="hljs-string">"width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"module"</span>&gt;</span><span class="javascript">
+        <span class="hljs-keyword">import</span> {FastText, addOnPostRun} <span class="hljs-keyword">from</span> <span class="hljs-string">"./fasttext.js"</span>;
+
+        addOnPostRun(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+            <span class="hljs-keyword">let</span> ft = <span class="hljs-keyword">new</span> FastText();
+            <span class="hljs-built_in">console</span>.log(ft);
+        });
+
+    </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span>
+</code></pre>
+<p>It is important to add the attribute <code>type=&quot;module&quot;</code> to the script tag, because we use ES6 style imports. <code>addOnPostRun</code> is a function that helps to provide a handler that is called when fastText is successfully loaded in the virtual machine. Once we are called inside that function, we can create an instance of <code>FastText</code>, that we will use to access the api.</p>
+<p>Let's test it.</p>
+<p>Opening <code>test.html</code> directly in the browser won't work since we are dynamically loading webassembly resources. The <code>test.html</code> file must be served from a webserver. The easiest way to achieve this is to use python's simple http server module:</p>
+<pre><code class="hljs css language-bash">$ <span class="hljs-built_in">cd</span> webassembly-test
+$ python -m SimpleHTTPServer
+</code></pre>
+<p>Then browse <code>http://localhost:8000/test.html</code> in your browser. If everything worked as expected, you should see <code>FastText {f: FastText}</code> in the javascript console.</p>
+<h1><a class="anchor" aria-hidden="true" id="load-a-model"></a><a href="#load-a-model" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Load a model</h1>
+<p>In order to load a fastText model that was already trained, we can use <code>loadModel</code> function. In the example below we use <code>lid.176.ftz</code> that you can download from <a href="/docs/en/language-identification.html">here</a>.</p>
+<p>Place the model file you want to load inside the same directory than the HTML file, and inside the script part:</p>
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">import</span> {FastText, addOnPostRun} <span class="hljs-keyword">from</span> <span class="hljs-string">"./fasttext.js"</span>;
+
+<span class="hljs-keyword">const</span> printVector = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">predictions</span>) </span>{
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i=<span class="hljs-number">0</span>; i&lt;predictions.size(); i++){
+        <span class="hljs-keyword">let</span> prediction = predictions.get(i);
+        <span class="hljs-built_in">console</span>.log(predictions.get(i));
+    }
+}
+
+addOnPostRun(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    <span class="hljs-keyword">let</span> ft = <span class="hljs-keyword">new</span> FastText();
+
+    <span class="hljs-keyword">const</span> url = <span class="hljs-string">"lid.176.ftz"</span>;
+    ft.loadModel(url).then(<span class="hljs-function"><span class="hljs-params">model</span> =&gt;</span> {
+        
+        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Model loaded."</span>)
+
+        <span class="hljs-keyword">let</span> text = <span class="hljs-string">"Bonjour à tous. Ceci est du français"</span>;
+        <span class="hljs-built_in">console</span>.log(text);
+        printVector(model.predict(text, <span class="hljs-number">5</span>, <span class="hljs-number">0.0</span>));
+
+        text = <span class="hljs-string">"Hello, world. This is english"</span>;
+        <span class="hljs-built_in">console</span>.log(text);
+        printVector(model.predict(text, <span class="hljs-number">5</span>, <span class="hljs-number">0.0</span>));
+
+        text = <span class="hljs-string">"Merhaba dünya. Bu da türkçe"</span>
+        <span class="hljs-built_in">console</span>.log(text);
+        printVector(model.predict(text, <span class="hljs-number">5</span>, <span class="hljs-number">0.0</span>));
+    });
+});
+</code></pre>
+<p><code>loadModel</code> function returns a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> that resolves to a <code>model</code> object. We can then use <a href="#model-object"><code>model</code> object</a> to call various methods, such as <code>predict</code>.</p>
+<p>We define <code>printVector</code> function that loops through a representation of <code>std::vector</code> in javascript, and displays the items. Here, we use it to display prediction results.</p>
+<p>You can also refer to <code>webassembly/doc/examples/predict.html</code> in the source code.</p>
+<h1><a class="anchor" aria-hidden="true" id="calling-other-methods"></a><a href="#calling-other-methods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Calling other methods</h1>
+<p>Once the model is loaded, you can call any method like <code>model.getDimension()</code> or <code>model.getSubwords(word)</code>. You can refer to <a href="#api">this</a> section of the document for a complete API. You can also have a look to <code>webassembly/doc/examples/misc.html</code> file in the source code for further examples.</p>
+<h1><a class="anchor" aria-hidden="true" id="train-a-model"></a><a href="#train-a-model" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Train a model</h1>
+<h3><a class="anchor" aria-hidden="true" id="disclaimer"></a><a href="#disclaimer" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Disclaimer</h3>
+<p>It is also possible to train a model inside the browser with fastText's WebAssembly API. The training can be slow because at the time of writing, it is not possible to use multithreading in WebAssembly (along with dynamic memory growth). So most of the time, we would train a model with the python or command line tool, eventually quantize it, and load it in the WebAssembly module. However, training a model inside the browser can be useful for creating animations or educational tools.</p>
+<h3><a class="anchor" aria-hidden="true" id="text-classification"></a><a href="#text-classification" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Text classification</h3>
+<p>Place the <code>cooking.train</code> file (as described <a href="/docs/en/supervised-tutorial.html">here</a>) inside the same directory:</p>
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">import</span> {FastText, addOnPostRun} <span class="hljs-keyword">from</span> <span class="hljs-string">"./fasttext.js"</span>;
+
+<span class="hljs-keyword">const</span> trainCallback = <span class="hljs-function">(<span class="hljs-params">progress, loss, wst, lr, eta</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log([progress, loss, wst, lr, eta]);
+};
+
+addOnPostRun(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    <span class="hljs-keyword">let</span> ft = <span class="hljs-keyword">new</span> FastText();
+
+    ft.trainSupervised(<span class="hljs-string">"cooking.train"</span>, {
+        <span class="hljs-string">'lr'</span>:<span class="hljs-number">1.0</span>,
+        <span class="hljs-string">'epoch'</span>:<span class="hljs-number">10</span>,
+        <span class="hljs-string">'loss'</span>:<span class="hljs-string">'hs'</span>,
+        <span class="hljs-string">'wordNgrams'</span>:<span class="hljs-number">2</span>,
+        <span class="hljs-string">'dim'</span>:<span class="hljs-number">50</span>,
+        <span class="hljs-string">'bucket'</span>:<span class="hljs-number">200000</span>
+    }, trainCallback).then(<span class="hljs-function"><span class="hljs-params">model</span> =&gt;</span> {
+        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Trained.'</span>);
+    });
+});
+</code></pre>
+<p><code>trainCallback</code> function is called by the module to show progress, average training cost, number of words per second (per thread, but there is only one thread), learning rate, estimated remaining time.</p>
+<h3><a class="anchor" aria-hidden="true" id="word-representations"></a><a href="#word-representations" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Word representations</h3>
+<p>Place the <code>fil9</code> file (as described <a href="/docs/en/unsupervised-tutorial.html">here</a>) inside the same directory:</p>
+<pre><code class="hljs css language-javascript"><span class="hljs-keyword">import</span> {FastText, addOnPostRun} <span class="hljs-keyword">from</span> <span class="hljs-string">"./fasttext.js"</span>;
+
+<span class="hljs-keyword">const</span> trainCallback = <span class="hljs-function">(<span class="hljs-params">progress, loss, wst, lr, eta</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log([progress, loss, wst, lr, eta]);
+};
+
+addOnPostRun(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    <span class="hljs-keyword">let</span> ft = <span class="hljs-keyword">new</span> FastText();
+
+    ft.trainUnsupervised(<span class="hljs-string">"fil9"</span>, <span class="hljs-string">'skipgram'</span>, {
+        <span class="hljs-string">'lr'</span>:<span class="hljs-number">0.1</span>,
+        <span class="hljs-string">'epoch'</span>:<span class="hljs-number">1</span>,
+        <span class="hljs-string">'loss'</span>:<span class="hljs-string">'ns'</span>,
+        <span class="hljs-string">'wordNgrams'</span>:<span class="hljs-number">2</span>,
+        <span class="hljs-string">'dim'</span>:<span class="hljs-number">50</span>,
+        <span class="hljs-string">'bucket'</span>:<span class="hljs-number">200000</span>
+    }, trainCallback).then(<span class="hljs-function"><span class="hljs-params">model</span> =&gt;</span> {
+        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Trained.'</span>);
+    });
+});
+</code></pre>
+<h1><a class="anchor" aria-hidden="true" id="quantized-models"></a><a href="#quantized-models" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Quantized models</h1>
+<p>Quantization is a technique that reduces the size of your models. You can quantize your model as <a href="/docs/en/faqs.html#how-can-i-reduce-the-size-of-my-fasttext-models">described here</a>.</p>
+<p>You can load a quantized model in fastText's WebAssembly module, as we did in <a href="#load-a-model">&quot;Load a model&quot; section</a>.</p>
+<p>In the context of web, it is particularly useful to have smaller models since they can be downloaded much faster. You can use our autotune feature as <a href="/docs/en/autotune.html#constrain-model-size">described here</a> in order to find the best trade-off between accuracy and model size that fits your needs.</p>
+<h1><a class="anchor" aria-hidden="true" id="api"></a><a href="#api" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>API</h1>
+<h2><a class="anchor" aria-hidden="true" id="model-object"></a><a href="#model-object" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>model</code> object</h2>
+<p><code>trainSupervised</code>, <code>trainUnsupervised</code> and <code>loadModel</code> functions return a Promise that resolves to an instance of <code>FastTextModel</code> class, that we generaly name <code>model</code> object.</p>
+<p>This object exposes several functions:</p>
+<pre><code class="hljs css language-javascript">isQuant                  <span class="hljs-comment">// true if the model is quantized.</span>
+getDimension             <span class="hljs-comment">// the dimension (size) of a lookup vector (hidden layer).</span>
+getWordVector(word)      <span class="hljs-comment">// the vector representation of `word`.</span>
+getSentenceVector(text)  <span class="hljs-comment">// the vector representation of `text`.</span>
+getNearestNeighbors(word, k=<span class="hljs-number">10</span>)      <span class="hljs-comment">// nearest `k` neighbors of `word`.</span>
+getAnalogies(wordA, wordB, wordC, k) <span class="hljs-comment">// nearest `k` neighbors of the operation `wordA - wordB + wordC`.</span>
+getWordId(word)          <span class="hljs-comment">// get the word id within the dictionary.</span>
+getSubwordId(subword)    <span class="hljs-comment">// the index (within input matrix) a subword hashes to.</span>
+getSubwords(word)        <span class="hljs-comment">// the subwords and their indicies.</span>
+getInputVector(ind)      <span class="hljs-comment">// given an index, get the corresponding vector of the Input Matrix.</span>
+predict(text, k = <span class="hljs-number">1</span>, threshold = <span class="hljs-number">0.0</span>) <span class="hljs-comment">// Given a string, get a list of labels and a list of corresponding</span>
+                                      <span class="hljs-comment">// probabilities. k controls the number of returned labels.</span>
+getInputMatrix()         <span class="hljs-comment">// get a reference to the full input matrix of a (non-quantized) Model.</span>
+getOutputMatrix()        <span class="hljs-comment">// get a reference to the full output matrix of a (non-quantized) Model.</span>
+getWords()               <span class="hljs-comment">// get the entire list of words of the dictionary including the frequency</span>
+                         <span class="hljs-comment">// of the individual words. This does not include any subwords. For that</span>
+                         <span class="hljs-comment">// please consult the function get_subwords.</span>
+getLabels()              <span class="hljs-comment">// get the entire list of labels of the dictionary including the frequency</span>
+getLine(text)            <span class="hljs-comment">// split a line of text into words and labels.</span>
+saveModel()              <span class="hljs-comment">// saves the model file in WebAssembly's in-memory FS and returns a blob</span>
+test(url, k, threshold)  <span class="hljs-comment">// downloads the test file from the specified url, evaluates the supervised model with it.</span>
+</code></pre>
+<p>You can also have a look to <code>webassembly/doc/examples/misc.html</code> file in the source code for further examples.</p>
+<h2><a class="anchor" aria-hidden="true" id="loadmodel"></a><a href="#loadmodel" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>loadModel</code></h2>
+<p>You can load a model as follows:</p>
+<p><code>ft.loadModel(url);</code></p>
+<p><code>loadModel</code> returns a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> that resolves to a <a href="#model-object"><code>model</code> object</a>.</p>
+<h2><a class="anchor" aria-hidden="true" id="trainsupervised"></a><a href="#trainsupervised" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>trainSupervised</code></h2>
+<p>You can train a text classification model with fastText's WebAssembly API as follows:</p>
+<p><code>ft.trainSupervised(trainFile, args, trainCallback);</code></p>
+<ul>
+<li><code>trainFile</code>:  the url of the input file</li>
+<li><code>args</code>: a dictionary with following keys:</li>
+</ul>
+<pre><code class="hljs css language-javascript">    lr                # learning rate [0.1]
+    dim               # size of word vectors [100]
+    ws                # size of the context window [5]
+    epoch             # number of epochs [5]
+    minCount          # minimal number of word occurences [1]
+    minCountLabel     # minimal number of label occurences [1]
+    minn              # min length of char ngram [0]
+    maxn              # max length of char ngram [0]
+    neg               # number of negatives sampled [5]
+    wordNgrams        # max length of word ngram [1]
+    loss              # loss function {ns, hs, softmax, ova} [softmax]
+    bucket            # number of buckets [2000000]
+    thread            # number of threads [number of cpus]
+    lrUpdateRate      # change the rate of updates for the learning rate [100]
+    t                 # sampling threshold [0.0001]
+    label             # label prefix ['__label__']
+</code></pre>
+<ul>
+<li><code>trainCallback</code> is the name of the function that will be called during training to provide various information. Set this argument to <code>null</code> if you don't need a callback, or provide a function that has the following signature: <code>function myCallback(progress, loss, wst, lr, eta){ ... }</code></li>
+</ul>
+<p><code>trainSupervised</code> returns a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> that resolves to a <a href="#model-object"><code>model</code> object</a>.</p>
+<h2><a class="anchor" aria-hidden="true" id="trainunsupervised"></a><a href="#trainunsupervised" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>trainUnsupervised</code></h2>
+<p>You can train a word representation model with fastText's WebAssembly API as follows:</p>
+<p><code>ft.trainUnsupervised(trainFile, modelname, args, trainCallback);</code></p>
+<ul>
+<li><code>trainFile</code>:  the url of the input file</li>
+<li><code>modelName</code>: must be <code>&quot;cbow&quot;</code> or <code>&quot;skipgram&quot;</code></li>
+<li><code>args</code>: a dictionary with following keys:</li>
+</ul>
+<pre><code class="hljs css language-javascript">    lr                # learning rate [0.05]
+    dim               # size of word vectors [100]
+    ws                # size of the context window [5]
+    epoch             # number of epochs [5]
+    minCount          # minimal number of word occurences [5]
+    minn              # min length of char ngram [3]
+    maxn              # max length of char ngram [6]
+    neg               # number of negatives sampled [5]
+    wordNgrams        # max length of word ngram [1]
+    loss              # loss function {ns, hs, softmax, ova} [ns]
+    bucket            # number of buckets [2000000]
+    thread            # number of threads [number of cpus]
+    lrUpdateRate      # change the rate of updates for the learning rate [100]
+    t                 # sampling threshold [0.0001]
+</code></pre>
+<ul>
+<li><code>trainCallback</code> is the name of the function that will be called during training to provide various information. Set this argument to <code>null</code> if you don't need a callback, or provide a function that has the following signature: <code>function myCallback(progress, loss, wst, lr, eta){ ... }</code></li>
+</ul>
+<p><code>trainUnsupervised</code> returns a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> that resolves to a <a href="#model-object"><code>model</code> object</a>.</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/en/python-module.html"><span class="arrow-prev">← </span><span>Python module</span></a><a class="docs-next button" href="/docs/en/faqs.html"><span>FAQ</span><span class="arrow-next"> →</span></a></div></div></div></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/fasttext-icon-white-web.png" alt="fastText"/></a><div><h5>Support</h5><a href="/docs/en/support.html">Getting Started</a><a href="/docs/en/supervised-tutorial.html">Tutorials</a><a href="/docs/en/faqs.html">FAQs</a><a href="/docs/en/api.html">API</a></div><div><h5>Community</h5><a href="https://www.facebook.com/groups/1174547215919768/" target="_blank">Facebook Group</a><a href="http://stackoverflow.com/questions/tagged/fasttext" target="_blank">Stack Overflow</a><a href="https://groups.google.com/forum/#!forum/fasttext-library" target="_blank">Google Group</a></div><div><h5>More</h5><a href="/blog">Blog</a><a href="https://github.com/facebookresearch/fastText" target="_blank">GitHub</a><a class="github-button" href="https://github.com/facebookresearch/fastText/" data-icon="octicon-star" data-count-href="/fastText/stargazers" data-count-api="/repos/fastText#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><a href="https://code.facebook.com/projects/" target="_blank" class="fbOpenSource"><img src="/img/oss_logo.png" alt="Facebook Open Source" width="170" height="45"/></a><section class="copyright">Copyright © 2020 Facebook Inc.</section></footer></div></body></html>
