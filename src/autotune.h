@@ -61,6 +61,7 @@ class Autotune {
   double getMetricScore(
       Meter& meter,
       const metric_name& metricName,
+      const double metricValue,
       const std::string& metricLabel) const;
   void printArgs(const Args& args, const Args& autotuneArgs);
   void printSkippedArgs(const Args& autotuneArgs);

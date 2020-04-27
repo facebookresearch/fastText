@@ -148,7 +148,7 @@ void test(const std::vector<std::string>& args) {
   FastText fasttext;
   fasttext.loadModel(model);
 
-  Meter meter;
+  Meter meter(false);
 
   if (input == "-") {
     fasttext.test(std::cin, k, threshold, meter);

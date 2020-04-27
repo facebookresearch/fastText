@@ -40,6 +40,18 @@ bool contains(const std::vector<T>& container, const T& value) {
       container.end();
 }
 
+template <typename T1, typename T2>
+bool containsSecond(
+    const std::vector<std::pair<T1, T2>>& container,
+    const T2& value) {
+  return std::find_if(
+             container.begin(),
+             container.end(),
+             [&value](const std::pair<T1, T2>& item) {
+               return item.second == value;
+             }) != container.end();
+}
+
 double getDuration(
     const std::chrono::steady_clock::time_point& start,
     const std::chrono::steady_clock::time_point& end);
@@ -52,6 +64,8 @@ class ClockPrint {
  private:
   int32_t duration_;
 };
+
+bool compareFirstLess(const std::pair<double, double>& l, const double& r);
 
 } // namespace utils
 

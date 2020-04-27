@@ -21,9 +21,64 @@ EOS = "</s>"
 BOW = "<"
 EOW = ">"
 
+displayed_errors = {}
+
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
+
+
+class _Meter(object):
+    def __init__(self, fasttext_model, meter):
+        self.f = fasttext_model
+        self.m = meter
+
+    def score_vs_true(self, label):
+        """Return scores and the gold of each sample for a specific label"""
+        label_id = self.f.get_label_id(label)
+        pair_list = self.m.scoreVsTrue(label_id)
+
+        if pair_list:
+            y_scores, y_true = zip(*pair_list)
+        else:
+            y_scores, y_true = ([], ())
+
+        return np.array(y_scores, copy=False), np.array(y_true, copy=False)
+
+    def precision_recall_curve(self, label=None):
+        """Return precision/recall curve"""
+        if label:
+            label_id = self.f.get_label_id(label)
+            pair_list = self.m.precisionRecallCurveLabel(label_id)
+        else:
+            pair_list = self.m.precisionRecallCurve()
+
+        if pair_list:
+            precision, recall = zip(*pair_list)
+        else:
+            precision, recall = ([], ())
+
+        return np.array(precision, copy=False), np.array(recall, copy=False)
+
+    def precision_at_recall(self, recall, label=None):
+        """Return precision for a given recall"""
+        if label:
+            label_id = self.f.get_label_id(label)
+            precision = self.m.precisionAtRecallLabel(label_id, recall)
+        else:
+            precision = self.m.precisionAtRecall(recall)
+
+        return precision
+
+    def recall_at_precision(self, precision, label=None):
+        """Return recall for a given precision"""
+        if label:
+            label_id = self.f.get_label_id(label)
+            recall = self.m.recallAtPrecisionLabel(label_id, precision)
+        else:
+            recall = self.m.recallAtPrecision(precision)
+
+        return recall
 
 
 class _FastText(object):
@@ -99,6 +154,13 @@ class _FastText(object):
         Returns -1 if word is not in the dictionary.
         """
         return self.f.getWordId(word)
+
+    def get_label_id(self, label):
+        """
+        Given a label, get the label id within the dictionary.
+        Returns -1 if label is not in the dictionary.
+        """
+        return self.f.getLabelId(label)
 
     def get_subword_id(self, subword):
         """
@@ -257,6 +319,11 @@ class _FastText(object):
         {'__label__italian-cuisine' : {'precision' : 0.7, 'recall' : 0.74}}
         """
         return self.f.testLabel(path, k, threshold)
+
+    def get_meter(self, path, k=-1):
+        meter = _Meter(self, self.f.getMeter(path, k))
+
+        return meter
 
     def quantize(
         self,

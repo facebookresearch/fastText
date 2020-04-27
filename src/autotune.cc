@@ -277,17 +277,28 @@ void Autotune::startTimer(const Args& args) {
 double Autotune::getMetricScore(
     Meter& meter,
     const metric_name& metricName,
+    const double metricValue,
     const std::string& metricLabel) const {
   double score = 0.0;
-  if (metricName == metric_name::f1score) {
-    score = meter.f1Score();
-  } else if (metricName == metric_name::labelf1score) {
-    int32_t labelId = fastText_->getDictionary()->getId(metricLabel);
+  int32_t labelId = -1;
+  if (!metricLabel.empty()) {
+    labelId = fastText_->getLabelId(metricLabel);
     if (labelId == -1) {
       throw std::runtime_error("Unknown autotune metric label");
     }
-    labelId = labelId - fastText_->getDictionary()->nwords();
+  }
+  if (metricName == metric_name::f1score) {
+    score = meter.f1Score();
+  } else if (metricName == metric_name::f1scoreLabel) {
     score = meter.f1Score(labelId);
+  } else if (metricName == metric_name::precisionAtRecall) {
+    score = meter.precisionAtRecall(metricValue);
+  } else if (metricName == metric_name::precisionAtRecallLabel) {
+    score = meter.precisionAtRecall(labelId, metricValue);
+  } else if (metricName == metric_name::recallAtPrecision) {
+    score = meter.recallAtPrecision(metricValue);
+  } else if (metricName == metric_name::recallAtPrecisionLabel) {
+    score = meter.recallAtPrecision(labelId, metricValue);
   } else {
     throw std::runtime_error("Unknown metric");
   }
@@ -397,14 +408,16 @@ void Autotune::train(const Args& autotuneArgs) {
       fastText_->train(trainArgs);
       bool sizeConstraintOK = quantize(trainArgs, autotuneArgs);
       if (sizeConstraintOK) {
-        Meter meter;
+        const auto& metricLabel = autotuneArgs.getAutotuneMetricLabel();
+        Meter meter(!metricLabel.empty());
         fastText_->test(
             validationFileStream, autotuneArgs.autotunePredictions, 0.0, meter);
 
         currentScore = getMetricScore(
             meter,
             autotuneArgs.getAutotuneMetric(),
-            autotuneArgs.getAutotuneMetricLabel());
+            autotuneArgs.getAutotuneMetricValue(),
+            metricLabel);
 
         if (bestScore_ == kUnknownBestScore || (currentScore > bestScore_)) {
           bestTrainArgs = trainArgs;

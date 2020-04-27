@@ -100,6 +100,14 @@ int32_t FastText::getSubwordId(const std::string& subword) const {
   return dict_->nwords() + h;
 }
 
+int32_t FastText::getLabelId(const std::string& label) const {
+  int32_t labelId = dict_->getId(label);
+  if (labelId != -1) {
+    labelId -= dict_->nwords();
+  }
+  return labelId;
+}
+
 void FastText::getWordVector(Vector& vec, const std::string& word) const {
   const std::vector<int32_t>& ngrams = dict_->getSubwords(word);
   vec.zero();
@@ -413,7 +421,7 @@ void FastText::skipgram(
 
 std::tuple<int64_t, double, double>
 FastText::test(std::istream& in, int32_t k, real threshold) {
-  Meter meter;
+  Meter meter(false);
   test(in, k, threshold, meter);
 
   return std::tuple<int64_t, double, double>(

@@ -65,7 +65,7 @@ meter.o: src/meter.cc src/meter.h
 fasttext.o: src/fasttext.cc src/*.h
 	$(CXX) $(CXXFLAGS) -c src/fasttext.cc
 
-fasttext: $(OBJS) src/fasttext.cc
+fasttext: $(OBJS) src/fasttext.cc src/main.cc
 	$(CXX) $(CXXFLAGS) $(OBJS) src/main.cc -o fasttext
 
 clean:
