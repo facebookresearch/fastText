@@ -126,7 +126,7 @@ class _FastText(object):
 
     def get_sentence_vector(self, text):
         """
-        Given a string, get a single vector represenation. This function
+        Given a string, get a single vector representation. This function
         assumes to be given a single line of text. We split words on
         whitespace (space, newline, tab, vertical tab) and the control
         characters carriage return, formfeed and the null character.
