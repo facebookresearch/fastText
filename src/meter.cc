@@ -39,9 +39,9 @@ void Meter::log(
     labelMetrics_[prediction.second].scoreVsTrue.emplace_back(score, gold);
   }
 
-  if (falseNegativeLabels_) {
-    for (const auto& label : labels) {
-      labelMetrics_[label].gold++;
+  for (const auto& label : labels) {
+    labelMetrics_[label].gold++;
+    if (falseNegativeLabels_) {
       if (!utils::containsSecond(predictions, label)) {
         labelMetrics_[label].scoreVsTrue.emplace_back(falseNegativeScore, 1.0);
       }
