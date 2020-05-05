@@ -101,7 +101,7 @@ def cpp_flag(compiler):
     """Return the -std=c++[11/14] compiler flag.
     The c++14 is preferred over c++11 (when it is available).
     """
-    standards = ['-std=c++14', '-std=c++11']
+    standards = ['-std=c++11']
     for standard in standards:
         if has_flag(compiler, [standard]):
             return standard

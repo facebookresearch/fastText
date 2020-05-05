@@ -199,28 +199,29 @@ PYBIND11_MODULE(fasttext_pybind, m) {
       .def("scoreVsTrue", &fasttext::Meter::scoreVsTrue)
       .def(
           "precisionRecallCurveLabel",
-          py::overload_cast<int32_t>(
-              &fasttext::Meter::precisionRecallCurve, py::const_))
+          (std::vector<std::pair<double, double>>(fasttext::Meter::*)(int32_t)
+               const) &
+              fasttext::Meter::precisionRecallCurve)
       .def(
           "precisionRecallCurve",
-          py::overload_cast<>(
-              &fasttext::Meter::precisionRecallCurve, py::const_))
+          (std::vector<std::pair<double, double>>(fasttext::Meter::*)() const) &
+              fasttext::Meter::precisionRecallCurve)
       .def(
           "precisionAtRecallLabel",
-          py::overload_cast<int32_t, double>(
-              &fasttext::Meter::precisionAtRecall, py::const_))
+          (double (fasttext::Meter::*)(int32_t, double) const) &
+              fasttext::Meter::precisionAtRecall)
       .def(
           "precisionAtRecall",
-          py::overload_cast<double>(
-              &fasttext::Meter::precisionAtRecall, py::const_))
+          (double (fasttext::Meter::*)(double) const) &
+              fasttext::Meter::precisionAtRecall)
       .def(
           "recallAtPrecisionLabel",
-          py::overload_cast<int32_t, double>(
-              &fasttext::Meter::recallAtPrecision, py::const_))
+          (double (fasttext::Meter::*)(int32_t, double) const) &
+              fasttext::Meter::recallAtPrecision)
       .def(
           "recallAtPrecision",
-          py::overload_cast<double>(
-              &fasttext::Meter::recallAtPrecision, py::const_));
+          (double (fasttext::Meter::*)(double) const) &
+              fasttext::Meter::recallAtPrecision);
 
   py::class_<fasttext::FastText>(m, "fasttext")
       .def(py::init<>())
