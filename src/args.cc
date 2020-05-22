@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <string>
 #include <unordered_map>
 
 namespace fasttext {
@@ -90,8 +91,16 @@ std::string Args::metricToString(metric_name mn) const {
   switch (mn) {
     case metric_name::f1score:
       return "f1score";
-    case metric_name::labelf1score:
-      return "labelf1score";
+    case metric_name::f1scoreLabel:
+      return "f1scoreLabel";
+    case metric_name::precisionAtRecall:
+      return "precisionAtRecall";
+    case metric_name::precisionAtRecallLabel:
+      return "precisionAtRecallLabel";
+    case metric_name::recallAtPrecision:
+      return "recallAtPrecision";
+    case metric_name::recallAtPrecisionLabel:
+      return "recallAtPrecisionLabel";
   }
   return "Unknown metric name!"; // should never happen
 }
@@ -262,7 +271,8 @@ void Args::printTrainingHelp() {
   std::cerr
       << "\nThe following arguments for training are optional:\n"
       << "  -lr                 learning rate [" << lr << "]\n"
-      << "  -lrUpdateRate       change the rate of updates for the learning rate ["
+      << "  -lrUpdateRate       change the rate of updates for the learning "
+         "rate ["
       << lrUpdateRate << "]\n"
       << "  -dim                size of word vectors [" << dim << "]\n"
       << "  -ws                 size of the context window [" << ws << "]\n"
@@ -270,9 +280,11 @@ void Args::printTrainingHelp() {
       << "  -neg                number of negatives sampled [" << neg << "]\n"
       << "  -loss               loss function {ns, hs, softmax, one-vs-all} ["
       << lossToString(loss) << "]\n"
-      << "  -thread             number of threads (set to 1 to ensure reproducible results) ["
+      << "  -thread             number of threads (set to 1 to ensure "
+         "reproducible results) ["
       << thread << "]\n"
-      << "  -pretrainedVectors  pretrained word vectors for supervised learning ["
+      << "  -pretrainedVectors  pretrained word vectors for supervised "
+         "learning ["
       << pretrainedVectors << "]\n"
       << "  -saveOutput         whether output params should be saved ["
       << boolToString(saveOutput) << "]\n"
@@ -280,17 +292,19 @@ void Args::printTrainingHelp() {
 }
 
 void Args::printAutotuneHelp() {
-  std::cerr
-      << "\nThe following arguments are for autotune:\n"
-      << "  -autotune-validation            validation file to be used for evaluation\n"
-      << "  -autotune-metric                metric objective {f1, f1:labelname} ["
-      << autotuneMetric << "]\n"
-      << "  -autotune-predictions           number of predictions used for evaluation  ["
-      << autotunePredictions << "]\n"
-      << "  -autotune-duration              maximum duration in seconds ["
-      << autotuneDuration << "]\n"
-      << "  -autotune-modelsize             constraint model file size ["
-      << autotuneModelSize << "] (empty = do not quantize)\n";
+  std::cerr << "\nThe following arguments are for autotune:\n"
+            << "  -autotune-validation            validation file to be used "
+               "for evaluation\n"
+            << "  -autotune-metric                metric objective {f1, "
+               "f1:labelname} ["
+            << autotuneMetric << "]\n"
+            << "  -autotune-predictions           number of predictions used "
+               "for evaluation  ["
+            << autotunePredictions << "]\n"
+            << "  -autotune-duration              maximum duration in seconds ["
+            << autotuneDuration << "]\n"
+            << "  -autotune-modelsize             constraint model file size ["
+            << autotuneModelSize << "] (empty = do not quantize)\n";
 }
 
 void Args::printQuantizationHelp() {
@@ -298,7 +312,8 @@ void Args::printQuantizationHelp() {
       << "\nThe following arguments for quantization are optional:\n"
       << "  -cutoff             number of words and ngrams to retain ["
       << cutoff << "]\n"
-      << "  -retrain            whether embeddings are finetuned if a cutoff is applied ["
+      << "  -retrain            whether embeddings are finetuned if a cutoff "
+         "is applied ["
       << boolToString(retrain) << "]\n"
       << "  -qnorm              whether the norm is quantized separately ["
       << boolToString(qnorm) << "]\n"
@@ -382,22 +397,59 @@ void Args::setManual(const std::string& argName) {
 
 metric_name Args::getAutotuneMetric() const {
   if (autotuneMetric.substr(0, 3) == "f1:") {
-    return metric_name::labelf1score;
+    return metric_name::f1scoreLabel;
   } else if (autotuneMetric == "f1") {
     return metric_name::f1score;
+  } else if (autotuneMetric.substr(0, 18) == "precisionAtRecall:") {
+    size_t semicolon = autotuneMetric.find(":", 18);
+    if (semicolon != std::string::npos) {
+      return metric_name::precisionAtRecallLabel;
+    }
+    return metric_name::precisionAtRecall;
+  } else if (autotuneMetric.substr(0, 18) == "recallAtPrecision:") {
+    size_t semicolon = autotuneMetric.find(":", 18);
+    if (semicolon != std::string::npos) {
+      return metric_name::recallAtPrecisionLabel;
+    }
+    return metric_name::recallAtPrecision;
   }
   throw std::runtime_error("Unknown metric : " + autotuneMetric);
 }
 
 std::string Args::getAutotuneMetricLabel() const {
-  if (getAutotuneMetric() == metric_name::labelf1score) {
-    std::string label = autotuneMetric.substr(3);
-    if (label.empty()) {
-      throw std::runtime_error("Empty metric label : " + autotuneMetric);
-    }
+  metric_name metric = getAutotuneMetric();
+  std::string label;
+  if (metric == metric_name::f1scoreLabel) {
+    label = autotuneMetric.substr(3);
+  } else if (
+      metric == metric_name::precisionAtRecallLabel ||
+      metric == metric_name::recallAtPrecisionLabel) {
+    size_t semicolon = autotuneMetric.find(":", 18);
+    label = autotuneMetric.substr(semicolon + 1);
+  } else {
     return label;
   }
-  return std::string();
+
+  if (label.empty()) {
+    throw std::runtime_error("Empty metric label : " + autotuneMetric);
+  }
+  return label;
+}
+
+double Args::getAutotuneMetricValue() const {
+  metric_name metric = getAutotuneMetric();
+  double value = 0.0;
+  if (metric == metric_name::precisionAtRecallLabel ||
+      metric == metric_name::precisionAtRecall ||
+      metric == metric_name::recallAtPrecisionLabel ||
+      metric == metric_name::recallAtPrecision) {
+    size_t firstSemicolon = 18; // semicolon position in "precisionAtRecall:"
+    size_t secondSemicolon = autotuneMetric.find(":", firstSemicolon);
+    const std::string valueStr =
+        autotuneMetric.substr(firstSemicolon, secondSemicolon - firstSemicolon);
+    value = std::stof(valueStr) / 100.0;
+  }
+  return value;
 }
 
 int64_t Args::getAutotuneModelSize() const {

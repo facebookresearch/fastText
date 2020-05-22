@@ -61,6 +61,7 @@ class Autotune {
   double getMetricScore(
       Meter& meter,
       const metric_name& metricName,
+      const double metricValue,
       const std::string& metricLabel) const;
   void printArgs(const Args& args, const Args& autotuneArgs);
   void printSkippedArgs(const Args& autotuneArgs);
@@ -72,9 +73,6 @@ class Autotune {
    public:
     TimeoutError() : std::runtime_error("Autotune timed out.") {}
   };
-
-  static const double kUnknownBestScore;
-  static const int kCutoffLimit;
 
  public:
   Autotune() = delete;

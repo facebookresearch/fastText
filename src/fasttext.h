@@ -12,6 +12,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <queue>
@@ -31,6 +32,10 @@
 namespace fasttext {
 
 class FastText {
+ public:
+  using TrainCallback =
+      std::function<void(float, float, double, double, int64_t)>;
+
  protected:
   std::shared_ptr<Args> args_;
   std::shared_ptr<Dictionary> dict_;
@@ -47,9 +52,9 @@ class FastText {
 
   void signModel(std::ostream&);
   bool checkModel(std::istream&);
-  void startThreads();
+  void startThreads(const TrainCallback& callback = {});
   void addInputVector(Vector&, int32_t) const;
-  void trainThread(int32_t);
+  void trainThread(int32_t, const TrainCallback& callback);
   std::vector<std::pair<real, std::string>> getNN(
       const DenseMatrix& wordVectors,
       const Vector& queryVec,
@@ -73,6 +78,7 @@ class FastText {
   void precomputeWordVectors(DenseMatrix& wordVectors);
   bool keepTraining(const int64_t ntokens) const;
   void buildModel();
+  std::tuple<int64_t, double, double> progressInfo(real progress);
 
  public:
   FastText();
@@ -80,6 +86,8 @@ class FastText {
   int32_t getWordId(const std::string& word) const;
 
   int32_t getSubwordId(const std::string& subword) const;
+
+  int32_t getLabelId(const std::string& label) const;
 
   void getWordVector(Vector& vec, const std::string& word) const;
 
@@ -114,7 +122,7 @@ class FastText {
 
   void getSentenceVector(std::istream& in, Vector& vec);
 
-  void quantize(const Args& qargs);
+  void quantize(const Args& qargs, const TrainCallback& callback = {});
 
   std::tuple<int64_t, double, double>
   test(std::istream& in, int32_t k, real threshold = 0.0);
@@ -146,7 +154,7 @@ class FastText {
       const std::string& wordB,
       const std::string& wordC);
 
-  void train(const Args& args);
+  void train(const Args& args, const TrainCallback& callback = {});
 
   void abort();
 

@@ -11,5 +11,4 @@
 namespace fasttext {
 
 typedef float real;
-
 }

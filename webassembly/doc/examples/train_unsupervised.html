@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+</head>
+<body>
+    <script type="module">
+        const printVector = function(predictions, limit) {
+            limit = limit || Infinity;
+
+            for (let i=0; i<predictions.size() && i<limit; i++){
+                let prediction = predictions.get(i);
+                console.log(predictions.get(i));
+            }
+        }
+
+        const trainCallback = (progress, loss, wst, lr, eta) => {
+            console.log([progress, loss, wst, lr, eta]);
+        };
+
+        import {FastText, addOnPostRun} from "./fasttext.js";
+
+        addOnPostRun(() => {
+            let ft = new FastText();
+
+            ft.trainUnsupervised("fil9", 'skipgram', {
+                'lr':0.1,
+                'epoch':1,
+                'loss':'ns',
+                'wordNgrams':2,
+                'dim':50,
+                'bucket':200000
+            }, trainCallback).then(model => {
+                let wordsInformation = model.getWords();
+                printVector(wordsInformation[0], 30);   // words
+                printVector(wordsInformation[1], 30);   // frequencies
+            });
+        });
+
+    </script>
+</body>
+
+</html>

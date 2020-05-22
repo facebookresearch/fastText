@@ -18,14 +18,14 @@ The first step of this tutorial is to install and build fastText. It only requir
 Let us start by downloading the [most recent release](https://github.com/facebookresearch/fastText/releases):
 
 ```bash
-$ wget https://github.com/facebookresearch/fastText/archive/v0.9.1.zip
-$ unzip v0.9.1.zip
+$ wget https://github.com/facebookresearch/fastText/archive/v0.9.2.zip
+$ unzip v0.9.2.zip
 ```
 
 Move to the fastText directory and build it:
 
 ```bash
-$ cd fastText-0.9.1
+$ cd fastText-0.9.2
 # for command line tool :
 $ make
 # for python bindings :
@@ -80,32 +80,32 @@ DESCRIPTION
 FUNCTIONS
     load_model(path)
         Load a model given a filepath and return a model object.
-    
+
     read_args(arg_list, arg_dict, arg_names, default_values)
-    
+
     tokenize(text)
         Given a string of text, tokenize it and return a list of tokens
-    
+
     train_supervised(*kargs, **kwargs)
         Train a supervised model and return a model object.
-        
+
         input must be a filepath. The input text does not need to be tokenized
         as per the tokenize function, but it must be preprocessed and encoded
         as UTF-8. You might want to consult standard preprocessing scripts such
         as tokenizer.perl mentioned here: http://www.statmt.org/wmt07/baseline.html
-        
+
         The input file must must contain at least one label per line. For an
         example consult the example datasets which are part of the fastText
         repository such as the dataset pulled by classification-example.sh.
-    
+
     train_unsupervised(*kargs, **kwargs)
         Train an unsupervised model and return a model object.
-        
+
         input must be a filepath. The input text does not need to be tokenized
         as per the tokenize function, but it must be preprocessed and encoded
         as UTF-8. You might want to consult standard preprocessing scripts such
         as tokenizer.perl mentioned here: http://www.statmt.org/wmt07/baseline.html
-        
+
         The input field must not contain any labels or use the specified label prefix
         unless it is ok for those words to be ignored. For an example consult the
         dataset pulled by the example script word-vector-example.sh, which is
@@ -366,7 +366,7 @@ This is much better! Another way to change the learning speed of our model is to
 <!--DOCUSAURUS_CODE_TABS-->
 <!--Command line-->
 ```bash
->> ./fasttext supervised -input cooking.train -output model_cooking -lr 1.0  
+>> ./fasttext supervised -input cooking.train -output model_cooking -lr 1.0
 Read 0M words
 Number of words:  9012
 Number of labels: 734

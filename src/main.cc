@@ -21,19 +21,25 @@ void printUsage() {
       << "usage: fasttext <command> <args>\n\n"
       << "The commands supported by fasttext are:\n\n"
       << "  supervised              train a supervised classifier\n"
-      << "  quantize                quantize a model to reduce the memory usage\n"
+      << "  quantize                quantize a model to reduce the memory "
+         "usage\n"
       << "  test                    evaluate a supervised classifier\n"
-      << "  test-label              print labels with precision and recall scores\n"
+      << "  test-label              print labels with precision and recall "
+         "scores\n"
       << "  predict                 predict most likely labels\n"
-      << "  predict-prob            predict most likely labels with probabilities\n"
+      << "  predict-prob            predict most likely labels with "
+         "probabilities\n"
       << "  skipgram                train a skipgram model\n"
       << "  cbow                    train a cbow model\n"
       << "  print-word-vectors      print word vectors given a trained model\n"
-      << "  print-sentence-vectors  print sentence vectors given a trained model\n"
-      << "  print-ngrams            print ngrams given a trained model and word\n"
+      << "  print-sentence-vectors  print sentence vectors given a trained "
+         "model\n"
+      << "  print-ngrams            print ngrams given a trained model and "
+         "word\n"
       << "  nn                      query for nearest neighbors\n"
       << "  analogies               query for analogies\n"
-      << "  dump                    dump arguments,dictionary,input/output vectors\n"
+      << "  dump                    dump arguments,dictionary,input/output "
+         "vectors\n"
       << std::endl;
 }
 
@@ -142,7 +148,7 @@ void test(const std::vector<std::string>& args) {
   FastText fasttext;
   fasttext.loadModel(model);
 
-  Meter meter;
+  Meter meter(false);
 
   if (input == "-") {
     fasttext.test(std::cin, k, threshold, meter);

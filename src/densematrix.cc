@@ -43,12 +43,17 @@ void DenseMatrix::uniformThread(real a, int block, int32_t seed) {
 }
 
 void DenseMatrix::uniform(real a, unsigned int thread, int32_t seed) {
-  std::vector<std::thread> threads;
-  for (int i = 0; i < thread; i++) {
-    threads.push_back(std::thread([=]() { uniformThread(a, i, seed); }));
-  }
-  for (int32_t i = 0; i < threads.size(); i++) {
-    threads[i].join();
+  if (thread > 1) {
+    std::vector<std::thread> threads;
+    for (int i = 0; i < thread; i++) {
+      threads.push_back(std::thread([=]() { uniformThread(a, i, seed); }));
+    }
+    for (int32_t i = 0; i < threads.size(); i++) {
+      threads[i].join();
+    }
+  } else {
+    // webassembly can't instantiate `std::thread`
+    uniformThread(a, 0, seed);
   }
 }
 
