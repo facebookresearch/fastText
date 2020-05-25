@@ -12,6 +12,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <mutex>
@@ -32,6 +33,10 @@
 namespace fasttext {
 
 class FastText {
+ public:
+  using TrainCallback =
+      std::function<void(float, float, double, double, int64_t)>;
+
  protected:
   std::shared_ptr<Args> args_;
   std::shared_ptr<Dictionary> dict_;
@@ -49,9 +54,9 @@ class FastText {
   void signModel(std::ostream&);
   bool checkModel(std::istream&);
   void streamVectorsParallelBatchLocked(int, int, std::ostream&, std::mutex&) const;
-  void startThreads();
+  void startThreads(const TrainCallback& callback = {});
   void addInputVector(Vector&, int32_t) const;
-  void trainThread(int32_t);
+  void trainThread(int32_t, const TrainCallback& callback);
   std::vector<std::pair<real, std::string>> getNN(
       const DenseMatrix& wordVectors,
       const Vector& queryVec,
@@ -74,6 +79,8 @@ class FastText {
   std::vector<int32_t> selectEmbeddings(int32_t cutoff) const;
   void precomputeWordVectors(DenseMatrix& wordVectors);
   bool keepTraining(const int64_t ntokens) const;
+  void buildModel();
+  std::tuple<int64_t, double, double> progressInfo(real progress);
 
  public:
   FastText();
@@ -81,6 +88,8 @@ class FastText {
   int32_t getWordId(const std::string& word) const;
 
   int32_t getSubwordId(const std::string& subword) const;
+
+  int32_t getLabelId(const std::string& label) const;
 
   void getWordVector(Vector& vec, const std::string& word) const;
 
@@ -97,6 +106,10 @@ class FastText {
 
   std::shared_ptr<const DenseMatrix> getInputMatrix() const;
 
+  void setMatrices(
+      const std::shared_ptr<DenseMatrix>& inputMatrix,
+      const std::shared_ptr<DenseMatrix>& outputMatrix);
+
   std::shared_ptr<const DenseMatrix> getOutputMatrix() const;
 
   void saveVectors(const std::string& filename);
@@ -111,7 +124,7 @@ class FastText {
 
   void getSentenceVector(std::istream& in, Vector& vec);
 
-  void quantize(const Args& qargs);
+  void quantize(const Args& qargs, const TrainCallback& callback = {});
 
   std::tuple<int64_t, double, double>
   test(std::istream& in, int32_t k, real threshold = 0.0);
@@ -143,7 +156,7 @@ class FastText {
       const std::string& wordB,
       const std::string& wordC);
 
-  void train(const Args& args);
+  void train(const Args& args, const TrainCallback& callback = {});
 
   void abort();
 

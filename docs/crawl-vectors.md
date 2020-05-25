@@ -7,6 +7,73 @@ We distribute pre-trained word vectors for 157 languages, trained on [*Common Cr
 These models were trained using CBOW with position-weights, in dimension 300, with character n-grams of length 5, a window of size 5 and 10 negatives.
 We also distribute three new word analogy datasets, for French, Hindi and Polish.
 
+### Download directly with command line or from python
+
+In order to download with command line or from python code, you must have installed the python package as [described here](/docs/en/support.html#building-fasttext-python-module).
+
+<!--DOCUSAURUS_CODE_TABS-->
+<!--Command line-->
+```bash
+$ ./download_model.py en     # English
+Downloading https://dl.fbaipublicfiles.com/fasttext/vectors-crawl/cc.en.300.bin.gz
+ (19.78%) [=========>                                         ]
+```
+Once the download is finished, use the model as usual:
+```bash
+$ ./fasttext nn cc.en.300.bin 10
+Query word?
+```
+<!--Python-->
+```py
+>>> import fasttext.util
+>>> fasttext.util.download_model('en', if_exists='ignore')  # English
+>>> ft = fasttext.load_model('cc.en.300.bin')
+```
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+### Adapt the dimension
+
+The pre-trained word vectors we distribute have dimension 300. If you need a smaller size, you can use our dimension reducer.
+In order to use that feature, you must have installed the python package as [described here](/docs/en/support.html#building-fasttext-python-module).
+
+For example, in order to get vectors of dimension 100:
+<!--DOCUSAURUS_CODE_TABS-->
+
+<!--Command line-->
+```bash
+$ ./reduce_model.py cc.en.300.bin 100
+Loading model
+Reducing matrix dimensions
+Saving model
+cc.en.100.bin saved
+```
+Then you can use the `cc.en.100.bin` model file as usual.
+
+<!--Python-->
+```py
+>>> import fasttext
+>>> import fasttext.util
+>>> ft = fasttext.load_model('cc.en.300.bin')
+>>> ft.get_dimension()
+300
+>>> fasttext.util.reduce_model(ft, 100)
+>>> ft.get_dimension()
+100
+```
+Then you can use `ft` model object as usual:
+```py
+>>> ft.get_word_vector('hello').shape
+(100,)
+>>> ft.get_nearest_neighbors('hello')
+[(0.775576114654541, u'heyyyy'), (0.7686290144920349, u'hellow'), (0.7663413286209106, u'hello-'), (0.7579624056816101, u'heyyyyy'), (0.7495524287223816, u'hullo'), (0.7473770380020142, u'.hello'), (0.7407292127609253, u'Hiiiii'), (0.7402616739273071, u'hellooo'), (0.7399682402610779, u'hello.'), (0.7396857738494873, u'Heyyyyy')]
+```
+or save it for later use:
+```py
+>>> ft.save_model('cc.en.100.bin')
+```
+<!--END_DOCUSAURUS_CODE_TABS-->
+
+
 ### Format
 
 The word vectors are available in both binary and text formats.

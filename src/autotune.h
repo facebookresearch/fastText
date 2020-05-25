@@ -28,6 +28,7 @@ class AutotuneStrategy {
   int bestMinnIndex_;
   int bestDsubExponent_;
   int bestNonzeroBucket_;
+  int originalBucket_;
   std::vector<int> minnChoices_;
   int getIndex(int val, const std::vector<int>& choices);
 
@@ -60,6 +61,7 @@ class Autotune {
   double getMetricScore(
       Meter& meter,
       const metric_name& metricName,
+      const double metricValue,
       const std::string& metricLabel) const;
   void printArgs(const Args& args, const Args& autotuneArgs);
   void printSkippedArgs(const Args& autotuneArgs);
@@ -71,9 +73,6 @@ class Autotune {
    public:
     TimeoutError() : std::runtime_error("Autotune timed out.") {}
   };
-
-  static constexpr double kUnknownBestScore = -1.0;
-  static constexpr int kCutoffLimit = 256;
 
  public:
   Autotune() = delete;

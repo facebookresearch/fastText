@@ -9,12 +9,10 @@
 #include "autotune.h"
 
 #include <algorithm>
-#include <cassert>
 #include <csignal>
 #include <functional>
 #include <iomanip>
 #include <iostream>
-#include <numeric>
 #include <random>
 #include <thread>
 
@@ -57,6 +55,9 @@ class ElapsedTimeMarker {
 } // namespace
 
 namespace fasttext {
+
+constexpr double kUnknownBestScore = -1.0;
+constexpr int kCutoffLimit = 256;
 
 template <typename T>
 T getArgGauss(
@@ -116,7 +117,8 @@ AutotuneStrategy::AutotuneStrategy(
       trials_(0),
       bestMinnIndex_(0),
       bestDsubExponent_(1),
-      bestNonzeroBucket_(2000000) {
+      bestNonzeroBucket_(2000000),
+      originalBucket_(originalArgs.bucket) {
   minnChoices_ = {0, 2, 3};
   updateBest(originalArgs);
 }
@@ -169,13 +171,14 @@ Args AutotuneStrategy::ask(double elapsed) {
     }
   }
   if (!args.isManual("bucket")) {
-    if (args.wordNgrams <= 1 && args.maxn == 0) {
-      args.bucket = 0;
-    } else {
-      int nonZeroBucket = updateArgGauss(
-          bestNonzeroBucket_, 10000, 10000000, 2.0, 1.5, t, false, rng_);
-      args.bucket = nonZeroBucket;
-    }
+    int nonZeroBucket = updateArgGauss(
+        bestNonzeroBucket_, 10000, 10000000, 2.0, 1.5, t, false, rng_);
+    args.bucket = nonZeroBucket;
+  } else {
+    args.bucket = originalBucket_;
+  }
+  if (args.wordNgrams <= 1 && args.maxn == 0) {
+    args.bucket = 0;
   }
   if (!args.isManual("loss")) {
     args.loss = loss_name::softmax;
@@ -222,7 +225,7 @@ void Autotune::printInfo(double maxDuration) {
   std::cerr << std::setprecision(1) << std::setw(5) << progress << "%";
   std::cerr << " Trials: " << std::setw(4) << trials_;
   std::cerr << " Best score: " << std::setw(9) << std::setprecision(6);
-  if (bestScore_ == Autotune::kUnknownBestScore) {
+  if (bestScore_ == kUnknownBestScore) {
     std::cerr << "unknown";
   } else {
     std::cerr << bestScore_;
@@ -259,7 +262,7 @@ void Autotune::startTimer(const Args& args) {
   std::chrono::steady_clock::time_point start =
       std::chrono::steady_clock::now();
   timer_ = std::thread([=]() { timer(start, args.autotuneDuration); });
-  bestScore_ = Autotune::kUnknownBestScore;
+  bestScore_ = kUnknownBestScore;
   trials_ = 0;
   continueTraining_ = true;
 
@@ -274,17 +277,28 @@ void Autotune::startTimer(const Args& args) {
 double Autotune::getMetricScore(
     Meter& meter,
     const metric_name& metricName,
+    const double metricValue,
     const std::string& metricLabel) const {
   double score = 0.0;
-  if (metricName == metric_name::f1score) {
-    score = meter.f1Score();
-  } else if (metricName == metric_name::labelf1score) {
-    int32_t labelId = fastText_->getDictionary()->getId(metricLabel);
+  int32_t labelId = -1;
+  if (!metricLabel.empty()) {
+    labelId = fastText_->getLabelId(metricLabel);
     if (labelId == -1) {
       throw std::runtime_error("Unknown autotune metric label");
     }
-    labelId = labelId - fastText_->getDictionary()->nwords();
+  }
+  if (metricName == metric_name::f1score) {
+    score = meter.f1Score();
+  } else if (metricName == metric_name::f1scoreLabel) {
     score = meter.f1Score(labelId);
+  } else if (metricName == metric_name::precisionAtRecall) {
+    score = meter.precisionAtRecall(metricValue);
+  } else if (metricName == metric_name::precisionAtRecallLabel) {
+    score = meter.precisionAtRecall(labelId, metricValue);
+  } else if (metricName == metric_name::recallAtPrecision) {
+    score = meter.recallAtPrecision(metricValue);
+  } else if (metricName == metric_name::recallAtPrecisionLabel) {
+    score = meter.recallAtPrecision(labelId, metricValue);
   } else {
     throw std::runtime_error("Unknown metric");
   }
@@ -386,23 +400,26 @@ void Autotune::train(const Args& autotuneArgs) {
     trials_++;
 
     trainArgs = strategy_->ask(elapsed_);
+    LOG_VAL(Trial, trials_)
+    printArgs(trainArgs, autotuneArgs);
     ElapsedTimeMarker elapsedTimeMarker;
     double currentScore = std::numeric_limits<double>::quiet_NaN();
     try {
       fastText_->train(trainArgs);
       bool sizeConstraintOK = quantize(trainArgs, autotuneArgs);
       if (sizeConstraintOK) {
-        Meter meter;
+        const auto& metricLabel = autotuneArgs.getAutotuneMetricLabel();
+        Meter meter(!metricLabel.empty());
         fastText_->test(
             validationFileStream, autotuneArgs.autotunePredictions, 0.0, meter);
 
         currentScore = getMetricScore(
             meter,
             autotuneArgs.getAutotuneMetric(),
-            autotuneArgs.getAutotuneMetricLabel());
+            autotuneArgs.getAutotuneMetricValue(),
+            metricLabel);
 
-        if (bestScore_ == Autotune::kUnknownBestScore ||
-            (currentScore > bestScore_)) {
+        if (bestScore_ == kUnknownBestScore || (currentScore > bestScore_)) {
           bestTrainArgs = trainArgs;
           bestScore_ = currentScore;
           strategy_->updateBest(bestTrainArgs);
@@ -412,21 +429,21 @@ void Autotune::train(const Args& autotuneArgs) {
         if (!sizeConstraintWarning && trials_ > 10 &&
             sizeConstraintFailed_ > (trials_ / 2)) {
           sizeConstraintWarning = true;
-          std::cerr
-              << std::endl
-              << "Warning : requested model size is probably too small. You may want to increase `autotune-modelsize`."
-              << std::endl;
+          std::cerr << std::endl
+                    << "Warning : requested model size is probably too small. "
+                       "You may want to increase `autotune-modelsize`."
+                    << std::endl;
         }
       }
     } catch (DenseMatrix::EncounteredNaNError&) {
       // ignore diverging loss and go on
+    } catch (std::bad_alloc&) {
+      // ignore parameter samples asking too much memory
     } catch (TimeoutError&) {
       break;
     } catch (FastText::AbortError&) {
       break;
     }
-    LOG_VAL(Trial, trials_)
-    printArgs(trainArgs, autotuneArgs);
     LOG_VAL_NAN(currentScore, currentScore)
     LOG_VAL(train took, elapsedTimeMarker.getElapsed())
   }
@@ -434,14 +451,16 @@ void Autotune::train(const Args& autotuneArgs) {
     timer_.join();
   }
 
-  if (bestScore_ == Autotune::kUnknownBestScore) {
+  if (bestScore_ == kUnknownBestScore) {
     std::string errorMessage;
     if (sizeConstraintWarning) {
       errorMessage =
-          "Couldn't fulfil model size constraint: please increase `autotune-modelsize`.";
+          "Couldn't fulfil model size constraint: please increase "
+          "`autotune-modelsize`.";
     } else {
       errorMessage =
-          "Didn't have enough time to train once: please increase `autotune-duration`.";
+          "Didn't have enough time to train once: please increase "
+          "`autotune-duration`.";
     }
     throw std::runtime_error(errorMessage);
   } else {

@@ -61,3 +61,6 @@ If you run fastText multiple times you'll obtain slightly different results each
 
 ## Why do I get a probability of 1.00001?
 This is a known rounding issue. You can consider it as 1.0.
+
+## How can I change the dimension of word vectors of a model file?
+If you already trained a model, or downloaded a pre-trained word vectors model, you can adapt the dimension of the word vectors with the `reduce_model.py` script or by calling `fasttext.util.reduce_model` from python, as [described here](/docs/en/crawl-vectors.html#adapt-the-dimension)

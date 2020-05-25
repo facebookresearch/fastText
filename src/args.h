@@ -18,7 +18,14 @@ namespace fasttext {
 
 enum class model_name : int { cbow = 1, sg, sup };
 enum class loss_name : int { hs = 1, ns, softmax, ova };
-enum class metric_name : int { f1score = 1, labelf1score };
+enum class metric_name : int {
+  f1score = 1,
+  f1scoreLabel,
+  precisionAtRecall,
+  precisionAtRecallLabel,
+  recallAtPrecision,
+  recallAtPrecisionLabel
+};
 
 class Args {
  protected:
@@ -81,6 +88,7 @@ class Args {
   std::string lossToString(loss_name) const;
   metric_name getAutotuneMetric() const;
   std::string getAutotuneMetricLabel() const;
+  double getAutotuneMetricValue() const;
   int64_t getAutotuneModelSize() const;
 
   static constexpr double kUnlimitedModelSize = -1.0;

@@ -49,10 +49,18 @@ set(SOURCE_FILES
     src/utils.cc
     src/vector.cc)
 
+
+if (NOT MSVC)
+  include(GNUInstallDirs)
+  configure_file("fasttext.pc.in" "fasttext.pc" @ONLY)
+  install(FILES "${CMAKE_BINARY_DIR}/fasttext.pc" DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+endif()
+
 add_library(fasttext-shared SHARED ${SOURCE_FILES} ${HEADER_FILES})
 add_library(fasttext-static STATIC ${SOURCE_FILES} ${HEADER_FILES})
 add_library(fasttext-static_pic STATIC ${SOURCE_FILES} ${HEADER_FILES})
-set_target_properties(fasttext-shared PROPERTIES OUTPUT_NAME fasttext)
+set_target_properties(fasttext-shared PROPERTIES OUTPUT_NAME fasttext
+  SOVERSION "${fasttext_VERSION_MAJOR}")
 set_target_properties(fasttext-static PROPERTIES OUTPUT_NAME fasttext)
 set_target_properties(fasttext-static_pic PROPERTIES OUTPUT_NAME fasttext_pic
   POSITION_INDEPENDENT_CODE True)

@@ -136,3 +136,21 @@ This is equivalent to manually optimize the f1-score we get when we test with `m
 Sometimes, you may be interested in predicting more than one label. For example, if you were optimizing the hyperparameters manually to get the best score to predict two labels, you would test with `model.test("cooking.valid", k=2)`. You can also tell autotune to optimize the parameters by testing two labels with the `autotunePredictions` argument.
 <!--END_DOCUSAURUS_CODE_TABS-->
 
+You can also force autotune to optimize for the best precision for a given recall, or the best recall for a given precision, for all labels, or for a specific label:
+
+For example, in order to get the best precision at recall = `30%`:
+```sh
+>> ./fasttext supervised [...] -autotune-metric precisionAtRecall:30
+```
+And to get the best precision at recall = `30%` for the label `__label__baking`:
+```sh
+>> ./fasttext supervised [...] -autotune-metric precisionAtRecall:30:__label__baking
+```
+
+Similarly, you can use `recallAtPrecision`:
+```sh
+>> ./fasttext supervised [...] -autotune-metric recallAtPrecision:30
+>> ./fasttext supervised [...] -autotune-metric recallAtPrecision:30:__label__baking
+```
+
+

@@ -44,6 +44,10 @@ std::ostream& operator<<(std::ostream& out, const ClockPrint& me) {
   return out;
 }
 
+bool compareFirstLess(const std::pair<double, double>& l, const double& r) {
+  return l.first < r;
+}
+
 } // namespace utils
 
 } // namespace fasttext

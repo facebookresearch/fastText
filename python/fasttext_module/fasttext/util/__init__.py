@@ -11,3 +11,5 @@ from __future__ import unicode_literals
 
 from .util import test
 from .util import find_nearest_neighbor
+from .util import reduce_model
+from .util import download_model

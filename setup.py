@@ -21,7 +21,7 @@ import subprocess
 import platform
 import io
 
-__version__ = '0.9.1'
+__version__ = '0.9.2'
 FASTTEXT_SRC = "src"
 
 # Based on https://github.com/pybind/python_example
@@ -101,7 +101,7 @@ def cpp_flag(compiler):
     """Return the -std=c++[11/14] compiler flag.
     The c++14 is preferred over c++11 (when it is available).
     """
-    standards = ['-std=c++14', '-std=c++11']
+    standards = ['-std=c++11']
     for standard in standards:
         if has_flag(compiler, [standard]):
             return standard

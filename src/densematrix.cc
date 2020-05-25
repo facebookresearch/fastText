@@ -8,7 +8,6 @@
 
 #include "densematrix.h"
 
-#include <exception>
 #include <random>
 #include <stdexcept>
 #include <thread>
@@ -24,6 +23,9 @@ DenseMatrix::DenseMatrix(int64_t m, int64_t n) : Matrix(m, n), data_(m * n) {}
 
 DenseMatrix::DenseMatrix(DenseMatrix&& other) noexcept
     : Matrix(other.m_, other.n_), data_(std::move(other.data_)) {}
+
+DenseMatrix::DenseMatrix(int64_t m, int64_t n, real* dataPtr)
+    : Matrix(m, n), data_(dataPtr, dataPtr + (m * n)) {}
 
 void DenseMatrix::zero() {
   std::fill(data_.begin(), data_.end(), 0.0);
@@ -41,12 +43,17 @@ void DenseMatrix::uniformThread(real a, int block, int32_t seed) {
 }
 
 void DenseMatrix::uniform(real a, unsigned int thread, int32_t seed) {
-  std::vector<std::thread> threads;
-  for (int i = 0; i < thread; i++) {
-    threads.push_back(std::thread([=]() { uniformThread(a, i, seed); }));
-  }
-  for (int32_t i = 0; i < threads.size(); i++) {
-    threads[i].join();
+  if (thread > 1) {
+    std::vector<std::thread> threads;
+    for (int i = 0; i < thread; i++) {
+      threads.push_back(std::thread([=]() { uniformThread(a, i, seed); }));
+    }
+    for (int32_t i = 0; i < threads.size(); i++) {
+      threads[i].join();
+    }
+  } else {
+    // webassembly can't instantiate `std::thread`
+    uniformThread(a, 0, seed);
   }
 }
 
