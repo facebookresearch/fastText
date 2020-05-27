@@ -24,10 +24,6 @@ EOW = ">"
 displayed_errors = {}
 
 
-def eprint(*args, **kwargs):
-    print(*args, file=sys.stderr, **kwargs)
-
-
 class _Meter(object):
     def __init__(self, fasttext_model, meter):
         self.f = fasttext_model
@@ -437,7 +433,6 @@ def tokenize(text):
 
 def load_model(path):
     """Load a model given a filepath and return a model object."""
-    eprint("Warning : `load_model` does not return WordVectorModel or SupervisedModel any more, but a `FastText` object which is very similar.")
     return _FastText(model_path=path)
 
 
