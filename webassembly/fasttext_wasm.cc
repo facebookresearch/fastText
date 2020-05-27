@@ -175,7 +175,7 @@ Meter test(
   if (!ifs.is_open()) {
     throw std::invalid_argument("Test file cannot be opened!");
   }
-  Meter meter;
+  Meter meter(false);
   fasttext->test(ifs, k, threshold, meter);
   ifs.close();
 
@@ -270,7 +270,7 @@ EMSCRIPTEN_BINDINGS(fasttext) {
           allow_raw_pointers());
 
   class_<Meter>("Meter")
-      .constructor<>()
+      .constructor<bool>()
       .property(
           "precision", select_overload<double(void) const>(&Meter::precision))
       .property("recall", select_overload<double(void) const>(&Meter::recall))
