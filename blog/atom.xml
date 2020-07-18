@@ -15,7 +15,6 @@
         <summary type="html"><![CDATA[<p>Today, we are happy to release a new version of the fastText python library. The main goal of this release is to merge two existing python modules: the official <code>fastText</code> module which was available on our github repository and the unofficial <code>fasttext</code> ...</p>]]></summary>
         <author>
             <name>Onur Çelebi</name>
-            <email/>
             <uri>https://research.fb.com/people/celebi-onur/</uri>
         </author>
     </entry>
@@ -29,7 +28,6 @@
 ]]></summary>
         <author>
             <name>Edouard Grave</name>
-            <email/>
             <uri>https://research.fb.com/people/grave-edouard/</uri>
         </author>
     </entry>
@@ -43,7 +41,6 @@
 ]]></summary>
         <author>
             <name>Armand Joulin</name>
-            <email/>
             <uri>https://research.fb.com/people/joulin-armand/</uri>
         </author>
     </entry>
@@ -59,7 +56,6 @@
 ]]></summary>
         <author>
             <name>Edouard Grave</name>
-            <email/>
             <uri>https://research.fb.com/people/grave-edouard/</uri>
         </author>
     </entry>
