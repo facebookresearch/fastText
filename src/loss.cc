@@ -80,14 +80,17 @@ void Loss::findKBest(
     if (output[i] < threshold) {
       continue;
     }
-    if (heap.size() == k && std_log(output[i]) < heap.front().first) {
+    if (heap.size() == k && output[i] < heap.front().first) {
       continue;
     }
-    heap.push_back(std::make_pair(std_log(output[i]), i));
+    heap.emplace_back(output[i], i);
     std::push_heap(heap.begin(), heap.end(), comparePairs);
     if (heap.size() > k) {
       std::pop_heap(heap.begin(), heap.end(), comparePairs);
       heap.pop_back();
+    }
+    for (auto& item : heap) {
+      item.first = std_log(item.first);
     }
   }
 }
