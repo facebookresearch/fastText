@@ -20,8 +20,14 @@ import os
 import subprocess
 import platform
 import io
+import imp
 
-__version__ = '0.9.2'
+
+__version__ = imp.load_source(
+    'fasttext.version',
+    os.path.join(os.path.dirname(__file__), 'python', 'fasttext_module', 'fasttext', 'version.py')
+).__version__
+
 FASTTEXT_SRC = "src"
 
 # Based on https://github.com/pybind/python_example
