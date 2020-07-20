@@ -11,7 +11,7 @@ In this tutorial, we show how to build these word vectors with the fastText tool
 In order to compute word vectors, you need a large text corpus. Depending on the corpus, the word vectors will capture different information. In this tutorial, we focus on Wikipedia's articles but other sources could be considered, like  news or Webcrawl (more examples [here](http://statmt.org/)). To download a raw dump of Wikipedia, run the following command:
 
 ```bash
-wget https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-pages-articles.xml.bz2
+$ wget https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-pages-articles.xml.bz2
 ```
 
 Downloading  the Wikipedia corpus takes some time. Instead, lets restrict our study to the  first 1 billion bytes of English Wikipedia. They can be found on Matt Mahoney's [website](http://mattmahoney.net/):
