@@ -29,11 +29,14 @@ If you use these models, please cite the following papers:
 
 [1] A. Joulin, E. Grave, P. Bojanowski, T. Mikolov, [*Bag of Tricks for Efficient Text Classification*](https://arxiv.org/abs/1607.01759)
 ```
-@article{joulin2016bag,
+@InProceedings{joulin2017bag,
   title={Bag of Tricks for Efficient Text Classification},
   author={Joulin, Armand and Grave, Edouard and Bojanowski, Piotr and Mikolov, Tomas},
-  journal={arXiv preprint arXiv:1607.01759},
-  year={2016}
+  booktitle={Proceedings of the 15th Conference of the European Chapter of the Association for Computational Linguistics: Volume 2, Short Papers},
+  month={April},
+  year={2017},
+  publisher={Association for Computational Linguistics},
+  pages={427--431},
 }
 ```
 [2] A. Joulin, E. Grave, P. Bojanowski, M. Douze, H. Jégou, T. Mikolov, [*FastText.zip: Compressing text classification models* ](https://arxiv.org/abs/1612.03651)
