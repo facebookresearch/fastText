@@ -217,7 +217,7 @@ The program will output one vector representation per line in the file.
 You can also quantize a supervised model to reduce its memory usage with the following command:
 
 ```
-$ ./fasttext quantize -output model
+$ ./fasttext quantize -input train_data.txt -output model
 ```
 This will create a `.ftz` file with a smaller memory footprint. All the standard functionality, like `test` or `predict` work the same way on the quantized models:
 ```
