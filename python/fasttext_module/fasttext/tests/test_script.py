@@ -452,6 +452,33 @@ class TestFastTextUnitPy(unittest.TestCase):
             gotError = True
         self.assertTrue(gotError)
 
+    def gen_test_predict_transpose(self, kwargs):
+        def check_single_sentence(pred, pred_t):
+            self.assertEqual(pred[0], pred_t[0])
+            self.assertTrue(np.array_equal(pred[1], pred_t[1]))
+            self.assertEqual(len(pred[0]), len(pred_t[0]))
+
+        def check_multi_sentence(pred, pred_t):
+            labels_all = []
+            probs_all = []
+            for pair in pred_t:
+                labels_all.append(pair[0])
+                probs_all.append(pair[1])
+            self.assertEqual(pred[0], labels_all)
+            self.assertTrue(np.array_equal(pred[1], probs_all))
+            self.assertEqual(len(pred_t), len(pred[0]))
+
+        f = build_supervised_model(get_random_data(100), kwargs)
+        text = [" ".join(get_random_words(20)) for i in range(3)]
+        # check list of sentences
+        pred = f.predict(text, k=5)
+        pred_t = f.predict(text, k=5, transpose_axis=True)
+        check_multi_sentence(pred, pred_t)
+        # check single sentence
+        pred = f.predict(text[0], k=2)
+        pred_t = f.predict(text[0], k=2, transpose_axis=True)
+        check_single_sentence(pred, pred_t)
+
 
 # Generate a supervised test case
 # The returned function will be set as an attribute to a test class
