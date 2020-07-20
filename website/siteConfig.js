@@ -100,6 +100,10 @@ const siteConfig = {
   scripts: [
     '/tabber.js',
   ],
+  algolia: {
+    apiKey: 'e0bc41aeaf88d333a51aa07f5dd05757',
+    indexName: 'fasttext',
+  },
 };
 
 module.exports = siteConfig;
