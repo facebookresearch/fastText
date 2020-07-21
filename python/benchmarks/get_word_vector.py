@@ -33,7 +33,7 @@ def get_word_vector(data, model):
     i = 0
     for t in tokens:
         f.get_word_vector(t)
-        i += 1
+        i = i+ 1
         if i % 10000 == 0:
             sys.stderr.write("\ri: " + str(float(i / len(tokens))))
             sys.stderr.flush()
