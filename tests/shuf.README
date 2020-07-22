@@ -1,0 +1,8 @@
+# You may be missing shuf command
+
+These options seem to work.
+
+create a file named shuf with the following and make it executable.
+echo $RANDOM
+
+There is a sample shuf file that you can make executable.
