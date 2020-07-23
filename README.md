@@ -1,7 +1,16 @@
-# fastText
-[fastText](https://fasttext.cc/) is a library for efficient learning of word representations and sentence classification.
+<p align="center">
+  <img src="./website/static/img/logo-color.png" alt="logo" width="20%"/>
+</p>
 
-[![CircleCI](https://circleci.com/gh/facebookresearch/fastText/tree/master.svg?style=svg)](https://circleci.com/gh/facebookresearch/fastText/tree/master)
+<p align="center">
+  <a href="https://circleci.com/gh/facebookresearch/fastText/tree/master">
+    <img src="https://circleci.com/gh/facebookresearch/fastText/tree/master.svg?style=svg" alt="CircleCI" />
+  </a>
+</p>
+<p align="center">
+  <a href="https://fasttext.cc/">fastText</a> is a library for efficient learning of word representations and sentence classification.
+</p>
+
 
 ## Table of contents
 
