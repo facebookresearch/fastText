@@ -147,6 +147,10 @@ class FastText {
   std::vector<std::pair<real, std::string>> getNN(
       const std::string& word,
       int32_t k);
+  
+  std::vector<std::pair<real, std::string>> getNNSimple(
+      const std::string& word,
+      int32_t k, const Args& args);
 
   std::vector<std::pair<real, std::string>> getAnalogies(
       int32_t k,
