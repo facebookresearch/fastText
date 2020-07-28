@@ -37,6 +37,7 @@ void printUsage() {
       << "  print-ngrams            print ngrams given a trained model and "
          "word\n"
       << "  nn                      query for nearest neighbors\n"
+      << "  nn_simple               load any model.vec, query for nearest neighbors\n"
       << "  analogies               query for analogies\n"
       << "  dump                    dump arguments,dictionary,input/output "
          "vectors\n"
@@ -115,6 +116,14 @@ void quantize(const std::vector<std::string>& args) {
 void printNNUsage() {
   std::cout << "usage: fasttext nn <model> <k>\n\n"
             << "  <model>      model filename\n"
+            << "  <k>          (optional; 10 by default) predict top k labels\n"
+            << std::endl;
+}
+
+void printNNSimpleUsage() {
+  std::cout << "usage: fasttext nn_simple <model.vec> <dim> <k>\n\n"
+            << "  <model.vec>      model.vec filename\n"
+            << "  <dim>        the vec's dim in model.vec\n"
             << "  <k>          (optional; 10 by default) predict top k labels\n"
             << std::endl;
 }
@@ -323,6 +332,32 @@ void nn(const std::vector<std::string> args) {
   exit(0);
 }
 
+void nn_simple(const std::vector<std::string> args) {
+  int32_t k;
+  Args a = Args();
+  if (args.size() == 4) {
+    k = 10;
+  } else if (args.size() == 5) {
+    k = std::stoi(args[4]);
+  } else {
+    printNNSimpleUsage();
+    exit(EXIT_FAILURE);
+  }
+  a.pretrainedVectors = std::string(args[2]);
+  a.dim = std::stoi(args[3]);
+  std::cout << "k=" << k << std::endl;
+  FastText fasttext;
+  std::string prompt("Query word? ");
+  std::cout << prompt;
+
+  std::string queryWord;
+  while (std::cin >> queryWord) {
+    printPredictions(fasttext.getNNSimple(queryWord, k, a), true, true);
+    std::cout << prompt;
+  }
+  exit(0);
+}
+
 void analogies(const std::vector<std::string> args) {
   int32_t k;
   if (args.size() == 3) {
@@ -440,6 +475,8 @@ int main(int argc, char** argv) {
     printNgrams(args);
   } else if (command == "nn") {
     nn(args);
+  } else if (command == "nn_simple") {
+    nn_simple(args);
   } else if (command == "analogies") {
     analogies(args);
   } else if (command == "predict" || command == "predict-prob") {

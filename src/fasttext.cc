@@ -558,6 +558,24 @@ void FastText::lazyComputeWordVectors() {
   }
 }
 
+std::vector<std::pair<real, std::string>> FastText::getNNSimple(
+    const std::string& word,
+    int32_t k, const Args& args) {
+  
+  args_ = std::make_shared<Args>(args);
+  dict_ = std::make_shared<Dictionary>(args_);
+  std::cout << args_->pretrainedVectors << std::endl;
+  input_ = getInputMatrixFromFile(args_->pretrainedVectors);
+
+  Vector query(args_->dim);
+
+  getWordVector(query, word);
+
+  lazyComputeWordVectors();
+  assert(wordVectors_);
+  return getNN(*wordVectors_, query, k, {word});
+}
+
 std::vector<std::pair<real, std::string>> FastText::getNN(
     const std::string& word,
     int32_t k) {
@@ -692,6 +710,7 @@ std::shared_ptr<Matrix> FastText::getInputMatrixFromFile(
         "Dimension of pretrained vectors (" + std::to_string(dim) +
         ") does not match dimension (" + std::to_string(args_->dim) + ")!");
   }
+  std::cout<< n << " " << dim <<std::endl;
   mat = std::make_shared<DenseMatrix>(n, dim);
   for (size_t i = 0; i < n; i++) {
     std::string word;
@@ -703,6 +722,7 @@ std::shared_ptr<Matrix> FastText::getInputMatrixFromFile(
     }
   }
   in.close();
+  std::cout<<"file in close"<<std::endl;
 
   dict_->threshold(1, 0);
   dict_->init();
