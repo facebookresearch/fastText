@@ -5,13 +5,29 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+// Import react-btn
+import GitHubButton from 'react-github-btn'
 
 const React = require("react");
 
+// const githubButton = (
+//   <a
+//     className="github-button"
+//     href="https://github.com/facebookresearch/fastText/"
+//     data-icon="octicon-star"
+//     data-count-href="/fastText/stargazers"
+//     data-count-api="/repos/fastText#stargazers_count"
+//     data-count-aria-label="# stargazers on GitHub"
+//     aria-label="Star this project on GitHub"
+//   >
+//     Star
+//   </a>
+// );
+
 const githubButton = (
-  <a
-    className="github-button"
-    href="https://github.com/facebookresearch/fastText/"
+
+  <GitHubButton
+    href="https://github.com/facebookresearch/fastText"
     data-icon="octicon-star"
     data-count-href="/fastText/stargazers"
     data-count-api="/repos/fastText#stargazers_count"
@@ -19,7 +35,8 @@ const githubButton = (
     aria-label="Star this project on GitHub"
   >
     Star
-  </a>
+  </GitHubButton>
+
 );
 
 class Footer extends React.Component {
