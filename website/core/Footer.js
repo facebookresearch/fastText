@@ -37,7 +37,7 @@ const githubButton = (
   Star
   </GitHubButton>
 
-):
+);
 
 class Footer extends React.Component {
   render() {
