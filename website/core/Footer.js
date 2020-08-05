@@ -27,14 +27,14 @@ const React = require("react");
 const githubButton = (
 
   <GitHubButton
-  href="https://github.com/facebookresearch/fastText"
-  data-icon="octicon-star"
-  data-count-href="/fastText/stargazers"
-  data-count-api="/repos/fastText#stargazers_count"
-  data-count-aria-label="# stargazers on GitHub"
-  aria-label="Star this project on GitHub"
+    href="https://github.com/facebookresearch/fastText"
+    data-icon="octicon-star"
+    data-count-href="/fastText/stargazers"
+    data-count-api="/repos/fastText#stargazers_count"
+    data-count-aria-label="# stargazers on GitHub"
+    aria-label="Star this project on GitHub"
   >
-  Star
+    Star
   </GitHubButton>
 
 );
