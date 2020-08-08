@@ -146,6 +146,7 @@ For more information about text classification usage of fasttext, you can refer 
 ### Compress model files with quantization
 
 When you want to save a supervised model file, fastText can compress it in order to have a much smaller model file by sacrificing only a little bit performance.
+This compression is done with advance Vector quantization and Feature Selection algorithms to provide you the best performance by removing the features that do not benefit the performance upto the threshold. This leads to a much smaller model with less redundancies.
 
 ```py
 # with the previously trained `model` object, call :
