@@ -544,7 +544,7 @@ def train_unsupervised(*kargs, **kwargs):
     dataset pulled by the example script word-vector-example.sh, which is
     part of the fastText repository.
     """
-    arg_names = ['input', 'model', 'lr', 'dim', 'ws', 'epoch', 'minCount',
+    arg_names = ['input', 'meta', 'nSideinfo', 'model', 'lr', 'dim', 'ws', 'epoch', 'minCount',
                  'minCountLabel', 'minn', 'maxn', 'neg', 'wordNgrams', 'loss', 'bucket',
                  'thread', 'lrUpdateRate', 't', 'label', 'verbose', 'pretrainedVectors']
     args, manually_set_args = read_args(kargs, kwargs, arg_names,

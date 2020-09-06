@@ -119,6 +119,17 @@ void FastText::getWordVector(Vector& vec, const std::string& word) const {
   }
 }
 
+void FastText::getSideinfoVector(Vector& vec, const std::string& query) const {
+  const std::vector<int32_t>& sideinfo = dict_->parseSideinfoStr(query);
+  vec.zero();
+  for (int i = 0; i < sideinfo.size(); i++) {
+    addInputVector(vec, sideinfo[i]);
+  }
+  if (sideinfo.size() > 0) {
+    vec.mul(1.0 / sideinfo.size());
+  }
+}
+
 void FastText::getSubwordVector(Vector& vec, const std::string& subword) const {
   vec.zero();
   int32_t h = dict_->hash(subword) % args_->bucket;
@@ -563,7 +574,11 @@ std::vector<std::pair<real, std::string>> FastText::getNN(
     int32_t k) {
   Vector query(args_->dim);
 
-  getWordVector(query, word);
+  if (word.find('\t') != std::string::npos) {
+    getSideinfoVector(query, word);
+  } else {
+    getWordVector(query, word);
+  }
 
   lazyComputeWordVectors();
   assert(wordVectors_);
@@ -724,7 +739,7 @@ std::shared_ptr<Matrix> FastText::getInputMatrixFromFile(
 
 std::shared_ptr<Matrix> FastText::createRandomMatrix() const {
   std::shared_ptr<DenseMatrix> input = std::make_shared<DenseMatrix>(
-      dict_->nwords() + args_->bucket, args_->dim);
+      dict_->nwords() + dict_->nsideinfo(), args_->dim);
   input->uniform(1.0 / args_->dim, args_->thread, args_->seed);
 
   return input;
@@ -752,8 +767,14 @@ void FastText::train(const Args& args, const TrainCallback& callback) {
     throw std::invalid_argument(
         args_->input + " cannot be opened for training!");
   }
-  dict_->readFromFile(ifs);
+  std::ifstream ifs_sub(args_->input_meta);
+  if (!ifs_sub.is_open()) {
+    throw std::invalid_argument(
+        args_->input_meta + " cannot be opened for training!");
+  }
+  dict_->readFromFile(ifs, ifs_sub);
   ifs.close();
+  ifs_sub.close();
 
   if (!args_->pretrainedVectors.empty()) {
     input_ = getInputMatrixFromFile(args_->pretrainedVectors);

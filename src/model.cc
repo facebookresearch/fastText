@@ -45,6 +45,8 @@ void Model::computeHidden(const std::vector<int32_t>& input, State& state)
   hidden.zero();
   for (auto it = input.cbegin(); it != input.cend(); ++it) {
     hidden.addRow(*wi_, *it);
+    // TODO: word vec の random drop 実装する
+    // backprop の mask も必要
   }
   hidden.mul(1.0 / input.size());
 }

@@ -26,10 +26,13 @@ const std::string Dictionary::EOW = ">";
 Dictionary::Dictionary(std::shared_ptr<Args> args)
     : args_(args),
       word2int_(MAX_VOCAB_SIZE, -1),
+      sideinfo2int_(args->nSideinfo),
+      word2sideids_(),
       size_(0),
       nwords_(0),
       nlabels_(0),
       ntokens_(0),
+      sideinfo_size_(args->nSideinfo, 0),
       pruneidx_size_(-1) {}
 
 Dictionary::Dictionary(std::shared_ptr<Args> args, std::istream& in)
@@ -74,6 +77,14 @@ int32_t Dictionary::nwords() const {
   return nwords_;
 }
 
+int32_t Dictionary::nsideinfo() const {
+  int32_t size = 0;
+  for (int i=0; i<sideinfo_size_.size(); ++i) {
+    size += sideinfo_size_[i];
+  }
+  return size;
+}
+
 int32_t Dictionary::nlabels() const {
   return nlabels_;
 }
@@ -85,7 +96,7 @@ int64_t Dictionary::ntokens() const {
 const std::vector<int32_t>& Dictionary::getSubwords(int32_t i) const {
   assert(i >= 0);
   assert(i < nwords_);
-  return words_[i].subwords;
+  return words_[i].sideinfo;  // it contains its own word id.
 }
 
 const std::vector<int32_t> Dictionary::getSubwords(
@@ -96,9 +107,36 @@ const std::vector<int32_t> Dictionary::getSubwords(
   }
   std::vector<int32_t> ngrams;
   if (word != EOS) {
-    computeSubwords(BOW + word + EOW, ngrams);
+    // TODO: このケースは例外にする
+    computeSubwords("", ngrams);
   }
   return ngrams;
+}
+
+const std::vector<int32_t> Dictionary::parseSideinfoStr(
+    const std::string& query_str) const {
+  std::istringstream isstream(query_str);
+  std::string field;
+  std::vector<int32_t> sideinfo;
+
+  sideinfo.clear();
+  int i = 0;
+  while (getline(isstream, field, '\t')) {
+    sideinfo.push_back(sideinfo2int_[i].at(field));
+    ++i;
+  }
+
+  assert(sideinfo.size() == args_->nSideinfo);
+
+  int32_t id;
+  for (int i=0; i<args_->nSideinfo; ++i) {
+    id = sideinfo[i] + nwords_;
+    for (int j=0; j<i; ++j) {
+      id += sideinfo_size_[j];
+    }
+    sideinfo[i] = id;
+  }
+  return sideinfo;
 }
 
 void Dictionary::getSubwords(
@@ -194,13 +232,28 @@ void Dictionary::computeSubwords(
   }
 }
 
+void Dictionary::getSideinfoOnWord(
+    const std::string& word,
+    std::vector<int32_t>& sideinfo) const {
+  int32_t id;
+  for (int i=0; i<args_->nSideinfo; ++i) {
+    id = word2sideids_.at(word)[i] + nwords_;
+    for (int j=0; j<i; ++j) {
+      id += sideinfo_size_[j];
+    }
+    sideinfo.push_back(id);
+  }
+}
+
 void Dictionary::initNgrams() {
+  int32_t id;
   for (size_t i = 0; i < size_; i++) {
-    std::string word = BOW + words_[i].word + EOW;
-    words_[i].subwords.clear();
-    words_[i].subwords.push_back(i);
+    // std::string word = BOW + words_[i].word + EOW;
+    std::string word = words_[i].word;
+    words_[i].sideinfo.clear();
+    words_[i].sideinfo.push_back(i);
     if (words_[i].word != EOS) {
-      computeSubwords(word, words_[i].subwords);
+      getSideinfoOnWord(word, words_[i].sideinfo);
     }
   }
 }
@@ -231,11 +284,40 @@ bool Dictionary::readWord(std::istream& in, std::string& word) const {
   return !word.empty();
 }
 
-void Dictionary::readFromFile(std::istream& in) {
+void Dictionary::readMetadata(std::istream& in) {
+  std::string line, word, field;
+  for (int i=0; i<sideinfo2int_.size(); ++i) {
+    sideinfo2int_[i].clear();
+  }
+  word2sideids_.clear();
+
+  while(getline(in, line)) {
+    std::istringstream isstream(line);
+
+    getline(isstream, word, '\t'); // skip the first column.
+    word2sideids_[word] = std::vector<int32_t>();
+
+    int i = 0;
+    while (getline(isstream, field, '\t')) {
+      if (!sideinfo2int_[i].count(field)) {
+        sideinfo2int_[i][field] = sideinfo2int_[i].size();
+      }
+      word2sideids_[word].push_back(sideinfo2int_[i][field]);
+      ++i;
+    }
+  }
+
+  for (int i=0; i<sideinfo2int_.size(); ++i) {
+    sideinfo_size_[i] = sideinfo2int_[i].size();
+  }
+}
+
+void Dictionary::readFromFile(std::istream& in, std::istream& in_sub) {
   std::string word;
   int64_t minThreshold = 1;
+  readMetadata(in_sub);
   while (readWord(in, word)) {
-    add(word);
+    add(word);  // words_ に entry を append して word2int_ に登録
     if (ntokens_ % 1000000 == 0 && args_->verbose > 1) {
       std::cerr << "\rRead " << ntokens_ / 1000000 << "M words" << std::flush;
     }
@@ -247,6 +329,7 @@ void Dictionary::readFromFile(std::istream& in) {
   threshold(args_->minCount, args_->minCountLabel);
   initTableDiscard();
   initNgrams();
+  assert(size_ == nwords_);
   if (args_->verbose > 0) {
     std::cerr << "\rRead " << ntokens_ / 1000000 << "M words" << std::endl;
     std::cerr << "Number of words:  " << nwords_ << std::endl;

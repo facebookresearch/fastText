@@ -91,6 +91,8 @@ class FastText {
 
   void getWordVector(Vector& vec, const std::string& word) const;
 
+  void getSideinfoVector(Vector& vec, const std::string& query) const;
+
   void getSubwordVector(Vector& vec, const std::string& subword) const;
 
   inline void getInputVector(Vector& vec, int32_t ind) {

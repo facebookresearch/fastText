@@ -11,6 +11,7 @@
 #include <istream>
 #include <memory>
 #include <ostream>
+#include <sstream>
 #include <random>
 #include <string>
 #include <unordered_map>
@@ -28,7 +29,7 @@ struct entry {
   std::string word;
   int64_t count;
   entry_type type;
-  std::vector<int32_t> subwords;
+  std::vector<int32_t> sideinfo;
 };
 
 class Dictionary {
@@ -47,12 +48,15 @@ class Dictionary {
   std::shared_ptr<Args> args_;
   std::vector<int32_t> word2int_;
   std::vector<entry> words_;
+  std::vector<std::unordered_map<std::string, int32_t>> sideinfo2int_;
+  std::unordered_map<std::string, std::vector<int32_t>> word2sideids_;
 
   std::vector<real> pdiscard_;
-  int32_t size_;
+  int32_t size_;  // # of vocab (= nwords_ + nlabels_)
   int32_t nwords_;
   int32_t nlabels_;
   int64_t ntokens_;
+  std::vector<int32_t> sideinfo_size_;
 
   int64_t pruneidx_size_;
   std::unordered_map<int32_t, int32_t> pruneidx_;
@@ -69,6 +73,7 @@ class Dictionary {
   explicit Dictionary(std::shared_ptr<Args>);
   explicit Dictionary(std::shared_ptr<Args>, std::istream&);
   int32_t nwords() const;
+  int32_t nsideinfo() const;
   int32_t nlabels() const;
   int64_t ntokens() const;
   int32_t getId(const std::string&) const;
@@ -79,6 +84,7 @@ class Dictionary {
   std::string getWord(int32_t) const;
   const std::vector<int32_t>& getSubwords(int32_t) const;
   const std::vector<int32_t> getSubwords(const std::string&) const;
+  const std::vector<int32_t> parseSideinfoStr(const std::string&) const;
   void getSubwords(
       const std::string&,
       std::vector<int32_t>&,
@@ -87,10 +93,14 @@ class Dictionary {
       const std::string&,
       std::vector<int32_t>&,
       std::vector<std::string>* substrings = nullptr) const;
+  void getSideinfoOnWord(
+      const std::string&,
+      std::vector<int32_t>&) const;
   uint32_t hash(const std::string& str) const;
   void add(const std::string&);
   bool readWord(std::istream&, std::string&) const;
-  void readFromFile(std::istream&);
+  void readFromFile(std::istream&, std::istream&);
+  void readMetadata(std::istream&);
   std::string getLabel(int32_t) const;
   void save(std::ostream&) const;
   void load(std::istream&);

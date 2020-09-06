@@ -37,7 +37,9 @@ class Args {
  public:
   Args();
   std::string input;
+  std::string input_meta;
   std::string output;
+  int nSideinfo;
   double lr;
   int lrUpdateRate;
   int dim;
