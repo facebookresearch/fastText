@@ -151,6 +151,7 @@ void Dictionary::getSubwords(
     substrings.push_back(words_[i].word);
   }
   if (word != EOS) {
+    // TODO: このケースは例外にする
     computeSubwords(BOW + word + EOW, ngrams, &substrings);
   }
 }
