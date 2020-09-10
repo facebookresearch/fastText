@@ -3,7 +3,7 @@ id: autotune
 title: Automatic hyperparameter optimization
 ---
 
-As we saw in [the tutorial](/docs/en/supervised-tutorial.html#more-epochs-and-larger-learning-rate), finding the best hyperparameters is crucial for building efficient models. However, searching the best hyperparameters manually is difficult. Parameters are dependent and the effect of each parameter vary from one dataset to another.
+As we saw in [the tutorial](/docs/supervised-tutorial.html#more-epochs-and-larger-learning-rate), finding the best hyperparameters is crucial for building efficient models. However, searching the best hyperparameters manually is difficult. Parameters are dependent and the effect of each parameter vary from one dataset to another.
 
 FastText's autotune feature allows you to find automatically the best hyperparameters for your dataset.
 
@@ -11,7 +11,7 @@ FastText's autotune feature allows you to find automatically the best hyperparam
 
 In order to activate hyperparameter optimization, we must provide a validation file with the `-autotune-validation` argument.
 
-For example, using the same data as our [tutorial example](/docs/en/supervised-tutorial.html#our-first-classifier), the autotune can be used in the following way:
+For example, using the same data as our [tutorial example](/docs/supervised-tutorial.html#our-first-classifier), the autotune can be used in the following way:
 
 <!--DOCUSAURUS_CODE_TABS-->
 <!--Command line-->
@@ -69,7 +69,7 @@ While autotuning, fastText displays the best f1-score found so far. If we decide
 
 # Constrain model size
 
-As you may know, fastText can compress the model with [quantization](/docs/en/cheatsheet.html#quantization). However, this compression task comes with its own [hyperparameters](/docs/en/options.html) (`-cutoff`, `-retrain`, `-qnorm`, `-qout`, `-dsub`) that have a consequence on the accuracy and the size of the final model.
+As you may know, fastText can compress the model with [quantization](/docs/cheatsheet.html#quantization). However, this compression task comes with its own [hyperparameters](/docs/options.html) (`-cutoff`, `-retrain`, `-qnorm`, `-qout`, `-dsub`) that have a consequence on the accuracy and the size of the final model.
 
 Fortunately, autotune can also find the hyperparameters for this compression task while targeting the desired model size. To this end, we can set the `-autotune-modelsize` argument:
 
