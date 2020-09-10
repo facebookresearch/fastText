@@ -11,7 +11,7 @@ FastText's autotune feature allows you to find automatically the best hyperparam
 
 In order to activate hyperparameter optimization, we must provide a validation file with the `-autotune-validation` argument.
 
-For example, using the same data as our [tutorial example](/docs/en/supervised-tutorial.html#our-first-classifier), the autotune can be used in the following way:
+For example, using the same data as our [tutorial example](/docs/supervised-tutorial.html#our-first-classifier), the autotune can be used in the following way:
 
 <!--DOCUSAURUS_CODE_TABS-->
 <!--Command line-->
