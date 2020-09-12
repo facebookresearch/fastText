@@ -358,7 +358,11 @@ class TestFastTextUnitPy(unittest.TestCase):
     def gen_test_subword_vector(self, kwargs):
         f = build_unsupervised_model(get_random_data(100), kwargs)
         words, _ = f.get_words(include_freq=True)
-        words += get_random_words(100, 1, 20)
+        #words += get_random_words(100, 1, 20)
+        random_meta = get_random_sideinfo(get_random_words(100, 1, 20))
+        for line in random_meta:
+            words.append('\t'.join(line[1:]))
+
         input_matrix = f.get_input_matrix()
         for word in words:
             # Universal API to get word vector
@@ -380,22 +384,17 @@ class TestFastTextUnitPy(unittest.TestCase):
                 vec3 = np.sum(input_matrix[subinds] / len(subinds), 0)
 
             # Build word vectors from word and subword ids
-            wid = f.get_word_id(word)
-            if wid >= 0:
-                swids = list(map(lambda x: f.get_subword_id(x), subwords[1:]))
-                swids.append(wid)
-            else:
-                swids = list(map(lambda x: f.get_subword_id(x), subwords))
+            _, swids = f.get_subwords(word)
             if len(swids) == 0:
                 vec4 = np.zeros((f.get_dimension(), ))
             else:
                 swids = np.array(swids)
                 vec4 = np.sum(input_matrix[swids] / len(swids), 0)
 
-            self.assertTrue(np.isclose(vec1, vec2, atol=1e-5, rtol=0).all())
-            self.assertTrue(np.isclose(vec2, vec3, atol=1e-5, rtol=0).all())
-            self.assertTrue(np.isclose(vec3, vec4, atol=1e-5, rtol=0).all())
-            self.assertTrue(np.isclose(vec4, vec1, atol=1e-5, rtol=0).all())
+            self.assertTrue(np.isclose(vec1, vec2, atol=1e-5, rtol=1e-8).all())
+            self.assertTrue(np.isclose(vec2, vec3, atol=1e-5, rtol=1e-8).all())
+            self.assertTrue(np.isclose(vec3, vec4, atol=1e-5, rtol=1e-8).all())
+            self.assertTrue(np.isclose(vec4, vec1, atol=1e-5, rtol=1e-8).all())
 
     def gen_test_unsupervised_get_words(self, kwargs):
         # Check more corner cases of 0 vocab, empty file etc.

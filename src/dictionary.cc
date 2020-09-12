@@ -107,35 +107,33 @@ const std::vector<int32_t> Dictionary::getSubwords(
   }
   std::vector<int32_t> ngrams;
   if (word != EOS) {
-    // TODO: このケースは例外にする
-    computeSubwords("", ngrams);
+    ngrams = parseSideinfoStr(word);
   }
   return ngrams;
 }
 
 const std::vector<int32_t> Dictionary::parseSideinfoStr(
-    const std::string& query_str) const {
+    const std::string& query_str,
+    std::vector<std::string>* substrings) const {
   std::istringstream isstream(query_str);
   std::string field;
   std::vector<int32_t> sideinfo;
 
   sideinfo.clear();
   int i = 0;
+  int32_t offset = nwords_;
   while (getline(isstream, field, '\t')) {
-    sideinfo.push_back(sideinfo2int_[i].at(field));
-    ++i;
-  }
-
-  assert(sideinfo.size() == args_->nSideinfo);
-
-  int32_t id;
-  for (int i=0; i<args_->nSideinfo; ++i) {
-    id = sideinfo[i] + nwords_;
-    for (int j=0; j<i; ++j) {
-      id += sideinfo_size_[j];
+    if (sideinfo2int_[i].count(field)) {
+      sideinfo.push_back(sideinfo2int_[i].at(field) + offset);
     }
-    sideinfo[i] = id;
+    offset += sideinfo_size_[i];
+    ++i;
+    if (substrings) {
+      substrings->push_back(field);
+    }
   }
+
+  // assert(sideinfo.size() == args_->nSideinfo);
   return sideinfo;
 }
 
@@ -144,15 +142,32 @@ void Dictionary::getSubwords(
     std::vector<int32_t>& ngrams,
     std::vector<std::string>& substrings) const {
   int32_t i = getId(word);
+  std::vector<int32_t> sideinfo_ids;
   ngrams.clear();
   substrings.clear();
-  if (i >= 0) {
+  if (word == EOS) {
     ngrams.push_back(i);
     substrings.push_back(words_[i].word);
-  }
-  if (word != EOS) {
-    // TODO: このケースは例外にする
-    computeSubwords(BOW + word + EOW, ngrams, &substrings);
+  } else {
+    if (i >= 0) {
+      // ngrams.push_back(i);
+      substrings.push_back(words_[i].word);
+      ngrams = getSubwords(i);
+      sideinfo_ids = word2sideids_.at(word);
+      for (int j=0; j<sideinfo_ids.size(); ++j) {
+        for (auto it=sideinfo2int_[j].begin(); it!=sideinfo2int_[j].end(); ++it) {
+          if (it->second == sideinfo_ids[j]) {
+            substrings.push_back(it->first);
+            break;
+          }
+        }
+        // substrings.push_back(words_[i].sideinfo[j]);
+      }
+    } else {
+      // TODO: word は確実に sideinfo クエリ
+      ngrams = parseSideinfoStr(word, &substrings);
+      // computeSubwords(BOW + word + EOW, ngrams, &substrings);
+    }
   }
 }
 
