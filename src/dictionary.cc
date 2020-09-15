@@ -37,10 +37,13 @@ Dictionary::Dictionary(std::shared_ptr<Args> args)
 
 Dictionary::Dictionary(std::shared_ptr<Args> args, std::istream& in)
     : args_(args),
+      sideinfo2int_(args->nSideinfo),
+      word2sideids_(),
       size_(0),
       nwords_(0),
       nlabels_(0),
       ntokens_(0),
+      sideinfo_size_(args->nSideinfo, 0),
       pruneidx_size_(-1) {
   load(in);
 }
@@ -544,6 +547,28 @@ void Dictionary::save(std::ostream& out) const {
     out.write((char*)&(pair.first), sizeof(int32_t));
     out.write((char*)&(pair.second), sizeof(int32_t));
   }
+  for (int32_t i=0; i<args_->nSideinfo; ++i) {
+    out.write((char*)&(sideinfo_size_[i]), sizeof(int32_t));
+  }
+  for (int i=0; i<sideinfo2int_.size(); ++i) {
+    for (auto it=sideinfo2int_[i].begin(); it!=sideinfo2int_[i].end(); ++it) {
+      std::string str = it->first;
+      out.write(str.data(), str.size() * sizeof(char));
+      out.put(0);
+      out.write((char*)&(it->second), sizeof(int32_t));
+    }
+    out.put(1);
+  }
+  for (auto it=word2sideids_.begin(); it!=word2sideids_.end(); ++it) {
+    std::string word = it->first;
+    std::vector<int32_t> sideids = it->second;
+    out.write(word.data(), word.size() * sizeof(char));
+    out.put(0);
+    for (int j=0; j<sideids.size(); ++j) {
+      out.write((char*)&sideids[j], sizeof(int32_t));
+    }
+  }
+  out.put(1);
 }
 
 void Dictionary::load(std::istream& in) {
@@ -570,6 +595,44 @@ void Dictionary::load(std::istream& in) {
     in.read((char*)&first, sizeof(int32_t));
     in.read((char*)&second, sizeof(int32_t));
     pruneidx_[first] = second;
+  }
+  for (int32_t i=0; i<args_->nSideinfo; ++i) {
+    int32_t size;
+    in.read((char*)&(size), sizeof(int32_t));
+    sideinfo_size_[i] = size;
+  }
+  for (int i=0; i<sideinfo2int_.size(); ++i) {
+    char c;
+    std::string field;
+    int32_t id;
+    field.clear();
+    while ((c = in.get()) != 1) {
+      if (c == 0) {
+        in.read((char*)&id, sizeof(int32_t));
+        sideinfo2int_[i][field] = id;
+        field.clear();
+      } else {
+        field.push_back(c);
+      }
+    }
+  }
+  char c;
+  std::string w;
+  w.clear();
+  while ((c = in.get()) != 1) {
+    if (c == 0) {
+      int32_t id;
+      std::vector<int32_t> sideids;
+      sideids.clear();
+      for (int i=0; i<args_->nSideinfo; ++i) {
+        in.read((char*)&id, sizeof(int32_t));
+        sideids.push_back(id);
+      }
+      word2sideids_[w] = sideids;
+      w.clear();
+    } else {
+      w.push_back(c);
+    }
   }
   initTableDiscard();
   initNgrams();

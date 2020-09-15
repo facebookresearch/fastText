@@ -323,6 +323,7 @@ void Args::printQuantizationHelp() {
 }
 
 void Args::save(std::ostream& out) {
+  out.write((char*)&(nSideinfo), sizeof(int));
   out.write((char*)&(dim), sizeof(int));
   out.write((char*)&(ws), sizeof(int));
   out.write((char*)&(epoch), sizeof(int));
@@ -339,6 +340,7 @@ void Args::save(std::ostream& out) {
 }
 
 void Args::load(std::istream& in) {
+  in.read((char*)&(nSideinfo), sizeof(int));
   in.read((char*)&(dim), sizeof(int));
   in.read((char*)&(ws), sizeof(int));
   in.read((char*)&(epoch), sizeof(int));

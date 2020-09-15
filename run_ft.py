@@ -10,3 +10,6 @@ if __name__ == "__main__":
     print(model.get_nearest_neighbors("50436994-16_", k=10))
     # sideinfo で探す場合
     print(model.get_nearest_neighbors("20\t2028\t12252\t481", k=10))
+    model.save_model('model.bin')
+    m = fasttext.load_model('model.bin')
+    print(m.get_nearest_neighbors("20\t2028\t12252\t481", k=10))
