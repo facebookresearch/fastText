@@ -27,9 +27,10 @@ enum class entry_type : int8_t { word = 0, label = 1 };
 
 struct entry {
   std::string word;
+  std::vector<std::string> sideinfo;
   int64_t count;
   entry_type type;
-  std::vector<int32_t> sideinfo;
+  std::vector<int32_t> word_sideinfo_ids;
 };
 
 class Dictionary {
@@ -49,14 +50,13 @@ class Dictionary {
   std::vector<int32_t> word2int_;
   std::vector<entry> words_;
   std::vector<std::unordered_map<std::string, int32_t>> sideinfo2int_;
-  std::unordered_map<std::string, std::vector<int32_t>> word2sideids_;
+  std::unordered_map<std::string, std::vector<std::string>> word2sideinfo_;
 
   std::vector<real> pdiscard_;
   int32_t size_;  // # of vocab (= nwords_ + nlabels_)
   int32_t nwords_;
   int32_t nlabels_;
   int64_t ntokens_;
-  std::vector<int32_t> sideinfo_size_;
 
   int64_t pruneidx_size_;
   std::unordered_map<int32_t, int32_t> pruneidx_;
@@ -96,7 +96,7 @@ class Dictionary {
       std::vector<int32_t>&,
       std::vector<std::string>* substrings = nullptr) const;
   void getSideinfoOnWord(
-      const std::string&,
+      const int32_t,
       std::vector<int32_t>&) const;
   uint32_t hash(const std::string& str) const;
   void add(const std::string&);

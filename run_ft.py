@@ -13,3 +13,8 @@ if __name__ == "__main__":
     model.save_model('model.bin')
     m = fasttext.load_model('model.bin')
     print(m.get_nearest_neighbors("20\t2028\t12252\t481", k=10))
+    print(m.get_nearest_neighbors("20\taaa\tbbb\tccc", k=10))
+    try:
+        print(m.get_nearest_neighbors("20\taaa\tbbb\tccc\tddd", k=10))
+    except:
+        print('error')
