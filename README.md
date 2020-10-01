@@ -226,6 +226,9 @@ $ ./fasttext test model.ftz test.txt
 The quantization procedure follows the steps described in [3](#fasttextzip-compressing-text-classification-models). You can
 run the script `quantization-example.sh` for an example.
 
+The rows of the dump of input and output correspond to the parameters of the model. `</s>` represents the end of line token. 
+
+
 
 ## Full documentation
 
