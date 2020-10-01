@@ -1,5 +1,5 @@
 # fastText
-[fastText](https://fasttext.cc/) is a library for efficient learning of word representations and sentence classification.
+[fastText](https://fasttext.cc/) is a library for efficient learning of word representations and sentence classification.By using it you will be able to represent words easily.
 
 [![CircleCI](https://circleci.com/gh/facebookresearch/fastText/tree/master.svg?style=svg)](https://circleci.com/gh/facebookresearch/fastText/tree/master)
 
