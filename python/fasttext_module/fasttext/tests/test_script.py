@@ -206,7 +206,7 @@ class TestFastTextUnitPy(unittest.TestCase):
                 model = train_supervised(input=tmpf.name, **kwargs)
                 true_labels = []
                 all_words = []
-                with open(tmpf2.name, 'r') as fid:
+                with open(tmpf2.name, 'r', encoding="UTF-8") as fid:
                     for line in fid:
                         if sys.version_info < (3, 0):
                             line = line.decode("UTF-8")
