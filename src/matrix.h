@@ -2,18 +2,18 @@
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
-#ifndef FASTTEXT_MATRIX_H
-#define FASTTEXT_MATRIX_H
+#pragma once
 
 #include <cstdint>
 #include <istream>
 #include <ostream>
+#include <vector>
 
+#include <assert.h>
 #include "real.h"
 
 namespace fasttext {
@@ -21,37 +21,24 @@ namespace fasttext {
 class Vector;
 
 class Matrix {
+ protected:
+  int64_t m_;
+  int64_t n_;
 
-  public:
-    real* data_;
-    int64_t m_;
-    int64_t n_;
+ public:
+  Matrix();
+  explicit Matrix(int64_t, int64_t);
+  virtual ~Matrix() = default;
 
-    Matrix();
-    Matrix(int64_t, int64_t);
-    Matrix(const Matrix&);
-    Matrix& operator=(const Matrix&);
-    ~Matrix();
+  int64_t size(int64_t dim) const;
 
-    inline const real& at(int64_t i, int64_t j) const {return data_[i * n_ + j];};
-    inline real& at(int64_t i, int64_t j) {return data_[i * n_ + j];};
-
-
-    void zero();
-    void uniform(real);
-    real dotRow(const Vector&, int64_t) const;
-    void addRow(const Vector&, int64_t, real);
-
-    void multiplyRow(const Vector& nums, int64_t ib = 0, int64_t ie = -1);
-    void divideRow(const Vector& denoms, int64_t ib = 0, int64_t ie = -1);
-
-    real l2NormRow(int64_t i) const;
-    void l2NormRow(Vector& norms) const;
-
-    void save(std::ostream&);
-    void load(std::istream&);
+  virtual real dotRow(const Vector&, int64_t) const = 0;
+  virtual void addVectorToRow(const Vector&, int64_t, real) = 0;
+  virtual void addRowToVector(Vector& x, int32_t i) const = 0;
+  virtual void addRowToVector(Vector& x, int32_t i, real a) const = 0;
+  virtual void save(std::ostream&) const = 0;
+  virtual void load(std::istream&) = 0;
+  virtual void dump(std::ostream&) const = 0;
 };
 
-}
-
-#endif
+} // namespace fasttext

@@ -1,0 +1,196 @@
+# Python CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+#
+# Copyright (c) 2016-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+#
+
+# Maybe one day this will work
+#   "mac":
+#     macos:
+#       xcode: "9.0"
+#     working_directory: ~/repo
+#     steps:
+#       - checkout
+#       - run:
+#           command: |
+#             . .circleci/cmake_test.sh
+
+version: 2
+jobs:
+  "py368":
+    docker:
+      - image: circleci/python:3.6.8
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/setup_circleimg.sh
+            . .circleci/python_test.sh
+
+
+  "py357":
+    docker:
+      - image: circleci/python:3.5.7
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/setup_circleimg.sh
+            . .circleci/python_test.sh
+
+  "py3410":
+    docker:
+      - image: circleci/python:3.4.10
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/setup_circleimg.sh
+            . .circleci/python_test.sh
+
+  "py2715":
+    docker:
+      - image: circleci/python:2.7.15
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/setup_circleimg.sh
+            . .circleci/python_test.sh
+
+  "gcc5":
+    docker:
+      - image: gcc:5
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/gcc_test.sh
+
+  "gcc6":
+    docker:
+      - image: gcc:6
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/gcc_test.sh
+
+  "gcc7":
+    docker:
+      - image: gcc:7
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/gcc_test.sh
+
+  "gcclatest":
+    docker:
+      - image: gcc:latest
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/gcc_test.sh
+
+  "debian-stretch-gcc":
+    docker:
+      - image: debian:stretch
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/setup_debian.sh
+            . .circleci/gcc_test.sh
+
+  "debian-stretch-cmake":
+    docker:
+      - image: debian:stretch
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/setup_debian.sh
+            . .circleci/cmake_test.sh
+
+  "debian-jessie-gcc":
+    docker:
+      - image: debian:jessie
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/setup_debian.sh
+            . .circleci/gcc_test.sh
+
+  "debian-jessie-cmake":
+    docker:
+      - image: debian:jessie
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/setup_debian.sh
+            . .circleci/cmake_test.sh
+
+  "debian-jessie-python":
+    docker:
+      - image: debian:jessie
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/setup_debian.sh
+            pip install .
+            python runtests.py -u
+
+  "website-build":
+    docker:
+      - image: node:latest
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            git config --global user.email "docusaurus-bot@users.noreply.github.com"
+            git config --global user.name "Website Deployment Script"
+            echo "machine github.com login docusaurus-bot password $GITHUB_TOKEN_DOCUSAURUS_BOT" > ~/.netrc
+            cd website && npm install && GIT_USER=docusaurus-bot npm run publish-gh-pages
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - "py368"
+      - "py357"
+      - "py3410"
+      - "py2715"
+      - "gcc5"
+      - "gcc6"
+      - "gcc7"
+      - "gcclatest"
+      - "website-build"
+      - "debian-stretch-gcc"
+      - "debian-stretch-cmake"
+      - "debian-jessie-gcc"
+      - "debian-jessie-cmake"
+      - "debian-jessie-python"

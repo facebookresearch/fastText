@@ -3,12 +3,11 @@
 # Copyright (c) 2016-present, Facebook, Inc.
 # All rights reserved.
 #
-# This source code is licensed under the BSD-style license found in the
-# LICENSE file in the root directory of this source tree. An additional grant
-# of patent rights can be found in the PATENTS file in the same directory.
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
 #
 
-# This script produces the results from Table 1 in the following paper: 
+# This script produces the results from Table 1 in the following paper:
 # Bag of Tricks for Efficient Text Classification, arXiv 1607.01759, 2016
 
 myshuf() {
