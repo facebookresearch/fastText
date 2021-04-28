@@ -70,7 +70,6 @@ class FastText {
     std::vector<int32_t> selectEmbeddings(int32_t) const;
     void quantize(std::shared_ptr<Args>);
     void test(std::istream&, int32_t);
-    bool hasInformationOfAnyWords(std::vector<int32_t>) const;
     void predict(std::istream&, int32_t, bool);
     void predict(
         std::istream&,

@@ -335,28 +335,6 @@ void FastText::test(std::istream& in, int32_t k) {
   std::cerr << "Number of examples: " << nexamples << std::endl;
 }
 
-bool FastText::hasInformationOfAnyWords(std::vector<int32_t> words) const {
-  std::string line;
-  for(int32_t const& value: words) {
-    line.append(dict_->getWord(value));
-    line.append(" ");
-  }
-
-  Vector vec(args_->dim);
-  std::string word;
-  std::istringstream iss(line);
-  while(iss >> word) {
-    if (word != "</s>") {
-      getVector(vec, word);
-      if (vec.argmax() > 0) {
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
-
 void FastText::predict(std::istream& in, int32_t k,
                        std::vector<std::pair<real,std::string>>& predictions) const {
   std::vector<int32_t> words, labels;
@@ -364,13 +342,6 @@ void FastText::predict(std::istream& in, int32_t k,
   dict_->getLine(in, words, labels, model_->rng);
   predictions.clear();
   if (words.empty()) return;
-
-  if (hasInformationOfAnyWords(words)) {
-    std::cout << "true ";
-  } else {
-    std::cout << "false ";
-  }
-
   Vector hidden(args_->dim);
   Vector output(dict_->nlabels());
   std::vector<std::pair<real,int32_t>> modelPredictions;
