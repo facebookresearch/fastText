@@ -1,0 +1,11 @@
+steps:
+  - name: ':docker: Build and push Docker image to tink-containers'
+    timeout_in_minutes: 10
+    command: |
+      # Build
+      echo "$BUILDKITE_COMMIT"
+      docker build -t fasttext:$BUILDKITE_COMMIT .
+
+      # Tag and push image with version number to repository
+      docker tag fasttext:$BUILDKITE_COMMIT gcr.io/tink-containers/fasttext:$BUILDKITE_COMMIT
+      gcloud docker -- push gcr.io/tink-containers/fasttext:$BUILDKITE_COMMIT
