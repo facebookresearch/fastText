@@ -1,0 +1,18 @@
+{
+  "docs": {
+    "Introduction": ["support", "cheatsheet", "options"],
+    "Tutorials": ["supervised-tutorial", "unsupervised-tutorial"],
+    "Help": ["python-module", "faqs", "api", "references"]
+  },
+  "download": {
+    "Resources": [
+      "english-vectors",
+      "crawl-vectors",
+      "pretrained-vectors",
+      "aligned-vectors",
+      "supervised-models",
+      "language-identification",
+      "dataset"
+    ]
+  }
+}

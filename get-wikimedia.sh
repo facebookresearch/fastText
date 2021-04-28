@@ -3,9 +3,8 @@
 # Copyright (c) 2016-present, Facebook, Inc.
 # All rights reserved.
 #
-# This source code is licensed under the BSD-style license found in the
-# LICENSE file in the root directory of this source tree. An additional grant
-# of patent rights can be found in the PATENTS file in the same directory.
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
 #
 
 set -e
@@ -30,7 +29,7 @@ read -r -p "Choose a language (e.g. en, bh, fr, etc.): " choice
 LANG="$choice"
 echo "Chosen language: ""$LANG"
 read -r -p "Continue to download (WARNING: This might be big and can take a long time!)(y/n)? " choice
-case "$choice" in 
+case "$choice" in
   y|Y ) echo "Starting download...";;
   n|N ) echo "Exiting";exit 1;;
   * ) echo "Invalid answer";exit 1;;
@@ -77,4 +76,4 @@ while (<>) {
     print $_;
   }
 }
-' | normalize_text | awk '{if (NF>1) print;}' | tr -s " " | shuf > "${ROOT}"/wiki."${LANG}".txt 
+' | normalize_text | awk '{if (NF>1) print;}' | tr -s " " | shuf > "${ROOT}"/wiki."${LANG}".txt

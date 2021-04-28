@@ -1,0 +1,48 @@
+.mainContainer .wrapper a {
+  text-decoration: initial;
+}
+
+div.productShowcaseSection {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.productShowcaseSection .indexUsers a {
+    max-width: 300px;
+    padding: 0 15 0 15;
+}
+
+.productShowcaseSection h2 {
+  margin-bottom: 10px;
+}
+
+.productShowcaseSection div.container {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.productShowcaseSection div.blockElement {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+div.descriptionSection {
+  padding-top: 20px;
+  padding-bottom: 40px;
+}
+
+.descriptionSection p {
+  text-align: left;
+  margin-left: 21.5%;
+  margin-right: 21.5%;
+}
+
+.descriptionSection .container h2 {
+  font-size: 30px;
+}
+
+.descriptionSection .blockImage {
+	  margin-top: 7%;
+}
+
+
