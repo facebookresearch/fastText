@@ -103,8 +103,9 @@ def _reduce_matrix(X_orig, dim, eigv):
         X = X_orig[:mapping_size]
         X = X - X.mean(axis=0, dtype=np.float32)
         C = np.divide(np.matmul(X.T, X), X.shape[0] - 1, dtype=np.float32)
-        _, U = np.linalg.eig(C)
-        eigv = U[:, :dim]
+        V, U = np.linalg.eig(C)
+        ind = list(V.argsort()[-dim:])    # find the indices of the top k eigenvalues
+        eigv = U[:, ind]
 
     X_reduced = np.matmul(X_orig, eigv)
 
