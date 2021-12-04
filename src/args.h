@@ -62,6 +62,8 @@ class Args {
     int verbose;
     std::string pretrainedVectors;
     bool saveOutput;
+    int checkpointEveryNEpochs;
+    double alphaNegativeSmoothing;
 
     bool qout;
     bool retrain;

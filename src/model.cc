@@ -280,10 +280,10 @@ void Model::initTableNegatives(const std::vector<int64_t>& counts) {
   // table for negative sampling 
   real z = 0.0;
   for (size_t i = 0; i < counts.size(); i++) {
-    z += pow(counts[i], 0.5);
+    z += pow(counts[i], args_->alphaNegativeSmoothing);
   }
   for (size_t i = 0; i < counts.size(); i++) {
-    real c = pow(counts[i], 0.5);
+    real c = pow(counts[i], args_->alphaNegativeSmoothing);
     for (size_t j = 0; j < c * NEGATIVE_TABLE_SIZE / z; j++) {
       negatives_.push_back(i);
     }

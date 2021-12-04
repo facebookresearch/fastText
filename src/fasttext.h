@@ -80,7 +80,7 @@ class FastText {
   void dumpVectors(std::ostream&) const;
   void saveModel(const std::string);
   void saveOutput();
-  void saveModel();
+  void saveModel(int32_t = 0);
   void loadModel(std::istream&);
   void loadModel(const std::string&);
   void printInfo(real, real, std::ostream&);

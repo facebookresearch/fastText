@@ -153,8 +153,12 @@ void FastText::signModel(std::ostream& out) {
   out.write((char*)&(version), sizeof(int32_t));
 }
 
-void FastText::saveModel() {
+void FastText::saveModel(const int32_t checkpoint) {
   std::string fn(args_->output);
+  if (checkpoint > 0) {
+    fn += ".";
+    fn += std::to_string(checkpoint);
+  }
   if (quant_) {
     fn += ".ftz";
   } else {
@@ -653,6 +657,7 @@ void FastText::trainThread(int32_t threadId) {
 
   const int64_t ntokens = dict_->ntokens();
   int64_t localTokenCount = 0;
+  int lastSavedEpochCount = 0;
   std::vector<int32_t> line, labels;
   std::vector<word_token> lineWithContext;
   while (tokenCount_ < args_->epoch * ntokens) {
@@ -673,8 +678,14 @@ void FastText::trainThread(int32_t threadId) {
     if (localTokenCount > args_->lrUpdateRate) {
       tokenCount_ += localTokenCount;
       localTokenCount = 0;
-      if (threadId == 0 && args_->verbose > 1)
+      if (threadId == 0 && args_->verbose > 1) {
         loss_ = model.getLoss();
+        int epochCount = int(tokenCount_) / (ntokens);
+        if (args_->checkpointEveryNEpochs > 0 && epochCount == lastSavedEpochCount + args_->checkpointEveryNEpochs) {
+          lastSavedEpochCount = epochCount;
+          saveModel(epochCount);
+        }
+      }
     }
   }
   if (threadId == 0)

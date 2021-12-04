@@ -50,6 +50,8 @@ Args::Args() {
   ignoreSplits = false;
   noSubsampling = false;
   parseWeights = false;
+  checkpointEveryNEpochs = 0;
+  alphaNegativeSmoothing = 0.5;
 
   qout = false;
   retrain = false;
@@ -194,6 +196,10 @@ void Args::parseArgs(const std::vector<std::string>& args) {
       } else if (args[ai] == "-noSubsampling") {
         noSubsampling = true;
         ai--;
+      } else if (args[ai] == "-checkpointEveryNEpochs") {
+        checkpointEveryNEpochs = std::stoi(args.at(ai + 1));
+      } else if (args[ai] == "-alphaNegativeSmoothing") {
+        alphaNegativeSmoothing = std::stof(args.at(ai + 1));
       } else if (args[ai] == "-saveOutput") {
         saveOutput = true;
         ai--;
@@ -251,42 +257,44 @@ void Args::printBasicHelp() {
 void Args::printDictionaryHelp() {
   std::cerr
     << "\nThe following arguments for the dictionary are optional:\n"
-    << "  -minCount           minimal number of word occurences [" << minCount << "]\n"
-    << "  -minCountLabel      minimal number of label occurences [" << minCountLabel << "]\n"
-    << "  -minCountGlobal     minimal number of global context occurences [" << minCountGlobal << "]\n"
-    << "  -minCountCustom     minimal number of custom token [" << minCountCustom << "]\n"
-    << "  -wordNgrams         max length of word ngram [" << wordNgrams << "]\n"
-    << "  -bucket             number of buckets [" << bucket << "]\n"
-    << "  -minn               min length of char ngram [" << minn << "]\n"
-    << "  -maxn               max length of char ngram [" << maxn << "]\n"
-    << "  -maxVocabSize       max tokens in vocabulary. Pruning happens at 0.75 of this: [" << maxVocabSize << "]\n"
-    << "  -t                  sampling threshold [" << t << "]\n"
-    << "  -label              labels prefix [" << label << "]\n"
-    << "  -negPrefix          negative token prefix [" << negativeTokenPrefix << "] negative tokens are associated with preceeding positive token \n"
-    << "  -globalPrefix       global context token prefix [" << globalContextTokenPrefix << "] global context is associated with all tokens in the line\n"
-    << "  -ccPrefix           token prefix for custom counts [" << customCountTokenPrefix << "]  \n"
-    << "  -splitPrefix        prefix for tokens to split [" << splitPrefix << "]  prefix stripped off when creating token \n"
-    << "  -splitChar          char to split text on [" << splitChar << "] these tokens are considered words and not ngrams. Using splits and ngrams together is not supported \n"
-    << "  -ignoreCNegs        ignore negative tokens. Negatives tokens have [" << negativeTokenPrefix << "] preceding them [" << boolToString(ignoreContextNegatives) << "]\n"
-    << "  -ignoreGContext     ignore global context tokens. Global cotext tokens have [" << globalContextTokenPrefix << "] preceding them [" << boolToString(ignoreGlobalContext) << "]\n"
-    << "  -ignoreSplits       ignore split prefix. Only the original token is used, with prefix [" << splitPrefix << "] stripped off [" << boolToString(ignoreSplits) << "]\n"
-    << "  -parseWeights       parse weights from word tokens, does not apply to neg, global or split. Weight is unsigned int in range [1-255], eg. word:3 [" << boolToString(parseWeights) << "]\n";
+    << "  -minCount                 minimal number of word occurences [" << minCount << "]\n"
+    << "  -minCountLabel            minimal number of label occurences [" << minCountLabel << "]\n"
+    << "  -minCountGlobal           minimal number of global context occurences [" << minCountGlobal << "]\n"
+    << "  -minCountCustom           minimal number of custom token [" << minCountCustom << "]\n"
+    << "  -wordNgrams               max length of word ngram [" << wordNgrams << "]\n"
+    << "  -bucket                   number of buckets [" << bucket << "]\n"
+    << "  -minn                     min length of char ngram [" << minn << "]\n"
+    << "  -maxn                     max length of char ngram [" << maxn << "]\n"
+    << "  -maxVocabSize             max tokens in vocabulary. Pruning happens at 0.75 of this: [" << maxVocabSize << "]\n"
+    << "  -t                        sampling threshold [" << t << "]\n"
+    << "  -label                    labels prefix [" << label << "]\n"
+    << "  -negPrefix                negative token prefix [" << negativeTokenPrefix << "] negative tokens are associated with preceeding positive token \n"
+    << "  -globalPrefix             global context token prefix [" << globalContextTokenPrefix << "] global context is associated with all tokens in the line\n"
+    << "  -ccPrefix                 token prefix for custom counts [" << customCountTokenPrefix << "]  \n"
+    << "  -splitPrefix              prefix for tokens to split [" << splitPrefix << "]  prefix stripped off when creating token \n"
+    << "  -splitChar                char to split text on [" << splitChar << "] these tokens are considered words and not ngrams. Using splits and ngrams together is not supported \n"
+    << "  -ignoreCNegs              ignore negative tokens. Negatives tokens have [" << negativeTokenPrefix << "] preceding them [" << boolToString(ignoreContextNegatives) << "]\n"
+    << "  -ignoreGContext           ignore global context tokens. Global cotext tokens have [" << globalContextTokenPrefix << "] preceding them [" << boolToString(ignoreGlobalContext) << "]\n"
+    << "  -ignoreSplits             ignore split prefix. Only the original token is used, with prefix [" << splitPrefix << "] stripped off [" << boolToString(ignoreSplits) << "]\n"
+    << "  -parseWeights             parse weights from word tokens, does not apply to neg, global or split. Weight is unsigned int in range [1-255], eg. word:3 [" << boolToString(parseWeights) << "]\n"
+    << "  -alphaNegativeSmoothing   changes the smoothing for negative sample frequency distribution. Default is 0.5. 1 samples based on frequency and 0 samples uniformly [" << alphaNegativeSmoothing << "]\n";
 }
 
 void Args::printTrainingHelp() {
   std::cerr
     << "\nThe following arguments for training are optional:\n"
-    << "  -lr                 learning rate [" << lr << "]\n"
-    << "  -lrUpdateRate       change the rate of updates for the learning rate [" << lrUpdateRate << "]\n"
-    << "  -dim                size of word vectors [" << dim << "]\n"
-    << "  -ws                 size of the context window [" << ws << "]\n"
-    << "  -epoch              number of epochs [" << epoch << "]\n"
-    << "  -neg                number of negatives sampled [" << neg << "]\n"
-    << "  -loss               loss function {ns, hs, softmax} [" << lossToString(loss) << "]\n"
-    << "  -thread             number of threads [" << thread << "]\n"
-    << "  -pretrainedVectors  pretrained word vectors for supervised learning ["<< pretrainedVectors <<"]\n"
-    << "  -noSubsampling      disable subsampling ["<< boolToString(noSubsampling) <<"]\n"
-    << "  -saveOutput         whether output params and vector should be saved [" << boolToString(saveOutput) << "]\n";
+    << "  -lr                       learning rate [" << lr << "]\n"
+    << "  -lrUpdateRate             change the rate of updates for the learning rate [" << lrUpdateRate << "]\n"
+    << "  -dim                      size of word vectors [" << dim << "]\n"
+    << "  -ws                       size of the context window [" << ws << "]\n"
+    << "  -epoch                    number of epochs [" << epoch << "]\n"
+    << "  -neg                      number of negatives sampled [" << neg << "]\n"
+    << "  -loss                     loss function {ns, hs, softmax} [" << lossToString(loss) << "]\n"
+    << "  -thread                   number of threads [" << thread << "]\n"
+    << "  -pretrainedVectors        pretrained word vectors for supervised learning ["<< pretrainedVectors <<"]\n"
+    << "  -noSubsampling            disable subsampling ["<< boolToString(noSubsampling) <<"]\n"
+    << "  -saveOutput               whether output params and vector should be saved [" << boolToString(saveOutput) << "]\n"
+    << "  -checkpointEveryNEpochs   saves a checkpoint file every nth epoch [" << boolToString(checkpointEveryNEpochs) << "]\n";
 }
 
 void Args::printQuantizationHelp() {
@@ -317,6 +325,7 @@ void Args::save(std::ostream& out) {
   out.write((char*) &(maxVocabSize), sizeof(int32_t));
   out.write((char*) &(minCountGlobal), sizeof(int));
   out.write((char*) &(minCountCustom), sizeof(int));
+  out.write((char*) &(alphaNegativeSmoothing), sizeof(double));
 }
 
 void Args::load(std::istream& in) {
@@ -337,6 +346,7 @@ void Args::load(std::istream& in) {
   in.read((char*) &(maxVocabSize), sizeof(int32_t));
   in.read((char*) &(minCountGlobal), sizeof(int));
   in.read((char*) &(minCountCustom), sizeof(int));
+  in.read((char*) &(alphaNegativeSmoothing), sizeof(double));
 }
 
 void Args::dump(std::ostream& out) const {
@@ -357,6 +367,7 @@ void Args::dump(std::ostream& out) const {
   out << "max_vocab_size" << " " << maxVocabSize << std::endl;
   out << "t" << " " << t << std::endl;
   out << "noSubsampling" << " " << boolToString(noSubsampling) << std::endl;
+  out << "alphaNegativeSmoothing" << " " << alphaNegativeSmoothing << std::endl;
 }
 
 }
