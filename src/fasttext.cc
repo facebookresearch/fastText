@@ -678,7 +678,7 @@ void FastText::trainThread(int32_t threadId) {
     if (localTokenCount > args_->lrUpdateRate) {
       tokenCount_ += localTokenCount;
       localTokenCount = 0;
-      if (threadId == 0 && args_->verbose > 1) {
+      if (threadId == 0) {
         loss_ = model.getLoss();
         int epochCount = int(tokenCount_) / (ntokens);
         if (args_->checkpointEveryNEpochs > 0 && epochCount == lastSavedEpochCount + args_->checkpointEveryNEpochs) {
