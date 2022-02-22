@@ -76,7 +76,7 @@ function VideoContainer() {
     <div className="container text--center margin-bottom--xl">
       <div className="row">
         <div className="col" style={{textAlign: 'center'}}>
-          <h2>Check it out in the intro video</h2>
+          <h2>Watch Introductory Video</h2>
           <div>
             <iframe
               width="560"
