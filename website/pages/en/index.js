@@ -71,6 +71,29 @@ class HomeSplash extends React.Component {
   }
 }
 
+function VideoContainer() {
+  return (
+    <div className="container text--center margin-bottom--xl">
+      <div className="row">
+        <div className="col" style={{textAlign: 'center'}}>
+          <h2>Watch Introductory Video</h2>
+          <div>
+            <iframe
+              width="560"
+              height="315"
+              src="https://www.youtube.com/embed/og183Y9yHFs"
+              title="Explain Like I'm 5: fastText"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 class Index extends React.Component {
   render() {
     let language = this.props.language || "en";
@@ -104,6 +127,7 @@ class Index extends React.Component {
               layout="twoColumn"
               />
             </Container>
+            <VideoContainer />
           </div>
           <div
           className="productShowcaseSection paddingTop"
