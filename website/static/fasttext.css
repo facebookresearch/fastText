@@ -45,4 +45,13 @@ div.descriptionSection {
 	  margin-top: 7%;
 }
 
+/* Social Banner */
+.SocialBanner {
+  font-weight: bold;
+  font-size: 20px;
+  padding: 20px;
+  max-width: 768px;
+  margin: 0 auto;
+  text-align: center;
+}
 
