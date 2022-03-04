@@ -94,6 +94,20 @@ function VideoContainer() {
   );
 }
 
+function SocialBanner() {
+  return (
+    <div className="SocialBanner">
+      <div>
+        Support Ukraine 🇺🇦{' '}
+        <a href="https://opensource.facebook.com/support-ukraine">
+          Help Provide Humanitarian Aid to Ukraine
+        </a>
+        .
+      </div>
+    </div>
+  );
+}
+
 class Index extends React.Component {
   render() {
     let language = this.props.language || "en";
@@ -113,6 +127,7 @@ class Index extends React.Component {
 
     return (
       <div>
+        <SocialBanner />
         <HomeSplash language={language} />
         <div className="mainContainer">
           <div className="descriptionSection paddingTop lightBackground" style={{ textAlign: "left" }} id="fast-download">
