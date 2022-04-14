@@ -657,7 +657,6 @@ void FastText::trainThread(int32_t threadId) {
 
   const int64_t ntokens = dict_->ntokens();
   int64_t localTokenCount = 0;
-  int lastSavedEpochCount = 0;
   std::vector<int32_t> line, labels;
   std::vector<word_token> lineWithContext;
   while (tokenCount_ < args_->epoch * ntokens) {
@@ -680,10 +679,9 @@ void FastText::trainThread(int32_t threadId) {
       localTokenCount = 0;
       if (threadId == 0) {
         loss_ = model.getLoss();
-        int epochCount = int(tokenCount_) / (ntokens);
-        if (args_->checkpointEveryNEpochs > 0 && epochCount == lastSavedEpochCount + args_->checkpointEveryNEpochs) {
-          lastSavedEpochCount = epochCount;
-          saveModel(epochCount);
+        int epochCount = int(real(tokenCount_) / (ntokens));
+        if (args_->checkpointEveryNEpochs > 0 && ((epochCount + 1) % args_->checkpointEveryNEpochs == 0)) {
+          saveModel(epochCount + 1);
         }
       }
     }
