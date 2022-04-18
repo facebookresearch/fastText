@@ -106,6 +106,8 @@ We used the [*Stanford word segmenter*](https://nlp.stanford.edu/software/segmen
 For languages using the Latin, Cyrillic, Hebrew or Greek scripts, we used the tokenizer from the [*Europarl*](http://www.statmt.org/europarl/) preprocessing tools.
 For the remaining languages, we used the ICU tokenizer.
 
+For Ukrainian language apostrophes are removed.
+
 More information about the training of these models can be found in the article [*Learning Word Vectors for 157 Languages*](https://arxiv.org/abs/1802.06893).
 
 ### License
