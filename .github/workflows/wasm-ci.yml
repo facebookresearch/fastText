@@ -1,0 +1,32 @@
+name: WebAssembly CI
+
+on:
+  push:
+    branches: [ "main", "wip" ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        ubuntu-version: [ ubuntu-20.04, ubuntu-22.04 ]
+        node-version: [ 14.x, 16.x, 18.x ]
+        emsdk-version: [ '3.1.26' ]
+    runs-on: ${{ matrix.ubuntu-version }}
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+    - uses: mymindstorm/setup-emsdk@v11
+      with:
+        version: ${{ matrix.emsdk-version }}
+        no-cache: true # https://github.com/mymindstorm/setup-emsdk/issues/20
+
+    - run: emcc -v
+    - run: make wasm
+
+    - run: npm ci
+      working-directory: webassembly
+    - run: npm test
+      working-directory: webassembly
