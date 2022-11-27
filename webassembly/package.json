@@ -1,0 +1,25 @@
+{
+  "name": "@rafaelkallis/fasttext",
+  "version": "0.2.0",
+  "description": "Node wrapper for Facebook's fastText",
+  "author": "Rafael Kallis <rk@rafaelkallis.com",
+  "license": "AGPL-3.0",
+  "main": "fasttext_node.js",
+  "files": [
+    "fasttext_node.js",
+    "fasttext_wasm.js",
+    "fasttext_wasm.wasm"
+  ],
+  "repository": "github:rafaelkallis/fastText.git",
+  "scripts": {
+    "build": "make --directory .. wasmopt",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "29.3.1",
+    "node-fetch": "2.6.7"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  }
+}

@@ -8,5 +8,9 @@ data
 fasttext
 result
 website/node_modules/
-package-lock.json
+website/package-lock.json
 node_modules/
+
+webassembly/fasttext_wasm.js
+webassembly/*.wasm
+*.wasm

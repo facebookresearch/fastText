@@ -1,0 +1,35 @@
+name: WebAssembly Node Package
+
+on:
+  release:
+    types: [ created ]
+
+env:
+  NODE_VERSION: 14
+  EMSDK_VERSION: 3.1.26
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+    - uses: mymindstorm/setup-emsdk@v11
+      with:
+        version: ${{ env.EMSDK_VERSION }}
+        no-cache: true # https://github.com/mymindstorm/setup-emsdk/issues/20
+
+    - run: make wasmopt
+
+    - run: npm ci
+      working-directory: webassembly
+    - run: npm test
+      working-directory: webassembly
+    - run: npm ci --production
+      working-directory: webassembly
+    - run: npm publish
+      working-directory: webassembly
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
