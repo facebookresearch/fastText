@@ -516,6 +516,7 @@ def train_supervised(*kargs, **kwargs):
         'model': "supervised"
     })
 
+    callback = kwargs.pop("callback", None)
     arg_names = ['input', 'lr', 'dim', 'ws', 'epoch', 'minCount',
                  'minCountLabel', 'minn', 'maxn', 'neg', 'wordNgrams', 'loss', 'bucket',
                  'thread', 'lrUpdateRate', 't', 'label', 'verbose', 'pretrainedVectors',
@@ -525,7 +526,10 @@ def train_supervised(*kargs, **kwargs):
                                         supervised_default)
     a = _build_args(args, manually_set_args)
     ft = _FastText(args=a)
-    fasttext.train(ft.f, a)
+    if callback:
+        fasttext.train_with_callback(ft.f, a, callback)
+    else:
+        fasttext.train(ft.f, a)
     ft.set_args(ft.f.getArgs())
     return ft
 
@@ -544,6 +548,7 @@ def train_unsupervised(*kargs, **kwargs):
     dataset pulled by the example script word-vector-example.sh, which is
     part of the fastText repository.
     """
+    callback = kwargs.pop("callback", None)
     arg_names = ['input', 'model', 'lr', 'dim', 'ws', 'epoch', 'minCount',
                  'minCountLabel', 'minn', 'maxn', 'neg', 'wordNgrams', 'loss', 'bucket',
                  'thread', 'lrUpdateRate', 't', 'label', 'verbose', 'pretrainedVectors']
@@ -551,7 +556,10 @@ def train_unsupervised(*kargs, **kwargs):
                                         unsupervised_default)
     a = _build_args(args, manually_set_args)
     ft = _FastText(args=a)
-    fasttext.train(ft.f, a)
+    if callback:
+        fasttext.train_with_callback(ft.f, a, callback)
+    else:
+        fasttext.train(ft.f, a)
     ft.set_args(ft.f.getArgs())
     return ft
 

@@ -12,6 +12,7 @@
 #include <fasttext.h>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
+#include <pybind11/functional.h>
 #include <pybind11/stl.h>
 #include <real.h>
 #include <vector.h>
@@ -164,6 +165,13 @@ PYBIND11_MODULE(fasttext_pybind, m) {
         } else {
           ft.train(a);
         }
+      },
+      py::call_guard<py::gil_scoped_release>());
+  
+  m.def(
+      "train_with_callback",
+      [](fasttext::FastText& ft, fasttext::Args& a, fasttext::FastText::TrainCallback& c) {
+        ft.train(a, c);
       },
       py::call_guard<py::gil_scoped_release>());
 
