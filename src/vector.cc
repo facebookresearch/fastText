@@ -23,31 +23,9 @@ void Vector::zero() {
   std::fill(data_.begin(), data_.end(), 0.0);
 }
 
-real Vector::norm() const {
-  real sum = 0;
-  for (int64_t i = 0; i < size(); i++) {
-    sum += data_[i] * data_[i];
-  }
-  return std::sqrt(sum);
-}
-
 void Vector::mul(real a) {
   for (int64_t i = 0; i < size(); i++) {
     data_[i] *= a;
-  }
-}
-
-void Vector::addVector(const Vector& source) {
-  assert(size() == source.size());
-  for (int64_t i = 0; i < size(); i++) {
-    data_[i] += source.data_[i];
-  }
-}
-
-void Vector::addVector(const Vector& source, real s) {
-  assert(size() == source.size());
-  for (int64_t i = 0; i < size(); i++) {
-    data_[i] += s * source.data_[i];
   }
 }
 
@@ -71,18 +49,6 @@ void Vector::mul(const Matrix& A, const Vector& vec) {
   for (int64_t i = 0; i < size(); i++) {
     data_[i] = A.dotRow(vec, i);
   }
-}
-
-int64_t Vector::argmax() {
-  real max = data_[0];
-  int64_t argmax = 0;
-  for (int64_t i = 1; i < size(); i++) {
-    if (data_[i] > max) {
-      max = data_[i];
-      argmax = i;
-    }
-  }
-  return argmax;
 }
 
 std::ostream& operator<<(std::ostream& os, const Vector& v) {

@@ -95,25 +95,6 @@ void Loss::findKBest(
 BinaryLogisticLoss::BinaryLogisticLoss(std::shared_ptr<Matrix>& wo)
     : Loss(wo) {}
 
-real BinaryLogisticLoss::binaryLogistic(
-    int32_t target,
-    Model::State& state,
-    bool labelIsPositive,
-    real lr,
-    bool backprop) const {
-  real score = sigmoid(wo_->dotRow(state.hidden, target));
-  if (backprop) {
-    real alpha = lr * (real(labelIsPositive) - score);
-    state.grad.addRow(*wo_, target, alpha);
-    wo_->addVectorToRow(state.hidden, target, alpha);
-  }
-  if (labelIsPositive) {
-    return -log(score);
-  } else {
-    return -log(1.0 - score);
-  }
-}
-
 void BinaryLogisticLoss::computeOutput(Model::State& state) const {
   Vector& output = state.output;
   output.mul(*wo_, state.hidden);
@@ -125,22 +106,6 @@ void BinaryLogisticLoss::computeOutput(Model::State& state) const {
 
 OneVsAllLoss::OneVsAllLoss(std::shared_ptr<Matrix>& wo)
     : BinaryLogisticLoss(wo) {}
-
-real OneVsAllLoss::forward(
-    const std::vector<int32_t>& targets,
-    int32_t /* we take all targets here */,
-    Model::State& state,
-    real lr,
-    bool backprop) {
-  real loss = 0.0;
-  int32_t osz = state.output.size();
-  for (int32_t i = 0; i < osz; i++) {
-    bool isMatch = utils::contains(targets, i);
-    loss += binaryLogistic(i, state, isMatch, lr, backprop);
-  }
-
-  return loss;
-}
 
 NegativeSamplingLoss::NegativeSamplingLoss(
     std::shared_ptr<Matrix>& wo,
@@ -159,34 +124,6 @@ NegativeSamplingLoss::NegativeSamplingLoss(
     }
   }
   uniform_ = std::uniform_int_distribution<size_t>(0, negatives_.size() - 1);
-}
-
-real NegativeSamplingLoss::forward(
-    const std::vector<int32_t>& targets,
-    int32_t targetIndex,
-    Model::State& state,
-    real lr,
-    bool backprop) {
-  assert(targetIndex >= 0);
-  assert(targetIndex < targets.size());
-  int32_t target = targets[targetIndex];
-  real loss = binaryLogistic(target, state, true, lr, backprop);
-
-  for (int32_t n = 0; n < neg_; n++) {
-    auto negativeTarget = getNegative(target, state.rng);
-    loss += binaryLogistic(negativeTarget, state, false, lr, backprop);
-  }
-  return loss;
-}
-
-int32_t NegativeSamplingLoss::getNegative(
-    int32_t target,
-    std::minstd_rand& rng) {
-  int32_t negative;
-  do {
-    negative = negatives_[uniform_(rng)];
-  } while (target == negative);
-  return negative;
 }
 
 HierarchicalSoftmaxLoss::HierarchicalSoftmaxLoss(
@@ -242,22 +179,6 @@ void HierarchicalSoftmaxLoss::buildTree(const std::vector<int64_t>& counts) {
     paths_.push_back(path);
     codes_.push_back(code);
   }
-}
-
-real HierarchicalSoftmaxLoss::forward(
-    const std::vector<int32_t>& targets,
-    int32_t targetIndex,
-    Model::State& state,
-    real lr,
-    bool backprop) {
-  real loss = 0.0;
-  int32_t target = targets[targetIndex];
-  const std::vector<bool>& binaryCode = codes_[target];
-  const std::vector<int32_t>& pathToRoot = paths_[target];
-  for (int32_t i = 0; i < pathToRoot.size(); i++) {
-    loss += binaryLogistic(pathToRoot[i], state, binaryCode[i], lr, backprop);
-  }
-  return loss;
 }
 
 void HierarchicalSoftmaxLoss::predict(
@@ -318,29 +239,5 @@ void SoftmaxLoss::computeOutput(Model::State& state) const {
     output[i] /= z;
   }
 }
-
-real SoftmaxLoss::forward(
-    const std::vector<int32_t>& targets,
-    int32_t targetIndex,
-    Model::State& state,
-    real lr,
-    bool backprop) {
-  computeOutput(state);
-
-  assert(targetIndex >= 0);
-  assert(targetIndex < targets.size());
-  int32_t target = targets[targetIndex];
-
-  if (backprop) {
-    int32_t osz = wo_->size(0);
-    for (int32_t i = 0; i < osz; i++) {
-      real label = (i == target) ? 1.0 : 0.0;
-      real alpha = lr * (label - state.output[i]);
-      state.grad.addRow(*wo_, i, alpha);
-      wo_->addVectorToRow(state.hidden, i, alpha);
-    }
-  }
-  return -log(state.output[target]);
-};
 
 } // namespace fasttext

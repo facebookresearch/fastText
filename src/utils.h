@@ -11,7 +11,6 @@
 #include "real.h"
 
 #include <algorithm>
-#include <chrono>
 #include <fstream>
 #include <ostream>
 #include <vector>
@@ -27,46 +26,5 @@
 namespace fasttext {
 
 using Predictions = std::vector<std::pair<real, int32_t>>;
-
-namespace utils {
-
-int64_t size(std::ifstream&);
-
-void seek(std::ifstream&, int64_t);
-
-template <typename T>
-bool contains(const std::vector<T>& container, const T& value) {
-  return std::find(container.begin(), container.end(), value) !=
-      container.end();
-}
-
-template <typename T1, typename T2>
-bool containsSecond(
-    const std::vector<std::pair<T1, T2>>& container,
-    const T2& value) {
-  return std::find_if(
-             container.begin(),
-             container.end(),
-             [&value](const std::pair<T1, T2>& item) {
-               return item.second == value;
-             }) != container.end();
-}
-
-double getDuration(
-    const std::chrono::steady_clock::time_point& start,
-    const std::chrono::steady_clock::time_point& end);
-
-class ClockPrint {
- public:
-  explicit ClockPrint(int32_t duration);
-  friend std::ostream& operator<<(std::ostream& out, const ClockPrint& me);
-
- private:
-  int32_t duration_;
-};
-
-bool compareFirstLess(const std::pair<double, double>& l, const double& r);
-
-} // namespace utils
 
 } // namespace fasttext

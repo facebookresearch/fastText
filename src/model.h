@@ -52,8 +52,6 @@ class Model {
     std::minstd_rand rng;
 
     State(int32_t hiddenSize, int32_t outputSize, int32_t seed);
-    real getLoss() const;
-    void incrementNExamples(real loss);
   };
 
   void predict(
@@ -62,18 +60,9 @@ class Model {
       real threshold,
       Predictions& heap,
       State& state) const;
-  void update(
-      const std::vector<int32_t>& input,
-      const std::vector<int32_t>& targets,
-      int32_t targetIndex,
-      real lr,
-      State& state);
   void computeHidden(const std::vector<int32_t>& input, State& state) const;
 
-  real std_log(real) const;
-
   static const int32_t kUnlimitedPredictions = -1;
-  static const int32_t kAllLabelsAsTarget = -1;
 };
 
 } // namespace fasttext

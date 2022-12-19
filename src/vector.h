@@ -47,13 +47,9 @@ class Vector {
   }
   void zero();
   void mul(real);
-  real norm() const;
-  void addVector(const Vector& source);
-  void addVector(const Vector&, real);
   void addRow(const Matrix&, int64_t);
   void addRow(const Matrix&, int64_t, real);
   void mul(const Matrix&, const Vector&);
-  int64_t argmax();
 };
 
 std::ostream& operator<<(std::ostream&, const Vector&);
