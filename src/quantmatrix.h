@@ -38,23 +38,16 @@ class QuantMatrix : public Matrix {
 
  public:
   QuantMatrix();
-  QuantMatrix(DenseMatrix&&, int32_t, bool);
   QuantMatrix(const QuantMatrix&) = delete;
   QuantMatrix(QuantMatrix&&) = delete;
   QuantMatrix& operator=(const QuantMatrix&) = delete;
   QuantMatrix& operator=(QuantMatrix&&) = delete;
   virtual ~QuantMatrix() noexcept override = default;
 
-  void quantizeNorm(const Vector&);
-  void quantize(DenseMatrix&& mat);
-
   real dotRow(const Vector&, int64_t) const override;
-  void addVectorToRow(const Vector&, int64_t, real) override;
   void addRowToVector(Vector& x, int32_t i) const override;
   void addRowToVector(Vector& x, int32_t i, real a) const override;
-  void save(std::ostream&) const override;
   void load(std::istream&) override;
-  void dump(std::ostream&) const override;
 };
 
 } // namespace fasttext

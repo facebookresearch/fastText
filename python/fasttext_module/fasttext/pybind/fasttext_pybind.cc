@@ -7,7 +7,6 @@
  */
 
 #include <args.h>
-#include <autotune.h>
 #include <fasttext.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -59,7 +58,6 @@ std::vector<std::pair<fasttext::real, py::str>> castToPythonString(
 PYBIND11_MODULE(fasttext_pybind, m) {
   py::class_<fasttext::FastText>(m, "fasttext")
       .def(py::init<>())
-      .def("getArgs", &fasttext::FastText::getArgs)
       .def(
           "loadModel",
           [](fasttext::FastText& m, std::string s) { m.loadModel(s); })

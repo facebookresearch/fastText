@@ -28,12 +28,6 @@ enum class metric_name : int {
 };
 
 class Args {
- protected:
-  std::string boolToString(bool) const;
-  std::string modelToString(model_name) const;
-  std::string metricToString(metric_name) const;
-  std::unordered_set<std::string> manualArgs_;
-
  public:
   Args();
   std::string input;
@@ -66,31 +60,7 @@ class Args {
   size_t cutoff;
   size_t dsub;
 
-  std::string autotuneValidationFile;
-  std::string autotuneMetric;
-  int autotunePredictions;
-  int autotuneDuration;
-  std::string autotuneModelSize;
-
-  void parseArgs(const std::vector<std::string>& args);
-  void printHelp();
-  void printBasicHelp();
-  void printDictionaryHelp();
-  void printTrainingHelp();
-  void printAutotuneHelp();
-  void printQuantizationHelp();
-  void save(std::ostream&);
   void load(std::istream&);
-  void dump(std::ostream&) const;
-  bool hasAutotune() const;
-  bool isManual(const std::string& argName) const;
-  void setManual(const std::string& argName);
-  std::string lossToString(loss_name) const;
-  metric_name getAutotuneMetric() const;
-  std::string getAutotuneMetricLabel() const;
-  double getAutotuneMetricValue() const;
-  int64_t getAutotuneModelSize() const;
 
-  static constexpr double kUnlimitedModelSize = -1.0;
 };
 } // namespace fasttext

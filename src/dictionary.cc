@@ -55,21 +55,6 @@ int32_t Dictionary::find(const std::string& w, uint32_t h) const {
   return id;
 }
 
-void Dictionary::add(const std::string& w) {
-  int32_t h = find(w);
-  ntokens_++;
-  if (word2int_[h] == -1) {
-    entry e;
-    e.word = w;
-    e.count = 1;
-    e.type = getType(w);
-    words_.push_back(e);
-    word2int_[h] = size_++;
-  } else {
-    words_[word2int_[h]].count++;
-  }
-}
-
 int32_t Dictionary::nwords() const {
   return nwords_;
 }
@@ -88,35 +73,6 @@ const std::vector<int32_t>& Dictionary::getSubwords(int32_t i) const {
   return words_[i].subwords;
 }
 
-const std::vector<int32_t> Dictionary::getSubwords(
-    const std::string& word) const {
-  int32_t i = getId(word);
-  if (i >= 0) {
-    return getSubwords(i);
-  }
-  std::vector<int32_t> ngrams;
-  if (word != EOS) {
-    computeSubwords(BOW + word + EOW, ngrams);
-  }
-  return ngrams;
-}
-
-void Dictionary::getSubwords(
-    const std::string& word,
-    std::vector<int32_t>& ngrams,
-    std::vector<std::string>& substrings) const {
-  int32_t i = getId(word);
-  ngrams.clear();
-  substrings.clear();
-  if (i >= 0) {
-    ngrams.push_back(i);
-    substrings.push_back(words_[i].word);
-  }
-  if (word != EOS) {
-    computeSubwords(BOW + word + EOW, ngrams, &substrings);
-  }
-}
-
 bool Dictionary::discard(int32_t id, real rand) const {
   assert(id >= 0);
   assert(id < nwords_);
@@ -131,11 +87,6 @@ int32_t Dictionary::getId(const std::string& w, uint32_t h) const {
   return word2int_[id];
 }
 
-int32_t Dictionary::getId(const std::string& w) const {
-  int32_t h = find(w);
-  return word2int_[h];
-}
-
 entry_type Dictionary::getType(int32_t id) const {
   assert(id >= 0);
   assert(id < size_);
@@ -144,12 +95,6 @@ entry_type Dictionary::getType(int32_t id) const {
 
 entry_type Dictionary::getType(const std::string& w) const {
   return (w.find(args_->label) == 0) ? entry_type::label : entry_type::word;
-}
-
-std::string Dictionary::getWord(int32_t id) const {
-  assert(id >= 0);
-  assert(id < size_);
-  return words_[id].word;
 }
 
 // The correct implementation of fnv should be:
@@ -229,66 +174,6 @@ bool Dictionary::readWord(std::istream& in, std::string& word) const {
   // trigger eofbit
   in.get();
   return !word.empty();
-}
-
-void Dictionary::readFromFile(std::istream& in) {
-  std::string word;
-  int64_t minThreshold = 1;
-  while (readWord(in, word)) {
-    add(word);
-    if (ntokens_ % 1000000 == 0 && args_->verbose > 1) {
-      std::cerr << "\rRead " << ntokens_ / 1000000 << "M words" << std::flush;
-    }
-    if (size_ > 0.75 * MAX_VOCAB_SIZE) {
-      minThreshold++;
-      threshold(minThreshold, minThreshold);
-    }
-  }
-  threshold(args_->minCount, args_->minCountLabel);
-  initTableDiscard();
-  initNgrams();
-  if (args_->verbose > 0) {
-    std::cerr << "\rRead " << ntokens_ / 1000000 << "M words" << std::endl;
-    std::cerr << "Number of words:  " << nwords_ << std::endl;
-    std::cerr << "Number of labels: " << nlabels_ << std::endl;
-  }
-  if (size_ == 0) {
-    throw std::invalid_argument(
-        "Empty vocabulary. Try a smaller -minCount value.");
-  }
-}
-
-void Dictionary::threshold(int64_t t, int64_t tl) {
-  sort(words_.begin(), words_.end(), [](const entry& e1, const entry& e2) {
-    if (e1.type != e2.type) {
-      return e1.type < e2.type;
-    }
-    return e1.count > e2.count;
-  });
-  words_.erase(
-      remove_if(
-          words_.begin(),
-          words_.end(),
-          [&](const entry& e) {
-            return (e.type == entry_type::word && e.count < t) ||
-                (e.type == entry_type::label && e.count < tl);
-          }),
-      words_.end());
-  words_.shrink_to_fit();
-  size_ = 0;
-  nwords_ = 0;
-  nlabels_ = 0;
-  std::fill(word2int_.begin(), word2int_.end(), -1);
-  for (auto it = words_.begin(); it != words_.end(); ++it) {
-    int32_t h = find(it->word);
-    word2int_[h] = size_++;
-    if (it->type == entry_type::word) {
-      nwords_++;
-    }
-    if (it->type == entry_type::label) {
-      nlabels_++;
-    }
-  }
 }
 
 void Dictionary::initTableDiscard() {
@@ -428,25 +313,6 @@ std::string Dictionary::getLabel(int32_t lid) const {
   return words_[lid + nwords_].word;
 }
 
-void Dictionary::save(std::ostream& out) const {
-  out.write((char*)&size_, sizeof(int32_t));
-  out.write((char*)&nwords_, sizeof(int32_t));
-  out.write((char*)&nlabels_, sizeof(int32_t));
-  out.write((char*)&ntokens_, sizeof(int64_t));
-  out.write((char*)&pruneidx_size_, sizeof(int64_t));
-  for (int32_t i = 0; i < size_; i++) {
-    entry e = words_[i];
-    out.write(e.word.data(), e.word.size() * sizeof(char));
-    out.put(0);
-    out.write((char*)&(e.count), sizeof(int64_t));
-    out.write((char*)&(e.type), sizeof(entry_type));
-  }
-  for (const auto pair : pruneidx_) {
-    out.write((char*)&(pair.first), sizeof(int32_t));
-    out.write((char*)&(pair.second), sizeof(int32_t));
-  }
-}
-
 void Dictionary::load(std::istream& in) {
   words_.clear();
   in.read((char*)&size_, sizeof(int32_t));
@@ -479,61 +345,6 @@ void Dictionary::load(std::istream& in) {
   word2int_.assign(word2intsize, -1);
   for (int32_t i = 0; i < size_; i++) {
     word2int_[find(words_[i].word)] = i;
-  }
-}
-
-void Dictionary::init() {
-  initTableDiscard();
-  initNgrams();
-}
-
-void Dictionary::prune(std::vector<int32_t>& idx) {
-  std::vector<int32_t> words, ngrams;
-  for (auto it = idx.cbegin(); it != idx.cend(); ++it) {
-    if (*it < nwords_) {
-      words.push_back(*it);
-    } else {
-      ngrams.push_back(*it);
-    }
-  }
-  std::sort(words.begin(), words.end());
-  idx = words;
-
-  if (ngrams.size() != 0) {
-    int32_t j = 0;
-    for (const auto ngram : ngrams) {
-      pruneidx_[ngram - nwords_] = j;
-      j++;
-    }
-    idx.insert(idx.end(), ngrams.begin(), ngrams.end());
-  }
-  pruneidx_size_ = pruneidx_.size();
-
-  std::fill(word2int_.begin(), word2int_.end(), -1);
-
-  int32_t j = 0;
-  for (int32_t i = 0; i < words_.size(); i++) {
-    if (getType(i) == entry_type::label ||
-        (j < words.size() && words[j] == i)) {
-      words_[j] = words_[i];
-      word2int_[find(words_[j].word)] = j;
-      j++;
-    }
-  }
-  nwords_ = words.size();
-  size_ = nwords_ + nlabels_;
-  words_.erase(words_.begin() + size_, words_.end());
-  initNgrams();
-}
-
-void Dictionary::dump(std::ostream& out) const {
-  out << words_.size() << std::endl;
-  for (auto it : words_) {
-    std::string entryType = "word";
-    if (it.type == entry_type::label) {
-      entryType = "label";
-    }
-    out << it.word << " " << it.count << " " << entryType << std::endl;
   }
 }
 

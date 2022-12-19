@@ -45,18 +45,9 @@ class ProductQuantizer {
   real* get_centroids(int32_t, uint8_t);
   const real* get_centroids(int32_t, uint8_t) const;
 
-  real assign_centroid(const real*, const real*, uint8_t*, int32_t) const;
-  void Estep(const real*, const real*, uint8_t*, int32_t, int32_t) const;
-  void MStep(const real*, real*, const uint8_t*, int32_t, int32_t);
-  void kmeans(const real*, real*, int32_t, int32_t);
-  void train(int, const real*);
-
   real mulcode(const Vector&, const uint8_t*, int32_t, real) const;
   void addcode(Vector&, const uint8_t*, int32_t, real) const;
-  void compute_code(const real*, uint8_t*) const;
-  void compute_codes(const real*, uint8_t*, int32_t) const;
 
-  void save(std::ostream&) const;
   void load(std::istream&);
 };
 

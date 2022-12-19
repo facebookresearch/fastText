@@ -23,15 +23,6 @@ Model::State::State(int32_t hiddenSize, int32_t outputSize, int32_t seed)
       grad(hiddenSize),
       rng(seed) {}
 
-real Model::State::getLoss() const {
-  return lossValue_ / nexamples_;
-}
-
-void Model::State::incrementNExamples(real loss) {
-  lossValue_ += loss;
-  nexamples_++;
-}
-
 Model::Model(
     std::shared_ptr<Matrix> wi,
     std::shared_ptr<Matrix> wo,
@@ -64,34 +55,6 @@ void Model::predict(
   computeHidden(input, state);
 
   loss_->predict(k, threshold, heap, state);
-}
-
-void Model::update(
-    const std::vector<int32_t>& input,
-    const std::vector<int32_t>& targets,
-    int32_t targetIndex,
-    real lr,
-    State& state) {
-  if (input.size() == 0) {
-    return;
-  }
-  computeHidden(input, state);
-
-  Vector& grad = state.grad;
-  grad.zero();
-  real lossValue = loss_->forward(targets, targetIndex, state, lr, true);
-  state.incrementNExamples(lossValue);
-
-  if (normalizeGradient_) {
-    grad.mul(1.0 / input.size());
-  }
-  for (auto it = input.cbegin(); it != input.cend(); ++it) {
-    wi_->addVectorToRow(grad, *it, 1.0);
-  }
-}
-
-real Model::std_log(real x) const {
-  return std::log(x + 1e-5);
 }
 
 } // namespace fasttext

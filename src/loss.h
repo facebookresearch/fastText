@@ -40,12 +40,6 @@ class Loss {
   explicit Loss(std::shared_ptr<Matrix>& wo);
   virtual ~Loss() = default;
 
-  virtual real forward(
-      const std::vector<int32_t>& targets,
-      int32_t targetIndex,
-      Model::State& state,
-      real lr,
-      bool backprop) = 0;
   virtual void computeOutput(Model::State& state) const = 0;
 
   virtual void predict(
@@ -56,14 +50,6 @@ class Loss {
 };
 
 class BinaryLogisticLoss : public Loss {
- protected:
-  real binaryLogistic(
-      int32_t target,
-      Model::State& state,
-      bool labelIsPositive,
-      real lr,
-      bool backprop) const;
-
  public:
   explicit BinaryLogisticLoss(std::shared_ptr<Matrix>& wo);
   virtual ~BinaryLogisticLoss() noexcept override = default;
@@ -74,12 +60,6 @@ class OneVsAllLoss : public BinaryLogisticLoss {
  public:
   explicit OneVsAllLoss(std::shared_ptr<Matrix>& wo);
   ~OneVsAllLoss() noexcept override = default;
-  real forward(
-      const std::vector<int32_t>& targets,
-      int32_t targetIndex,
-      Model::State& state,
-      real lr,
-      bool backprop) override;
 };
 
 class NegativeSamplingLoss : public BinaryLogisticLoss {
@@ -89,7 +69,6 @@ class NegativeSamplingLoss : public BinaryLogisticLoss {
   int neg_;
   std::vector<int32_t> negatives_;
   std::uniform_int_distribution<size_t> uniform_;
-  int32_t getNegative(int32_t target, std::minstd_rand& rng);
 
  public:
   explicit NegativeSamplingLoss(
@@ -98,12 +77,6 @@ class NegativeSamplingLoss : public BinaryLogisticLoss {
       const std::vector<int64_t>& targetCounts);
   ~NegativeSamplingLoss() noexcept override = default;
 
-  real forward(
-      const std::vector<int32_t>& targets,
-      int32_t targetIndex,
-      Model::State& state,
-      real lr,
-      bool backprop) override;
 };
 
 class HierarchicalSoftmaxLoss : public BinaryLogisticLoss {
@@ -134,12 +107,6 @@ class HierarchicalSoftmaxLoss : public BinaryLogisticLoss {
       std::shared_ptr<Matrix>& wo,
       const std::vector<int64_t>& counts);
   ~HierarchicalSoftmaxLoss() noexcept override = default;
-  real forward(
-      const std::vector<int32_t>& targets,
-      int32_t targetIndex,
-      Model::State& state,
-      real lr,
-      bool backprop) override;
   void predict(
       int32_t k,
       real threshold,
@@ -151,12 +118,6 @@ class SoftmaxLoss : public Loss {
  public:
   explicit SoftmaxLoss(std::shared_ptr<Matrix>& wo);
   ~SoftmaxLoss() noexcept override = default;
-  real forward(
-      const std::vector<int32_t>& targets,
-      int32_t targetIndex,
-      Model::State& state,
-      real lr,
-      bool backprop) override;
   void computeOutput(Model::State& state) const override;
 };
 

@@ -25,7 +25,6 @@ class Vector;
 class DenseMatrix : public Matrix {
  protected:
   std::vector<real> data_;
-  void uniformThread(real, int, int32_t);
 
  public:
   DenseMatrix();
@@ -58,22 +57,11 @@ class DenseMatrix : public Matrix {
   inline int64_t cols() const {
     return n_;
   }
-  void zero();
-  void uniform(real, unsigned int, int32_t);
-
-  void multiplyRow(const Vector& nums, int64_t ib = 0, int64_t ie = -1);
-  void divideRow(const Vector& denoms, int64_t ib = 0, int64_t ie = -1);
-
-  real l2NormRow(int64_t i) const;
-  void l2NormRow(Vector& norms) const;
 
   real dotRow(const Vector&, int64_t) const override;
-  void addVectorToRow(const Vector&, int64_t, real) override;
   void addRowToVector(Vector& x, int32_t i) const override;
   void addRowToVector(Vector& x, int32_t i, real a) const override;
-  void save(std::ostream&) const override;
   void load(std::istream&) override;
-  void dump(std::ostream&) const override;
 
   class EncounteredNaNError : public std::runtime_error {
    public:
