@@ -196,8 +196,6 @@ setup(
     cmdclass={'build_ext': BuildExt},
     packages=[
         str('fasttext'),
-        str('fasttext.util'),
-        str('fasttext.tests'),
     ],
     package_dir={str(''): str('python/fasttext_module')},
     zip_safe=False,
