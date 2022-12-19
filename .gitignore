@@ -10,3 +10,9 @@ result
 website/node_modules/
 package-lock.json
 node_modules/
+
+build/
+dist/
+wheelhouse/
+python/fasttext_module/fasttext_predict.egg-info/
+python/fasttext_module/fasttext_pybind.*.so
