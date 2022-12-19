@@ -161,29 +161,30 @@ def _get_readme():
     Use pandoc to generate rst from md.
     pandoc --from=markdown --to=rst --output=python/README.rst python/README.md
     """
-    with io.open("python/README.rst", encoding='utf-8') as fid:
+    with io.open("README.rst", encoding='utf-8') as fid:
         return fid.read()
 
 
 setup(
-    name='fasttext',
+    name='fasttext-predict',
     version=__version__,
-    author='Onur Celebi',
-    author_email='celebio@fb.com',
-    description='fasttext Python bindings',
+    author='Alexandre Flament',
+    author_email='alex.andre@al-f.net',
+    description='fasttext Python bindings, only the predict method, no numpy dependency',
     long_description=_get_readme(),
     ext_modules=ext_modules,
-    url='https://github.com/facebookresearch/fastText',
+    url='https://github.com/dalf/fasttext-predict/',
     license='MIT',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         'Topic :: Software Development',
         'Topic :: Scientific/Engineering',
         'Operating System :: Microsoft :: Windows',
