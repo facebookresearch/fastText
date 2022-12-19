@@ -1,0 +1,180 @@
+name: Wheel build
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  sdist:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.x"
+
+    - name: Install Python dependencies
+      run: python -m pip install -U pip setuptools wheel
+
+    - name: Build docs and sdist
+      run: make sdist
+      env: { STATIC_DEPS: false }
+
+    - name: Upload sdist
+      uses: actions/upload-artifact@v3
+      with:
+        name: sdist
+        path: dist/*.tar.gz
+
+  Linux:
+    runs-on: ubuntu-latest
+
+    strategy:
+      # Allows for matrix sub-jobs to fail without canceling the rest
+      fail-fast: false
+
+      matrix:
+        image:
+          - manylinux1_x86_64
+          - manylinux1_i686
+          #- manylinux2010_x86_64
+          #- manylinux2010_i686
+          - manylinux_2_24_x86_64
+          - manylinux_2_24_i686
+          - manylinux_2_24_aarch64
+          - musllinux_1_1_x86_64
+          - musllinux_1_1_aarch64
+          #- manylinux_2_24_ppc64le
+          #- manylinux_2_24_ppc64le
+          #- manylinux_2_24_s390x
+        pyversion: ["*"]
+
+        exclude:
+          - image: manylinux_2_24_aarch64
+            pyversion: "*"
+          - image: musllinux_1_1_aarch64
+            pyversion: "*"
+        include:
+          - image: manylinux_2_24_aarch64
+            pyversion: "cp37*"
+          - image: manylinux_2_24_aarch64
+            pyversion: "cp38*"
+          - image: manylinux_2_24_aarch64
+            pyversion: "cp39*"
+          - image: manylinux_2_24_aarch64
+            pyversion: "cp310*"
+          - image: manylinux_2_24_aarch64
+            pyversion: "cp311*"
+
+          - image: musllinux_1_1_aarch64
+            pyversion: "cp37*"
+          - image: musllinux_1_1_aarch64
+            pyversion: "cp38*"
+          - image: musllinux_1_1_aarch64
+            pyversion: "cp39*"
+          - image: musllinux_1_1_aarch64
+            pyversion: "cp310*"
+          - image: musllinux_1_1_aarch64
+            pyversion: "cp311*"
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.x"
+
+    - name: Install dependencies
+      run: python -m pip install .
+
+    - name: Build Linux wheels
+      run: make sdist wheel_${{ matrix.image }}
+      env: { STATIC_DEPS: true, PYTHON_BUILD_VERSION: "${{ matrix.pyversion }}" }
+
+    - name: Upload wheels
+      uses: actions/upload-artifact@v3
+      with:
+        name: wheels-${{ matrix.image }}
+        path: wheelhouse/*/*-m*linux*.whl  # manylinux / musllinux
+        if-no-files-found: ignore
+
+  non-Linux:
+    strategy:
+      # Allows for matrix sub-jobs to fail without canceling the rest
+      fail-fast: false
+
+      matrix:
+        os: [macos-latest, windows-2019]
+        #os: [macos-10.15, windows-latest]
+        #os: [macos-10.15, macOS-M1]
+        #os: [macos-10.15]
+        python_version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+
+    runs-on: ${{ matrix.os }}
+    env: { MACOSX_DEPLOYMENT_TARGET: 10.15 }
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python_version }}
+
+    - name: Install MacOS dependencies
+      if: startsWith(matrix.os, 'mac')
+      run: |
+        brew install automake libtool
+        ln -s /usr/local/bin/glibtoolize /usr/local/bin/libtoolize
+
+    - name: Install dependencies
+      run: python -m pip install setuptools wheel -r requirements.txt
+
+    - name: Build wheels
+      run: make sdist wheel
+      env: { STATIC_DEPS: true, RUN_TESTS: true }
+
+    - name: Upload wheels
+      uses: actions/upload-artifact@v3
+      with:
+        name: wheels-${{ matrix.os }}
+        path: dist/fasttext_predict-*.whl
+        if-no-files-found: ignore
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    needs: [ sdist, Linux, non-Linux ]
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          path: artifacts
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Display structure of downloaded files
+        run: |
+          ls -R
+          mkdir dist
+          mv artifacts/sdist/*.tar.gz dist
+          mv artifacts/*/*/*.whl dist
+          mv artifacts/*/*.whl dist
+      - name: Publish to PyPi
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: |
+          pip install --upgrade wheel pip setuptools twine
+          twine upload --repository testpypi --skip-existing dist/*
+      # - name: Release
+      #   uses: softprops/action-gh-release@v1
+      #   if: startsWith(github.ref, 'refs/tags/')
+      #   with:
+      #     files: dist/*.tar.gz
