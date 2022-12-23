@@ -49,13 +49,12 @@ clean:
 
 FTFVERSION:=$(shell python setup.py -V' )
 PYTHON_BUILD_VERSION ?= *
-MANYLINUX_CFLAGS=-O3 -g1 -pipe -fPIC -flto
-MANYLINUX_LDFLAGS=-flto
 
 .PHONY: sdist build require-cython wheel_manylinux wheel
 
 dist/fasttext-predict-$(FTFVERSION).tar.gz:
-	python setup.py sdist
+	pip install build
+	python -m build --sdist
 
 sdist: dist/fasttext-predict-$(FTFVERSION).tar.gz
 
@@ -68,8 +67,6 @@ wheel_%: dist/fasttext-predict-$(FTFVERSION).tar.gz qemu-user-static
 		-e AR=gcc-ar \
 		-e NM=gcc-nm \
 		-e RANLIB=gcc-ranlib \
-		-e CFLAGS="$(MANYLINUX_CFLAGS) $(if $(patsubst %aarch64,,$@),-march=core2,-march=armv8-a -mtune=cortex-a72)" \
-		-e LDFLAGS="$(MANYLINUX_LDFLAGS)" \
 		-e PYTHON_BUILD_VERSION="$(PYTHON_BUILD_VERSION)" \
 		-e WHEELHOUSE=$(subst wheel_,wheelhouse/,$@) \
 		quay.io/pypa/$(subst wheel_,,$@) \

@@ -1,0 +1,8 @@
+# based on https://github.com/pybind/python_example/blob/master/pyproject.toml
+[build-system]
+requires = [
+    "setuptools>=42",
+    "pybind11>=2.10.0",
+    "wheel",
+]
+build-backend = "setuptools.build_meta"

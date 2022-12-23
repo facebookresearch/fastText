@@ -6,7 +6,6 @@
 echo "Started $0 $@"
 
 set -e -x
-REQUIREMENTS=/io/requirements.txt
 [ -n "$WHEELHOUSE" ] || WHEELHOUSE=wheelhouse
 SDIST=$1
 PACKAGE=$(basename ${SDIST%-*})
@@ -14,10 +13,19 @@ SDIST_PREFIX='fasttext_predict'
 [ -z "$PYTHON_BUILD_VERSION" ] && PYTHON_BUILD_VERSION="*"
 
 build_wheel() {
+    echo "===[ build_wheels $1 $2 ]==="
     pybin="$1"
     source="$2"
     [ -n "$source" ] || source=/io
 
+    ${pybin}/pip install --upgrade pip
+
+    case $( uname -m ) in
+        x86_64|i686|amd64) CFLAGS="$CFLAGS -march=core2";;
+        aarch64) CFLAGS="$CFLAGS -march=armv8-a -mtune=cortex-a72";;
+    esac
+
+    rm -rf /io/build
     env STATIC_DEPS=true \
         RUN_TESTS=true \
         LDFLAGS="$LDFLAGS -fPIC" \
@@ -25,11 +33,13 @@ build_wheel() {
         ACLOCAL_PATH=/usr/share/aclocal/ \
         ${pybin}/pip \
             wheel \
+            -v \
             "$source" \
             -w /io/$WHEELHOUSE
 }
 
 prepare_system() {
+    echo "===[ prepare_system ]==="
     rm -fr /opt/python/cp27-*
     rm -fr /opt/python/cp34-*
     rm -fr /opt/python/cp35-*
@@ -39,31 +49,18 @@ prepare_system() {
 }
 
 build_wheels() {
+    echo "===[ build_wheels ]==="
     # Compile wheels for all python versions
     test -e "$SDIST" && source="$SDIST" || source=
-    FIRST=
-    SECOND=
-    THIRD=
     for PYBIN in /opt/python/${PYTHON_BUILD_VERSION}/bin; do
-        # Install build requirements if we need them and file exists
-        test -n "$source" -o ! -e "$REQUIREMENTS" \
-            || ${PYBIN}/python -m pip install -r "$REQUIREMENTS"
-
         echo "Starting build with $($PYBIN/python -V)"
-        build_wheel "$PYBIN" "$source" &
-        THIRD=$!
-
-        [ -z "$FIRST" ] || wait ${FIRST}
-        if [ "$(uname -m)" == "aarch64" ]; then FIRST=$THIRD; else FIRST=$SECOND; fi
-        SECOND=$THIRD
+        build_wheel "$PYBIN" "$source"
     done
-    wait || exit 1
 }
 
 repair_wheels() {
+    echo "===[ repair_wheels ]==="
     # Bundle external shared libraries into the wheels
-    find /io/$WHEELHOUSE
-    find /usr/lib* | grep libm
     for whl in /io/$WHEELHOUSE/${SDIST_PREFIX}-*.whl; do
         OPT="--strip"
         if [[ "$whl" == *x86_64.whl && "$whl" == *manylinux_2_24_x86_64* ]]; then
@@ -78,6 +75,7 @@ repair_wheels() {
 }
 
 show_wheels() {
+    echo "===[ show_wheels ]==="
     ls -l /io/$WHEELHOUSE/${SDIST_PREFIX}-*.whl
 }
 
