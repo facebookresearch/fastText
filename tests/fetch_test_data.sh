@@ -69,6 +69,7 @@ if [ ! -f "$data_result" ] || \
    [ $(md5sum "$data_result" | cut -f 1 -d ' ') != "8139d58cf075c7f70d085358e73af9b3" ]
 then
   wget -c "https://github.com/le-scientifique/torchDatasets/raw/master/dbpedia_csv.tar.gz" -O "$data_result"
+  wget -c "https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbQ2Vic1kxMmZZQ1k" -O "$data_result"
   tar -xzvf "$data_result" -C "${DATADIR}"
 fi
 
