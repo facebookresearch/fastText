@@ -52,8 +52,5 @@ jobs:
         run: |
           python -m pip install -U pip
           python -m pip install numpy setuptools pybind11
-      - name: Build and install
-        run: |
-          python -m pip install -e .[all]
       - name: Run unittests
         run: . .circleci/python_test.sh
