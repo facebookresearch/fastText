@@ -50,6 +50,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          sudo apt-get update
           sudo apt-get install install g++ make cmake build-essential
           python -m pip install -U pip
           python -m pip install -U numpy setuptools pybind11
