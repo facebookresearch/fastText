@@ -51,6 +51,6 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install -U pip
-          python -m pip install numpy setuptools pybind11
+          python -m pip install -U numpy setuptools pybind11
       - name: Run unittests
         run: python runtests.py -u
