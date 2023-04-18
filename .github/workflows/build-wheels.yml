@@ -37,7 +37,7 @@ jobs:
       - name: Build and install macos
         if: matrix.os == 'macOS'
         run: |
-          python -m pip install .[all]
+          python -m pip install -e .[all]
       - name: Create wheel
         run: |
           python -m pip install wheel
@@ -45,7 +45,7 @@ jobs:
       - name: Upload wheel
         uses: actions/upload-artifact@v3
         with:
-          name: fasttext-${{ matrix.python }}-pytorch${{ matrix.torch }}-${{matrix.os}}-wheel
+          name: fasttext-${{ matrix.python }}-${{matrix.os}}-wheel
           path: dist/*.whl
       - name: Build and install linux
         if: matrix.os == 'ubuntu-latest'
@@ -55,5 +55,5 @@ jobs:
       - name: Upload wheel
         uses: actions/upload-artifact@v3
         with:
-          name: fasttext-${{ matrix.python }}-pytorch${{ matrix.torch }}-${{matrix.os}}-wheel
+          name: fasttext-${{ matrix.python }}-${{matrix.os}}-wheel
           path: dist/*.whl
