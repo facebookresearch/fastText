@@ -31,8 +31,8 @@ jobs:
       - name: Install dependencies ubuntu
         if: matrix.os == 'ubuntu-latest'
         run: |
-          sudo apt-get update
-          sudo apt-get install install g++ make cmake build-essential
+          sudo apt-get update &&
+          sudo apt-get install g++ make cmake build-essential
           python -m pip install -U pip
           python -m pip install -U numpy setuptools pybind11
       - name: Build and install macos
