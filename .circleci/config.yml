@@ -20,11 +20,11 @@
 #           command: |
 #             . .circleci/cmake_test.sh
 
-version: 2
+version: 2.1
 jobs:
-  "py368":
+  "py310":
     docker:
-      - image: circleci/python:3.6.8
+      - image: circleci/python:3.10
     working_directory: ~/repo
     steps:
       - checkout
@@ -33,10 +33,19 @@ jobs:
             . .circleci/setup_circleimg.sh
             . .circleci/python_test.sh
 
-
-  "py357":
+  "py311":
     docker:
-      - image: circleci/python:3.5.7
+      - image: circleci/python:3.11
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          command: |
+            . .circleci/setup_circleimg.sh
+            . .circleci/python_test.sh
+  "py39":
+    docker:
+      - image: circleci/python:3.9
     working_directory: ~/repo
     steps:
       - checkout
@@ -45,31 +54,9 @@ jobs:
             . .circleci/setup_circleimg.sh
             . .circleci/python_test.sh
 
-  "py3410":
+  "gcc13":
     docker:
-      - image: circleci/python:3.4.10
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - run:
-          command: |
-            . .circleci/setup_circleimg.sh
-            . .circleci/python_test.sh
-
-  "py2715":
-    docker:
-      - image: circleci/python:2.7.15
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - run:
-          command: |
-            . .circleci/setup_circleimg.sh
-            . .circleci/python_test.sh
-
-  "gcc5":
-    docker:
-      - image: gcc:5
+      - image: gcc:13
     working_directory: ~/repo
     steps:
       - checkout
@@ -77,9 +64,9 @@ jobs:
           command: |
             . .circleci/gcc_test.sh
 
-  "gcc6":
+  "gcc12":
     docker:
-      - image: gcc:6
+      - image: gcc:12
     working_directory: ~/repo
     steps:
       - checkout
@@ -87,9 +74,9 @@ jobs:
           command: |
             . .circleci/gcc_test.sh
 
-  "gcc7":
+  "gcc11":
     docker:
-      - image: gcc:7
+      - image: gcc:12
     working_directory: ~/repo
     steps:
       - checkout
@@ -107,9 +94,9 @@ jobs:
           command: |
             . .circleci/gcc_test.sh
 
-  "debian-stretch-gcc":
+  "debian-bullseye-gcc":
     docker:
-      - image: debian:stretch
+      - image: debian:bullseye
     working_directory: ~/repo
     steps:
       - checkout
@@ -118,9 +105,9 @@ jobs:
             . .circleci/setup_debian.sh
             . .circleci/gcc_test.sh
 
-  "debian-stretch-cmake":
+  "debian-bullseye-cmake":
     docker:
-      - image: debian:stretch
+      - image: debian:bullseye
     working_directory: ~/repo
     steps:
       - checkout
@@ -129,9 +116,9 @@ jobs:
             . .circleci/setup_debian.sh
             . .circleci/cmake_test.sh
 
-  "debian-stretch-python":
+  "debian-bullseye-python":
     docker:
-      - image: debian:stretch
+      - image: debian:bullseye
     working_directory: ~/repo
     steps:
       - checkout
@@ -140,28 +127,6 @@ jobs:
             . .circleci/setup_debian.sh
             pip install .
             python runtests.py -u
-
-  "debian-jessie-gcc":
-    docker:
-      - image: debian:jessie
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - run:
-          command: |
-            . .circleci/setup_debian.sh
-            . .circleci/gcc_test.sh
-
-  "debian-jessie-cmake":
-    docker:
-      - image: debian:jessie
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - run:
-          command: |
-            . .circleci/setup_debian.sh
-            . .circleci/cmake_test.sh
 
   "website-build":
     docker:
@@ -180,17 +145,14 @@ workflows:
   version: 2
   build:
     jobs:
-      - "py368"
-      - "py357"
-      - "py3410"
-      - "py2715"
-      - "gcc5"
-      - "gcc6"
-      - "gcc7"
+      - "py311"
+      - "py310"
+      - "py39"
+      - "gcc13"
+      - "gcc12"
+      - "gcc11"
       - "gcclatest"
       - "website-build"
-      - "debian-stretch-gcc"
-      - "debian-stretch-cmake"
-      - "debian-stretch-python"
-      - "debian-jessie-gcc"
-      - "debian-jessie-cmake"
+      - "debian-bullseye-gcc"
+      - "debian-bullseye-cmake"
+      - "debian-bullseye-python"
