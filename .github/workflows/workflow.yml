@@ -50,6 +50,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          apt install g++ make cmake build-essential
           python -m pip install -U pip
           python -m pip install -U numpy setuptools pybind11
       - name: Run unittests
