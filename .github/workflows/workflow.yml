@@ -37,15 +37,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Set up Python 3.10
+      - name: Set up Python 3.11
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
+          python-version: "3.11"
       - name: Cache dependencies
         uses: actions/cache@v3
         with:
           path: |
-            ${{ env.pythonLocation }}/lib/python3.10/site-packages
+            ${{ env.pythonLocation }}/lib/python3.11/site-packages
           key: ${{ runner.os }}-${{ hashFiles('setup.py') }}-20230418
 
       - name: Install dependencies
