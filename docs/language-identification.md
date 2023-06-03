@@ -14,6 +14,33 @@ We distribute two versions of the models:
 
 These models were trained on UTF-8 data, and therefore expect UTF-8 as input.
 
+#### Updated model (NLLB project)
+A newer LID (**L**anguage **ID**entification) model was [released as part of the NLLB project](https://github.com/facebookresearch/fairseq/tree/nllb#lid-model) under [CC-BY-NC 4.0](LICENSE.model.md) license. 
+
+* [lid218e.bin](https://tinyurl.com/nllblid218e) uses different language codes from the original models—the ISO 639-3 code (e.g. "eng", "fra", "rus") plus an additional code describing the script (e.g., "eng_Latn", "ukr_Cyrl")—and has a file size of 1.2GB.
+
+You can read more about the data the model was trained on [here](https://github.com/facebookresearch/fairseq/blob/nllb/README.md#datasets).
+
+#### 🤗 HuggingFace Integration
+This model is [available](https://huggingface.co/facebook/fasttext-language-identification) on the Hugging Face Hub. 
+
+```python
+>>> import fasttext
+>>> from huggingface_hub import hf_hub_download
+
+>>> model_path = hf_hub_download(repo_id="facebook/fasttext-language-identification", filename="model.bin")
+>>> model = fasttext.load_model(model_path)
+>>> model.predict("Hello, world!")
+
+(('__label__eng_Latn',), array([0.81148803]))
+
+>>> model.predict("Hello, world!", k=5)
+
+(('__label__eng_Latn', '__label__vie_Latn', '__label__nld_Latn', '__label__pol_Latn', '__label__deu_Latn'), 
+ array([0.61224753, 0.21323682, 0.09696738, 0.01359863, 0.01319415]))
+```
+
+
 ### License
 
 The models are distributed under the [*Creative Commons Attribution-Share-Alike License 3.0*](https://creativecommons.org/licenses/by-sa/3.0/).
