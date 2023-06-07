@@ -31,6 +31,17 @@ Query word?
 ```
 <!--END_DOCUSAURUS_CODE_TABS-->
 
+#### 🤗 HuggingFace Integration
+Word vectors for 157 languages available on the Hugging Face Hub under the [`fasttext`](https://huggingface.co/models?library=fasttext) tag and more documentation is available [here](https://huggingface.co/facebook/fasttext-en-vectors/blob/main/README.md).
+
+```python
+>>> import fasttext
+>>> from huggingface_hub import hf_hub_download
+
+>>> model_path = hf_hub_download(repo_id="facebook/fasttext-en-vectors", filename="model.bin")
+>>> model = fasttext.load_model(model_path)
+```
+
 ### Adapt the dimension
 
 The pre-trained word vectors we distribute have dimension 300. If you need a smaller size, you can use our dimension reducer.
