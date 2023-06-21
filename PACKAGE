@@ -1,0 +1,3 @@
+load("@fbcode_macros//build_defs:package_local_utils.bzl", "package_local_utils")
+
+package_local_utils.set_clang_version(15, True)
