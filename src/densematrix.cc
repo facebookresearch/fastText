@@ -146,6 +146,14 @@ void DenseMatrix::addRowToVector(Vector& x, int32_t i, real a) const {
   }
 }
 
+void DenseMatrix::averageRowsToVector(Vector& x, const std::vector<int32_t>& rows) const {
+  x.zero();
+  for (auto it = rows.cbegin(); it != rows.cend(); ++it) {
+    addRowToVector(x, *it);
+  }
+  x.mul(1.0 / rows.size());
+}
+
 void DenseMatrix::save(std::ostream& out) const {
   out.write((char*)&m_, sizeof(int64_t));
   out.write((char*)&n_, sizeof(int64_t));

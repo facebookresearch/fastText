@@ -36,6 +36,7 @@ class Matrix {
   virtual void addVectorToRow(const Vector&, int64_t, real) = 0;
   virtual void addRowToVector(Vector& x, int32_t i) const = 0;
   virtual void addRowToVector(Vector& x, int32_t i, real a) const = 0;
+  virtual void averageRowsToVector(Vector& x, const std::vector<int32_t>& rows) const = 0;
   virtual void save(std::ostream&) const = 0;
   virtual void load(std::istream&) = 0;
   virtual void dump(std::ostream&) const = 0;
