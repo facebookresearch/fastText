@@ -183,6 +183,7 @@ template <unsigned Cols> void averageRowsFast(Vector& x, const std::vector<int32
   if (rows.empty()) {
     x.zero();
     x.mul(1.0 / rows.size());
+    return;
   }
 
   // Copy the first row to accumulation registers.
