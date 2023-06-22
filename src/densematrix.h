@@ -15,6 +15,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include "aligned.h"
 #include "matrix.h"
 #include "real.h"
 
@@ -24,7 +25,7 @@ class Vector;
 
 class DenseMatrix : public Matrix {
  protected:
-  std::vector<real> data_;
+  intgemm::AlignedVector<real> data_;
   void uniformThread(real, int, int32_t);
 
  public:
