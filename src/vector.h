@@ -26,7 +26,7 @@ class Vector {
  public:
   explicit Vector(int64_t);
   Vector(const Vector&) = default;
-  Vector(Vector&&) noexcept = default;
+  Vector(Vector&&) = default;
   Vector& operator=(const Vector&) = default;
   Vector& operator=(Vector&&) = default;
 
