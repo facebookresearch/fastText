@@ -219,7 +219,7 @@ class Index extends React.Component {
             </h2>
             <Container>
               <GridBlock
-                align="left"
+                align="center"
                 contents={[
                   {
                     content: "P. Bojanowski, E. Grave, A. Joulin, T. Mikolov",
