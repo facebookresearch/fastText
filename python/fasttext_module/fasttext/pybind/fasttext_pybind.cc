@@ -78,8 +78,9 @@ std::pair<std::vector<py::str>, std::vector<py::str>> getLineText(
     } else if (type == fasttext::entry_type::label && wid >= 0) {
       labels.push_back(castToPythonString(token, onUnicodeError));
     }
-    if (token == fasttext::Dictionary::EOS)
+    if (token == fasttext::Dictionary::EOS) {
       break;
+}
   }
   return std::pair<std::vector<py::str>, std::vector<py::str>>(words, labels);
 }
