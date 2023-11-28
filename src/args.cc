@@ -8,7 +8,8 @@
 
 #include "args.h"
 
-#include <stdlib.h>
+#include <cstdlib>
+#include <cstdint>
 
 #include <iostream>
 #include <stdexcept>
@@ -106,7 +107,7 @@ std::string Args::metricToString(metric_name mn) const {
 }
 
 void Args::parseArgs(const std::vector<std::string>& args) {
-  std::string command(args[1]);
+  const std::string& command(args[1]);
   if (command == "supervised") {
     model = model_name::sup;
     loss = loss_name::softmax;
@@ -401,13 +402,13 @@ metric_name Args::getAutotuneMetric() const {
   } else if (autotuneMetric == "f1") {
     return metric_name::f1score;
   } else if (autotuneMetric.substr(0, 18) == "precisionAtRecall:") {
-    size_t semicolon = autotuneMetric.find(":", 18);
+    size_t semicolon = autotuneMetric.find(':', 18);
     if (semicolon != std::string::npos) {
       return metric_name::precisionAtRecallLabel;
     }
     return metric_name::precisionAtRecall;
   } else if (autotuneMetric.substr(0, 18) == "recallAtPrecision:") {
-    size_t semicolon = autotuneMetric.find(":", 18);
+    size_t semicolon = autotuneMetric.find(':', 18);
     if (semicolon != std::string::npos) {
       return metric_name::recallAtPrecisionLabel;
     }
@@ -424,7 +425,7 @@ std::string Args::getAutotuneMetricLabel() const {
   } else if (
       metric == metric_name::precisionAtRecallLabel ||
       metric == metric_name::recallAtPrecisionLabel) {
-    size_t semicolon = autotuneMetric.find(":", 18);
+    size_t semicolon = autotuneMetric.find(':', 18);
     label = autotuneMetric.substr(semicolon + 1);
   } else {
     return label;
@@ -444,7 +445,7 @@ double Args::getAutotuneMetricValue() const {
       metric == metric_name::recallAtPrecisionLabel ||
       metric == metric_name::recallAtPrecision) {
     size_t firstSemicolon = 18; // semicolon position in "precisionAtRecall:"
-    size_t secondSemicolon = autotuneMetric.find(":", firstSemicolon);
+    size_t secondSemicolon = autotuneMetric.find(':', firstSemicolon);
     const std::string valueStr =
         autotuneMetric.substr(firstSemicolon, secondSemicolon - firstSemicolon);
     value = std::stof(valueStr) / 100.0;
