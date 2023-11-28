@@ -15,7 +15,11 @@ set (fasttext_VERSION_MINOR 1)
 
 include_directories(fasttext)
 
+if(WIN32)
+set(CMAKE_CXX_FLAGS " -std=c++11 -funroll-loops -O3 -march=native")
+else()
 set(CMAKE_CXX_FLAGS " -pthread -std=c++11 -funroll-loops -O3 -march=native")
+endif()
 
 set(HEADER_FILES
     src/args.h
@@ -65,7 +69,13 @@ set_target_properties(fasttext-static PROPERTIES OUTPUT_NAME fasttext)
 set_target_properties(fasttext-static_pic PROPERTIES OUTPUT_NAME fasttext_pic
   POSITION_INDEPENDENT_CODE True)
 add_executable(fasttext-bin src/main.cc)
+
+if(WIN32)
+target_link_libraries(fasttext-bin fasttext-static)
+else()
 target_link_libraries(fasttext-bin pthread fasttext-static)
+endif()
+
 set_target_properties(fasttext-bin PROPERTIES PUBLIC_HEADER "${HEADER_FILES}" OUTPUT_NAME fasttext)
 install (TARGETS fasttext-shared
     LIBRARY DESTINATION lib)
