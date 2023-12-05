@@ -9,6 +9,8 @@
 cmake_minimum_required(VERSION 2.8.9)
 project(fasttext)
 
+set(CMAKE_CXX_STANDARD 17)
+
 # The version number.
 set (fasttext_VERSION_MAJOR 0)
 set (fasttext_VERSION_MINOR 1)
