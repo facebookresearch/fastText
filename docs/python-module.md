@@ -282,10 +282,12 @@ In addition, the object exposes several functions :
                             # This is equivalent to `labels` property.
     get_line                # Split a line of text into words and labels.
     get_output_matrix       # Get a copy of the full output matrix of a Model.
-    get_sentence_vector     # Given a string, get a single vector represenation. This function
+    get_sentence_vector     # Given a string, get a single vector representation. This function
                             # assumes to be given a single line of text. We split words on
                             # whitespace (space, newline, tab, vertical tab) and the control
                             # characters carriage return, formfeed and the null character.
+    get_nearest_neighbors   # Given a word, return the nearest neighbors and their
+                            # cosine similarity with the given word.
     get_subword_id          # Given a subword, return the index (within input matrix) it hashes to.
     get_subwords            # Given a word, get the subwords and their indicies.
     get_word_id             # Given a word, get the word id within the dictionary.

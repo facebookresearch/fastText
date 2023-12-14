@@ -122,7 +122,7 @@ class _FastText:
 
     def get_sentence_vector(self, text):
         """
-        Given a string, get a single vector represenation. This function
+        Given a string, get a single vector representation. This function
         assumes to be given a single line of text. We split words on
         whitespace (space, newline, tab, vertical tab) and the control
         characters carriage return, formfeed and the null character.
@@ -138,6 +138,10 @@ class _FastText:
         return np.array(b)
 
     def get_nearest_neighbors(self, word, k=10, on_unicode_error='strict'):
+        """
+        Given a word, return the nearest neighbors and their
+        cosine similarity with the given word.
+        """
         return self.f.getNN(word, k, on_unicode_error)
 
     def get_analogies(self, wordA, wordB, wordC, k=10,
