@@ -180,7 +180,9 @@ class _FastText:
         self.f.getInputVector(b, ind)
         return np.array(b)
 
-    def predict(self, text, k=1, threshold=0.0, on_unicode_error='strict'):
+    def predict(self, text, k=1, threshold=0.0, on_unicode_error='strict',
+                transpose_axis=False):
+
         """
         Given a string, get a list of labels and a list of
         corresponding probabilities. k controls the number
@@ -190,7 +192,8 @@ class _FastText:
         the returned labels by a threshold on probability. A
         choice of 0.5 will return labels with at least 0.5
         probability. k and threshold will be applied together to
-        determine the returned labels.
+        determine the returned labels. transpose_axis arranges
+        class labels and scores in a single array.
 
         This function assumes to be given
         a single line of text. We split words on whitespace (space,
@@ -211,12 +214,20 @@ class _FastText:
             entry += "\n"
             return entry
 
+        def transpose(labels, probs):
+            """Arrange class labels and probs in a single array"""
+            return [ (labels[i], probs[i]) for i in range(len(labels)) ]
+
+
         if type(text) == list:
             text = [check(entry) for entry in text]
             all_labels, all_probs = self.f.multilinePredict(
                 text, k, threshold, on_unicode_error)
 
-            return all_labels, all_probs
+            if transpose_axis:
+                return transpose(all_labels, all_probs)
+            else:
+                return all_labels, all_probs
         else:
             text = check(text)
             predictions = self.f.predict(text, k, threshold, on_unicode_error)
