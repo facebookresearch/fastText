@@ -20,3 +20,5 @@ from .FastText import EOW
 from .FastText import cbow
 from .FastText import skipgram
 from .FastText import supervised
+
+from .version import __version__
