@@ -1,0 +1,55 @@
+name: CI
+on: [ push, pull_request ]
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python: [ "3.9", "3.10", "3.11" ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ env.pythonLocation }}/lib/python${{ matrix.python }}/site-packages
+            ~/.torch
+          key: ${{ runner.os }}-torch${{ matrix.torch }}-${{ hashFiles('setup.py') }}-20230418
+      - name: Install dependencies macOS
+        if: matrix.os == 'macos-latest'
+        run: |
+          python -m pip install -U pip
+          python -m pip install -U numpy setuptools pybind11
+      - name: Install dependencies ubuntu
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update &&
+          sudo apt-get install g++ make cmake build-essential
+          python -m pip install -U pip
+          python -m pip install -U numpy setuptools pybind11
+      - name: Build and install macos
+        if: matrix.os == 'macOS'
+        run: |
+          python -m pip install -U -e .[all]
+      - name: Create wheel
+        run: |
+          python -m pip install wheel
+          python setup.py bdist_wheel
+      - name: Upload wheel
+        uses: actions/upload-artifact@v3
+        with:
+          name: fasttext-${{ matrix.python }}-${{matrix.os}}-wheel
+          path: dist/*.whl
+      - name: Upload wheel
+        uses: actions/upload-artifact@v3
+        with:
+          name: fasttext-${{ matrix.python }}-${{matrix.os}}-wheel
+          path: dist/*.whl

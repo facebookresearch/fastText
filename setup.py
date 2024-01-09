@@ -21,7 +21,7 @@ import subprocess
 import platform
 import io
 
-__version__ = '0.9.2'
+__version__ = '0.9.3'
 FASTTEXT_SRC = "src"
 
 # Based on https://github.com/pybind/python_example
@@ -179,10 +179,9 @@ setup(
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         'Topic :: Software Development',
         'Topic :: Scientific/Engineering',
         'Operating System :: Microsoft :: Windows',
@@ -190,7 +189,7 @@ setup(
         'Operating System :: Unix',
         'Operating System :: MacOS',
     ],
-    install_requires=['pybind11>=2.2', "setuptools >= 0.7.0", "numpy"],
+    install_requires=['pybind11>=2.10', "setuptools >= 67.6.1", "numpy"],
     cmdclass={'build_ext': BuildExt},
     packages=[
         str('fasttext'),

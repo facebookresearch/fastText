@@ -1,0 +1,58 @@
+name: CI
+on: [ push, pull_request ]
+
+# Run linter with github actions for quick feedbacks.
+# Run macos tests with github actions. Linux (CPU & GPU) tests currently runs on CircleCI
+jobs:
+  linter:
+    runs-on: ubuntu-latest
+    # run on PRs, or commits to facebookresearch (not internal)
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        # flake8-bugbear flake8-comprehensions are useful but not available internally
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install flake8==6.0.0 isort==5.12.0
+          python -m pip install black==23.1.0
+          flake8 --version
+      - name: Lint
+        run: |
+          echo "Running isort"
+          isort -c --sp . .
+          echo "Running black"
+          black -l 100 --check .
+          echo "Running flake8"
+          flake8 .
+
+  macos_tests:
+    runs-on: macos-latest
+    # run on PRs, or commits to facebookresearch (not internal)
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ env.pythonLocation }}/lib/python3.11/site-packages
+          key: ${{ runner.os }}-${{ hashFiles('setup.py') }}-20230418
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install g++ make cmake build-essential
+          python -m pip install -U pip
+          python -m pip install -U numpy setuptools pybind11
+      - name: Run unittests
+        run: python runtests.py -u
