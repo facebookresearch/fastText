@@ -15,6 +15,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include "aligned.h"
 #include "matrix.h"
 #include "real.h"
 
@@ -24,7 +25,7 @@ class Vector;
 
 class DenseMatrix : public Matrix {
  protected:
-  std::vector<real> data_;
+  intgemm::AlignedVector<real> data_;
   void uniformThread(real, int, int32_t);
 
  public:
@@ -71,6 +72,7 @@ class DenseMatrix : public Matrix {
   void addVectorToRow(const Vector&, int64_t, real) override;
   void addRowToVector(Vector& x, int32_t i) const override;
   void addRowToVector(Vector& x, int32_t i, real a) const override;
+  void averageRowsToVector(Vector& x, const std::vector<int32_t>& rows) const override;
   void save(std::ostream&) const override;
   void load(std::istream&) override;
   void dump(std::ostream&) const override;
