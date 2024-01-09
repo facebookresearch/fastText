@@ -532,7 +532,7 @@ std::vector<std::pair<std::string, Vector>> FastText::getNgramVectors(
     if (ngrams[i] >= 0) {
       vec.addRow(*input_, ngrams[i]);
     }
-    result.emplace_back(std::make_pair(substrings[i], std::move(vec)));
+    result.emplace_back(substrings[i], std::move(vec));
   }
   return result;
 }
