@@ -46,7 +46,7 @@ template <class T> class AlignedVector {
       std::copy(first, last, begin());
     }
 
-    AlignedVector(AlignedVector &&from) : mem_(from.mem_), size_(from.size_) {
+    AlignedVector(AlignedVector &&from) noexcept : mem_(from.mem_), size_(from.size_) {
       from.mem_ = nullptr;
       from.size_ = 0;
     }

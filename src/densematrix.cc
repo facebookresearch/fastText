@@ -152,17 +152,17 @@ void DenseMatrix::addRowToVector(Vector& x, int32_t i, real a) const {
 
 /* Abstract over AVX512F, AVX, and SSE intrinsics, using the one available on this machine. */
 #if defined(__AVX512F__)
-typedef __m512 Register;
+using Register = __m512;
 inline Register Add(Register first, Register second) { return _mm512_add_ps(first, second); }
 inline Register Set1(float to) { return _mm512_set1_ps(to); }
 inline Register Multiply(Register first, Register second) { return _mm512_mul_ps(first, second); }
 #elif defined(__AVX__)
-typedef __m256 Register;
+using Register = __m256;
 inline Register Add(Register first, Register second) { return _mm256_add_ps(first, second); }
 inline Register Set1(float to) { return _mm256_set1_ps(to); }
 inline Register Multiply(Register first, Register second) { return _mm256_mul_ps(first, second); }
 #elif defined(__SSE__)
-typedef __m128 Register;
+using Register = __m128;
 inline Register Add(Register first, Register second) { return _mm_add_ps(first, second); }
 inline Register Set1(float to) { return _mm_set1_ps(to); }
 inline Register Multiply(Register first, Register second) { return _mm_mul_ps(first, second); }
