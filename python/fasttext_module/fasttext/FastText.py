@@ -24,7 +24,7 @@ EOW = ">"
 displayed_errors = {}
 
 
-class _Meter(object):
+class _Meter:
     def __init__(self, fasttext_model, meter):
         self.f = fasttext_model
         self.m = meter
@@ -77,7 +77,7 @@ class _Meter(object):
         return recall
 
 
-class _FastText(object):
+class _FastText:
     """
     This class defines the API to inspect models and should not be used to
     create objects. It will be returned by functions such as load_model or

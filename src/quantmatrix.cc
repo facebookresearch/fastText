@@ -80,6 +80,14 @@ void QuantMatrix::addRowToVector(Vector& x, int32_t i) const {
   pq_->addcode(x, codes_.data(), i, norm);
 }
 
+void QuantMatrix::averageRowsToVector(Vector& x, const std::vector<int32_t>& rows) const {
+  x.zero();
+  for (auto it = rows.cbegin(); it != rows.cend(); ++it) {
+    addRowToVector(x, *it);
+  }
+  x.mul(1.0 / rows.size());
+}
+
 void QuantMatrix::save(std::ostream& out) const {
   out.write((char*)&qnorm_, sizeof(qnorm_));
   out.write((char*)&m_, sizeof(m_));

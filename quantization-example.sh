@@ -17,7 +17,7 @@ mkdir -p "${DATADIR}"
 
 if [ ! -f "${DATADIR}/dbpedia.train" ]
 then
-  wget -c "https://github.com/le-scientifique/torchDatasets/raw/master/dbpedia_csv.tar.gz" -O "${DATADIR}/dbpedia_csv.tar.gz"
+  wget -c "https://drive.google.com/uc?export=download&id=0Bz8a_Dbh9QhbQ2Vic1kxMmZZQ1k" -O "${DATADIR}/dbpedia_csv.tar.gz"
   tar -xzvf "${DATADIR}/dbpedia_csv.tar.gz" -C "${DATADIR}"
   cat "${DATADIR}/dbpedia_csv/train.csv" | normalize_text > "${DATADIR}/dbpedia.train"
   cat "${DATADIR}/dbpedia_csv/test.csv" | normalize_text > "${DATADIR}/dbpedia.test"

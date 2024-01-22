@@ -42,11 +42,7 @@ Model::Model(
 void Model::computeHidden(const std::vector<int32_t>& input, State& state)
     const {
   Vector& hidden = state.hidden;
-  hidden.zero();
-  for (auto it = input.cbegin(); it != input.cend(); ++it) {
-    hidden.addRow(*wi_, *it);
-  }
-  hidden.mul(1.0 / input.size());
+  wi_->averageRowsToVector(hidden, input);
 }
 
 void Model::predict(
