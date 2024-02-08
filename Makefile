@@ -35,7 +35,7 @@ autotune.o: src/autotune.cc src/autotune.h
 matrix.o: src/matrix.cc src/matrix.h
 	$(CXX) $(CXXFLAGS) -c src/matrix.cc
 
-dictionary.o: src/dictionary.cc src/dictionary.h src/args.h
+dictionary.o: src/dictionary.cc src/dictionary.h src/args.h src/real.h
 	$(CXX) $(CXXFLAGS) -c src/dictionary.cc
 
 loss.o: src/loss.cc src/loss.h src/matrix.h src/real.h
