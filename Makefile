@@ -29,37 +29,37 @@ wasmdebug: webassembly/fasttext_wasm.js
 args.o: src/args.cc src/args.h
 	$(CXX) $(CXXFLAGS) -c src/args.cc
 
-autotune.o: src/autotune.cc src/autotune.h
+autotune.o: src/autotune.cc src/autotune.h src/meter.h  src/aligned.h  src/utils.h  src/densematrix.h  src/real.h  src/fasttext.h  src/model.h  src/vector.h  src/args.h  src/matrix.h  src/dictionary.h
 	$(CXX) $(CXXFLAGS) -c src/autotune.cc
 
-matrix.o: src/matrix.cc src/matrix.h
+matrix.o: src/matrix.cc src/matrix.h src/real.h
 	$(CXX) $(CXXFLAGS) -c src/matrix.cc
 
-dictionary.o: src/dictionary.cc src/dictionary.h src/args.h
+dictionary.o: src/dictionary.cc src/dictionary.h src/args.h src/real.h
 	$(CXX) $(CXXFLAGS) -c src/dictionary.cc
 
-loss.o: src/loss.cc src/loss.h src/matrix.h src/real.h
+loss.o: src/loss.cc src/loss.h src/matrix.h src/real.h src/model.h  src/aligned.h  src/vector.h  src/utils.h
 	$(CXX) $(CXXFLAGS) -c src/loss.cc
 
-productquantizer.o: src/productquantizer.cc src/productquantizer.h src/utils.h
+productquantizer.o: src/productquantizer.cc src/productquantizer.h src/utils.h src/aligned.h  src/vector.h  src/real.h
 	$(CXX) $(CXXFLAGS) -c src/productquantizer.cc
 
-densematrix.o: src/densematrix.cc src/densematrix.h src/utils.h src/matrix.h
+densematrix.o: src/densematrix.cc src/densematrix.h src/utils.h src/matrix.h src/aligned.h  src/real.h  src/vector.h
 	$(CXX) $(CXXFLAGS) -c src/densematrix.cc
 
-quantmatrix.o: src/quantmatrix.cc src/quantmatrix.h src/utils.h src/matrix.h
+quantmatrix.o: src/quantmatrix.cc src/quantmatrix.h src/utils.h src/matrix.h src/densematrix.h  src/aligned.h  src/productquantizer.h  src/vector.h  src/real.h
 	$(CXX) $(CXXFLAGS) -c src/quantmatrix.cc
 
-vector.o: src/vector.cc src/vector.h src/utils.h
+vector.o: src/vector.cc src/vector.h src/utils.h src/aligned.h  src/matrix.h  src/real.h
 	$(CXX) $(CXXFLAGS) -c src/vector.cc
 
-model.o: src/model.cc src/model.h src/args.h
+model.o: src/model.cc src/model.h src/args.h src/aligned.h  src/matrix.h  src/vector.h  src/loss.h  src/utils.h  src/real.h
 	$(CXX) $(CXXFLAGS) -c src/model.cc
 
-utils.o: src/utils.cc src/utils.h
+utils.o: src/utils.cc src/utils.h src/real.h
 	$(CXX) $(CXXFLAGS) -c src/utils.cc
 
-meter.o: src/meter.cc src/meter.h
+meter.o: src/meter.cc src/meter.h src/utils.h  src/real.h  src/args.h  src/dictionary.h
 	$(CXX) $(CXXFLAGS) -c src/meter.cc
 
 fasttext.o: src/fasttext.cc src/*.h
