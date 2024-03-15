@@ -42,11 +42,11 @@ Dictionary::Dictionary(std::shared_ptr<Args> args, std::istream& in)
   load(in);
 }
 
-int32_t Dictionary::find(const std::string& w) const {
+int32_t Dictionary::find(const std::string_view w) const {
   return find(w, hash(w));
 }
 
-int32_t Dictionary::find(const std::string& w, uint32_t h) const {
+int32_t Dictionary::find(const std::string_view w, uint32_t h) const {
   int32_t word2intsize = word2int_.size();
   int32_t id = h % word2intsize;
   while (word2int_[id] != -1 && words_[word2int_[id]].word != w) {
@@ -126,12 +126,12 @@ bool Dictionary::discard(int32_t id, real rand) const {
   return rand > pdiscard_[id];
 }
 
-int32_t Dictionary::getId(const std::string& w, uint32_t h) const {
+int32_t Dictionary::getId(const std::string_view w, uint32_t h) const {
   int32_t id = find(w, h);
   return word2int_[id];
 }
 
-int32_t Dictionary::getId(const std::string& w) const {
+int32_t Dictionary::getId(const std::string_view w) const {
   int32_t h = find(w);
   return word2int_[h];
 }
@@ -142,7 +142,7 @@ entry_type Dictionary::getType(int32_t id) const {
   return words_[id].type;
 }
 
-entry_type Dictionary::getType(const std::string& w) const {
+entry_type Dictionary::getType(const std::string_view w) const {
   return (w.find(args_->label) == 0) ? entry_type::label : entry_type::word;
 }
 
@@ -160,7 +160,7 @@ std::string Dictionary::getWord(int32_t id) const {
 // Since all fasttext models that were already released were trained
 // using signed char, we fixed the hash function to make models
 // compatible whatever compiler is used.
-uint32_t Dictionary::hash(const std::string& str) const {
+uint32_t Dictionary::hash(const std::string_view str) const {
   uint32_t h = 2166136261;
   for (size_t i = 0; i < str.size(); i++) {
     h = h ^ uint32_t(int8_t(str[i]));
@@ -324,11 +324,16 @@ void Dictionary::addWordNgrams(
 
 void Dictionary::addSubwords(
     std::vector<int32_t>& line,
-    const std::string& token,
+    const std::string_view token,
     int32_t wid) const {
   if (wid < 0) { // out of vocab
     if (token != EOS) {
-      computeSubwords(BOW + token + EOW, line);
+      std::string concat;
+      concat.reserve(BOW.size() + token.size() + EOW.size());
+      concat += BOW;
+      concat.append(token.data(), token.size());
+      concat += EOW;
+      computeSubwords(concat, line);
     }
   } else {
     if (args_->maxn <= 0) { // in vocab w/o subwords
@@ -387,6 +392,51 @@ int32_t Dictionary::getLine(
   words.clear();
   labels.clear();
   while (readWord(in, token)) {
+    uint32_t h = hash(token);
+    int32_t wid = getId(token, h);
+    entry_type type = wid < 0 ? getType(token) : getType(wid);
+
+    ntokens++;
+    if (type == entry_type::word) {
+      addSubwords(words, token, wid);
+      word_hashes.push_back(h);
+    } else if (type == entry_type::label && wid >= 0) {
+      labels.push_back(wid - nwords_);
+    }
+    if (token == EOS) {
+      break;
+    }
+  }
+  addWordNgrams(words, word_hashes, args_->wordNgrams);
+  return ntokens;
+}
+
+namespace {
+bool readWordNoNewline(std::string_view& in, std::string_view& word) {
+  const std::string_view spaces(" \n\r\t\v\f\0");
+  std::string_view::size_type begin = in.find_first_not_of(spaces);
+  if (begin == std::string_view::npos) {
+    in.remove_prefix(in.size());
+    return false;
+  }
+  in.remove_prefix(begin);
+  word = in.substr(0, in.find_first_of(spaces));
+  in.remove_prefix(word.size());
+  return true;
+}
+} // namespace
+
+int32_t Dictionary::getStringNoNewline(
+    std::string_view in,
+    std::vector<int32_t>& words,
+    std::vector<int32_t>& labels) const {
+  std::vector<int32_t> word_hashes;
+  std::string_view token;
+  int32_t ntokens = 0;
+
+  words.clear();
+  labels.clear();
+  while (readWordNoNewline(in, token)) {
     uint32_t h = hash(token);
     int32_t wid = getId(token, h);
     entry_type type = wid < 0 ? getType(token) : getType(wid);

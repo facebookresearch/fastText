@@ -12,6 +12,7 @@
 #include <ostream>
 #include <vector>
 
+#include "aligned.h"
 #include "real.h"
 
 namespace fasttext {
@@ -20,12 +21,12 @@ class Matrix;
 
 class Vector {
  protected:
-  std::vector<real> data_;
+  intgemm::AlignedVector<real> data_;
 
  public:
   explicit Vector(int64_t);
   Vector(const Vector&) = default;
-  Vector(Vector&&) noexcept = default;
+  Vector(Vector&&) = default;
   Vector& operator=(const Vector&) = default;
   Vector& operator=(Vector&&) = default;
 
