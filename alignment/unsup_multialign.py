@@ -67,9 +67,13 @@ def GWmatrix(emb0):
 def gromov_wasserstein(x_src, x_tgt, C2):
     N = x_src.shape[0]
     C1 = GWmatrix(x_src)
-    M = ot.gromov_wasserstein(C1,C2,np.ones(N),np.ones(N),'square_loss',epsilon=0.55,max_iter=100,tol=1e-4)
+    M = ot.gromov.entropic_gromov_wasserstein(C1,C2,np.ones(N)/N,np.ones(N)/N,'square_loss',epsilon=0.55,max_iter=100,tol=1e-4)
+    M = M * np.full((N, N), N)
     return procrustes(np.dot(M,x_tgt), x_src)
 
+def proj_ortho(R):
+    U, s, V = np.linalg.svd(R)
+    return np.dot(U, V)
 
 def align(EMB, TRANS, lglist, args):
     nmax, l = args.maxload, len(lglist)
