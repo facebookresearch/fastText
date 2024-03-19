@@ -68,7 +68,9 @@ void Loss::predict(
     Model::State& state) const {
   computeOutput(state);
   findKBest(k, threshold, heap, state.output);
-  std::sort_heap(heap.begin(), heap.end(), comparePairs);
+  std::sort_heap(heap.begin(), heap.end(), [](const std::pair<real, int32_t>& a, const std::pair<real, int32_t>& b){
+                                                   return comparePairs(a, b);
+                                               });
 }
 
 void Loss::findKBest(
@@ -84,9 +86,13 @@ void Loss::findKBest(
       continue;
     }
     heap.push_back(std::make_pair(std_log(output[i]), i));
-    std::push_heap(heap.begin(), heap.end(), comparePairs);
+    std::push_heap(heap.begin(), heap.end(), [](const std::pair<real, int32_t>& a, const std::pair<real, int32_t>& b){
+                                                     return comparePairs(a, b);
+                                                 });
     if (heap.size() > k) {
-      std::pop_heap(heap.begin(), heap.end(), comparePairs);
+      std::pop_heap(heap.begin(), heap.end(), [](const std::pair<real, int32_t>& a, const std::pair<real, int32_t>& b){
+                                                      return comparePairs(a, b);
+                                                  });
       heap.pop_back();
     }
   }
@@ -266,7 +272,9 @@ void HierarchicalSoftmaxLoss::predict(
     Predictions& heap,
     Model::State& state) const {
   dfs(k, threshold, 2 * osz_ - 2, 0.0, heap, state.hidden);
-  std::sort_heap(heap.begin(), heap.end(), comparePairs);
+  std::sort_heap(heap.begin(), heap.end(), [](const std::pair<real, int32_t>& a, const std::pair<real, int32_t>& b){
+                                                   return comparePairs(a, b);
+                                               });
 }
 
 void HierarchicalSoftmaxLoss::dfs(
@@ -285,9 +293,13 @@ void HierarchicalSoftmaxLoss::dfs(
 
   if (tree_[node].left == -1 && tree_[node].right == -1) {
     heap.push_back(std::make_pair(score, node));
-    std::push_heap(heap.begin(), heap.end(), comparePairs);
+    std::push_heap(heap.begin(), heap.end(), [](const std::pair<real, int32_t>& a, const std::pair<real, int32_t>& b){
+                                                     return comparePairs(a, b);
+                                                 });
     if (heap.size() > k) {
-      std::pop_heap(heap.begin(), heap.end(), comparePairs);
+      std::pop_heap(heap.begin(), heap.end(), [](const std::pair<real, int32_t>& a, const std::pair<real, int32_t>& b){
+                                                      return comparePairs(a, b);
+                                                  });
       heap.pop_back();
     }
     return;
