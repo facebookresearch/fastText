@@ -8,10 +8,8 @@
 # LICENSE file in the root directory of this source tree.
 #
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 import numpy as np
 from scipy import stats
 import os
@@ -49,47 +47,41 @@ parser.add_argument(
 args = parser.parse_args()
 
 vectors = {}
-fin = open(args.modelPath, 'rb')
-for _, line in enumerate(fin):
-    try:
-        tab = compat_splitting(line)
-        vec = np.array(tab[1:], dtype=float)
-        word = tab[0]
-        if np.linalg.norm(vec) == 0:
+with open(args.modelPath, 'rb') as fin:
+    for line in enumerate(fin):
+        try:
+            tab = compat_splitting(line)
+            vec = np.array(tab[1:], dtype=float)
+            word = tab[0]
+            if np.linalg.norm(vec) == 0:
+                continue
+            if word not in vectors:
+                vectors[word] = vec
+        except (ValueError, UnicodeDecodeError) as e:
             continue
-        if not word in vectors:
-            vectors[word] = vec
-    except ValueError:
-        continue
-    except UnicodeDecodeError:
-        continue
-fin.close()
 
-mysim = []
-gold = []
-drop = 0.0
-nwords = 0.0
+mysim, gold = [], []
+drop, nwords = 0.0, 0.0
 
-fin = open(args.dataPath, 'rb')
-for line in fin:
-    tline = compat_splitting(line)
-    word1 = tline[0].lower()
-    word2 = tline[1].lower()
-    nwords = nwords + 1.0
+with open(args.dataPath, 'rb') as evfin:
+    for line in evfin:
+        tline = compat_splitting(line)
+        word1 = tline[0].lower()
+        word2 = tline[1].lower()
+        nwords += 1.0
 
-    if (word1 in vectors) and (word2 in vectors):
-        v1 = vectors[word1]
-        v2 = vectors[word2]
-        d = similarity(v1, v2)
-        mysim.append(d)
-        gold.append(float(tline[2]))
-    else:
-        drop = drop + 1.0
-fin.close()
+        if (word1 in vectors) and (word2 in vectors):
+            v1 = vectors[word1]
+            v2 = vectors[word2]
+            d = similarity(v1, v2)
+            mysim.append(d)
+            gold.append(float(tline[2]))
+        else:
+            drop = drop + 1.0
 
-corr = stats.spearmanr(mysim, gold)
+corr, p = stats.spearmanr(mysim, gold)
 dataset = os.path.basename(args.dataPath)
 print(
     "{0:20s}: {1:2.0f}  (OOV: {2:2.0f}%)"
-    .format(dataset, corr[0] * 100, math.ceil(drop / nwords * 100.0))
+    .format(dataset, corr * 100, math.ceil(drop / nwords * 100.0))
 )
