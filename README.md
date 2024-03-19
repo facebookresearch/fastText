@@ -179,6 +179,13 @@ $ ./fasttext supervised -input train.txt -output model
 where `train.txt` is a text file containing a training sentence per line along with the labels.
 By default, we assume that labels are words that are prefixed by the string `__label__`.
 This will output two files: `model.bin` and `model.vec`.
+
+You can also use a pretrained word representation model `word_model.vec` learnt using the above [method](#word-representation-learning) with `pretrainedVectors` argument with the dimension of the model by using the `dim` argument. This way you can take advantage of the big dataset of unlabelled text by pretrain the word representation model on them.
+
+```
+$ ./fasttext supervised -input train.txt -output model -pretrainedVectors word_model.vec -dim dimension_of_word_model
+```
+
 Once the model was trained, you can evaluate it by computing the precision and recall at k (P@k and R@k) on a test set using:
 
 ```
