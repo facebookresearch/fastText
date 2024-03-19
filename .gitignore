@@ -1,5 +1,6 @@
 .*.swp
 *.o
+*.exe
 *.bin
 *.vec
 *.bc
