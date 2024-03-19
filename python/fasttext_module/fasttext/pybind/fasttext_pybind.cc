@@ -495,6 +495,11 @@ PYBIND11_MODULE(fasttext_pybind, m) {
             return castToPythonString(m.getNN(word, k), onUnicodeError);
           })
       .def(
+          "getSimilarity",
+          [](fasttext::FastText& m, const std::string& word1, const std::string& word2) {
+            return m.getSimilarity(word1, word2);
+          })
+      .def(
           "getAnalogies",
           [](fasttext::FastText& m,
              const std::string& wordA,

@@ -558,6 +558,39 @@ void FastText::lazyComputeWordVectors() {
   }
 }
 
+real FastText::getSimilarity(
+    const std::string& word1,
+    const std::string& word2) {
+  Vector queryWord1(args_->dim);
+  Vector queryWord2(args_->dim);
+
+  getWordVector(queryWord1, word1);
+  getWordVector(queryWord2, word2);
+
+  lazyComputeWordVectors();
+  assert(wordVectors_);
+
+  return getSimilarity(*wordVectors_, queryWord1, queryWord2);
+}
+
+real FastText::getSimilarity(const DenseMatrix& wordVectors,
+  const Vector& queryWord1,
+  const Vector& queryWord2) {
+
+  real word1Norm = queryWord1.norm();
+  real word2Norm = queryWord2.norm();
+
+  real queryNorm = std::sqrt(word1Norm * word1Norm * word2Norm * word2Norm);
+  if (std::abs(queryNorm) < 1e-8) {
+    queryNorm = 1;
+  }
+
+  real dp = wordVectors.dotTwoVecs(queryWord1, queryWord2);
+  real similarity = dp / queryNorm;
+
+  return similarity;
+}
+
 std::vector<std::pair<real, std::string>> FastText::getNN(
     const std::string& word,
     int32_t k) {
