@@ -13,7 +13,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 # The version number.
 set (fasttext_VERSION_MAJOR 0)
-set (fasttext_VERSION_MINOR 1)
+set (fasttext_VERSION_MINOR 2)
 
 include_directories(fasttext)
 
