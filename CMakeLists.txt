@@ -69,12 +69,15 @@ set_target_properties(fasttext-static_pic PROPERTIES OUTPUT_NAME fasttext_pic
 add_executable(fasttext-bin src/main.cc)
 target_link_libraries(fasttext-bin pthread fasttext-static)
 set_target_properties(fasttext-bin PROPERTIES PUBLIC_HEADER "${HEADER_FILES}" OUTPUT_NAME fasttext)
-install (TARGETS fasttext-shared
-    LIBRARY DESTINATION lib)
+if(WIN32)
+    install (TARGETS fasttext-bin
+        RUNTIME DESTINATION bin
+    PUBLIC_HEADER DESTINATION include/fasttext)
+else()
+    install (TARGETS fasttext-shared
+        LIBRARY DESTINATION lib)
+endif()
 install (TARGETS fasttext-static
     ARCHIVE DESTINATION lib)
 install (TARGETS fasttext-static_pic
     ARCHIVE DESTINATION lib)
-install (TARGETS fasttext-bin
-    RUNTIME DESTINATION bin
- PUBLIC_HEADER DESTINATION include/fasttext)
