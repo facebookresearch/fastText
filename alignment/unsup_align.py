@@ -21,6 +21,7 @@ parser.add_argument('--niter', default=5000, type=int, help='Initial number of i
 parser.add_argument('--bsz', default=500, type=int, help='Initial batch size')
 parser.add_argument('--lr', default=500., type=float, help='Learning rate')
 parser.add_argument('--nmax', default=20000, type=int, help='Vocabulary size for learning the alignment')
+parser.add_argument('--maxload', default=200000, type=int, help='Maximal number of words to load from source and target embeddings (-1 for whole vocabulary)')
 parser.add_argument('--reg', default=0.05, type=float, help='Regularization parameter for sinkhorn')
 args = parser.parse_args()
 
@@ -82,10 +83,12 @@ print("\n*** Wasserstein Procrustes ***\n")
 
 np.random.seed(args.seed)
 
-maxload = 200000
+maxload = args.maxload
 w_src, x_src = load_vectors(args.model_src, maxload, norm=True, center=True)
 w_tgt, x_tgt = load_vectors(args.model_tgt, maxload, norm=True, center=True)
-src2trg, _ = load_lexicon(args.lexicon, w_src, w_tgt)
+src2trg = None
+if args.lexicon is not None:
+    src2trg, _ = load_lexicon(args.lexicon, w_src, w_tgt)
 
 print("\nComputing initial mapping with convex relaxation...")
 t0 = time.time()
@@ -98,8 +101,9 @@ R = align(x_src, x_tgt, R0.copy(), bsz=args.bsz, lr=args.lr, niter=args.niter,
           nepoch=args.nepoch, reg=args.reg, nmax=args.nmax)
 print("Done [%03d sec]" % math.floor(time.time() - t0))
 
-acc = compute_nn_accuracy(x_src, np.dot(x_tgt, R.T), src2trg)
-print("\nPrecision@1: %.3f\n" % acc)
+if src2trg is not None:
+    acc = compute_nn_accuracy(x_src, np.dot(x_tgt, R.T), src2trg)
+    print("\nPrecision@1: %.3f\n" % acc)
 
 if args.output_src != '':
     x_src = x_src / np.linalg.norm(x_src, 2, 1).reshape([-1, 1])
