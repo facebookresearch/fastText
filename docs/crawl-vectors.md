@@ -100,6 +100,7 @@ Each value is space separated, and words are sorted by frequency in descending o
 These text models can easily be loaded in Python using the following code:
 ```python
 import io
+import numpy as np
 
 def load_vectors(fname):
     fin = io.open(fname, 'r', encoding='utf-8', newline='\n', errors='ignore')
@@ -107,7 +108,7 @@ def load_vectors(fname):
     data = {}
     for line in fin:
         tokens = line.rstrip().split(' ')
-        data[tokens[0]] = map(float, tokens[1:])
+        data[tokens[0]] = np.array(tokens[1:], dtype=np.float)
     return data
 ```
 
